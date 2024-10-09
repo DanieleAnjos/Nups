@@ -1,0 +1,18 @@
+<h1>Editar Produto</h1>
+<form action="/produtos/{{produto.id}}?_method=PUT" method="POST">
+  <label>Nome</label>
+  <input type="text" name="nome" value="{{produto.nome}}" required>
+  
+  <label>Observações</label>
+  <input type="text" name="observacoes" value="{{produto.observacoes}}">
+  
+  <label>Fornecedor</label>
+  <select name="fornecedorId" required>
+    <option value="" disabled>Selecione um fornecedor</option>
+    {{#each fornecedores}}
+    <option value="{{this.id}}" {{#if (eq this.id ../produto.fornecedorId)}}selected{{/if}}>{{this.nome}}</option>
+    {{/each}}
+  </select>
+  
+  <button type="submit">Salvar Alterações</button>
+</form>

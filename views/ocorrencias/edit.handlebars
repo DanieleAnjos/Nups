@@ -1,0 +1,24 @@
+<h2>Editar Ocorrência</h2>
+<form action="/ocorrencias/{{ocorrencia.id}}?_method=PUT" method="POST">
+  <label for="data">Data:</label>
+  <input type="date" name="data" value="{{ocorrencia.data}}" required>
+
+  <label for="relatorio">Relatório:</label>
+  <textarea name="relatorio" required>{{ocorrencia.relatorio}}</textarea>
+
+  <label for="horarioChegada">Horário de Chegada:</label>
+  <input type="time" name="horarioChegada" value="{{ocorrencia.horarioChegada}}" required>
+
+  <label for="horarioSaida">Horário de Saída:</label>
+  <input type="time" name="horarioSaida" value="{{ocorrencia.horarioSaida}}">
+
+  <label for="profissionalId">Profissional:</label>
+  <select name="profissionalId" required>
+    {{#each profissionais}}
+      <option value="{{this.id}}" {{#if (eq this.id ../ocorrencia.profissionalId)}}selected{{/if}}>{{this.nome}}</option>
+    {{/each}}
+  </select>
+
+  <button type="submit">Atualizar Ocorrência</button>
+</form>
+<a href="/ocorrencias">Voltar</a>

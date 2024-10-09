@@ -1,0 +1,64 @@
+<h2>Editar Paciente</h2>
+<form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST">
+    <label>Nome:</label>
+    <input type="text" name="nome" value="{{paciente.nome}}" required>
+    
+    <label>Data de Nascimento:</label>
+    <input type="date" name="dataNascimento" value="{{paciente.dataNascimento}}" required>
+    
+    <label>CPF:</label>
+    <input type="text" name="cpf" value="{{paciente.cpf}}" required>
+    
+    <label>Endereço:</label>
+    <input type="text" name="endereco" value="{{paciente.endereco}}" required>
+    
+    <label>Sexo:</label>
+    <select name="sexo" required>
+        <option value="Masculino" {{#if (eq paciente.sexo "Masculino")}}selected{{/if}}>Masculino</option>
+        <option value="Feminino" {{#if (eq paciente.sexo "Feminino")}}selected{{/if}}>Feminino</option>
+        <option value="Outro" {{#if (eq paciente.sexo "Outro")}}selected{{/if}}>Outro</option>
+    </select>
+    
+    <label>Telefone:</label>
+    <input type="text" name="telefone" value="{{paciente.telefone}}" required>
+    
+    <label>Tipo de Telefone:</label>
+    <select name="tipoTelefone" required>
+        <option value="Celular" {{#if (eq paciente.tipoTelefone "Celular")}}selected{{/if}}>Celular</option>
+        <option value="Residencial" {{#if (eq paciente.tipoTelefone "Residencial")}}selected{{/if}}>Residencial</option>
+        <option value="Comercial" {{#if (eq paciente.tipoTelefone "Comercial")}}selected{{/if}}>Comercial</option>
+    </select>
+
+    <label>Bairro:</label>
+    <input type="text" name="bairro" value="{{paciente.bairro}}" required>
+    
+    <label>Cidade:</label>
+    <input type="text" name="cidade" value="{{paciente.cidade}}" required>
+    
+    <label>Estado:</label>
+    <input type="text" name="estado" value="{{paciente.estado}}" required>
+    
+    <label>Número:</label>
+    <input type="text" name="numero" value="{{paciente.numero}}" required>
+    
+    <label>Complemento:</label>
+    <input type="text" name="complemento" value="{{paciente.complemento}}">
+    
+    <label>Histórico Médico:</label>
+    <input type="text" name="historicoMedico" value="{{paciente.historicoMedico}}">
+    
+    <label>Status:</label>
+    <select name="status" required>
+        <option value="Em Atendimento" {{#if (eq paciente.status "Em Atendimento")}}selected{{/if}}>Em Atendimento</option>
+        <option value="Abandono de Tratamento" {{#if (eq paciente.status "Abandono de Tratamento")}}selected{{/if}}>Abandono de Tratamento</option>
+        <option value="Alta" {{#if (eq paciente.status "Alta")}}selected{{/if}}>Alta</option>
+    </select>
+
+    <label>Encaminhamento:</label>
+    <select name="encaminhamento" required>
+        <option value="Psicologia" {{#if (eq paciente.encaminhamento "Psicologia")}}selected{{/if}}>Psicologia</option>
+        <option value="Serviço Social" {{#if (eq paciente.encaminhamento "Serviço Social")}}selected{{/if}}>Serviço Social</option>
+    </select>
+
+    <button type="submit">Salvar</button>
+</form>

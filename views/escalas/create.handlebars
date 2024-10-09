@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Escala</title>
+</head>
+<body>
+    <header>
+        <h1>Criar Nova Escala</h1>
+    </header>
+    <main>
+        <form action="/escalas" method="POST">
+            <label for="data">Data:</label>
+            <input type="date" name="data" required>
+
+            <label for="horarioInicio">Horário Início:</label>
+            <input type="time" name="horarioInicio" required>
+
+            <label for="horarioFim">Horário Fim:</label>
+            <input type="time" name="horarioFim" required>
+
+            <label for="adminId">Profissional:</label>
+            <select name="adminId" required>
+                {{#each profissionais}}
+                <option value="{{this.id}}">{{this.nome}}</option>
+                {{/each}}
+            </select>
+
+            <button type="submit">Criar</button>
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,36 @@
+
+        <h1>Lista de Escalas</h1>
+        <nav>
+            <a href="/escalas/create">Adicionar Escala</a>
+        </nav>
+    </header>
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data</th>
+                    <th>Horário Início</th>
+                    <th>Horário Fim</th>
+                    <th>Profissional</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each escalas}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.data}}</td>
+                    <td>{{this.horarioInicio}}</td>
+                    <td>{{this.horarioFim}}</td>
+                    <td>{{this.admin.nome}}</td>
+                    <td>
+                        <a href="/escalas/{{this.id}}/edit">Editar</a>
+                        <form action="/escalas/{{this.id}}?_method=DELETE" method="POST">
+                            <button type="submit">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>

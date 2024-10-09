@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Escala</title>
+</head>
+<body>
+    <header>
+        <h1>Editar Escala</h1>
+    </header>
+    <main>
+        <form action="/escalas/{{escala.id}}?_method=PUT" method="POST">
+            <label for="data">Data:</label>
+            <input type="date" name="data" value="{{escala.data}}" required>
+
+            <label for="horarioInicio">Horário Início:</label>
+            <input type="time" name="horarioInicio" value="{{escala.horarioInicio}}" required>
+
+            <label for="horarioFim">Horário Fim:</label>
+            <input type="time" name="horarioFim" value="{{escala.horarioFim}}" required>
+
+            <label for="adminId">Profissional:</label>
+            <select name="adminId" required>
+                {{#each profissionais}}
+                <option value="{{this.id}}" {{#ifCond this.id ../escala.adminId}}selected{{/ifCond}}>{{this.nome}}</option>
+                {{/each}}
+            </select>
+
+            <button type="submit">Salvar</button>
+        </form>
+    </main>
+</body>
+</html>

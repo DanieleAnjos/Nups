@@ -1,0 +1,24 @@
+<h2>Adicionar Nova Ocorrência</h2>
+<form action="/ocorrencias" method="POST">
+    <label for="data">Data:</label>
+    <input type="date" name="data" required>
+
+    <label for="relatorio">Relatório:</label>
+    <textarea name="relatorio" required></textarea>
+
+    <label for="horarioChegada">Horário de Chegada:</label>
+    <input type="time" name="horarioChegada" required>
+
+    <label for="horarioSaida">Horário de Saída:</label>
+    <input type="time" name="horarioSaida">
+
+    <label for="profissionalId">Profissional:</label>
+    <select name="profissionalId" required>
+        {{#each profissionais}}
+            <option value="{{this.id}}">{{this.nome}}</option>
+        {{/each}}
+    </select>
+
+    <button type="submit">Adicionar Ocorrência</button>
+</form>
+<a href="/ocorrencias">Voltar</a>

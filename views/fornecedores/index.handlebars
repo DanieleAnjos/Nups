@@ -1,0 +1,31 @@
+<h1>Lista de Fornecedores</h1>
+<a href="/fornecedores/create">Adicionar Fornecedor</a>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>CNPJ</th>
+      <th>Telefone</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each fornecedores}}
+    <tr>
+      <td>{{this.id}}</td>
+      <td>{{this.nome}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.cnpj}}</td>
+      <td>{{this.telefone}}</td>
+      <td>
+        <a href="/fornecedores/{{this.id}}/edit">Editar</a>
+        <form action="/fornecedores/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">Deletar</button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

@@ -1,0 +1,40 @@
+<h1>Editar Atendimento</h1>
+
+<form action="/atendimentos/{{atendimento.id}}?_method=PUT" method="POST">
+  <!-- Paciente -->
+  <label for="matriculaPaciente">Paciente</label>
+  <select name="matriculaPaciente" id="matriculaPaciente" required>
+    {{#each pacientes}}
+    <option value="{{this.matricula}}" {{#if (eq this.matricula ../atendimento.matriculaPaciente)}}selected{{/if}}>{{this.nome}}</option>
+    {{/each}}
+  </select>
+
+  <!-- Número do Processo -->
+  <label for="numeroProcesso">Número do Processo</label>
+  <input type="text" name="numeroProcesso" id="numeroProcesso" value="{{atendimento.numeroProcesso}}" required>
+
+  <!-- Assunto -->
+  <label for="assunto">Assunto</label>
+  <select name="assunto" id="assunto" required>
+    <option value="Acolhimento de disparo" {{#if (eq atendimento.assunto "Acolhimento de disparo")}}selected{{/if}}>Acolhimento de disparo</option>
+    <option value="Acolhimento psicossocial" {{#if (eq atendimento.assunto "Acolhimento psicossocial")}}selected{{/if}}>Acolhimento psicossocial</option>
+    <option value="Exposição negativa na mídia" {{#if (eq atendimento.assunto "Exposição negativa na mídia")}}selected{{/if}}>Exposição negativa na mídia</option>
+  </select>
+
+  <!-- Profissional (preenchido automaticamente) -->
+  <label for="profissionalId">Profissional</label>
+  <input type="text" name="profissionalId" id="profissionalId" value="{{profissional.nome}} - {{profissional.especialidade}}" readonly>
+
+  <!-- ID do profissional (oculto) -->
+  <input type="hidden" name="profissionalId" value="{{profissional.id}}">
+
+  <!-- Registro do Atendimento -->
+  <label for="registroAtendimento">Registro de Atendimento</label>
+  <textarea name="registroAtendimento" id="registroAtendimento" rows="5" required>{{atendimento.registroAtendimento}}</textarea>
+
+  <!-- Data do Acolhimento -->
+  <label for="acolhidoEm">Data de Acolhimento</label>
+  <input type="date" name="acolhidoEm" id="acolhidoEm" value="{{atendimento.acolhidoEm}}" required>
+
+  <button type="submit">Salvar</button>
+</form>

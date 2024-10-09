@@ -1,0 +1,33 @@
+<h1>Lista de Pacientes</h1>
+<a href="/pacientes/create">Adicionar Paciente</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#if pacientes.length}}
+            {{#each pacientes}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.nome}}</td>
+                    <td>{{this.status}}</td>
+                    <td>
+                        <a href="/pacientes/{{this.id}}/edit">Editar</a>
+                        <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+            {{/each}}
+        {{else}}
+            <tr>
+                <td colspan="4">Nenhum paciente encontrado.</td>
+            </tr>
+        {{/if}}
+    </tbody>
+</table>

@@ -1,0 +1,33 @@
+<h1>Lista de Produtos</h1>
+<a href="/produtos/create">Adicionar Produto</a>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Fornecedor</th>
+      <th>Observações</th>
+      <th>Ações</th>
+      <th>Ajustes de Estoque</th> <!-- Nova coluna para ajuste de estoque -->
+    </tr>
+  </thead>
+  <tbody>
+    {{#each produtos}}
+    <tr>
+      <td>{{this.id}}</td>
+      <td>{{this.nome}}</td>
+      <td>{{this.fornecedor.nome}}</td> <!-- Mostra o nome do fornecedor -->
+      <td>{{this.observacoes}}</td>
+      <td>
+        <a href="/produtos/{{this.id}}/edit">Editar</a>
+        <form action="/produtos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+          <button type="submit">Deletar</button>
+        </form>
+      </td>
+      <td>
+        <a href="/ajustes/create?produtoId={{this.id}}">Ajustar Estoque</a> <!-- Link para ajuste de estoque -->
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

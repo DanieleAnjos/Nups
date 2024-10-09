@@ -1,0 +1,16 @@
+<h1>Editar Fornecedor</h1>
+<form action="/fornecedores/{{fornecedor.id}}?_method=PUT" method="POST">
+  <label>Nome</label>
+  <input type="text" name="nome" value="{{fornecedor.nome}}" required>
+  
+  <label>Email</label>
+  <input type="email" name="email" value="{{fornecedor.email}}" required>
+  
+  <label>CNPJ</label>
+  <input type="text" name="cnpj" value="{{fornecedor.cnpj}}" required>
+  
+  <label>Telefone</label>
+  <input type="text" name="telefone" value="{{fornecedor.telefone}}" required>
+  
+  <button type="submit">Salvar Alterações</button>
+</form>

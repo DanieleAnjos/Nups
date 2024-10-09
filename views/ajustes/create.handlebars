@@ -1,0 +1,21 @@
+<h1>Adicionar Ajuste de Estoque</h1>
+<form action="/ajustes" method="POST">
+  <label>Produto</label>
+  <select name="produtoId" required>
+    <option value="" disabled {{#unless produtoIdSelecionado}}selected{{/unless}}>Selecione um produto</option>
+    {{#each produtos}}
+    <option value="{{this.id}}" {{#if (eq this.id ../produtoIdSelecionado)}}selected{{/if}}>{{this.nome}}</option>
+    {{/each}}
+  </select>
+
+  <label>Quantidade</label>
+  <input type="number" name="quantidade" required>
+
+  <label>Tipo de Ajuste</label>
+  <select name="tipo" required>
+    <option value="adição">Adição</option>
+    <option value="ajuste">Ajuste</option>
+  </select>
+
+  <button type="submit">Salvar</button>
+</form>

@@ -1,0 +1,18 @@
+<h1>Adicionar Produto</h1>
+<form action="/produtos" method="POST">
+  <label>Nome</label>
+  <input type="text" name="nome" required>
+  
+  <label>Observações</label>
+  <input type="text" name="observacoes">
+  
+  <label>Fornecedor</label>
+  <select name="fornecedorId" required>
+    <option value="" disabled selected>Selecione um fornecedor</option>
+    {{#each fornecedores}}
+    <option value="{{this.id}}">{{this.nome}}</option>
+    {{/each}}
+  </select>
+  
+  <button type="submit">Salvar</button>
+</form>

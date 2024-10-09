@@ -1,0 +1,40 @@
+<h1>Novo Atendimento</h1>
+
+<form action="/atendimentos" method="POST">
+  <!-- Paciente -->
+  <label for="matriculaPaciente">Paciente</label>
+  <select name="matriculaPaciente" id="matriculaPaciente" required>
+    {{#each pacientes}}
+    <option value="{{this.matricula}}">{{this.nome}}</option>
+    {{/each}}
+  </select>
+
+  <!-- Número do Processo -->
+  <label for="numeroProcesso">Número do Processo</label>
+  <input type="text" name="numeroProcesso" id="numeroProcesso" required>
+
+  <!-- Assunto -->
+  <label for="assunto">Assunto</label>
+  <select name="assunto" id="assunto" required>
+    <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+    <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+    <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+  </select>
+
+  <!-- Profissional (preenchido automaticamente) -->
+  <label for="profissionalId">Profissional</label>
+  <input type="text" name="profissionalId" id="profissionalId" value="{{profissional.nome}} - {{profissional.especialidade}}" readonly>
+
+  <!-- ID do profissional (oculto) -->
+  <input type="hidden" name="profissionalId" value="{{profissional.id}}">
+
+  <!-- Registro do Atendimento -->
+  <label for="registroAtendimento">Registro de Atendimento</label>
+  <textarea name="registroAtendimento" id="registroAtendimento" rows="5" required></textarea>
+
+  <!-- Data do Acolhimento -->
+  <label for="acolhidoEm">Data de Acolhimento</label>
+  <input type="date" name="acolhidoEm" id="acolhidoEm" required>
+
+  <button type="submit">Salvar</button>
+</form>

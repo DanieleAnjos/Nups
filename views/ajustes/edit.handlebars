@@ -1,0 +1,20 @@
+<h1>Editar Ajuste de Estoque</h1>
+<form action="/ajustes/{{ajuste.id}}?_method=PUT" method="POST">
+  <label>Produto</label>
+  <select name="produtoId" required>
+    {{#each produtos}}
+    <option value="{{this.id}}" {{#if (eq this.id ../ajuste.produtoId)}}selected{{/if}}>{{this.nome}}</option>
+    {{/each}}
+  </select>
+
+  <label>Quantidade</label>
+  <input type="number" name="quantidade" value="{{ajuste.quantidade}}" required>
+
+  <label>Tipo de Ajuste</label>
+  <select name="tipo" required>
+    <option value="adição" {{#if (eq ajuste.tipo 'adição')}}selected{{/if}}>Adição</option>
+    <option value="ajuste" {{#if (eq ajuste.tipo 'ajuste')}}selected{{/if}}>Ajuste</option>
+  </select>
+
+  <button type="submit">Salvar Alterações</button>
+</form>
