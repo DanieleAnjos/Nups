@@ -1,30 +1,38 @@
-<h2>Lista de Profissionais</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Cargo</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each profissionais}}
+
+<main class="container mt-5">
+    <h2>Lista de Profissionais</h2>
+    <div class="text-right mb-3">
+    <a href="/profissionais/create" class="btn btn-primary">Adicionar Profissional</a>
+    </div>
+    <table class="table table-striped mt-3">
+        <thead>
             <tr>
-                <td>{{this.nome}}</td>
-                <td>{{this.email}}</td>
-                <td>{{this.cargo}}</td>
-                <td>
-                    <a href="/profissionais/edit/{{this.id}}">Editar</a>
-                    <form action="/profissionais/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                        <button type="submit">Deletar</button>
-                    </form>
-                </td>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Cargo</th>
+                <th>Ações</th>
             </tr>
-        {{else}}
-            <tr>
-                <td colspan="4">Nenhum profissional encontrado.</td>
-            </tr>
-        {{/each}}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {{#if profissionais.length}}
+                {{#each profissionais}}
+                    <tr>
+                        <td>{{this.nome}}</td>
+                        <td>{{this.email}}</td>
+                        <td>{{this.cargo}}</td>
+                        <td>
+                            <a href="/profissionais/edit/{{this.id}}" class="btn btn-warning btn-sm">Editar</a>
+                            <form action="/profissionais/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="4" class="text-center">Nenhum profissional encontrado.</td>
+                </tr>
+            {{/if}}
+        </tbody>
+    </table>
+</main>

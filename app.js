@@ -19,13 +19,24 @@ const atendimentoRoutes = require('./routes/atendimentoRoutes');
 const ocorrenciaRoutes = require('./routes/ocorrenciaRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 
 const hbs = engine({
     helpers: {
-        eq: (a, b) => a === b, // Define o helper eq
+        eq: (a, b) => a === b,
         ifCond: (v1, v2, options) => {
             return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        },
+        ifEquals: (arg1, arg2, options) => {
+            return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
+        },
+        formatDate: (date) => {
+            if (!date) return '';
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
     },
     runtimeOptions: {
@@ -33,6 +44,7 @@ const hbs = engine({
         allowProtoMethodsByDefault: true
     }
 });
+
 
 app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');

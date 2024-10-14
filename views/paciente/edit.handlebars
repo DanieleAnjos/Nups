@@ -1,64 +1,407 @@
 <h2>Editar Paciente</h2>
-<form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST">
-    <label>Nome:</label>
-    <input type="text" name="nome" value="{{paciente.nome}}" required>
-    
-    <label>Data de Nascimento:</label>
-    <input type="date" name="dataNascimento" value="{{paciente.dataNascimento}}" required>
-    
-    <label>CPF:</label>
-    <input type="text" name="cpf" value="{{paciente.cpf}}" required>
-    
-    <label>Endereço:</label>
-    <input type="text" name="endereco" value="{{paciente.endereco}}" required>
-    
-    <label>Sexo:</label>
-    <select name="sexo" required>
-        <option value="Masculino" {{#if (eq paciente.sexo "Masculino")}}selected{{/if}}>Masculino</option>
-        <option value="Feminino" {{#if (eq paciente.sexo "Feminino")}}selected{{/if}}>Feminino</option>
-        <option value="Outro" {{#if (eq paciente.sexo "Outro")}}selected{{/if}}>Outro</option>
-    </select>
-    
-    <label>Telefone:</label>
-    <input type="text" name="telefone" value="{{paciente.telefone}}" required>
-    
-    <label>Tipo de Telefone:</label>
-    <select name="tipoTelefone" required>
-        <option value="Celular" {{#if (eq paciente.tipoTelefone "Celular")}}selected{{/if}}>Celular</option>
-        <option value="Residencial" {{#if (eq paciente.tipoTelefone "Residencial")}}selected{{/if}}>Residencial</option>
-        <option value="Comercial" {{#if (eq paciente.tipoTelefone "Comercial")}}selected{{/if}}>Comercial</option>
-    </select>
 
-    <label>Bairro:</label>
-    <input type="text" name="bairro" value="{{paciente.bairro}}" required>
-    
-    <label>Cidade:</label>
-    <input type="text" name="cidade" value="{{paciente.cidade}}" required>
-    
-    <label>Estado:</label>
-    <input type="text" name="estado" value="{{paciente.estado}}" required>
-    
-    <label>Número:</label>
-    <input type="text" name="numero" value="{{paciente.numero}}" required>
-    
-    <label>Complemento:</label>
-    <input type="text" name="complemento" value="{{paciente.complemento}}">
-    
-    <label>Histórico Médico:</label>
-    <input type="text" name="historicoMedico" value="{{paciente.historicoMedico}}">
-    
-    <label>Status:</label>
-    <select name="status" required>
-        <option value="Em Atendimento" {{#if (eq paciente.status "Em Atendimento")}}selected{{/if}}>Em Atendimento</option>
-        <option value="Abandono de Tratamento" {{#if (eq paciente.status "Abandono de Tratamento")}}selected{{/if}}>Abandono de Tratamento</option>
-        <option value="Alta" {{#if (eq paciente.status "Alta")}}selected{{/if}}>Alta</option>
-    </select>
+<form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST" onsubmit="setCurrentDate()">
+    <input type="hidden" name="_method" value="PUT"> 
+    <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
-    <label>Encaminhamento:</label>
-    <select name="encaminhamento" required>
-        <option value="Psicologia" {{#if (eq paciente.encaminhamento "Psicologia")}}selected{{/if}}>Psicologia</option>
-        <option value="Serviço Social" {{#if (eq paciente.encaminhamento "Serviço Social")}}selected{{/if}}>Serviço Social</option>
-    </select>
+    <fieldset class="border p-4 mb-4">
+        <legend>Informações Pessoais</legend>
 
-    <button type="submit">Salvar</button>
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" class="form-control" name="nome" id="nome" value="{{paciente.nome}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="matricula">Matrícula:</label>
+            <input type="text" class="form-control" name="matricula" id="matricula" value="{{paciente.matricula}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dataNascimento">Data de Nascimento:</label>
+            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sexo">Sexo:</label>
+            <select class="form-control" name="sexo" id="sexo" required>
+                <option value="Masculino" {{#if (eq paciente.sexo 'Masculino')}}selected{{/if}}>Masculino</option>
+                <option value="Feminino" {{#if (eq paciente.sexo 'Feminino')}}selected{{/if}}>Feminino</option>
+                <option value="Outro" {{#if (eq paciente.sexo 'Outro')}}selected{{/if}}>Outro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="escolaridade">Escolaridade:</label>
+            <select class="form-control" name="escolaridade" id="escolaridade" required>
+                <option value="Ensino Fundamental" {{#if (eq paciente.escolaridade 'Ensino Fundamental')}}selected{{/if}}>Ensino Fundamental</option>
+                <option value="Ensino Médio" {{#if (eq paciente.escolaridade 'Ensino Médio')}}selected{{/if}}>Ensino Médio</option>
+                <option value="Superior" {{#if (eq paciente.escolaridade 'Superior')}}selected{{/if}}>Superior</option>
+                <option value="Pós-Graduação" {{#if (eq paciente.escolaridade 'Pós-Graduação')}}selected{{/if}}>Pós-Graduação</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="cpf">CPF:</label>
+            <input type="text" class="form-control" name="cpf" id="cpf" value="{{paciente.cpf}}" required pattern="\d{11}" title="Digite um CPF válido com 11 números">
+        </div>
+
+        <div class="form-group">
+            <label for="telefone">Telefone:</label>
+            <input type="text" class="form-control" name="telefone" id="telefone" value="{{paciente.telefone}}" required pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+        </div>
+
+        <div class="form-group">
+            <label for="tipoTelefone">Tipo de Telefone:</label>
+            <select class="form-control" name="tipoTelefone" id="tipoTelefone" required>
+                <option value="Celular" {{#if (eq paciente.tipoTelefone 'Celular')}}selected{{/if}}>Celular</option>
+                <option value="Residencial" {{#if (eq paciente.tipoTelefone 'Residencial')}}selected{{/if}}>Residencial</option>
+                <option value="Comercial" {{#if (eq paciente.tipoTelefone 'Comercial')}}selected{{/if}}>Comercial</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Imagem do Paciente</legend>
+        <div class="form-group">
+            <label for="imagemPaciente">Carregar Imagem:</label>
+            <input type="file" class="form-control" name="imagemPaciente" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
+            <small class="form-text text-muted">Formato aceito: JPG, PNG, GIF.</small>
+            <img id="imagemPreview" src="{{paciente.imagemPaciente}}" alt="Pré-visualização da Imagem" style="margin-top:10px; max-width:200px;">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Endereço</legend>
+
+        <div class="form-group">
+            <label for="cep">CEP:</label>
+            <input type="text" class="form-control" name="cep" id="cep" value="{{paciente.cep}}" required pattern="\d{8}" title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
+        </div>
+
+        <div class="form-group">
+            <label for="endereco">Endereço:</label>
+            <input type="text" class="form-control" name="endereco" id="endereco" value="{{paciente.endereco}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="numero">Número:</label>
+            <input type="text" class="form-control" name="numero" id="numero" value="{{paciente.numero}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="bairro">Bairro:</label>
+            <input type="text" class="form-control" name="bairro" id="bairro" value="{{paciente.bairro}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cidade">Cidade:</label>
+            <input type="text" class="form-control" name="cidade" id="cidade" value="{{paciente.cidade}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <input type="text" class="form-control" name="estado" id="estado" value="{{paciente.estado}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="complemento">Complemento:</label>
+            <input type="text" class="form-control" name="complemento" id="complemento" value="{{paciente.complemento}}">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Contato de Emergência</legend>
+
+        <div class="form-group">
+            <label for="nomeContato">Nome do Contato:</label>
+            <input type="text" class="form-control" name="nomeContato" id="nomeContato" value="{{paciente.nomeContato}}">
+        </div>
+
+        <div class="form-group">
+            <label for="telefoneContato">Telefone:</label>
+            <input type="text" class="form-control" name="telefoneContato" id="telefoneContato" value="{{paciente.telefoneContato}}" pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+        </div>
+
+        <div class="form-group">
+            <label for="parentesco">Parentesco:</label>
+            <select class="form-control" name="parentesco" id="parentesco">
+                <option value="Pai" {{#if (eq paciente.parentesco 'Pai')}}selected{{/if}}>Pai</option>
+                <option value="Mãe" {{#if (eq paciente.parentesco 'Mãe')}}selected{{/if}}>Mãe</option>
+                <option value="Filho" {{#if (eq paciente.parentesco 'Filho')}}selected{{/if}}>Filho</option>
+                <option value="Cônjuge" {{#if (eq paciente.parentesco 'Cônjuge')}}selected{{/if}}>Cônjuge</option>
+                <option value="Outro" {{#if (eq paciente.parentesco 'Outro')}}selected{{/if}}>Outro</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Histórico de Saúde</legend>
+
+        <div class="form-group">
+            <label for="alergia">Possui alergia a algum medicamento?</label>
+            <select class="form-control" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
+                <option value="false" {{#if (eq paciente.alergia 'false')}}selected{{/if}}>Não</option>
+                <option value="true" {{#if (eq paciente.alergia 'true')}}selected{{/if}}>Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="alergiaMedicamento" style="display: {{#if (eq paciente.alergia 'true')}}block{{else}}none{{/if}}">
+            <label for="medicamento">Qual(is)?</label>
+            <input type="text" class="form-control" name="medicamento" id="medicamento" value="{{paciente.medicamento}}">
+        </div>
+
+        <div class="form-group">
+            <label for="doenca">Possui alguma doença crônica?</label>
+            <select class="form-control" name="doenca" id="doenca" onchange="toggleField('doenca', 'doencaDescricao')">
+                <option value="false" {{#if (eq paciente.doenca 'false')}}selected{{/if}}>Não</option>
+                <option value="true" {{#if (eq paciente.doenca 'true')}}selected{{/if}}>Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="terapia">Faz terapia?</label>
+            <select class="form-control" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
+                <option value="false" {{#unless terapia}}selected{{/unless}}>Não</option>
+                <option value="true" {{#if terapia}}selected{{/if}}>Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="terapiaPeriodo" style="display:none;">
+            <label for="terapiaPeriodoInput">Período da Terapia:</label>
+            <input type="text" class="form-control" name="terapiaPeriodo" id="terapiaPeriodoInput" value="{{terapiaPeriodo}}">
+        </div>
+
+        <div class="form-group" id="terapiaMotivo" style="display:none;">
+            <label for="terapiaMotivoInput">Motivo da Terapia:</label>
+            <input type="text" class="form-control" name="terapiaMotivo" id="terapiaMotivoInput" value="{{terapiaMotivo}}">
+        </div>
+
+        <div class="form-group">
+            <label for="atividadeFisica">Faz atividade física?</label>
+            <select class="form-control" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
+                <option value="false" {{#unless atividadeFisica}}selected{{/unless}}>Não</option>
+                <option value="true" {{#if atividadeFisica}}selected{{/if}}>Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="tipoAtividadeFisica" style="display:none;">
+            <label for="tipoAtividadeFisicaInput">Tipo de Atividade Física:</label>
+            <input type="text" class="form-control" name="tipoAtividadeFisica" id="tipoAtividadeFisicaInput" value="{{tipoAtividadeFisica}}">
+        </div>
+
+        <div class="form-group">
+            <label for="observacoes">Observações:</label>
+            <textarea class="form-control" name="observacoes" id="observacoes" rows="3">{{observacoes}}</textarea>
+        </div>
+
+        </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Outras Informações</legend>
+
+        <div class="form-group">
+            <label for="planoSaude">Plano de Saúde:</label>
+            <input type="text" class="form-control" name="planoSaude" id="planoSaude" value="{{ paciente.planoSaude }}">
+        </div>
+
+        <div class="form-group">
+            <label for="cartaoSus">Cartão SUS:</label>
+            <input type="text" class="form-control" name="cartaoSus" id="cartaoSus" value="{{ paciente.cartaoSus }}">
+        </div>
+
+        <div class="form-group">
+            <label for="seguroVida">Seguro de Vida:</label>
+            <input type="text" class="form-control" name="seguroVida" id="seguroVida" value="{{ paciente.seguroVida }}">
+        </div>
+
+        <div class="form-group">
+            <label for="comoConheceuEmpresa">Como conheceu o NUPS:</label>
+            <input type="text" class="form-control" name="comoConheceuEmpresa" id="comoConheceuEmpresa" value="{{ paciente.comoConheceuEmpresa }}">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Informações de Serviço</legend>
+
+        <div class="form-group">
+            <label for="postoServico">Posto de Serviço:</label>
+            <input type="text" class="form-control" name="postoServico" id="postoServico" value="{{ paciente.postoServico }}">
+        </div>
+
+        <div class="form-group">
+            <label for="escala">Escala:</label>
+            <input type="number" class="form-control" name="escala" id="escala" value="{{ paciente.escala }}">
+        </div>
+
+        <div class="form-group">
+            <label for="tempoServico">Tempo de Serviço:</label>
+            <input type="text" class="form-control" name="tempoServico" id="tempoServico" value="{{ paciente.tempoServico }}">
+        </div>
+
+        <div class="form-group">
+            <label for="periodoEscala">Período de Escala:</label>
+            <input type="text" class="form-control" name="periodoEscala" id="periodoEscala" value="{{ paciente.periodoEscala }}">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Com quem reside</legend>
+
+        <div class="form-group">
+            <label for="moradia">Moradia:</label>
+            <input type="text" class="form-control" name="moradia" id="moradia" value="{{ paciente.moradia }}">
+        </div>
+
+        <div class="form-group">
+            <label for="familiaDeficiencias">Família com Deficiências:</label>
+            <select class="form-control" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
+                {{#ifEquals paciente.familiaDeficiencias 'false'}}
+                    <option value="false" selected>Não</option>
+                    <option value="true">Sim</option>
+                {{else}}
+                    <option value="false">Não</option>
+                    <option value="true" selected>Sim</option>
+                {{/ifEquals}}
+            </select>
+        </div>
+
+        <div class="form-group" id="deficiencia" style="display:{{#ifEquals paciente.familiaDeficiencias 'true'}}block{{else}}none{{/ifEquals}}">
+            <label for="deficiencia">Deficiência:</label>
+            <input type="text" class="form-control" name="deficiencia" id="deficienciaInput" value="{{ paciente.deficiencia }}">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Informações Adicionais</legend>
+
+        <div class="form-group">
+            <label for="filhos">Filhos:</label>
+            <select class="form-control" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
+                {{#ifEquals paciente.filhos 'false'}}
+                    <option value="false" selected>Não</option>
+                    <option value="true">Sim</option>
+                {{else}}
+                    <option value="false">Não</option>
+                    <option value="true" selected>Sim</option>
+                {{/ifEquals}}
+            </select>
+        </div>
+
+        <div class="form-group" id="quantidadeFilhos" style="display:{{#ifEquals paciente.filhos 'true'}}block{{else}}none{{/ifEquals}}">
+            <label for="quantidadeFilhos">Quantidade de Filhos:</label>
+            <input type="text" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput" value="{{ paciente.quantidadeFilhos }}">
+        </div>
+
+        <div class="form-group" id="idadeFilhos" style="display:{{#ifEquals paciente.filhos 'true'}}block{{else}}none{{/ifEquals}}">
+            <label for="idadeFilhos">Idade dos Filhos:</label>
+            <input type="text" class="form-control" name="idadeFilhos" id="idadeFilhosInput" value="{{ paciente.idadeFilhos }}">
+        </div>
+
+        <div class="form-group">
+            <label for="porteArma">Porte de Arma:</label>
+            <select class="form-control" name="porteArma" id="porteArma">
+                {{#ifEquals paciente.porteArma 'false'}}
+                    <option value="false" selected>Não</option>
+                    <option value="true">Sim</option>
+                {{else}}
+                    <option value="false">Não</option>
+                    <option value="true" selected>Sim</option>
+                {{/ifEquals}}
+            </select>
+        </div>
+
+<div class="form-group">
+    <label for="trabalhoArmado">Trabalho Armado:</label>
+    <select class="form-control" name="trabalhoArmado" id="trabalhoArmado">
+        {{#ifEquals paciente.trabalhoArmado 'false'}}
+            <option value="false" selected>Não</option>
+            <option value="true">Sim</option>
+        {{else}}
+            <option value="false">Não</option>
+            <option value="true" selected>Sim</option>
+        {{/ifEquals}}
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="armaPessoal">Arma Pessoal:</label>
+    <select class="form-control" name="armaPessoal" id="armaPessoal">
+        {{#ifEquals paciente.armaPessoal 'false'}}
+            <option value="false" selected>Não</option>
+            <option value="true">Sim</option>
+        {{else}}
+            <option value="false">Não</option>
+            <option value="true" selected>Sim</option>
+        {{/ifEquals}}
+    </select>
+</div>
+
+</fieldset>
+
+<fieldset class="border p-4 mb-4">
+    <div class="form-group">
+        <label for="encaminhamento">Encaminhamento</label>
+        <select class="form-control" name="encaminhamento" id="encaminhamento">
+            {{#ifEquals paciente.encaminhamento 'Psicologia'}}
+                <option value="Psicologia" selected>Psicologia</option>
+                <option value="Serviço Social">Serviço Social</option>
+            {{else}}
+                <option value="Psicologia">Psicologia</option>
+                <option value="Serviço Social" selected>Serviço Social</option>
+            {{/ifEquals}}
+        </select>
+    </div>
+</fieldset>
+
+        
+
+    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
 </form>
+
+<script>
+    function setCurrentDate() {
+        document.getElementById('dataAtendimento').value = new Date().toISOString().split('T')[0];
+    }
+
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const output = document.getElementById('imagemPreview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function buscarEndereco() {
+    const cep = document.getElementById('cep').value.replace('-', '');
+    if (cep) {
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+
+            if (!data.erro) {
+                document.getElementById('endereco').value = data.logradouro || '';
+                document.getElementById('bairro').value = data.bairro || '';
+                document.getElementById('cidade').value = data.localidade || '';
+                document.getElementById('estado').value = data.uf || '';
+            } else {
+                alert('CEP não encontrado.');
+            }
+        } catch (error) {
+            alert('Erro ao buscar o endereço.');
+        }
+    }
+    }
+
+    function toggleField(selectId, fieldId) {
+        const selectElement = document.getElementById(selectId);
+        const fieldElement = document.getElementById(fieldId);
+        if (selectElement.value === "true") {
+            fieldElement.style.display = "block";
+        } else {
+            fieldElement.style.display = "none";
+        }
+    }
+
+</script>

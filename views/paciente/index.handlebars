@@ -1,32 +1,34 @@
-<h1>Lista de Pacientes</h1>
-<a href="/pacientes/create">Adicionar Paciente</a>
-<table>
-    <thead>
+<h1 class="text-center my-4">Lista de Pacientes</h1>
+<div class="text-right mb-3">
+    <a href="/pacientes/create" class="btn btn-primary">Adicionar Paciente</a>
+</div>
+    <table class="table table-striped mt-3">
         <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>Status</th>
+            <th>Matricula</th>
+            <th>Encaminhamento</th>
             <th>Ações</th>
         </tr>
-    </thead>
     <tbody>
         {{#if pacientes.length}}
             {{#each pacientes}}
                 <tr>
                     <td>{{this.id}}</td>
                     <td>{{this.nome}}</td>
-                    <td>{{this.status}}</td>
+                    <td>{{this.matricula}}</td>
+                    <td>{{this.encaminhamento}}</td>
                     <td>
-                        <a href="/pacientes/{{this.id}}/edit">Editar</a>
+                        <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm mr-2">Editar</a>
                         <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                            <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">Deletar</button>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">Deletar</button>
                         </form>
                     </td>
                 </tr>
             {{/each}}
         {{else}}
             <tr>
-                <td colspan="4">Nenhum paciente encontrado.</td>
+                <td colspan="4" class="text-center">Nenhum paciente encontrado.</td>
             </tr>
         {{/if}}
     </tbody>

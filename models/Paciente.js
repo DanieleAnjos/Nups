@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Importa a configuração do banco de dados
+const sequelize = require('../config/database'); 
 
 const Paciente = sequelize.define('Paciente', {
   id: {
@@ -7,31 +7,44 @@ const Paciente = sequelize.define('Paciente', {
     primaryKey: true,
     autoIncrement: true,
   },
+  dataHoraAtendimento: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW, 
+  },
   matricula: {
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: true,
     validate: {
-      isInt: true, // Deve ser um número inteiro
+      isInt: true, 
     },
   },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      len: [3, 255], // Deve ter entre 3 e 255 caracteres
+      len: [3, 255], 
     },
   },
   dataNascimento: {
     type: DataTypes.DATE,
     allowNull: false,
     validate: {
-      isDate: true, // Deve ser uma data válida
+      isDate: true, 
       isBefore: {
-        args: new Date().toISOString().slice(0, 10), // Data não pode ser futura
+        args: new Date().toISOString().slice(0, 10), 
         msg: "A data de nascimento não pode ser no futuro."
       },
     },
+  },
+  sexo: {
+    type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
+    allowNull: false
+  },
+  escolaridade: {
+    type: DataTypes.ENUM('Ensino Fundamental', 'Ensino Médio', 'Superior'),
+    allowNull: false
   },
   endereco: {
     type: DataTypes.STRING,
@@ -42,42 +55,10 @@ const Paciente = sequelize.define('Paciente', {
     allowNull: false,
     validate: {
       is: {
-        args: /^[0-9]{5}-?[0-9]{3}$/, // Validação para o formato de CEP (xxxxx-xxx)
+        args: /^[0-9]{5}-?[0-9]{3}$/,
         msg: "O CEP deve ter 8 ou 9 dígitos (xxxxx-xxx)."
       },
     },
-  },
-  cpf: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      is: {
-        args: /^[0-9]{11}$/, // Validação para 11 dígitos numéricos
-        msg: "O CPF deve conter 11 números."
-      },
-    },
-  },
-  sexo: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      isIn: [['Masculino', 'Feminino', 'Outro']], // Adicione suas opções aqui
-    },
-  },
-  telefone: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      is: {
-        args: /^[0-9]{10,11}$/, // Validação para 10 ou 11 dígitos numéricos
-        msg: "O telefone deve conter entre 10 e 11 números."
-      },
-    },
-  },
-  tipoTelefone: {
-    type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
-    allowNull: false,
   },
   bairro: {
     type: DataTypes.STRING,
@@ -91,8 +72,8 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      isAlpha: true, // Deve conter apenas letras
-      len: [2, 2], // Deve ter exatamente 2 caracteres
+      isAlpha: true,
+      len: [2, 2], 
     },
   },
   numero: {
@@ -101,32 +82,182 @@ const Paciente = sequelize.define('Paciente', {
   },
   complemento: {
     type: DataTypes.STRING,
-    allowNull: true, // Opcional
+    allowNull: true, 
   },
-  historicoMedico: {
+  cpf: {
     type: DataTypes.STRING,
-    allowNull: true, // Opcional
+    allowNull: false,
+    unique: true,
+    validate: {
+      is: {
+        args: /^[0-9]{11}$/, 
+        msg: "O CPF deve conter 11 números."
+      },
+    },
   },
-  status: {
-    type: DataTypes.ENUM('Em Atendimento', 'Abandono de Tratamento', 'Alta'),
+  telefone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      is: {
+        args: /^[0-9]{10,11}$/, 
+        msg: "O telefone deve conter entre 10 e 11 números."
+      },
+    },
+  },
+  tipoTelefone: {
+    type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
     allowNull: false,
   },
   encaminhamento: {
     type: DataTypes.ENUM('Psicologia', 'Serviço Social'),
     allowNull: false,
   },
+  nomeContato: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  telefoneContato: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      is: {
+        args: /^[0-9]{10,11}$/, 
+        msg: "O telefone de contato deve conter entre 10 e 11 números."
+      },
+    },
+  },
+  parentesco: {
+    type: DataTypes.ENUM('Pai', 'Mãe', 'Filho', 'Cônjuge', 'Outro'),
+    allowNull: false,
+  },
+  postoServiço: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  escala: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  tempoServiço: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  periodoEscala: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  porteArma: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  trabalhoArmado: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  armaPessoal: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  planoSaude: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  cartaoSus: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  alergia: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  alergiaMedicamento: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  doenca: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  descricaoDoenca: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  medicamentos: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  tipoMedicamento: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  seguroVida: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  comoConheceuEmpresa: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  terapia: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  terapiaPeriodo: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  terapiaMotivo: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  filhos: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  quantidadeFilhos: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  idadeFilhos: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  moradia: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  familiaDeficiencias: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  deficiencia: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  atividadeFisica: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
+  tipoAtividadeFisica: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  observacoes: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   imagePath: {
     type: DataTypes.STRING,
-    allowNull: true, // Opcional
+    allowNull: true, 
   },
 }, {
-  tableName: 'paciente', // Define o nome da tabela
-  timestamps: true, // Adiciona campos de createdAt e updatedAt
+  tableName: 'paciente', 
+  timestamps: true, 
 });
 
 (async () => {
-    await sequelize.sync(); // Certifique-se de sincronizar seus modelos
+  await sequelize.sync(); 
 })();
 
-// Exporta o modelo para uso em outras partes da aplicação
 module.exports = Paciente;

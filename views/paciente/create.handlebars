@@ -1,77 +1,375 @@
 <h2>Criar Paciente</h2>
-<form action="/pacientes" method="POST">
-    <label for="cep">CEP:</label>
-    <input type="text" name="cep" id="cep" required>
-    <button type="button" onclick="buscarEndereco()">Buscar Endereço</button>
 
-    <label for="nome">Nome:</label>
-    <input type="text" name="nome" id="nome" required>
+<form action="/pacientes" method="POST" onsubmit="setCurrentDate()">
 
-    <label for="matricula">Matricula:</label>
-    <input type="text" name="matricula" id="matricula" required>
+    <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
 
-    <label for="dataNascimento">Data de Nascimento:</label>
-    <input type="date" name="dataNascimento" id="dataNascimento" required>
+    <fieldset class="border p-4 mb-4">
+        <legend>Informações Pessoais</legend>
 
-    <label for="cpf">CPF:</label>
-    <input type="text" name="cpf" id="cpf" required>
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" class="form-control" name="nome" id="nome" required>
+        </div>
 
-    <label for="endereco">Endereço:</label>
-    <input type="text" name="endereco" id="endereco" required>
+        <div class="form-group">
+            <label for="matricula">Matrícula:</label>
+            <input type="text" class="form-control" name="matricula" id="matricula" required>
+        </div>
 
-    <label for="sexo">Sexo:</label>
-    <select name="sexo" id="sexo" required>
-        <option value="Masculino">Masculino</option>
-        <option value="Feminino">Feminino</option>
-        <option value="Outro">Outro</option>
-    </select>
+        <div class="form-group">
+            <label for="dataNascimento">Data de Nascimento:</label>
+            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" required>
+        </div>
 
-    <label for="telefone">Telefone:</label>
-    <input type="text" name="telefone" id="telefone" required>
+        <div class="form-group">
+            <label for="sexo">Sexo:</label>
+            <select class="form-control" name="sexo" id="sexo" required>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
 
-    <label for="tipoTelefone">Tipo de Telefone:</label>
-    <select name="tipoTelefone" id="tipoTelefone" required>
-        <option value="Celular">Celular</option>
-        <option value="Residencial">Residencial</option>
-        <option value="Comercial">Comercial</option>
-    </select>
 
-    <label for="bairro">Bairro:</label>
-    <input type="text" name="bairro" id="bairro" required>
+        <div class="form-group">
+            <label for="escolaridade">Escolaridade:</label>
+            <select class="form-control" name="escolaridade" id="escolaridade" required>
+                <option value="Ensino Fundamental">Ensino Fundamental</option>
+                <option value="Ensino Médio">Ensino Médio</option>
+                <option value="Superior">Superior</option>
+            </select>
+        </div>
 
-    <label for="cidade">Cidade:</label>
-    <input type="text" name="cidade" id="cidade" required>
+            <div class="form-group">
+        <label for="cpf">CPF:</label>
+        <input type="text" class="form-control" name="cpf" id="cpf" required pattern="\d{11}" title="Digite um CPF válido com 11 números">
+    </div>
 
-    <label for="estado">Estado:</label>
-    <input type="text" name="estado" id="estado" required>
+    <div class="form-group">
+        <label for="telefone">Telefone:</label>
+        <input type="text" class="form-control" name="telefone" id="telefone" required pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+    </div>
 
-    <label for="numero">Número:</label>
-    <input type="text" name="numero" id="numero" required>
+    <div class="form-group">
+        <label for="tipoTelefone">Tipo de Telefone:</label>
+        <select class="form-control" name="tipoTelefone" id="tipoTelefone" required>
+            <option value="Celular">Celular</option>
+            <option value="Residencial">Residencial</option>
+            <option value="Comercial">Comercial</option>
+        </select>
+    </div>
 
-    <label for="complemento">Complemento:</label>
-    <input type="text" name="complemento" id="complemento">
+    </fieldset>
 
-    <label for="historicoMedico">Histórico Médico:</label>
-    <input type="text" name="historicoMedico" id="historicoMedico">
+    <fieldset class="border p-4 mb-4">
+        <legend>Imagem do Paciente</legend>
+            <div class="form-group">
+                <label for="imagemPaciente">Carregar Imagem:</label>
+            <input type="file" class="form-control" name="imagemPaciente" id="imagemPaciente" accept="image/*" required onchange="previewImage(event)">
+            <small class="form-text text-muted">Formato aceito: JPG, PNG, GIF.</small>
+            <img id="imagemPreview" src="#" alt="Pré-visualização da Imagem" style="display:none; margin-top:10px; max-width:200px;">
+             </div>
+    </fieldset>
 
-    <label for="status">Status:</label>
-    <select name="status" id="status" required>
-        <option value="Em Atendimento">Em Atendimento</option>
-        <option value="Abandono de Tratamento">Abandono de Tratamento</option>
-        <option value="Alta">Alta</option>
-    </select>
+    <fieldset class="border p-4 mb-4">
+        <legend>Endereço</legend>
 
-    <label for="encaminhamento">Encaminhamento:</label>
-    <select name="encaminhamento" id="encaminhamento" required>
-        <option value="Psicologia">Psicologia</option>
-        <option value="Serviço Social">Serviço Social</option>
-    </select>
+        <div class="form-group">
+            <label for="cep">CEP:</label>
+            <input type="text" class="form-control" name="cep" id="cep" required pattern="\d{8}" title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
+        </div>
 
-    <button type="submit">Salvar</button>
+        <div class="form-group">
+            <label for="endereco">Endereço:</label>
+            <input type="text" class="form-control" name="endereco" id="endereco" required>
+        </div>
+
+        <div class="form-group">
+            <label for="numero">Número:</label>
+            <input type="text" class="form-control" name="numero" id="numero" required>
+        </div>
+
+
+
+        <div class="form-group">
+            <label for="bairro">Bairro:</label>
+            <input type="text" class="form-control" name="bairro" id="bairro" required>
+        </div>
+
+        <div class="form-group">
+            <label for="cidade">Cidade:</label>
+            <input type="text" class="form-control" name="cidade" id="cidade" required>
+        </div>
+
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <input type="text" class="form-control" name="estado" id="estado" required>
+        </div>
+
+        <div class="form-group">
+            <label for="complemento">Complemento:</label>
+            <input type="text" class="form-control" name="complemento" id="complemento">
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Contato de Emergência</legend>
+
+        <div class="form-group">
+            <label for="nomeContato">Nome do Contato:</label>
+            <input type="text" class="form-control" name="nomeContato" id="nomeContato">
+        </div>
+
+        <div class="form-group">
+            <label for="telefoneContato">Telefone:</label>
+            <input type="text" class="form-control" name="telefoneContato" id="telefoneContato" pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+        </div>
+
+        <div class="form-group">
+            <label for="parentesco">Parentesco:</label>
+            <select class="form-control" name="parentesco" id="parentesco">
+                <option value="Pai">Pai</option>
+                <option value="Mãe">Mãe</option>
+                <option value="Filho">Filho</option>
+                <option value="Cônjuge">Cônjuge</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset class="border p-4 mb-4">
+        <legend>Histórico de Saúde</legend>
+
+
+        <div class="form-group">
+            <label for="alergia">Possui alergia a algum medicamento?</label>
+            <select class="form-control" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="alergiaMedicamento" style="display:none;">
+            <label for="alergiaMedicamento">Medicamento:</label>
+            <input type="text" class="form-control" name="alergiaMedicamento" id="alergiaMedicamentoInput">
+        </div>
+
+        <div class="form-group">
+            <label for="doenca">Doenças crônicas:</label>
+            <select class="form-control" name="doenca" id="doenca" onchange="toggleField('doenca', 'descricaoDoenca')">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="descricaoDoenca" style="display:none;">
+            <label for="descricaoDoenca">Descrição da Doença:</label>
+            <input type="text" class="form-control" name="descricaoDoenca" id="descricaoDoencaInput">
+        </div>
+
+        <div class="form-group">
+            <label for="medicamentos">Faz uso de medicação de controle?</label>
+            <select class="form-control" name="medicamentos" id="medicamentos" onchange="toggleField('medicamentos', 'tipoMedicamento')">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="tipoMedicamento" style="display:none;">
+            <label for="tipoMedicamento">Nome do medicamento:</label>
+            <input type="text" class="form-control" name="tipoMedicamento" id="tipoMedicamentoInput">
+        </div>
+
+        <div class="form-group">
+            <label for="terapia">Faz terapia?</label>
+            <select class="form-control" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="terapiaPeriodo" style="display:none;">
+            <label for="terapiaPeriodo">Período da Terapia:</label>
+            <input type="text" class="form-control" name="terapiaPeriodo" id="terapiaPeriodoInput">
+        </div>
+
+        <div class="form-group" id="terapiaMotivo" style="display:none;">
+            <label for="terapiaMotivo">Motivo da Terapia:</label>
+            <input type="text" class="form-control" name="terapiaMotivo" id="terapiaMotivoInput">
+        </div>
+
+        <div class="form-group">
+            <label for="atividadeFisica">Faz atividade física?</label>
+            <select class="form-control" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="tipoAtividadeFisica" style="display:none;">
+            <label for="tipoAtividadeFisica">Tipo de Atividade Física:</label>
+            <input type="text" class="form-control" name="tipoAtividadeFisica" id="tipoAtividadeFisicaInput">
+        </div>
+
+        <div class="form-group">
+            <label for="observacoes">Observações:</label>
+            <textarea class="form-control" name="observacoes" id="observacoes" rows="3"></textarea>
+        </div>
+    </fieldset>
+
+
+
+<fieldset class="border p-4 mb-4">
+    <legend>Outras Informações</legend>
+
+    <div class="form-group">
+        <label for="planoSaude">Plano de Saúde:</label>
+        <input type="text" class="form-control" name="planoSaude" id="planoSaude">
+    </div>
+
+    <div class="form-group">
+        <label for="cartaoSus">Cartão SUS:</label>
+        <input type="text" class="form-control" name="cartaoSus" id="cartaoSus">
+    </div>
+
+    <div class="form-group">
+        <label for="seguroVida">Seguro de Vida:</label>
+        <input type="text" class="form-control" name="seguroVida" id="seguroVida">
+    </div>
+
+    <div class="form-group">
+        <label for="comoConheceuEmpresa">Como conheceu o NUPS:</label>
+        <input type="text" class="form-control" name="comoConheceuEmpresa" id="comoConheceuEmpresa">
+    </div>
+
+</fieldset>
+
+<fieldset class="border p-4 mb-4 ">
+    <legend>Informações de Serviço</legend>
+
+    <div class="form-group">
+        <label for="postoServico">Posto de Serviço:</label>
+        <input type="text" class="form-control" name="postoServico" id="postoServico">
+    </div>
+
+    <div class="form-group">
+        <label for="escala">Escala:</label>
+        <input type="number" class="form-control" name="escala" id="escala">
+    </div>
+
+    <div class="form-group">
+        <label for="tempoServico">Tempo de Serviço:</label>
+        <input type="text" class="form-control" name="tempoServico" id="tempoServico">
+    </div>
+
+    <div class="form-group">
+        <label for="periodoEscala">Período de Escala:</label>
+        <input type="text" class="form-control" name="periodoEscala" id="periodoEscala">
+    </div>
+</fieldset>
+
+<fieldset class="border p-4 mb-4 ">
+    <legend>Com quem reside</legend>
+
+    <div class="form-group">
+        <label for="moradia">Moradia:</label>
+        <input type="text" class="form-control" name="moradia" id="moradia">
+    </div>
+
+    <div class="form-group">
+        <label for="familiaDeficiencias">Família com Deficiências:</label>
+        <select class="form-control" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="deficiencia" style="display:none;">
+        <label for="deficiencia">Deficiência:</label>
+        <input type="text" class="form-control" name="deficiencia" id="deficienciaInput">
+    </div>
+</fieldset>
+
+
+<fieldset class="border p-4 mb-4">
+    <legend>Informações Adicionais</legend>
+
+    <div class="form-group">
+        <label for="filhos">Filhos:</label>
+        <select class="form-control" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="quantidadeFilhos" style="display:none;">
+        <label for="quantidadeFilhos">Quantidade de Filhos:</label>
+        <input type="text" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput">
+    </div>
+
+    <div class="form-group" id="idadeFilhos" style="display:none;">
+        <label for="idadeFilhos">Idade dos Filhos:</label>
+        <input type="text" class="form-control" name="idadeFilhos" id="idadeFilhosInput">
+    </div>
+
+        <div class="form-group">
+        <label for="porteArma">Porte de Arma:</label>
+        <select class="form-control" name="porteArma" id="porteArma">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="trabalhoArmado">Trabalho Armado:</label>
+        <select class="form-control" name="trabalhoArmado" id="trabalhoArmado">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="armaPessoal">Arma Pessoal:</label>
+        <select class="form-control" name="armaPessoal" id="armaPessoal">
+            <option value="false">Não</option>
+            <option value="true">Sim</option>
+        </select>
+    </div>
+
+
+
+</fieldset>
+
+<fieldset  class="border p-4 mb-4">
+    <div class="form-group">
+        <label for="encaminhamento">Encaminhamento</label>
+        <select class="form-control" name="encaminhamento" id="encaminhamento">
+            <option value="Psicologia">Psicologia</option>
+            <option value="Serviço Social">Serviço Social</option>
+        </select>
+    </div>
+</fieldset>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
 
+
+
 <script>
+    function toggleField(selectId, ...fieldIds) {
+        const selectElement = document.getElementById(selectId);
+        fieldIds.forEach(fieldId => {
+            const fieldElement = document.getElementById(fieldId);
+            if (selectElement.value === 'true') {
+                fieldElement.style.display = 'block';
+            } else {
+                fieldElement.style.display = 'none';
+            }
+        });
+    }
+
 async function buscarEndereco() {
     const cep = document.getElementById('cep').value.replace('-', '');
     if (cep) {
@@ -92,4 +390,16 @@ async function buscarEndereco() {
         }
     }
 }
+
+function previewImage(event) {
+    const imgPreview = document.getElementById('imagemPreview');
+    imgPreview.src = URL.createObjectURL(event.target.files[0]);
+    imgPreview.style.display = 'block';
+}
+
+    function setCurrentDate() {
+        const currentDate = new Date().toISOString().split('T')[0]; 
+        document.getElementById('dataAtendimento').value = currentDate;
+    }
+
 </script>

@@ -3,22 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Profissionais</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- Adicione seu CSS aqui -->
+    <title>NUPS - Gestão de Profissionais</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        nav a {
+            margin: 0 15px;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: color 0.3s ease-in-out;
+        }
+        nav a:hover {
+            color: #ffdd57;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            bottom: 0;
+            width: 100%;
+        }
+        footer p {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Gestão de Profissionais</h1>
-        <nav>
-            <a href="/profissionais">Listar Profissionais</a>
-            <a href="/profissionais/create">Adicionar Profissional</a>
+        <h1>NUPS</h1>
+        <nav class="mt-3">
+            <a href="/profissionais" class="btn btn-light">Profissionais</a>
+            <a href="/pacientes" class="btn btn-warning">Pacientes</a>
+            <a href="/atendimentos" class="btn btn-warning">Atendimentos</a>
+            <a href="/ocorrencias" class="btn btn-warning">Ocorrencias</a>
+
+
         </nav>
     </header>
-    <main>
-        {{{body}}} <!-- Renderiza o conteúdo das views -->
+
+    <main class="container mt-5">
+        {{{body}}}
     </main>
-    <footer>
-        <p>&copy; 2024 - Seu Nome</p>
+
+    <footer class="text-center py-3">
+        <p>&copy; 2024 NUPS - Todos os direitos reservados</p>
     </footer>
 </body>
 </html>
