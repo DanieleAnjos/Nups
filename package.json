@@ -15,6 +15,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
@@ -29,6 +30,6 @@
     "sequelize": "^6.37.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.7"
   }
 }
