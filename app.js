@@ -109,6 +109,10 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res) => {
+    res.redirect('/auth/login');
+});
+
 app.use('/auth', authRoutes);
 
 app.use(authController.ensureAuthenticated);
@@ -121,9 +125,6 @@ app.use('/', ajusteEstoqueRoutes);
 app.use('/atendimentos', atendimentoRoutes);
 app.use('/ocorrencias', ocorrenciaRoutes);
 
-app.get('/', (req, res) => {
-    res.redirect('/auth/login');
-});
 
 app.use((req, res, next) => {
     res.status(404).render('error', { error_msg: 'Página não encontrada.' });
