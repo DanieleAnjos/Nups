@@ -53,8 +53,12 @@ exports.logout = (req, res) => {
 };
 
 exports.ensureAuthenticated = (req, res, next) => {
+  console.log('Autenticação autorizada para a rota: ', req.originalUrl);
+
   if (req.isAuthenticated()) {
+    console.log('Usuário autenticado');
     return next();
   }
-  res.redirect('auth/login');
+  console.log('Usuário não autenticado, redirecionando de volta')
+  res.redirect('/auth/login');
 };

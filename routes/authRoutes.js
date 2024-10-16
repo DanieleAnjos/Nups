@@ -12,10 +12,10 @@ router.post('/register-admin', authController.registerAdmin);
 
 router.get('/logout', authController.logout)
 
-router.get('/logout', (req, res) => {
-    res.clearCookie('token'); 
-    req.flash('success_msg', 'Você foi desconectado com sucesso.');
-    res.redirect('/auth/login'); 
-});
+// router.get('/logout', (req, res) => {
+//     res.clearCookie('token'); 
+//     req.flash('success_msg', 'Você foi desconectado com sucesso.');
+//     res.redirect('/auth/login'); 
+// });
 
 module.exports = router;
