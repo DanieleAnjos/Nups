@@ -1,4 +1,4 @@
-require('dotenv').config(); 
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -6,8 +6,11 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const { engine } = require('express-handlebars');
-const cors = require('cors'); 
+const cors = require('cors');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
+const authController = require('./controllers/authController');
 const authRoutes = require('./routes/authRoutes');
 const profissionalRoutes = require('./routes/profissionalRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
@@ -58,7 +61,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'default_secret', 
+    secret: process.env.SESSION_SECRET || 'default_secret',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -66,6 +69,37 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
     }
 }));
+
+passport.use(new LocalStrategy(
+    async (username, password, done) => {
+        try {
+            const user = await Profissional.findOne({ where: { usuario: username } });
+            if (!user) {
+                return done(null, false, { message: 'Usuário não encontrado.' });
+            }
+            const validPassword = await argon2.verify(user.senha, password);
+            if (!validPassword) {
+                return done(null, false, { message: 'Senha inválida.' });
+            }
+            return done(null, user);
+        } catch (err) {
+            return done(err);
+        }
+    }
+));
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await Profissional.findByPk(id);
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
+});
 
 app.use(flash());
 
@@ -77,6 +111,7 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
+app.use(authController.ensureAuthenticated);
 app.use('/profissionais', profissionalRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/escalas', escalaRoutes);
@@ -86,13 +121,16 @@ app.use('/', ajusteEstoqueRoutes);
 app.use('/atendimentos', atendimentoRoutes);
 app.use('/ocorrencias', ocorrenciaRoutes);
 
+app.get('/', (req, res) => {
+    res.redirect('/auth/login');
+});
 
 app.use((req, res, next) => {
     res.status(404).render('error', { error_msg: 'Página não encontrada.' });
 });
 
 app.use((err, req, res, next) => {
-    console.error(err.stack); 
+    console.error(err.stack);
     res.status(500).render('error', { error_msg: 'Algo deu errado. Tente novamente mais tarde.' });
 });
 

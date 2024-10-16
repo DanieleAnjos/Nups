@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
 const profissionalController = require('../controllers/profissionalController');
+
+router.use(authController.ensureAuthenticated);
 
 router.get('/', profissionalController.index);
 router.get('/create', profissionalController.create);

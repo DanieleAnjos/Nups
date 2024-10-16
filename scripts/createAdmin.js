@@ -1,19 +1,27 @@
 const argon2 = require('argon2');
-const Profissional = require('../models/Profissional'); // Ajuste o caminho
+const Profissional = require('../models/Profissional');
+const sequelize = require('../config/database');
 
 (async () => {
     try {
+        await sequelize.authenticate();
+        console.log('Conexão estabelecida com sucesso.');
+
+        // Sincroniza os modelos
+        await sequelize.sync();
+        console.log('Modelos sincronizados com sucesso.');
+
         // Verifica se o administrador já existe
         const existingAdmin = await Profissional.findOne({ where: { usuario: 'admin' } });
-
         if (existingAdmin) {
             console.log('Usuário administrador já existe.');
             return;
         }
 
         // Gera o hash da senha
-        const hashedPassword = await argon2.hash('senhalima');
+        const hashedPassword = await argon2.hash('123');
 
+        // Cria o usuário administrador
         await Profissional.create({
             nome: 'Admin Interno',
             email: 'admin@interno.com',
@@ -25,20 +33,17 @@ const Profissional = require('../models/Profissional'); // Ajuste o caminho
             dataNascimento: '1990-02-01',
             sexo: 'Masculino',
             estadoCivil: 'Solteiro',
-            cep: '40240290', // Forneça um CEP válido
-            endereco: 'Rua Exemplo 100', // Preencha com o endereço
-            bairro: 'Centro', // Preencha com o bairro
-            cidade: 'Cidade Exemplo', // Preencha com a cidade
-            estado: 'SP', // Preencha com a sigla do estado
+            cep: '40240290',
+            endereco: 'Rua Exemplo 100',
+            bairro: 'Centro',
+            cidade: 'Cidade Exemplo',
+            estado: 'SP',
             numero: '100',
             complemento: '',
             telefone: '99999999999',
             tipoTelefone: 'Celular',
-            imagePath: null,
-            contatoEmergenciaNome: null,
-            telefoneContatoEmergencia: null,
-            usuario: 'admin', // Mantenha o nome de usuário como 'admin'
-            senha: hashedPassword, // Use o hash gerado
+            usuario: 'admin',
+            senha: hashedPassword,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -47,4 +52,4 @@ const Profissional = require('../models/Profissional'); // Ajuste o caminho
     } catch (error) {
         console.error('Erro ao criar o usuário administrador:', error);
     }
-})();
+})(); 
