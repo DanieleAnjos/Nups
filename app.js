@@ -24,27 +24,27 @@ const app = express();
 const PORT = process.env.PORT || 3002;
 
 const hbs = engine({
-  helpers: {
-    eq: (a, b) => a === b,
-    ifCond: (v1, v2, options) => {
-      return (v1 === v2) ? options.fn(this) : options.inverse(this);
+    helpers: {
+        eq: (a, b) => a === b,
+        ifCond: (v1, v2, options) => {
+            return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        },
+        ifEquals: (arg1, arg2, options) => {
+            return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
+        },
+        formatDate: (date) => {
+            if (!date) return '';
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
     },
-    ifEquals: (arg1, arg2, options) => {
-      return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
-    },
-    formatDate: (date) => {
-      if (!date) return '';
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
     }
-  },
-  runtimeOptions: {
-    allowProtoPropertiesByDefault: true,
-    allowProtoMethodsByDefault: true
-  }
 });
 
 app.engine('handlebars', hbs);
@@ -58,57 +58,60 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default_secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-  }
+    secret: process.env.SESSION_SECRET || 'default_secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+    }
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const user = await Profissional.findOne({ where: { usuario: username } });
-      if (!user) {
-        return done(null, false, { message: 'Usuário não encontrado.' });
-      }
-      const validPassword = await argon2.verify(user.senha, password);
-      if (!validPassword) {
-        return done(null, false, { message: 'Senha inválida.' });
-      }
-      return done(null, user);
-    } catch (err) {
-      return done(err);
+    async (username, password, done) => {
+        try {
+            const user = await Profissional.findOne({ where: { usuario: username } });
+            if (!user) {
+                return done(null, false, { message: 'Usuário não encontrado.' });
+            }
+            const validPassword = await argon2.verify(user.senha, password);
+            if (!validPassword) {
+                return done(null, false, { message: 'Senha inválida.' });
+            }
+            return done(null, user);
+        } catch (err) {
+            return done(err);
+        }
     }
-  }
 ));
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+    done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await Profissional.findByPk(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
+    try {
+        const user = await Profissional.findByPk(id);
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
 });
 
 app.use(flash());
 app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  next();
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    next();
 });
 
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
-  res.redirect('/auth/login');
+    res.redirect('/auth/login');
 });
 
 // Middleware de autenticação global
@@ -125,14 +128,14 @@ app.use('/atendimentos', atendimentoRoutes);
 app.use('/ocorrencias', ocorrenciaRoutes);
 
 app.use((req, res, next) => {
-  res.status(404).render('error', { error_msg: 'Página não encontrada.' });
+    res.status(404).render('error', { error_msg: 'Página não encontrada.' });
 });
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).render('error', { error_msg: 'Algo deu errado. Tente novamente mais tarde.' });
+    console.error(err.stack);
+    res.status(500).render('error', { error_msg: 'Algo deu errado. Tente novamente mais tarde.' });
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
