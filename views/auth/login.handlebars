@@ -1,24 +1,27 @@
-<h1>Login</h1>
+<h1 class="text-center my-4">Login</h1>
 
 <!-- Exibe mensagens de erro ou sucesso -->
 {{#if error_msg}}
-    <div class="message error" role="alert" aria-live="polite">{{error_msg}}</div>
+    <div class="alert alert-danger text-center" role="alert" aria-live="polite">{{error_msg}}</div>
 {{/if}}
 {{#if success_msg}}
-    <div class="message success" role="alert" aria-live="polite">{{success_msg}}</div>
+    <div class="alert alert-success text-center" role="alert" aria-live="polite">{{success_msg}}</div>
 {{/if}}
 
-<!-- Formulário de login -->
-<form action="/auth/login" method="POST" aria-labelledby="loginForm">
-    <div>
-        <label for="usuario">Usuário:</label>
-        <input type="text" id="usuario" name="usuario" autocomplete="username" required autofocus>
-    </div>
+<div class="container d-flex justify-content-center">
+    <!-- Formulário de login -->
+    <form action="/auth/login" method="POST" aria-labelledby="loginForm" class="mt-4 p-4 border rounded shadow-sm bg-light" style="max-width: 400px; width: 100%;">
 
-    <div>
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" autocomplete="current-password" required>
-    </div>
+        <div class="form-group mb-3">
+            <label for="usuario" class="form-label">Usuário:</label>
+            <input type="text" id="usuario" name="usuario" class="form-control" autocomplete="username" required autofocus>
+        </div>
 
-    <button type="submit">Login</button>
-</form>
+        <div class="form-group mb-4">
+            <label for="senha" class="form-label">Senha:</label>
+            <input type="password" id="senha" name="senha" class="form-control" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+</div>
