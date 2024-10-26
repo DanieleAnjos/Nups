@@ -11,9 +11,9 @@ Ocorrencia.init({
     primaryKey: true
   },
   data: {
-    type: DataTypes.DATEONLY, 
+    type: DataTypes.DATEONLY,
     allowNull: false,
-    defaultValue: DataTypes.NOW
+    defaultValue: () => new Date().toISOString().split('T')[0], // Data atual
   },
   relatorio: {
     type: DataTypes.TEXT,
@@ -21,28 +21,18 @@ Ocorrencia.init({
   },
   horarioChegada: {
     type: DataTypes.TIME,
-    allowNull: false,
-    validate: {
-        isAfter(value) {
-            const now = new Date();
-            const currentHour = now.getHours().toString().padStart(2, '0');
-            const currentMinute = now.getMinutes().toString().padStart(2, '0');
-            const currentTime = `${currentHour}:${currentMinute}:00`; 
-
-            if (value <= currentTime) {
-                throw new Error("O horário de chegada deve ser um horário futuro.");
-            }
-        }
-    }
-},
-
+    allowNull: false
+  },
   horarioSaida: { 
     type: DataTypes.TIME,
     allowNull: true,
     validate: {
       isAfter(value) {
         if (value && this.horarioChegada) {
-          if (new Date(`1970-01-01T${value}Z`) <= new Date(`1970-01-01T${this.horarioChegada}Z`)) {
+          const chegada = new Date(`1970-01-01T${this.horarioChegada}Z`);
+          const saida = new Date(`1970-01-01T${value}Z`);
+
+          if (saida <= chegada) {
             throw new Error("O horário de saída deve ser após o horário de chegada.");
           }
         }
@@ -56,15 +46,15 @@ Ocorrencia.init({
       key: 'id'
     },
     allowNull: false, 
-    onDelete: 'CASCADE' 
+    onDelete: 'CASCADE'
   }
 }, {
   sequelize,
   modelName: 'Ocorrencia',
   tableName: 'ocorrencias_diarias',
   timestamps: true,
-  createdAt: 'dataCriacao', 
-  updatedAt: 'dataAtualizacao' 
+  createdAt: 'dataCriacao',
+  updatedAt: 'dataAtualizacao'
 });
 
 Ocorrencia.belongsTo(Profissional, {

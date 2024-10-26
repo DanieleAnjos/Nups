@@ -1,6 +1,8 @@
-<h1>Lista de Atendimentos</h1>
-<a href="/atendimentos/create">Novo Atendimento</a>
-<table>
+<h1 class="text-center my-4">Lista de Atendimentos</h1>
+<div class="text-right mb-3">
+  <a href="/atendimentos/create" class="btn btn-primary mb-3">Novo Atendimento</a>
+</div>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>ID</th>
@@ -14,18 +16,16 @@
     {{#each atendimentos}}
     <tr>
       <td>{{this.id}}</td>
-      <td>{{this.paciente.nome}}</td> <!-- Nome do paciente relacionado -->
-      <td>{{this.profissional.nome}}</td> <!-- Nome do profissional relacionado -->
+      <td>{{this.paciente.nome}}</td>
+      <td>{{this.profissional.nome}}</td>
       <td>{{this.assunto}}</td>
       <td>
-        <a href="/atendimentos/{{this.id}}/edit">Editar</a>
+        <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
         <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Deletar</button>
+          <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
         </form>
       </td>
     </tr>
     {{/each}}
   </tbody>
 </table>
-
-

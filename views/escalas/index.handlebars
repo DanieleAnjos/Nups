@@ -1,36 +1,57 @@
-
-        <h1>Lista de Escalas</h1>
-        <nav>
-            <a href="/escalas/create">Adicionar Escala</a>
-        </nav>
+<main class="content">
+    <header>
+        <h1 class="text-center my-4">Lista de Escalas</h1>
+        <div class="text-right mb-3">
+            <a href="/escalas/create" class="btn btn-primary">Adicionar Escala</a>
+        </div>
+        <form method="GET" class="mt-3">
+            <div class="form-row">
+                <div class="col">
+                    <input type="date" name="data" value="{{query.data}}" class="form-control" placeholder="Data">
+                </div>
+                <div class="col">
+                    <select name="profissional" class="form-control">
+                        <option value="">Selecione um Profissional</option>
+                        {{#each profissionais}}
+                            <option value="{{this.id}}" {{#ifCond this.id ../query.profissional}}selected{{/ifCond}}>{{this.nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-secondary">Buscar</button>
+                </div>
+            </div>
+        </form>
     </header>
-    <main>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Data</th>
-                    <th>Horário Início</th>
-                    <th>Horário Fim</th>
-                    <th>Profissional</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each escalas}}
-                <tr>
-                    <td>{{this.id}}</td>
-                    <td>{{this.data}}</td>
-                    <td>{{this.horarioInicio}}</td>
-                    <td>{{this.horarioFim}}</td>
-                    <td>{{this.admin.nome}}</td>
-                    <td>
-                        <a href="/escalas/{{this.id}}/edit">Editar</a>
-                        <form action="/escalas/{{this.id}}?_method=DELETE" method="POST">
-                            <button type="submit">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Horário Início</th>
+                <th>Horário Fim</th>
+                <th>Profissional</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each escalas}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.data}}</td>
+                <td>{{this.horarioInicio}}</td>
+                <td>{{this.horarioFim}}</td>
+                <td>{{this.admin.nome}}</td>
+                <td>
+                    <a href="/escalas/{{this.id}}/edit" class="btn btn-warning">Editar</a>
+                    <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</main>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" defer></script>

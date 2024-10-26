@@ -1,0 +1,38 @@
+<h1>Editar Reserva</h1>
+<form action="/reservas/{{reserva.id}}?_method=PUT" method="POST" class="mt-4">
+    <div class="form-group">
+        <label for="salaId">Sala:</label>
+        <select name="salaId" id="salaId" class="form-control" required>
+            {{#each salas}}
+                <option value="{{this.id}}" {{#if (eq this.id ../reserva.salaId)}}selected{{/if}}>{{this.nome}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" name="data" class="form-control" value="{{reserva.data}}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="horarioInicial">Horário Inicial:</label>
+        <input type="time" name="horarioInicial" id="horarioInicial" class="form-control" value="{{reserva.horarioInicial}}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="horarioFinal">Horário Final:</label>
+        <input type="time" name="horarioFinal" id="horarioFinal" class="form-control" value="{{reserva.horarioFinal}}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="profissionalId">Profissional:</label>
+        <select name="profissionalId" id="profissionalId" class="form-control" required>
+            {{#each profissionais}}
+                <option value="{{this.id}}" {{#if (eq this.id ../reserva.profissionalId)}}selected{{/if}}>{{this.nome}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+<a href="/reservas" class="btn btn-secondary mt-3">Voltar</a>

@@ -32,25 +32,24 @@ Escala.init({
   adminId: {
     type: DataTypes.INTEGER,
     references: {
-      model: Profissional, // Referência ao modelo Profissional
+      model: Profissional, 
       key: 'id'
     },
     allowNull: false,
-    onDelete: 'CASCADE' // Comportamento de exclusão em cascata
+    onDelete: 'CASCADE' 
   }
 }, {
   sequelize,
   modelName: 'Escala',
-  tableName: 'escalas', // Nome da tabela
-  timestamps: true, // Se precisar de timestamps
-  createdAt: 'dataCriacao', // Nome da coluna para data de criação
-  updatedAt: 'dataAtualizacao' // Nome da coluna para data de atualização
+  tableName: 'escalas', 
+  timestamps: true, 
+  createdAt: 'dataCriacao', 
+  updatedAt: 'dataAtualizacao' 
 });
 
-// Definindo o relacionamento
 Escala.belongsTo(Profissional, {
   foreignKey: 'adminId',
-  as: 'admin' // Alias para o relacionamento
+  as: 'admin' 
 });
 
 module.exports = Escala;

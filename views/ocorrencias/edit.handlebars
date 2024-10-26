@@ -1,24 +1,36 @@
 <h2>Editar Ocorrência</h2>
-<form action="/ocorrencias/{{ocorrencia.id}}?_method=PUT" method="POST">
-  <label for="data">Data:</label>
-  <input type="date" name="data" value="{{ocorrencia.data}}" required>
+<form action="/ocorrencias/{{ocorrencia.id}}?_method=PUT" method="POST" class="mt-4">
+    <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" name="data" value="{{ocorrencia.data}}" required class="form-control">
+    </div>
 
-  <label for="relatorio">Relatório:</label>
-  <textarea name="relatorio" required>{{ocorrencia.relatorio}}</textarea>
+    <div class="form-group">
+        <label for="relatorio">Relatório:</label>
+        <textarea name="relatorio" required class="form-control" rows="4">{{ocorrencia.relatorio}}</textarea>
+    </div>
 
-  <label for="horarioChegada">Horário de Chegada:</label>
-  <input type="time" name="horarioChegada" value="{{ocorrencia.horarioChegada}}" required>
+    <div class="form-group">
+        <label for="horarioChegada">Horário de Chegada:</label>
+        <input type="time" name="horarioChegada" value="{{ocorrencia.horarioChegada}}" required class="form-control">
+    </div>
 
-  <label for="horarioSaida">Horário de Saída:</label>
-  <input type="time" name="horarioSaida" value="{{ocorrencia.horarioSaida}}">
+    <div class="form-group">
+        <label for="horarioSaida">Horário de Saída:</label>
+        <input type="time" name="horarioSaida" value="{{ocorrencia.horarioSaida}}" class="form-control">
+    </div>
 
-  <label for="profissionalId">Profissional:</label>
-  <select name="profissionalId" required>
-    {{#each profissionais}}
-      <option value="{{this.id}}" {{#if (eq this.id ../ocorrencia.profissionalId)}}selected{{/if}}>{{this.nome}}</option>
-    {{/each}}
-  </select>
+    <div class="form-group">
+        <label for="profissionalId">Profissional:</label>
+        <select name="profissionalId" required class="form-control">
+            <option value="" disabled selected>Selecione um profissional</option>
+            {{#each profissionais}}
+                <option value="{{this.id}}" {{#if (eq this.id ../ocorrencia.profissionalId)}}selected{{/if}}>{{this.nome}}</option>
+            {{/each}}
+        </select>
+    </div>
 
-  <button type="submit">Atualizar Ocorrência</button>
+    <button type="submit" class="btn btn-success">Atualizar Ocorrência</button>
 </form>
-<a href="/ocorrencias">Voltar</a>
+
+<a href="/ocorrencias" class="btn btn-secondary mt-3">Voltar</a>

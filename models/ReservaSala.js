@@ -1,12 +1,13 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./Index');
-const Sala = require('./Sala'); // Importa o modelo Sala
+const sequelize = require('../config/database');
+const Sala = require('./Sala'); 
+const Profissional = require('./Profissional'); 
 
 const ReservaSala = sequelize.define('ReservaSala', {
-  salaId: { // Agora referenciamos a sala pelo ID
+  salaId: { 
     type: DataTypes.INTEGER,
     references: {
-      model: Sala, // Referência ao modelo Sala
+      model: Sala, 
       key: 'id'
     },
     allowNull: false
@@ -15,27 +16,49 @@ const ReservaSala = sequelize.define('ReservaSala', {
     type: DataTypes.DATEONLY,
     allowNull: false
   },
-  horario: {
+  horarioInicial: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      isAfter(value) {
+        if (this.horarioFinal && value >= this.horarioFinal) {
+          throw new Error("O horário inicial deve ser anterior ao horário final.");
+        }
+      }
+    }
+  },
+  horarioFinal: {
+    type: DataTypes.TIME,
+    allowNull: false,
+    validate: {
+      isAfter(value) {
+        if (this.horarioInicial && value <= this.horarioInicial) {
+          throw new Error("O horário final deve ser posterior ao horário inicial.");
+        }
+      }
+    }
   },
   profissionalId: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'Profissionais',
+      model: Profissional, 
       key: 'id'
     },
-    allowNull: false // O profissional que faz a reserva é obrigatório
+    allowNull: false 
   }
 }, {
-  tableName: 'reservas_sala', // Nome da tabela no banco de dados
-  timestamps: true // Para acompanhar a criação e atualização
+  tableName: 'reservas_sala',
+  timestamps: true 
 });
 
-// Relacionamentos
+// Associações
 ReservaSala.belongsTo(Sala, {
   foreignKey: 'salaId',
-  as: 'sala' // Alias para o relacionamento
+  as: 'sala' 
+});
+ReservaSala.belongsTo(Profissional, {
+  foreignKey: 'profissionalId',
+  as: 'profissional'
 });
 
 module.exports = ReservaSala;

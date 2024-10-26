@@ -2,14 +2,37 @@
 <div class="text-right mb-3">
     <a href="/pacientes/create" class="btn btn-primary">Adicionar Paciente</a>
 </div>
-    <table class="table table-striped mt-3">
+
+<!-- Formulário de filtro -->
+<form class="mb-4" method="GET" action="/pacientes">
+    <div class="form-row">
+        <div class="col">
+            <label for="nome" class="sr-only">Nome do Paciente</label>
+            <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do Paciente" value="{{query.nome}}">
+        </div>
+        <div class="col">
+            <label for="matricula" class="sr-only">Matrícula</label>
+            <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Matrícula" value="{{query.matricula}}">
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fas fa-filter"></i> Filtrar
+            </button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped mt-3">
+    <thead>
         <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>Matricula</th>
+            <th>Matrícula</th>
             <th>Encaminhamento</th>
+            <th>Status Cadastro</th>
             <th>Ações</th>
         </tr>
+    </thead>
     <tbody>
         {{#if pacientes.length}}
             {{#each pacientes}}
@@ -19,16 +42,27 @@
                     <td>{{this.matricula}}</td>
                     <td>{{this.encaminhamento}}</td>
                     <td>
-                        <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        {{#if this.cadastroCompleto}}
+                            Completo
+                        {{else}}
+                            Incompleto
+                        {{/if}}
+                    </td>
+                    <td>
+                        <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm mr-2">
+                            <i class="fas fa-pencil-alt"></i> Editar
+                        </a>
                         <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">Deletar</button>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">
+                                <i class="fas fa-trash-alt"></i> Deletar
+                            </button>
                         </form>
                     </td>
                 </tr>
             {{/each}}
         {{else}}
             <tr>
-                <td colspan="4" class="text-center">Nenhum paciente encontrado.</td>
+                <td colspan="6" class="text-center">Nenhum paciente encontrado.</td>
             </tr>
         {{/if}}
     </tbody>

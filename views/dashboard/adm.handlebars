@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      height: 100vh;
+    }
+    /* Barra lateral */
+    .sidebar {
+      width: 80px;
+      height: 100vh;
+      background-color: #343a40;
+      transition: width 0.3s;
+      position: relative;
+    }
+    .sidebar:hover {
+      width: 250px;
+    }
+    .sidebar .nav-link {
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      font-size: 18px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar .nav-link i {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    .sidebar .nav-link span {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .sidebar:hover .nav-link span {
+      opacity: 1;
+    }
+    .sidebar .logo {
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    /* Conteúdo principal */
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">NUPS</div>
+    <nav class="nav flex-column">
+      <a href="/profissionais" class="nav-link">
+        <i class="fas fa-user-md"></i>
+        <span>Profissionais</span>
+      </a>
+      <a href="/pacientes" class="nav-link">
+        <i class="fas fa-users"></i>
+        <span>Pacientes</span>
+      </a>
+      <a href="/atendimentos" class="nav-link">
+        <i class="fas fa-calendar-check"></i>
+        <span>Atendimentos</span>
+      </a>
+      <a href="/ocorrencias" class="nav-link">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Ocorrências</span>
+      </a>
+      <a href="/produtos" class="nav-link">
+        <i class="fas fa-boxes"></i>
+        <span>Estoque</span>
+      </a>
+      <a href="/salas" class="nav-link">
+        <i class="fas fa-door-open"></i>
+        <span>Salas</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="content">
+    <h1>{{title}}</h1>
+    <p>Bem-vindo ao Dashboard Administrativo.</p>
+  </div>
+
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

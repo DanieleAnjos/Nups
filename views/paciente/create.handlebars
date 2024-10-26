@@ -17,6 +17,11 @@
             <label for="matricula">Matrícula:</label>
             <input type="text" class="form-control" name="matricula" id="matricula" required>
         </div>
+        
+        <div class="form-group">
+            <label for="numeroProcesso">Processo:</label>
+            <input type="text" class="form-control" name="numeroProcesso" id="numeroProcesso" required>
+        </div>
 
         <div class="form-group">
             <label for="dataNascimento">Data de Nascimento:</label>
@@ -35,7 +40,7 @@
 
         <div class="form-group">
             <label for="escolaridade">Escolaridade:</label>
-            <select class="form-control" name="escolaridade" id="escolaridade" required>
+            <select class="form-control" name="escolaridade" id="escolaridade" >
                 <option value="Ensino Fundamental">Ensino Fundamental</option>
                 <option value="Ensino Médio">Ensino Médio</option>
                 <option value="Superior">Superior</option>
@@ -49,12 +54,13 @@
 
     <div class="form-group">
         <label for="telefone">Telefone:</label>
-        <input type="text" class="form-control" name="telefone" id="telefone" required pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+        <input type="text" class="form-control" name="telefone" id="telefone" pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
     </div>
 
     <div class="form-group">
         <label for="tipoTelefone">Tipo de Telefone:</label>
-        <select class="form-control" name="tipoTelefone" id="tipoTelefone" required>
+        <select class="form-control" name="tipoTelefone" id="tipoTelefone" >
+            <option value="" disabled selected>Selecione uma opção</option>
             <option value="Celular">Celular</option>
             <option value="Residencial">Residencial</option>
             <option value="Comercial">Comercial</option>
@@ -67,7 +73,7 @@
         <legend>Imagem do Paciente</legend>
             <div class="form-group">
                 <label for="imagemPaciente">Carregar Imagem:</label>
-            <input type="file" class="form-control" name="imagemPaciente" id="imagemPaciente" accept="image/*" required onchange="previewImage(event)">
+            <input type="file" class="form-control" name="imagemPaciente" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
             <small class="form-text text-muted">Formato aceito: JPG, PNG, GIF.</small>
             <img id="imagemPreview" src="#" alt="Pré-visualização da Imagem" style="display:none; margin-top:10px; max-width:200px;">
              </div>
@@ -78,34 +84,34 @@
 
         <div class="form-group">
             <label for="cep">CEP:</label>
-            <input type="text" class="form-control" name="cep" id="cep" required pattern="\d{8}" title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
+            <input type="text" class="form-control" name="cep" id="cep" pattern="\d{8}" title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
         </div>
 
         <div class="form-group">
             <label for="endereco">Endereço:</label>
-            <input type="text" class="form-control" name="endereco" id="endereco" required>
+            <input type="text" class="form-control" name="endereco" id="endereco">
         </div>
 
         <div class="form-group">
             <label for="numero">Número:</label>
-            <input type="text" class="form-control" name="numero" id="numero" required>
+            <input type="text" class="form-control" name="numero" id="numero">
         </div>
 
 
 
         <div class="form-group">
             <label for="bairro">Bairro:</label>
-            <input type="text" class="form-control" name="bairro" id="bairro" required>
+            <input type="text" class="form-control" name="bairro" id="bairro">
         </div>
 
         <div class="form-group">
             <label for="cidade">Cidade:</label>
-            <input type="text" class="form-control" name="cidade" id="cidade" required>
+            <input type="text" class="form-control" name="cidade" id="cidade">
         </div>
 
         <div class="form-group">
             <label for="estado">Estado:</label>
-            <input type="text" class="form-control" name="estado" id="estado" required>
+            <input type="text" class="form-control" name="estado" id="estado">
         </div>
 
         <div class="form-group">
@@ -130,6 +136,7 @@
         <div class="form-group">
             <label for="parentesco">Parentesco:</label>
             <select class="form-control" name="parentesco" id="parentesco">
+                <option value="" disabled selected>Selecione o grau de parentesco</option>
                 <option value="Pai">Pai</option>
                 <option value="Mãe">Mãe</option>
                 <option value="Filho">Filho</option>
@@ -146,6 +153,7 @@
         <div class="form-group">
             <label for="alergia">Possui alergia a algum medicamento?</label>
             <select class="form-control" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
+                <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
             </select>
@@ -159,6 +167,7 @@
         <div class="form-group">
             <label for="doenca">Doenças crônicas:</label>
             <select class="form-control" name="doenca" id="doenca" onchange="toggleField('doenca', 'descricaoDoenca')">
+                <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
             </select>
@@ -185,6 +194,7 @@
         <div class="form-group">
             <label for="terapia">Faz terapia?</label>
             <select class="form-control" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
+                <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
             </select>
@@ -392,9 +402,16 @@ async function buscarEndereco() {
 }
 
 function previewImage(event) {
-    const imgPreview = document.getElementById('imagemPreview');
-    imgPreview.src = URL.createObjectURL(event.target.files[0]);
-    imgPreview.style.display = 'block';
+    const preview = document.getElementById('imagemPreview');
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function() {
+        preview.src = reader.result;
+        preview.style.display = 'block';
+    };
+
+    reader.readAsDataURL(file);
 }
 
     function setCurrentDate() {

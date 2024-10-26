@@ -1,71 +1,162 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NUPS - Gestão de Profissionais</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        nav a {
-            margin: 0 15px;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: color 0.3s ease-in-out;
-        }
-        nav a:hover {
-            color: #ffdd57;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        footer {
-            background-color: #343a40;
-            color: white;
-            bottom: 0;
-            width: 100%;
-        }
-        footer p {
-            margin: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - NUPS</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .sidebar {
+      width: 100px;
+      height: 100vh;
+      background-color: #343a40;
+      transition: width 0.3s;
+      position: relative;
+    }
+
+    .sidebar:hover {
+      width: 200px;
+    }
+
+    .sidebar .nav-link {
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      font-size: 15px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar .nav-link i {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .sidebar .nav-link span {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar:hover .nav-link span {
+      opacity: 1;
+    }
+
+    .sidebar .logo {
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .sidebar .nav-link.active {
+      background-color: #495057; /* Destaque para o link ativo */
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+
+    .header h1 {
+      margin: 0;
+    }
+
+    .header .btn {
+      background-color: #28a745;
+      color: white;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      .sidebar .nav-link span {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <header>
-        <h1>NUPS</h1>
-        <nav class="mt-3">
-            <a href="/profissionais" class="btn btn-light">Profissionais</a>
-            <a href="/pacientes" class="btn btn-warning">Pacientes</a>
-            <a href="/atendimentos" class="btn btn-warning">Atendimentos</a>
-            <a href="/ocorrencias" class="btn btn-warning">Ocorrencias</a>
+  <nav class="sidebar">
+    <div class="logo">NUPS</div>
+    <div class="nav flex-column">
+      <a href="/profissionais" class="nav-link" aria-label="Gerenciar Profissionais">
+        <i class="fas fa-user-md"></i>
+        <span>Profissionais</span>
+      </a>
+      <a href="/pacientes" class="nav-link" aria-label="Gerenciar Pacientes">
+        <i class="fas fa-users"></i>
+        <span>Pacientes</span>
+      </a>
+      <a href="/atendimentos" class="nav-link" aria-label="Gerenciar Atendimentos">
+        <i class="fas fa-calendar-check"></i>
+        <span>Atendimentos</span>
+      </a>
+      <a href="/ocorrencias" class="nav-link" aria-label="Gerenciar Ocorrências">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Ocorrências</span>
+      </a>
+      <a href="/produtos" class="nav-link" aria-label="Gerenciar Estoque">
+        <i class="fas fa-boxes"></i>
+        <span>Estoque</span>
+      </a>
+      <a href="/salas" class="nav-link" aria-label="Salas">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Cadastro de Salas</span>
+      </a>
+      <a href="/reservas" class="nav-link" aria-label="Gerenciar Reservas de Salas">
+        <i class="fas fa-door-open"></i>
+        <span>Salas</span>
+      </a>
+      <a href="/escalas" class="nav-link" aria-label="Gerenciar Escalas">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Escalas</span>
+      </a>
+      <a href="/eventos" class="nav-link" aria-label="Eventos">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Eventos</span>
+      </a>
 
 
-        </nav>
-    </header>
+    </div>
+  </nav>
 
-    <main class="container mt-5">
-        {{{body}}}
-    </main>
+  <main class="content">
+    
+    {{#if errorMessage}}
+        <div class="alert alert-danger">{{errorMessage}}</div>
+    {{/if}}
 
-    <footer class="text-center py-3">
-        <p>&copy; 2024 NUPS - Todos os direitos reservados</p>
-    </footer>
+    {{{body}}}
+  </main>
+
+  <script src="https://kit.fontawesome.com/a076d05399.js" defer></script>
 </body>
 </html>

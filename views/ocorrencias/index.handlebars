@@ -1,33 +1,47 @@
-<h2>Lista de Ocorrências</h2>
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Data</th>
-      <th>Relatório</th>
-      <th>Horário de Chegada</th>
-      <th>Horário de Saída</th>
-      <th>Profissional</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
+<h2 class="text-center my-4">Lista de Ocorrências</h2>
+<div class="text-right mb-3">
+  <a href="/ocorrencias/create" class="btn btn-primary mt-3">Adicionar Nova Ocorrência</a>
+</div>
+
+<!-- Formulário de Filtro -->
+<form action="/ocorrencias" method="GET" class="mb-4">
+  <div class="row">
+    <div class="col-md-3">
+      <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+</form>
+
+<table class="table table-striped">
+  <tr>
+    <th>ID</th>
+    <th>Data</th>
+    <th>Relatório</th>
+    <th>Horário de Chegada</th>
+    <th>Horário de Saída</th>
+    <th>Profissional</th>
+    <th>Ações</th>
+  </tr>
   <tbody>
     {{#each ocorrencias}}
       <tr>
         <td>{{this.id}}</td>
         <td>{{this.data}}</td>
         <td>{{this.relatorio}}</td>
-        <td>{{this.horarioChegada}}</td> <!-- Corrigido para horarioChegada -->
-        <td>{{this.horarioSaida}}</td>   <!-- Corrigido para horarioSaida -->
+        <td>{{this.horarioChegada}}</td>
+        <td>{{this.horarioSaida}}</td>
         <td>{{this.profissional.nome}}</td>
         <td>
-          <a href="/ocorrencias/{{this.id}}/edit">Editar</a>
+          <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
           <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit">Remover</button>
+            <button type="submit" class="btn btn-danger btn-sm">Remover</button>
           </form>
         </td>
       </tr>
     {{/each}}
   </tbody>
 </table>
-<a href="/ocorrencias/create">Adicionar Nova Ocorrência</a>

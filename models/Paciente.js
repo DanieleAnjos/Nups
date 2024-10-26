@@ -20,6 +20,11 @@ const Paciente = sequelize.define('Paciente', {
       isInt: true, 
     },
   },
+  numeroProcesso: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+    },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -44,41 +49,48 @@ const Paciente = sequelize.define('Paciente', {
   },
   escolaridade: {
     type: DataTypes.ENUM('Ensino Fundamental', 'Ensino Médio', 'Superior'),
-    allowNull: false
+    allowNull: true,
   },
   endereco: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   cep: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     validate: {
-      is: {
-        args: /^[0-9]{5}-?[0-9]{3}$/,
-        msg: "O CEP deve ter 8 ou 9 dígitos (xxxxx-xxx)."
+      isValid(value) {
+        if (value && !/^[0-9]{5}-?[0-9]{3}$/.test(value)) {
+          throw new Error("O CEP deve ter 8 ou 9 dígitos (xxxxx-xxx).");
+        }
       },
     },
   },
+
+
   bairro: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   cidade: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   estado: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true, 
     validate: {
-      isAlpha: true,
-      len: [2, 2], 
+      isEmptyOrValid(value) {
+        if (value && (value.length !== 2 || !/^[A-Za-z]+$/.test(value))) {
+          throw new Error("O estado deve ter exatamente 2 caracteres e conter apenas letras.");
+        }
+      },
     },
   },
+  
   numero: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   complemento: {
     type: DataTypes.STRING,
@@ -97,17 +109,20 @@ const Paciente = sequelize.define('Paciente', {
   },
   telefone: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     validate: {
-      is: {
-        args: /^[0-9]{10,11}$/, 
-        msg: "O telefone deve conter entre 10 e 11 números."
+      isEmptyOrValid(value) {
+        if (value && !/^[0-9]{10,11}$/.test(value)) {
+          throw new Error("O telefone deve conter entre 10 e 11 números.");
+        }
       },
     },
   },
+  
+
   tipoTelefone: {
     type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
-    allowNull: false,
+    allowNull: true,
   },
   encaminhamento: {
     type: DataTypes.ENUM('Psicologia', 'Serviço Social'),
@@ -119,24 +134,26 @@ const Paciente = sequelize.define('Paciente', {
   },
   telefoneContato: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: true, 
     validate: {
-      is: {
-        args: /^[0-9]{10,11}$/, 
-        msg: "O telefone de contato deve conter entre 10 e 11 números."
+      isEmptyOrValid(value) {
+        if (value && !/^[0-9]{10,11}$/.test(value)) {
+          throw new Error("O telefone de contato deve conter entre 10 e 11 números.");
+        }
       },
     },
   },
+  
   parentesco: {
     type: DataTypes.ENUM('Pai', 'Mãe', 'Filho', 'Cônjuge', 'Outro'),
-    allowNull: false,
+    allowNull: true,
   },
   postoServiço: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   escala: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: true,
   },
   tempoServiço: {
@@ -251,6 +268,11 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: true, 
   },
+  cadastroCompleto: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false, 
+},
 }, {
   tableName: 'paciente', 
   timestamps: true, 

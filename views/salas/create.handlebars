@@ -1,0 +1,13 @@
+<h1>Criar Nova Sala</h1>
+<form action="/salas" method="POST">
+  <label for="nome">Nome:</label>
+  <input type="text" id="nome" name="nome" required minlength="3" maxlength="100">
+
+  <label for="capacidade">Capacidade:</label>
+  <input type="number" id="capacidade" name="capacidade" required min="1">
+
+  <label for="descricao">Descrição:</label>
+  <input type="text" id="descricao" name="descricao" maxlength="255">
+
+  <button type="submit">Salvar</button>
+</form>

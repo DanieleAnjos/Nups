@@ -1,24 +1,24 @@
-    <h1>Login</h1>
+<h1>Login</h1>
 
-    <!-- Exibe mensagens de erro ou sucesso -->
-    {{#if error_msg}}
-        <div class="message error" aria-live="polite">{{error_msg}}</div>
-    {{/if}}
-    {{#if success_msg}}
-        <div class="message success" aria-live="polite">{{success_msg}}</div>
-    {{/if}}
+<!-- Exibe mensagens de erro ou sucesso -->
+{{#if error_msg}}
+    <div class="message error" role="alert" aria-live="polite">{{error_msg}}</div>
+{{/if}}
+{{#if success_msg}}
+    <div class="message success" role="alert" aria-live="polite">{{success_msg}}</div>
+{{/if}}
 
-    <!-- Formulário de login -->
-    <form action="/auth/login" method="POST">
-        <div>
-            <label for="usuario">Usuário:</label>
-            <input type="text" id="usuario" name="usuario" autocomplete="username" required autofocus>
-        </div>
+<!-- Formulário de login -->
+<form action="/auth/login" method="POST" aria-labelledby="loginForm">
+    <div>
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" name="usuario" autocomplete="username" required autofocus>
+    </div>
 
-        <div>
-            <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" autocomplete="current-password" required>
-        </div>
+    <div>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" autocomplete="current-password" required>
+    </div>
 
-        <button type="submit">Login</button>
-    </form>
+    <button type="submit">Login</button>
+</form>

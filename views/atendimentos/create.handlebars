@@ -1,40 +1,45 @@
 <h1>Novo Atendimento</h1>
 
-<form action="/atendimentos" method="POST">
-  <!-- Paciente -->
-  <label for="matriculaPaciente">Paciente</label>
-  <select name="matriculaPaciente" id="matriculaPaciente" required>
-    {{#each pacientes}}
-    <option value="{{this.matricula}}">{{this.nome}}</option>
-    {{/each}}
-  </select>
+<form action="/atendimentos" method="POST" class="mt-4">
 
-  <!-- Número do Processo -->
-  <label for="numeroProcesso">Número do Processo</label>
-  <input type="text" name="numeroProcesso" id="numeroProcesso" required>
+  <div class="form-group">
+    <label for="matriculaPaciente">Paciente</label>
+    <select name="matriculaPaciente" id="matriculaPaciente" required class="form-control">
+      {{#each pacientes}}
+        <option value="{{this.matricula}}">{{this.nome}}</option>
+      {{/each}}
+    </select>
+  </div>
 
-  <!-- Assunto -->
-  <label for="assunto">Assunto</label>
-  <select name="assunto" id="assunto" required>
-    <option value="Acolhimento de disparo">Acolhimento de disparo</option>
-    <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
-    <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-  </select>
+  <div class="form-group">
+    <label for="numeroProcesso">Número do Processo</label>
+    <input type="text" name="numeroProcesso" id="numeroProcesso" required class="form-control">
+  </div>
 
-  <!-- Profissional (preenchido automaticamente) -->
-  <label for="profissionalId">Profissional</label>
-  <input type="text" name="profissionalId" id="profissionalId" value="{{profissional.nome}} - {{profissional.especialidade}}" readonly>
+  <div class="form-group">
+    <label for="assunto">Assunto</label>
+    <select name="assunto" id="assunto" required class="form-control">
+      <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+      <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+      <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+    </select>
+  </div>
 
-  <!-- ID do profissional (oculto) -->
-  <input type="hidden" name="profissionalId" value="{{profissional.id}}">
+  <div class="form-group">
+    <label for="profissionalId">Profissional</label>
+    <input type="text" name="profissionalId" id="profissionalId" value="{{profissional.nome}} - {{profissional.especialidade}}" readonly class="form-control-plaintext">
+    <input type="hidden" name="profissionalId" value="{{profissional.id}}">
+  </div>
 
-  <!-- Registro do Atendimento -->
-  <label for="registroAtendimento">Registro de Atendimento</label>
-  <textarea name="registroAtendimento" id="registroAtendimento" rows="5" required></textarea>
+  <div class="form-group">
+    <label for="registroAtendimento">Registro de Atendimento</label>
+    <textarea name="registroAtendimento" id="registroAtendimento" rows="5" required class="form-control"></textarea>
+  </div>
 
-  <!-- Data do Acolhimento -->
-  <label for="acolhidoEm">Data de Acolhimento</label>
-  <input type="date" name="acolhidoEm" id="acolhidoEm" required>
+  <div class="form-group">
+    <label for="acolhidoEm">Data de Acolhimento</label>
+    <input type="date" name="acolhidoEm" id="acolhidoEm" required class="form-control">
+  </div>
 
-  <button type="submit">Salvar</button>
+  <button type="submit" class="btn btn-success">Salvar</button>
 </form>

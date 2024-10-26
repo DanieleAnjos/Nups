@@ -3,11 +3,6 @@ const axios = require('axios');
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-// Função para hash de senha
-async function hashPassword(profissional) {
-  profissional.senha = await argon2.hash(profissional.senha);
-}
-
 const Profissional = sequelize.define('Profissional', {
   id: {
     type: DataTypes.INTEGER,
@@ -48,7 +43,7 @@ const Profissional = sequelize.define('Profissional', {
     allowNull: false,
     unique: true,
     validate: {
-      is: /^[0-9]{11}$/, // Valida CPF (apenas números)
+      is: /^[0-9]{11}$/, 
     },
   },
   dataNascimento: {
@@ -62,13 +57,6 @@ const Profissional = sequelize.define('Profissional', {
   estadoCivil: {
     type: DataTypes.ENUM('Casado', 'Solteiro', 'Divorciado'),
     allowNull: true,
-  },
-  observacoes: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    validate: {
-      len: [0, 255], // Limita a 255 caracteres
-    },
   },
   nomeBanco: {
     type: DataTypes.STRING,
@@ -86,7 +74,7 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      is: /^[0-9]{8}$/, // Valida CEP com 8 dígitos
+      is: /^[0-9]{8}$/, 
     },
   },
   endereco: {
@@ -117,28 +105,12 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      is: /^[0-9]{10,11}$/, // Valida telefone com 10 ou 11 dígitos
+      is: /^[0-9]{10,11}$/, 
     },
   },
   tipoTelefone: {
     type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
     allowNull: false,
-  },
-  usuario: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  senha: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      len: [8, 100], // Limita o tamanho da senha
-      isStrong(value) {
-        if (value.length < 8) {
-          throw new Error('A senha deve conter ao menos 8 caracteres.');
-        }
-      },
-    },
   },
   imagePath: {
     type: DataTypes.STRING,
@@ -157,16 +129,7 @@ const Profissional = sequelize.define('Profissional', {
   timestamps: true,
 });
 
-// Hooks para hash de senha
-Profissional.beforeCreate(hashPassword);
 
-Profissional.beforeUpdate(async (profissional) => {
-  if (profissional.changed('senha')) {
-    await hashPassword(profissional);
-  }
-});
-
-// Verifica se o termo de voluntariado venceu (1 ano após admissão)
 Profissional.prototype.isVolunteerTermExpired = function () {
   if (this.vinculo === 'Voluntario') {
     const today = new Date();
@@ -177,7 +140,6 @@ Profissional.prototype.isVolunteerTermExpired = function () {
   return false;
 };
 
-// Função para preencher endereço automaticamente com base no CEP
 Profissional.prototype.fillAddressFromCep = async function () {
   if (this.cep) {
     try {
@@ -194,7 +156,6 @@ Profissional.prototype.fillAddressFromCep = async function () {
   }
 };
 
-// Hook para preencher o endereço ao criar ou atualizar
 Profissional.beforeCreate(async (profissional) => {
   await profissional.fillAddressFromCep();
 });
@@ -206,7 +167,7 @@ Profissional.beforeUpdate(async (profissional) => {
 });
 
 (async () => {
-  await sequelize.sync(); // Certifique-se de sincronizar seus modelos
+  await sequelize.sync(); 
 })();
 
 module.exports = Profissional;

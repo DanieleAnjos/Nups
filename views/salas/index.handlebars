@@ -1,0 +1,37 @@
+<h1 class="text-center my-4">Lista de Salas</h1>
+
+<div class="text-right mb-3">
+    <a href="/salas/create" class="btn btn-primary">Adicionar Nova Sala</a>
+</div>
+
+<table class="table table-striped">
+    <thead >
+        <tr>
+            <th>Nome</th>
+            <th>Capacidade</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each salas}}
+        <tr>
+            <td>{{this.nome}}</td>
+            <td>{{this.capacidade}}</td>
+            <td>{{this.descricao}}</td>
+            <td>
+                <a href="/salas/{{this.id}}/editar" class="btn btn-warning btn-sm">Editar</a>
+                <form action="/salas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta sala?');">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{#if (eq salas.length 0)}}
+    <div class="alert alert-info text-center" role="alert">
+        Nenhuma sala encontrada.
+    </div>
+{{/if}}

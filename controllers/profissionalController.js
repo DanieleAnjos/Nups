@@ -1,20 +1,39 @@
 const Profissional = require('../models/Profissional');
 const { ValidationError } = require('sequelize');
+const { Op } = require('sequelize');
+
 
 exports.index = async (req, res) => {
+  const { nome, email, cargo } = req.query; 
+  const where = {}; 
+
+  if (nome) {
+    where.nome = { [Op.like]: `%${nome}%` }; 
+  }
+  if (email) {
+    where.email = { [Op.like]: `%${email}%` }; 
+  }
+  if (cargo) {
+    where.cargo = { [Op.like]: `%${cargo}%` }; 
+  }
+
   try {
-    const profissionais = await Profissional.findAll();
-    const profissionaisData = profissionais.map(prof => prof.get({ plain: true })); // Obter dados simples
-    res.render('profissional/index', { profissionais: profissionaisData });
+    const profissionais = await Profissional.findAll({ where });
+    const profissionaisData = profissionais.map(prof => prof.get({ plain: true }));
+
+    res.render('profissional/index', { 
+      profissionais: profissionaisData,
+      query: req.query 
+    });
   } catch (error) {
     console.error('Erro ao listar profissionais:', error);
     req.flash('error_msg', 'Erro ao listar profissionais.');
-    res.redirect('/');
+    res.redirect('/profissionais');
   }
 };
 
 exports.create = (req, res) => {
-  res.render('profissional/create');
+  res.render('profissional/create', { error_msg: req.flash('error_msg') });
 };
 
 exports.store = async (req, res) => {
@@ -41,7 +60,7 @@ exports.edit = async (req, res) => {
       req.flash('error_msg', 'Profissional não encontrado.');
       return res.redirect('/profissionais');
     }
-    res.render('profissional/edit', { profissional });
+    res.render('profissional/edit', { profissional: profissional.get({ plain: true }), error_msg: req.flash('error_msg') });
   } catch (error) {
     console.error('Erro ao buscar profissional:', error);
     req.flash('error_msg', 'Erro ao buscar o profissional.');

@@ -1,0 +1,38 @@
+<h1 class="text-center my-4">Criar Nova Reserva</h1>
+<form action="/reservas" method="POST" class="mt-4">
+    <div class="form-group">
+        <label for="salaId">Sala:</label>
+        <select name="salaId" id="salaId" class="form-control" required>
+            {{#each salas}}
+                <option value="{{this.id}}">{{this.nome}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" name="data" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="horarioInicial">Horário Inicial:</label>
+        <input type="time" name="horarioInicial" id="horarioInicial" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="horarioFinal">Horário Final:</label>
+        <input type="time" name="horarioFinal" id="horarioFinal" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="profissionalId">Profissional:</label>
+        <select name="profissionalId" id="profissionalId" class="form-control" required>
+            {{#each profissionais}}
+                <option value="{{this.id}}">{{this.nome}}</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+<a href="/reservas" class="btn btn-secondary mt-3">Voltar</a>

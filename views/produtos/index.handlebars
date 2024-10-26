@@ -1,33 +1,57 @@
-<h1>Lista de Produtos</h1>
-<a href="/produtos/create">Adicionar Produto</a>
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nome</th>
-      <th>Fornecedor</th>
-      <th>Observações</th>
-      <th>Ações</th>
-      <th>Ajustes de Estoque</th> <!-- Nova coluna para ajuste de estoque -->
-    </tr>
-  </thead>
-  <tbody>
-    {{#each produtos}}
-    <tr>
-      <td>{{this.id}}</td>
-      <td>{{this.nome}}</td>
-      <td>{{this.fornecedor.nome}}</td> <!-- Mostra o nome do fornecedor -->
-      <td>{{this.observacoes}}</td>
-      <td>
-        <a href="/produtos/{{this.id}}/edit">Editar</a>
-        <form action="/produtos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Deletar</button>
-        </form>
-      </td>
-      <td>
-        <a href="/ajustes/create?produtoId={{this.id}}">Ajustar Estoque</a> <!-- Link para ajuste de estoque -->
-      </td>
-    </tr>
-    {{/each}}
-  </tbody>
+<h1 class="text-center my-4">Lista de Produtos</h1>
+<div class="text-right mb-3">
+    <a href="/produtos/create" class="btn btn-primary mb-3">Adicionar Novo Produto</a>
+</div>
+
+<!-- Formulário de filtro -->
+<form class="mb-4" method="GET" action="/produtos">
+    <div class="form-row">
+        <div class="col">
+            <input type="text" name="nome" class="form-control" placeholder="Nome do Produto" value="{{query.nome}}">
+        </div>
+        <div class="col">
+            <select name="categoria" class="form-control">
+                <!-- Aqui você pode adicionar as opções de categorias disponíveis -->
+                <option value="">Selecione uma Categoria</option> <!-- Opção padrão -->
+                <option value="Papelaria" {{#if (eq 'Papelaria' query.categoria)}}selected{{/if}}>Papelaria</option>
+                <option value="Higiene" {{#if (eq 'Higiene' query.categoria)}}selected{{/if}}>Higiene</option>
+                <option value="Alimentos" {{#if (eq 'Alimentos' query.categoria)}}selected{{/if}}>Alimentos</option>
+                <option value="Eletrônicos" {{#if (eq 'Eletrônicos' query.categoria)}}selected{{/if}}>Eletrônicos</option>7
+                <option value="Limpeza" {{#if (eq 'Limpeza' query.categoria)}}selected{{/if}}>Limpeza</option>
+                <option value="Outros" {{#if (eq 'Outros' query.categoria)}}selected{{/if}}>Outros</option>
+                <!-- Adicione mais categorias conforme necessário -->
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-secondary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Fornecimento</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each produtos}}
+        <tr>
+            <td>{{this.nome}}</td>
+            <td>{{this.descricao}}</td>
+            <td>{{this.categoria}}</td>
+            <td>{{this.fornecimento}}</td>
+            <td>
+                <a href="/produtos/{{this.id}}/edit" class="btn btn-warning">Editar</a>
+                <form action="/produtos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Deletar</button>
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
 </table>

@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Importa a configuração do banco de dados
-const Fornecedor = require('./Fornecedor'); // Importa o modelo Fornecedor
+const sequelize = require('../config/database');
 
 const Produto = sequelize.define('Produto', {
   id: {
@@ -11,24 +10,38 @@ const Produto = sequelize.define('Produto', {
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  observacoes: {
-    type: DataTypes.STRING,
-  },
-  fornecedorId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: Fornecedor, // Referência ao modelo Fornecedor
-      key: 'id',
+    validate: {
+      notEmpty: true,
+      len: [3, 255], 
     },
+  },
+  descricao: {
+    type: DataTypes.TEXT, 
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [10, 500], 
+    },
+  },
+  categoria: {
+    type: DataTypes.ENUM(
+      'Papelaria', 
+      'Higiene', 
+      'Alimentos', 
+      'Eletrônicos', 
+      'Limpeza',
+      'Outros'
+    ),
     allowNull: false,
   },
-});
-
-// Relacionamento com o modelo Fornecedor
-Produto.belongsTo(Fornecedor, {
-  foreignKey: 'fornecedorId',
-  as: 'fornecedor',
-});
+  fornecimento: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true, 
+    },
+  },
+}, 
+);
 
 module.exports = Produto;
