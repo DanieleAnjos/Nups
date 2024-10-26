@@ -28,7 +28,7 @@ const createUser = async (usuario, senha, profissionalId) => {
 };
 
 const usuario = 'admin'; 
-const senha = 'Senhalima12.'; 
+const senha = 'SenhaAdmin12.'; 
 const profissionalId = 1; 
 
 createUser(usuario, senha, profissionalId);
