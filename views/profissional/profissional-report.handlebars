@@ -1,0 +1,30 @@
+{{!-- Conteúdo específico da página de Relatório de Profissionais --}}
+  <div class="container">
+    <h2 class="my-4">Relatório de Profissionais</h2>
+
+    <div class="mb-4">
+      <h4>Filtros Aplicados</h4>
+      <p><strong>Nome:</strong> {{query.nome}}</p>
+      <p><strong>Email:</strong> {{query.email}}</p>
+      <p><strong>Cargo:</strong> {{query.cargo}}</p>
+    </div>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Cargo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each profissionais}}
+          <tr>
+            <td>{{this.nome}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.cargo}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>

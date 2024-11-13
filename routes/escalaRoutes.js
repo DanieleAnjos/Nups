@@ -3,7 +3,12 @@ const express = require('express');
 const router = express.Router();
 const escalaController = require('../controllers/escalaController');
 
-router.get('/', escalaController.index); 
+router.get('/', escalaController.index);
+
+router.get('/relatorio', escalaController.generateEscalaReport);
+
+router.get('/viewReport', escalaController.viewEscalasReport);
+
 
 router.get('/create', escalaController.create); 
 router.post('/', escalaController.store); 

@@ -9,9 +9,9 @@ const { engine } = require('express-handlebars');
 const cors = require('cors');
 const passport = require('./config/passportConfig'); 
 const argon2 = require('argon2'); 
+const Profissional = require('./models/Profissional');
 
 const authRoutes = require('./routes/authRoutes');
-const profissionalRoutes = require('./routes/profissionalRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const escalaRoutes = require('./routes/escalaRoutes');
 const fornecedorRoutes = require('./routes/fornecedorRoutes');
@@ -23,24 +23,37 @@ const salasRoutes = require('./routes/salasRoutes');
 const reservasSalaRoutes = require('./routes/reservasSalaRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const eventoRoutes = require('./routes/eventoRoutes');
+const encaminhamentosRoutes = require('./routes/encaminhamentosRoutes');
+const relatoriosRoutes = require('./routes/relatoriosRoutes');
+const profissionalRoutes = require('./routes/profissionalRoutes');
+
+
 
 const Usuario = require('./models/Usuario'); 
+const { partials } = require('handlebars');
 const app = express();
 const PORT = process.env.PORT || 3002;
-
 const hbs = engine({
+    defaultLayout: 'main',  
+    layoutsDir: path.join(__dirname, 'views', 'layouts'), 
+    partialsDir: [
+        path.join(__dirname, 'views', 'partials'),      
+        path.join(__dirname, 'views', 'partials', 'public')  
+    ],
     helpers: {
         eq: (a, b) => a === b,
         ifCond: (v1, v2, options) => (v1 === v2 ? options.fn(this) : options.inverse(this)),
         ifEquals: (arg1, arg2, options) => (arg1 === arg2 ? options.fn(this) : options.inverse(this)),
+        
         formatDate: (date) => {
             if (!date) return '';
             const d = new Date(date);
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return `${day}/${month}/${year}`;
         },
+
         formatDateTime: (date) => {
             if (!date) return '';
             const d = new Date(date);
@@ -49,7 +62,11 @@ const hbs = engine({
             const day = String(d.getDate()).padStart(2, '0');
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
+            return `${day}/${month}/${year} ${hours}:${minutes}`; 
+        },
+        
+        json: function(context) {
+            return JSON.stringify(context);
         }
     },
     runtimeOptions: {
@@ -57,6 +74,8 @@ const hbs = engine({
         allowProtoMethodsByDefault: true
     }
 });
+
+
 
 app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
@@ -71,14 +90,10 @@ app.use(cors());
 app.use(flash());
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'default_secret', 
+    secret: 'secret_key',
     resave: false,
-    saveUninitialized: false, 
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        maxAge: 24 * 60 * 60 * 1000 
-    }
+    saveUninitialized: false,
+    cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
 
 app.use(passport.initialize());
@@ -87,8 +102,12 @@ app.use(passport.session());
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
+    if (req.user && req.user.cargo) {
+        res.locals.cargo = req.user.cargo; 
+    }
     next();
 });
+
 
 app.use('/auth', authRoutes);
 
@@ -96,35 +115,137 @@ app.get('/', (req, res) => {
     res.redirect('/auth/login');
 });
 
-app.use((req, res, next) => {
+app.get('/NupsNews',function(req, res)  {
+    res.render('NupsNews', { layout: 'public/public-layout'} );
+});
+
+app.get('/Eventos',function(req, res)  {
+    res.render('Eventos', {layout: 'public/public-layout'});
+});
+app.get('/Quem_Somos',function(req, res)  {
+    res.render('Quem_Somos', {layout: 'public/public-layout'});
+});
+
+app.get('/Pagina_Inicial',function(req, res)  {
+    res.render('Pagina_Inicial', {layout: 'public/public-layout'});
+});
+
+
+app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
-    
+
     if (publicRoutes.some(route => req.originalUrl.startsWith(route))) {
         return next();
     }
 
     if (req.isAuthenticated()) {
         console.log('Usuário autenticado');
-        return next();
+
+        const usuario = req.user;  
+        if (!usuario || !usuario.profissionalId) {
+            console.log('Usuário ou profissionalId não encontrado');
+            req.flash('error_msg', 'Usuário ou profissional não encontrado');
+            return res.redirect('/auth/login'); 
+        }
+
+        try {
+            const profissional = await Profissional.findByPk(usuario.profissionalId); // Buscando o profissional associado
+
+            if (!profissional) {
+                console.log('Profissional não encontrado');
+                req.flash('error_msg', 'Profissional não encontrado');
+                return res.redirect('/');
+            }
+
+            const dashboardRoutes = {
+                'Administrador': '/dashboard/adm',
+                'Assistente social': '/dashboard/assistente-social',
+                'Psicólogo': '/dashboard/psicologo-psiquiatra',
+                'Psiquiatra': '/dashboard/psicologo-psiquiatra'
+            };
+
+            const cargo = profissional.cargo; 
+            const permittedRoutes = accessControl[cargo];
+
+            if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
+                return next();
+            } else {
+                if (req.originalUrl === '/') {
+                    const redirectRoute = dashboardRoutes[cargo];
+                    if (redirectRoute) {
+                        return res.redirect(redirectRoute);
+                    }
+                }
+
+                console.log('Acesso negado: Você não tem permissão para acessar esta página');
+                req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
+                return res.redirect('/');
+            }
+
+        } catch (err) {
+            console.error('Erro ao verificar o profissional:', err);
+            req.flash('error_msg', 'Erro ao verificar as permissões do profissional.');
+            return res.redirect('/'); 
+        }
     }
 
-    console.log('Usuário não autenticado, redirecionando de volta');
-    req.flash('error_msg', 'Você precisa estar logado para acessar essa página.'); // Mensagem de erro
+    req.flash('error_msg', 'Você precisa estar logado para acessar essa página.');
     res.redirect('/auth/login');
 });
+
+
+
+const accessControl = {
+    'Administrador': [
+        '/dashboard/adm',
+        '/profissionais',
+        '/pacientes',
+        '/escalas',
+        '/fornecedores', 
+        '/ajustes', 
+        '/atendimentos',
+        '/ocorrencias',
+        '/salas',
+        '/reservas',
+        '/dashboard',
+        '/eventos2', 
+        '/encaminhamentos',
+        '/relatorios',  
+        '/estoque',
+        '/produtos',
+    ],
+    'Assistente social': [
+        '/dashboard/assistente-social',
+        '/atendimentos',
+        '/ocorrencias',
+        '/salas',
+        '/pacientes',
+    ],
+    'Psicólogo': [
+        '/dashboard/psicologo-psiquiatra',
+        '/dashboard/psicologo',
+    ],
+    'Psiquiatra': [
+        '/dashboard/psicologo-psiquiatra',
+        '/dashboard/psicologo',
+    ],
+};
+
 
 app.use('/profissionais', profissionalRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/escalas', escalaRoutes);
 app.use('/fornecedores', fornecedorRoutes);
 app.use('/produtos', produtoRoutes);
-app.use('/ajusteestoque', ajusteEstoqueRoutes);
+app.use('/ajustes', ajusteEstoqueRoutes);
 app.use('/atendimentos', atendimentoRoutes);
 app.use('/ocorrencias', ocorrenciaRoutes);
 app.use('/salas', salasRoutes);
 app.use('/reservas', reservasSalaRoutes);
 app.use('/dashboard', dashboardRoutes);
-app.use('/eventos', eventoRoutes);
+app.use('/eventos2', eventoRoutes);
+app.use('/encaminhamentos', encaminhamentosRoutes);
+app.use('/relatorios', relatoriosRoutes);
 
 app.use((req, res) => {
     res.status(404).render('404'); 

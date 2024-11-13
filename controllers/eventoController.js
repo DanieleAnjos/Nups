@@ -25,7 +25,7 @@ const eventoController = {
             where,
         });
 
-        res.render('eventos/index', {
+        res.render('eventos2/index', {
             eventos,
             search: { titulo, dataHoraInicio },
         });
@@ -37,7 +37,7 @@ const eventoController = {
 
 
   create: (req, res) => {
-    res.render('eventos/create');
+    res.render('eventos2/create');
   },
 
   store: async (req, res) => {
@@ -45,7 +45,7 @@ const eventoController = {
       const { titulo, descricao, localizacao, dataHoraInicio, dataHoraFim, responsaveis, link, privacidade } = req.body;
 
       if (!titulo || !descricao || !dataHoraInicio || !dataHoraFim) {
-        return res.render('eventos/create', { errorMessage: 'Preencha todos os campos obrigatórios.' });
+        return res.render('eventos2/create', { errorMessage: 'Preencha todos os campos obrigatórios.' });
       }
       const evento = await Evento.create({
         titulo,
@@ -62,10 +62,10 @@ const eventoController = {
         await handleImageUpload(req.files, evento.id);
       }
 
-      res.redirect('/eventos');
+      res.redirect('/eventos2');
     } catch (error) {
       console.error('Erro ao criar evento:', error);
-      res.render('eventos/create', { errorMessage: 'Erro ao criar evento.' });
+      res.render('eventos2/create', { errorMessage: 'Erro ao criar evento.' });
     }
   },
 
@@ -73,12 +73,12 @@ const eventoController = {
     try {
         const evento = await Evento.findByPk(req.params.id, { include: 'imagens' });
         if (!evento) {
-            return res.render('eventos/edit', { errorMessage: 'Evento não encontrado.' });
+            return res.render('eventos2/edit', { errorMessage: 'Evento não encontrado.' });
         }
-        res.render('eventos/edit', { evento });
+        res.render('eventos2/edit', { evento });
     } catch (error) {
         console.error('Erro ao buscar evento:', error);
-        res.render('eventos/edit', { errorMessage: 'Erro ao buscar evento.' });
+        res.render('eventos2/edit', { errorMessage: 'Erro ao buscar evento.' });
     }
 },
 
@@ -87,7 +87,7 @@ const eventoController = {
     try {
       const evento = await Evento.findByPk(req.params.id);
       if (!evento) {
-        return res.render('eventos/edit', { errorMessage: 'Evento não encontrado.' });
+        return res.render('eventos2/edit', { errorMessage: 'Evento não encontrado.' });
       }
 
       const { titulo, descricao, localizacao, dataHoraInicio, dataHoraFim, responsaveis, link, privacidade } = req.body;
@@ -107,10 +107,10 @@ const eventoController = {
         await handleImageUpload(req.files, evento.id, true);
       }
 
-      res.redirect('/eventos');
+      res.redirect('/eventos2');
     } catch (error) {
       console.error('Erro ao atualizar evento:', error.message);
-      res.render('eventos/edit', { errorMessage: 'Erro ao atualizar evento.' });
+      res.render('eventos2/edit', { errorMessage: 'Erro ao atualizar evento.' });
     }
   },
 
@@ -118,16 +118,16 @@ const eventoController = {
     try {
       const evento = await Evento.findByPk(req.params.id);
       if (!evento) {
-        return res.render('eventos/index', { errorMessage: 'Evento não encontrado.' });
+        return res.render('eventos2/index', { errorMessage: 'Evento não encontrado.' });
       }
 
       await Imagem.destroy({ where: { eventoId: evento.id } });
       await evento.destroy();
 
-      res.redirect('/eventos');
+      res.redirect('/eventos2');
     } catch (error) {
       console.error('Erro ao excluir evento:', error.message);
-      res.render('eventos/index', { errorMessage: 'Erro ao excluir evento.' });
+      res.render('eventos2/index', { errorMessage: 'Erro ao excluir evento.' });
     }
   },
 };

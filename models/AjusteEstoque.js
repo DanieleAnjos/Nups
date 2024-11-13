@@ -1,52 +1,45 @@
-const { DataTypes, Model } = require('sequelize');
+const { DataTypes, Model, Sequelize } = require('sequelize');  
 const sequelize = require('../config/database');
-const Produto = require('./Produto'); 
+const Produto = require('../models/Produto');  
 
 class AjusteEstoque extends Model {}
 
 AjusteEstoque.init({
   id: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     autoIncrement: true,
-    primaryKey: true
   },
   produtoId: {
     type: DataTypes.INTEGER,
-    references: {
-      model: Produto, 
-      key: 'id',
-    },
     allowNull: false,
-    onDelete: 'CASCADE' 
   },
   data: {
-    type: DataTypes.DATE, 
+    type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW,
   },
   quantidade: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    validate: {
-      min: 0 
-    }
   },
   tipo: {
-    type: DataTypes.ENUM('adição', 'ajuste'),
+    type: DataTypes.ENUM('entrada', 'saida'),
     allowNull: false,
+  },
+  dataCriacao: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.NOW,  
+  },
+  dataAtualizacao: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.NOW,  
   },
 }, {
   sequelize,
-  modelName: 'AjusteEstoque',
-  tableName: 'ajustes_estoque', 
-  timestamps: true, 
-  createdAt: 'dataCriacao', 
-  updatedAt: 'dataAtualizacao' 
-});
-
-AjusteEstoque.belongsTo(Produto, {
-  foreignKey: 'produtoId',
-  as: 'produto' 
+  modelName: 'AjusteEstoque',  
+  timestamps: false,  
 });
 
 module.exports = AjusteEstoque;

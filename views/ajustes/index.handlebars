@@ -1,5 +1,7 @@
 <h1>Lista de Ajustes de Estoque</h1>
-<a href="/ajustes/create">Adicionar Ajuste</a>
+<form action="/ajustes/create" method="GET">
+  <button type="submit">Adicionar Ajuste</button>
+</form>
 <table>
   <thead>
     <tr>
@@ -18,11 +20,12 @@
       <td>{{this.produto.nome}}</td> <!-- Mostra o nome do produto -->
       <td>{{this.quantidade}}</td>
       <td>{{this.tipo}}</td>
-      <td>{{this.data}}</td>
+      <!-- Formata a data para exibição -->
+      <td>{{formatDateTime this.data}}</td>
       <td>
         <a href="/ajustes/{{this.id}}/edit">Editar</a>
         <form action="/ajustes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Deletar</button>
+          <button type="submit" style="background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;">Deletar</button>
         </form>
       </td>
     </tr>

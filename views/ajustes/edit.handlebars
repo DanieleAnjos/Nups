@@ -12,8 +12,8 @@
 
   <label>Tipo de Ajuste</label>
   <select name="tipo" required>
-    <option value="adição" {{#if (eq ajuste.tipo 'adição')}}selected{{/if}}>Adição</option>
-    <option value="ajuste" {{#if (eq ajuste.tipo 'ajuste')}}selected{{/if}}>Ajuste</option>
+    <option value="adição" {{#if (eq ajuste.tipo 'entrada')}}selected{{/if}}>Adição</option>
+    <option value="ajuste" {{#if (eq ajuste.tipo 'saida')}}selected{{/if}}>Ajuste</option>
   </select>
 
   <button type="submit">Salvar Alterações</button>

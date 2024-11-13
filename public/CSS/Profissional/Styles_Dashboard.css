@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #F2F2F2;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+}
+
+
+/* Estilo da Seção de Boas-Vindas */
+.welcome-section h1 {
+    font-size: 32px;
+    color: #072c47;
+    margin: 0;
+    text-align: center;
+    margin-left:100px;
+    margin-top:50px;
+}

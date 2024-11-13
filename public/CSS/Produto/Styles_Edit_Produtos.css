@@ -1,0 +1,117 @@
+/* Reset de estilos para garantir consistência */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Corpo da página */
+body {
+    display: flex;
+    background-color: #F2F2F2;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Compensa o espaço para o header lateral fixo */
+.main-content {
+    margin-left: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 80px); /* Mantém o formulário centralizado no restante da página */
+    min-height: 100vh;
+}
+
+/* Título da página */
+h1 {
+    font-size: 2rem;
+    color: #3690CC;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Container do formulário */
+form {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin-left:520px;
+}
+
+/* Estilo dos labels */
+label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Estilo dos inputs e selects */
+input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #3690CC;
+    box-shadow: 0 0 8px rgba(54, 144, 204, 0.5);
+    outline: none;
+}
+
+/* Estilo do botão de envio */
+button[type="submit"] {
+    background-color: #3690CC;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #287bb5;
+}
+
+button[type="submit"]:active {
+    transform: translateY(2px);
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 60px;
+        width: calc(100% - 60px);
+    }
+
+    form {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    input[type="text"], select {
+        font-size: 0.95rem;
+    }
+
+    button[type="submit"] {
+        font-size: 1rem;
+    }
+}

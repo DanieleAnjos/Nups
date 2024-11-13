@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database'); 
-const Profissional = require('./Profissional'); 
+const Profissional = require('../models/Profissional'); 
 
 class Escala extends Model {}
 

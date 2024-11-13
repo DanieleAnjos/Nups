@@ -1,41 +1,113 @@
-
-
-  <div class="container text-center mt-5">
-        <h1>Bem-vindo ao Dashboard Administrativo.</h1>
-      <a href="/profissionais" class="nav-link" aria-label="Gerenciar Profissionais">
-        <i class="fas fa-user-md"></i>
-        <span>Profissionais</span>
-      </a>
-      <a href="/pacientes" class="nav-a" aria-label="Gerenciar Pacientes">
-        <i class="fas fa-users"></i>
-        <span>Pacientes</span>
-      </a>
-      <a href="/atendimentos" class="nav-link" aria-label="Gerenciar Atendimentos">
-        <i class="fas fa-calendar-check"></i>
-        <span>Atendimentos</span>
-      </a>
-      <a href="/ocorrencias" class="nav-link" aria-label="Gerenciar Ocorrências">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span>Ocorrências</span>
-      </a>
-      <a href="/produtos" class="nav-link" aria-label="Gerenciar Estoque">
-        <i class="fas fa-boxes"></i>
-        <span>Estoque</span>
-      </a>
-      <a href="/salas" class="nav-link" aria-label="Salas">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Cadastro de Salas</span>
-      </a>
-      <a href="/reservas" class="nav-link" aria-label="Gerenciar Reservas de Salas">
-        <i class="fas fa-door-open"></i>
-        <span>Salas</span>
-      </a>
-      <a href="/escalas" class="nav-link" aria-label="Gerenciar Escalas">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Escalas</span>
-      </a>
-      <a href="/eventos" class="nav-link" aria-label="Eventos">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Eventos</span>
-      </a>
+<div class="container text-center mt-5 dashboard">
+  <h1 class="mb-4">Bem-vindo ao Dashboard Administrativo</h1>
+  <div class="dashboard-grid">
+    <a href="/profissionais" class="dashboard-card" aria-label="Gerenciar Profissionais">
+      <i class="fas fa-user-md"></i>
+      <span>Profissionais</span>
+    </a>
+    <a href="/pacientes" class="dashboard-card" aria-label="Gerenciar Pacientes">
+      <i class="fas fa-users"></i>
+      <span>Pacientes</span>
+    </a>
+    <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
+      <i class="fas fa-calendar-check"></i>
+      <span>Atendimentos</span>
+    </a>
+    <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Ocorrências</span>
+    </a>
+    <a href="/produtos" class="dashboard-card" aria-label="Gerenciar Estoque">
+      <i class="fas fa-boxes"></i>
+      <span>Estoque</span>
+    </a>
+    <a href="/salas" class="dashboard-card" aria-label="Cadastro de Salas">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Cadastro de Salas</span>
+    </a>
+    <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
+      <i class="fas fa-door-open"></i>
+      <span>Salas</span>
+    </a>
+    <a href="/escalas" class="dashboard-card" aria-label="Gerenciar Escalas">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Escalas</span>
+    </a>
+    <a href="/eventos2" class="dashboard-card" aria-label="Eventos">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Eventos</span>
+    </a>
+      <a href="/relatorios" class="dashboard-card" aria-label="Relatórios">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Relatórios</span>
+    </a>
   </div>
+</div>
+
+<style>
+  /* Estilo para o container do dashboard */
+.dashboard {
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Grid para organizar os cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+/* Estilo dos cards */
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #072C47;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Efeito hover para os cards */
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background-color: #297FB8;
+    color: #ffffff;
+}
+
+/* Ícone maior para melhor visibilidade */
+.dashboard-card i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* Texto do card */
+.dashboard-card span {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Estilo responsivo */
+@media (max-width: 576px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
+    .dashboard-card {
+        padding: 15px;
+    }
+    .dashboard-card i {
+        font-size: 1.5rem;
+    }
+    .dashboard-card span {
+        font-size: 1rem;
+    }
+}
+
+</style>

@@ -14,4 +14,10 @@ router.put('/:id', ocorrenciaController.update);
 
 router.delete('/:id', ocorrenciaController.destroy);
 
+router.get('/relatorio', ocorrenciaController.generateOcorrenciaReport);
+
+router.get('/viewReport', ocorrenciaController.viewOcorrenciasReport);
+
+
+
 module.exports = router;

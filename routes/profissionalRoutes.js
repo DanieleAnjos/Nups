@@ -9,4 +9,13 @@ router.get('/edit/:id', profissionalController.edit);
 router.put('/:id', profissionalController.update); 
 router.delete('/:id', profissionalController.delete);
 
+router.get('/relatorio', profissionalController.generateProfissionalReport);
+
+router.get('/viewReport', profissionalController.viewProfissionaisReport);
+
+router.get('/perfil/:id', profissionalController.show);
+
+
+
+
 module.exports = router;

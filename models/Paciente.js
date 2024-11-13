@@ -1,5 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); 
+const Atendimento = require('../models/Atendimento');
+const axios = require('axios');  // Certifique-se de que o axios está instalado
+
+
 
 const Paciente = sequelize.define('Paciente', {
   id: {
@@ -107,6 +111,16 @@ const Paciente = sequelize.define('Paciente', {
       },
     },
   },
+  rg: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      is: {
+        args: /^[0-9]{9}$/, 
+        msg: "O RG deve conter 9 números."
+      },
+    },
+  },
   telefone: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -123,10 +137,6 @@ const Paciente = sequelize.define('Paciente', {
   tipoTelefone: {
     type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
     allowNull: true,
-  },
-  encaminhamento: {
-    type: DataTypes.ENUM('Psicologia', 'Serviço Social'),
-    allowNull: false,
   },
   nomeContato: {
     type: DataTypes.STRING,
@@ -264,19 +274,57 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  relatorio: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   imagePath: {
     type: DataTypes.STRING,
     allowNull: true, 
-  },
-  cadastroCompleto: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false, 
-},
+  }
 }, {
   tableName: 'paciente', 
   timestamps: true, 
 });
+
+
+Paciente.prototype.fillAddressFromCep = async function () {
+  if (this.cep) {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
+      const { logradouro, bairro, localidade, uf } = response.data;
+      
+      this.endereco = logradouro;
+      this.bairro = bairro;
+      this.cidade = localidade;
+      this.estado = uf;
+    } catch (error) {
+      throw new Error('Não foi possível buscar o endereço pelo CEP.');
+    }
+  }
+};
+
+
+Paciente.fillFromAtendimento = async function (matricula) {
+  try {
+    const atendimento = await Atendimento.findOne({ where: { matricula } });
+    if (atendimento) {
+      return {
+        nome: atendimento.nomePaciente,
+        numeroProcesso: atendimento.numeroProcesso,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Erro ao buscar atendimento:", error);
+    throw error;
+  }
+};
+
+Paciente.associate = (models) => {
+  Paciente.belongsTo(models.Profissional, { foreignKey: 'profissionalId' });
+  };
+
 
 (async () => {
   await sequelize.sync(); 

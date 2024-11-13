@@ -1,36 +1,60 @@
-<h2>Adicionar Nova Ocorrência</h2>
-<form action="/ocorrencias" method="POST" class="mt-4">
-    <div class="form-group">
-        <label for="data">Data:</label>
-        <input type="date" name="data" required class="form-control">
+    <div class="container mt-5">
+        <!-- Cartão de formulário -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title text-center text-primary mb-4">Adicionar Nova Ocorrência</h2>
+
+                <form action="/ocorrencias" method="POST">
+                    <!-- Campo Data -->
+                    <div class="mb-3">
+                        <label for="data" class="form-label">Data:</label>
+                        <input type="date" name="data" required class="form-control">
+                    </div>
+
+                    <!-- Campo Relatório -->
+                    <div class="mb-3">
+                        <label for="relatorio" class="form-label">Relatório:</label>
+                        <textarea name="relatorio" required class="form-control" rows="4" placeholder="Descreva os detalhes da ocorrência..."></textarea>
+                    </div>
+
+                    <!-- Campo Horário de Chegada -->
+                    <div class="mb-3">
+                        <label for="horarioChegada" class="form-label">Horário de Chegada:</label>
+                        <input type="time" name="horarioChegada" required class="form-control">
+                    </div>
+
+                    <!-- Campo Horário de Saída -->
+                    <div class="mb-3">
+                        <label for="horarioSaida" class="form-label">Horário de Saída:</label>
+                        <input type="time" name="horarioSaida" class="form-control">
+                    </div>
+
+                    <!-- Campo Profissional -->
+                    <div class="mb-3">
+                        <label for="profissionalId" class="form-label">Profissional:</label>
+                        <select name="profissionalId" required class="form-select" aria-label="Selecione o profissional responsável">
+                            <option value="" disabled selected>Escolha o profissional responsável</option>
+                            {{#each profissionais}}
+                                <option value="{{this.id}}" title="{{this.nome}}">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <!-- Nome do profissional -->
+                                        <span>{{this.nome}}</span>
+                                        <!-- Ícone abaixo do nome -->
+                                        <i class="bi bi-person-fill mt-1"></i>
+                                    </div>
+                                </option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+
+
+                    <!-- Botões -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-success">Adicionar Ocorrência</button>
+                        <a href="/ocorrencias" class="btn btn-secondary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="relatorio">Relatório:</label>
-        <textarea name="relatorio" required class="form-control" rows="4"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="horarioChegada">Horário de Chegada:</label>
-        <input type="time" name="horarioChegada" required class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label for="horarioSaida">Horário de Saída:</label>
-        <input type="time" name="horarioSaida" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label for="profissionalId">Profissional:</label>
-        <select name="profissionalId" required class="form-control">
-            <option value="" disabled selected>Selecione um profissional</option>
-            {{#each profissionais}}
-                <option value="{{this.id}}">{{this.nome}}</option>
-            {{/each}}
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-success">Adicionar Ocorrência</button>
-</form>
-
-<a href="/ocorrencias" class="btn btn-secondary mt-3">Voltar</a>

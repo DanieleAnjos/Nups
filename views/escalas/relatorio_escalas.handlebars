@@ -1,0 +1,21 @@
+ <h2>Relatório de Escalas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Profissional</th>
+          <th>Início</th>
+          <th>Fim</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each escalas}}
+          <tr>
+            <td>{{this.data}}</td>
+            <td>{{this.admin.nome}}</td>
+            <td>{{this.horarioInicio}}</td>
+            <td>{{this.horarioFim}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>

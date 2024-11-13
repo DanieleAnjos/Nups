@@ -11,6 +11,7 @@ const Profissional = require('../models/Profissional');
             cargo: 'Administrador',
             vinculo: 'Servidor',
             cpf: '00000000002',
+            rg: '000000000',
             dataNascimento: '1990-02-01',
             sexo: 'Masculino',
             estadoCivil: 'Solteiro',

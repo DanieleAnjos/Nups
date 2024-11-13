@@ -3,14 +3,15 @@ const express = require('express');
 const router = express.Router();
 const ajusteEstoqueController = require('../controllers/ajusteEstoqueController');
 
-router.get('/ajustes', ajusteEstoqueController.index); 
+router.get('/', ajusteEstoqueController.index); 
 
-router.get('/ajustes/create', ajusteEstoqueController.create); 
-router.post('/ajustes', ajusteEstoqueController.store); 
+router.get('/create', ajusteEstoqueController.create); 
+router.post('/', ajusteEstoqueController.store); 
 
-router.get('/ajustes/:id/edit', ajusteEstoqueController.edit); 
-router.put('/ajustes/:id', ajusteEstoqueController.update); 
 
-router.delete('/ajustes/:id', ajusteEstoqueController.destroy); 
+router.get('/:id/edit', ajusteEstoqueController.edit); 
+router.put('/:id', ajusteEstoqueController.update); 
+
+router.delete(':id', ajusteEstoqueController.destroy); 
 
 module.exports = router;

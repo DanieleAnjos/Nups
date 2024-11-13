@@ -1,13 +1,41 @@
-<h1>Criar Nova Sala</h1>
-<form action="/salas" method="POST">
-  <label for="nome">Nome:</label>
-  <input type="text" id="nome" name="nome" required minlength="3" maxlength="100">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Ajustei a largura para col-md-8 e col-lg-6 para um tamanho moderado -->
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title text-center text-primary mb-4">Criar Nova Sala</h1>
 
-  <label for="capacidade">Capacidade:</label>
-  <input type="number" id="capacidade" name="capacidade" required min="1">
+                    <form action="/salas" method="POST">
+                        <!-- Campo Nome -->
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" id="nome" name="nome" required class="form-control" minlength="3" maxlength="100" placeholder="Digite o nome da sala">
+                        </div>
 
-  <label for="descricao">Descrição:</label>
-  <input type="text" id="descricao" name="descricao" maxlength="255">
+                        <!-- Campo Capacidade -->
+                        <div class="mb-3">
+                            <label for="capacidade" class="form-label">Capacidade:</label>
+                            <input type="number" id="capacidade" name="capacidade" required class="form-control" min="1" placeholder="Número máximo de pessoas">
+                        </div>
 
-  <button type="submit">Salvar</button>
-</form>
+                        <!-- Campo Descrição -->
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <input type="text" id="descricao" name="descricao" maxlength="255" class="form-control" placeholder="Digite uma breve descrição da sala">
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="/salas" class="btn btn-secondary">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Incluir o script do Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

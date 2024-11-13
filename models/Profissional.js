@@ -38,6 +38,14 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.ENUM('Servidor', 'Voluntario'),
     allowNull: false,
   },
+  rg:{
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      is: /^[0-9]{9}$/, 
+    },
+  },
   cpf: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -141,20 +149,21 @@ Profissional.prototype.isVolunteerTermExpired = function () {
 };
 
 Profissional.prototype.fillAddressFromCep = async function () {
-  if (this.cep) {
+  if (this.cep && !this.endereco && !this.bairro && !this.cidade && !this.estado) {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
       const { logradouro, bairro, localidade, uf } = response.data;
       
-      this.endereco = logradouro;
-      this.bairro = bairro;
-      this.cidade = localidade;
-      this.estado = uf;
+      if (!this.endereco) this.endereco = logradouro;
+      if (!this.bairro) this.bairro = bairro;
+      if (!this.cidade) this.cidade = localidade;
+      if (!this.estado) this.estado = uf;
     } catch (error) {
       throw new Error('Não foi possível buscar o endereço pelo CEP.');
     }
   }
 };
+
 
 Profissional.beforeCreate(async (profissional) => {
   await profissional.fillAddressFromCep();

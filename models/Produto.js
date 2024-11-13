@@ -1,7 +1,10 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database');
+const AjusteEstoque = require('../models/AjusteEstoque');
 
-const Produto = sequelize.define('Produto', {
+class Produto extends Model {}
+
+Produto.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -12,23 +15,23 @@ const Produto = sequelize.define('Produto', {
     allowNull: false,
     validate: {
       notEmpty: true,
-      len: [3, 255], 
+      len: [3, 255],
     },
   },
   descricao: {
-    type: DataTypes.TEXT, 
+    type: DataTypes.TEXT,
     allowNull: false,
     validate: {
       notEmpty: true,
-      len: [10, 500], 
+      len: [10, 500],
     },
   },
   categoria: {
     type: DataTypes.ENUM(
-      'Papelaria', 
-      'Higiene', 
-      'Alimentos', 
-      'Eletrônicos', 
+      'Papelaria',
+      'Higiene',
+      'Alimentos',
+      'Eletrônicos',
       'Limpeza',
       'Outros'
     ),
@@ -38,10 +41,22 @@ const Produto = sequelize.define('Produto', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      notEmpty: true, 
+      notEmpty: true,
     },
   },
-}, 
-);
+  quantidade_inicial: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 0,
+      isInt: true,
+    },
+  },
+}, {
+  sequelize,
+  modelName: 'Produto',  
+  timestamps: true,  
+});
+
 
 module.exports = Produto;

@@ -1,45 +1,123 @@
-<h1>Novo Atendimento</h1>
-
-<form action="/atendimentos" method="POST" class="mt-4">
-
-  <div class="form-group">
-    <label for="matriculaPaciente">Paciente</label>
-    <select name="matriculaPaciente" id="matriculaPaciente" required class="form-control">
-      {{#each pacientes}}
-        <option value="{{this.matricula}}">{{this.nome}}</option>
-      {{/each}}
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label for="numeroProcesso">Número do Processo</label>
-    <input type="text" name="numeroProcesso" id="numeroProcesso" required class="form-control">
-  </div>
-
-  <div class="form-group">
-    <label for="assunto">Assunto</label>
-    <select name="assunto" id="assunto" required class="form-control">
-      <option value="Acolhimento de disparo">Acolhimento de disparo</option>
-      <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
-      <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label for="profissionalId">Profissional</label>
-    <input type="text" name="profissionalId" id="profissionalId" value="{{profissional.nome}} - {{profissional.especialidade}}" readonly class="form-control-plaintext">
-    <input type="hidden" name="profissionalId" value="{{profissional.id}}">
-  </div>
-
-  <div class="form-group">
-    <label for="registroAtendimento">Registro de Atendimento</label>
-    <textarea name="registroAtendimento" id="registroAtendimento" rows="5" required class="form-control"></textarea>
-  </div>
-
-  <div class="form-group">
-    <label for="acolhidoEm">Data de Acolhimento</label>
-    <input type="date" name="acolhidoEm" id="acolhidoEm" required class="form-control">
-  </div>
-
-  <button type="submit" class="btn btn-success">Salvar</button>
+<h1>Criar Atendimento</h1>
+<form action="/atendimentos" method="POST">
+    <div>
+        <label for="matricula">Matrícula:</label>
+        <input type="number" id="matricula" name="matricula" required>
+    </div>
+    <div>
+        <label for="nomePaciente">Nome do Paciente:</label>
+        <input type="text" id="nomePaciente" name="nomePaciente" required>
+    </div>
+    <div>
+        <label for="numeroProcesso">Número do Processo:</label>
+        <input type="text" id="numeroProcesso" name="numeroProcesso" required>
+    </div>
+    <div>
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" placeholder="10 ou 11 dígitos">
+    </div>
+    <div>
+        <label for="assunto">Assunto:</label>
+        <select id="assunto" name="assunto" required>
+            <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+            <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+            <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+        </select>
+    </div>
+    <div>
+        <label for="registroAtendimento">Registro de Atendimento:</label>
+        <textarea id="registroAtendimento" name="registroAtendimento" required></textarea>
+    </div>
+    <div>
+        <label for="encaminhamento">Encaminhamento:</label>
+        <select id="encaminhamento" name="encaminhamento" onchange="atualizarProfissionais()">
+            <option value="">Selecione</option>
+            <option value="Psicólogo">Psicologia</option>
+            <option value="'Assistente social">'Assistente social</option>
+            <option value="Psiquiatra">Psiquiatria</option>
+        </select>
+    </div>
+    <div>
+        <label for="profissionalId">Profissional:</label>
+          <select id="profissionalId" name="profissionalId" required>
+              <option value="">Selecione um profissional</option>
+              {{#each profissionais}}
+                  <option value="{{this.id}}" data-cargo="{{this.cargo}}">{{this.nome}}</option>
+              {{/each}}
+          </select>
+    </div>
+    <div>
+        <button type="submit">Criar Atendimento</button>
+    </div>
 </form>
+
+<script>
+    function salvarDadosFormulario() {
+        const matricula = document.getElementById('matricula').value;
+        const nomePaciente = document.getElementById('nomePaciente').value;
+        const numeroProcesso = document.getElementById('numeroProcesso').value;
+        const telefone = document.getElementById('telefone').value;
+        const assunto = document.getElementById('assunto').value;
+        const registroAtendimento = document.getElementById('registroAtendimento').value;
+        const encaminhamento = document.getElementById('encaminhamento').value;
+
+        // Armazena os dados no localStorage
+        localStorage.setItem('matricula', matricula);
+        localStorage.setItem('nomePaciente', nomePaciente);
+        localStorage.setItem('numeroProcesso', numeroProcesso);
+        localStorage.setItem('telefone', telefone);
+        localStorage.setItem('assunto', assunto);
+        localStorage.setItem('registroAtendimento', registroAtendimento);
+        localStorage.setItem('encaminhamento', encaminhamento);
+    }
+
+    function atualizarProfissionais() {
+        const encaminhamentoSelect = document.getElementById('encaminhamento');
+        const encaminhamentoSelecionado = encaminhamentoSelect.value;
+
+        // Salva os dados do formulário antes de buscar profissionais
+        salvarDadosFormulario();
+
+        // Faz a requisição para buscar os profissionais
+        fetch(`/api/profissionais?encaminhamento=${encaminhamentoSelecionado}`)
+            .then(response => response.json())
+            .then(data => {
+                const profissionaisContainer = document.getElementById('profissionaisContainer');
+                profissionaisContainer.innerHTML = ''; // Limpa os profissionais anteriores
+
+                if (data.length > 0) {
+                    const ul = document.createElement('ul');
+
+                    data.forEach(profissional => {
+                        const li = document.createElement('li');
+                        li.textContent = `${profissional.nome} - ${profissional.cargo}`;
+                        ul.appendChild(li);
+                    });
+
+                    profissionaisContainer.appendChild(ul);
+                } else {
+                    profissionaisContainer.textContent = 'Nenhum profissional encontrado.';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar profissionais:', error);
+            });
+    }
+
+    // Função para restaurar os dados do formulário do localStorage
+    function restaurarDadosFormulario() {
+        document.getElementById('matricula').value = localStorage.getItem('matricula') || '';
+        document.getElementById('nomePaciente').value = localStorage.getItem('nomePaciente') || '';
+        document.getElementById('numeroProcesso').value = localStorage.getItem('numeroProcesso') || '';
+        document.getElementById('telefone').value = localStorage.getItem('telefone') || '';
+        document.getElementById('assunto').value = localStorage.getItem('assunto') || '';
+        document.getElementById('registroAtendimento').value = localStorage.getItem('registroAtendimento') || '';
+        document.getElementById('encaminhamento').value = localStorage.getItem('encaminhamento') || '';
+    }
+
+    // Chama a função para restaurar os dados quando a página carregar
+    window.onload = restaurarDadosFormulario;
+
+    // Adiciona o evento para finalizar o atendimento ao sair da página
+    window.addEventListener('beforeunload', finalizarAtendimento);
+</script>

@@ -1,76 +1,84 @@
-const Profissional = require('./Profissional');
-const Paciente = require('./Paciente'); 
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/database');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database'); // Ajuste o caminho conforme necessário
+const Profissional = require('../models/Profissional'); // Modelo Profissional
+const Paciente = require('../models/Paciente');
+const Encaminhamento = require('../models/Encaminhamento'); ///
 
-class Atendimento extends Model {}
-
-Atendimento.init({
+const Atendimento = sequelize.define('Atendimento', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  matriculaPaciente: {
-    type: DataTypes.INTEGER, 
+  matricula: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: Paciente, 
-      key: 'matricula' 
-    }
+    unique: true,
   },
   nomePaciente: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   numeroProcesso: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+  },
+  telefone: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   assunto: {
     type: DataTypes.ENUM('Acolhimento de disparo', 'Acolhimento psicossocial', 'Exposição negativa na mídia'),
-    allowNull: false
+    allowNull: false,
   },
   registroAtendimento: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
   },
-  acolhidoEm: {
-    type: DataTypes.DATEONLY,
-    allowNull: false
+  encaminhamento: {
+    type: DataTypes.ENUM('Assistente social', 'Psicólogo', 'Psiquiatra'),
+    allowNull: true,
   },
   profissionalId: {
     type: DataTypes.INTEGER,
     references: {
       model: Profissional,
-      key: 'id'
+      key: 'id',
     },
-    allowNull: false
+    allowNull: false,
   },
-  especialidade: {
-    type: DataTypes.ENUM('Assistente Social', 'Psicólogo', 'Psiquiatra'),
-    allowNull: false 
+  status: {
+    type: DataTypes.ENUM('Pendente', 'Realizado'),
+    allowNull: false,
+    defaultValue: 'Pendente',
   },
-  profissionalAtendimento: {
-    type: DataTypes.STRING, 
-    allowNull: false
-  },
-}, { 
-  sequelize, 
-  modelName: 'Atendimento' 
+}, {
+  timestamps: true,
+  hooks: {
+    async afterCreate(atendimento, options) {
+        try {
+          const profissional = await Profissional.findByPk(atendimento.profissionalId);
+          await Encaminhamento.create({
+            nomePaciente: atendimento.nomePaciente,
+            matriculaPaciente: atendimento.matricula.toString(),
+            nomeProfissional: profissional ? profissional.nome : null,
+            profissaoProfissional: atendimento.encaminhamento,
+            assuntoAcolhimento: atendimento.assunto,
+            descricao: atendimento.registroAtendimento,
+            statusAcolhimento: 'Pendente',
+            atendimentoId: atendimento.id,
+          });
+        } catch (error) {
+          console.error('Erro ao criar o encaminhamento:', error);
+        }
+    }
+  }
 });
 
 
-Atendimento.belongsTo(Profissional, {
-  foreignKey: 'profissionalId',
-  as: 'profissional'
-});
+Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
 
 
-Atendimento.belongsTo(Paciente, {
-  foreignKey: 'matriculaPaciente', 
-  targetKey: 'matricula', 
-  as: 'paciente' 
-});
+
 
 module.exports = Atendimento;

@@ -2,6 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const Usuario = require('../models/Usuario'); 
 const argon2 = require('argon2');
+const Profissional = require('../models/Profissional');
 
 passport.use(new LocalStrategy({
     usernameField: 'usuario',
@@ -36,11 +37,20 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await Usuario.findByPk(id);
+        const user = await Usuario.findByPk(id, {
+            include: {
+                model: Profissional,
+                attributes: ['cargo']  // Certifique-se de incluir o cargo aqui
+            }
+        });
+        if (user && user.Profissional) {
+            user.cargo = user.Profissional.cargo; // Atribui o cargo ao objeto do usuário
+        }
         done(null, user);
     } catch (error) {
         done(error, null);
     }
 });
+
 
 module.exports = passport;

@@ -2,6 +2,7 @@ const ReservaSala = require('../models/ReservaSala');
 const Sala = require('../models/Sala');
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize');
+const puppeteer = require('puppeteer');
 
 const reservasSalaController = {
   listarReservas: async (req, res) => {
@@ -203,6 +204,96 @@ const reservasSalaController = {
       console.error('Erro ao deletar reserva:', error);
       req.flash('error', 'Erro ao deletar reserva.');
       res.redirect('/reservas');
+    }
+  },
+
+  generateReservaSalaReport: async (req, res) => {
+    try {
+      const { dataInicio, dataFim, salaId, profissionalId } = req.query;
+      const where = {};
+
+      if (dataInicio && dataFim) {
+        where.data = { [Op.between]: [new Date(dataInicio), new Date(dataFim)] };
+      } else if (dataInicio) {
+        where.data = { [Op.gte]: new Date(dataInicio) };
+      } else if (dataFim) {
+        where.data = { [Op.lte]: new Date(dataFim) };
+      }
+
+      if (salaId) {
+        where.salaId = salaId;
+      }
+
+      if (profissionalId) {
+        where.profissionalId = profissionalId;
+      }
+
+      const reservas = await ReservaSala.findAll({
+        where,
+        include: [
+          { model: Sala, as: 'sala' },
+          { model: Profissional, as: 'profissional' }
+        ],
+      });
+
+      if (reservas.length === 0) {
+        return res.status(404).send('Nenhuma reserva encontrada para os filtros aplicados.');
+      }
+
+      let htmlContent = '<h1>Relatório de Reservas de Sala</h1><table border="1" cellpadding="5" cellspacing="0"><thead><tr><th>Data</th><th>Horário Inicial</th><th>Horário Final</th><th>Sala</th><th>Profissional</th></tr></thead><tbody>';
+      reservas.forEach(reserva => {
+        const dataFormatada = new Date(reserva.data).toLocaleDateString();
+        htmlContent += `<tr><td>${dataFormatada}</td><td>${reserva.horarioInicial}</td><td>${reserva.horarioFinal}</td><td>${reserva.sala ? reserva.sala.nome : 'Sala não encontrada'}</td><td>${reserva.profissional ? reserva.profissional.nome : 'Profissional não encontrado'}</td></tr>`;
+      });
+      htmlContent += '</tbody></table>';
+
+      const browser = await puppeteer.launch({ headless: true });
+      const page = await browser.newPage();
+      await page.setContent(htmlContent);
+
+      const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+      await browser.close();
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=relatorio_reservas_sala.pdf');
+      res.end(pdfBuffer);
+    } catch (error) {
+      console.error('Erro ao gerar o relatório em PDF:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+    }
+  },
+
+  viewReservasSalaReport: async (req, res) => {
+    try {
+      const { salaId, profissionalId } = req.query;
+      const where = {};
+
+      if (salaId) {
+        where.salaId = salaId;
+      }
+      if (profissionalId) {
+        where.profissionalId = profissionalId;
+      }
+
+      const reservas = await ReservaSala.findAll({
+        where,
+        include: [
+          { model: Sala, as: 'sala' },
+          { model: Profissional, as: 'profissional' }
+        ]
+      });
+
+      if (reservas.length === 0) {
+        return res.status(404).send('Nenhuma reserva encontrada.');
+      }
+
+      const salas = await Sala.findAll();
+      const profissionais = await Profissional.findAll();
+
+      res.render('relatorios/viewReservasSalaReport', { reservas, salas, profissionais, layout: false });
+    } catch (error) {
+      console.error('Erro ao gerar o relatório de reservas de sala:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
     }
   }
 };

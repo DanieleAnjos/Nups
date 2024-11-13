@@ -14,4 +14,7 @@ router.put('/:id', produtoController.update);
 
 router.delete('/:id', produtoController.destroy);
 
+router.get('/quantidade_atual', produtoController.listarProdutos);
+
+
 module.exports = router;

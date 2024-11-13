@@ -1,0 +1,146 @@
+/* Estilo geral */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #F2F2F2;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column; /* Empilhar o conteúdo */
+}
+
+/* Estilo do header */
+header {
+    background-color: #072C47;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    width: 100%;  /* Garante que o header ocupe toda a largura */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Mantém o header sobre outros elementos */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo da barra lateral */
+.sidebar {
+    width: 80px;
+    background-color: #072C47;
+    height: 100vh;
+    position: fixed;
+    transition: width 0.3s;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar:hover {
+    width: 250px;
+}
+
+/* Estilo do menu */
+.menu {
+    list-style: none;
+    padding: 30px 0 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.menu li {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s, padding-left 0.3s;
+    white-space: nowrap;
+}
+
+.menu li:hover {
+    background-color: #297FB8;
+    padding-left: 30px;
+}
+
+.menu li .icon {
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.sidebar:not(:hover) .menu li span {
+    display: none;
+}
+
+.menu-sair {
+    margin-top: auto;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s, padding-left 0.3s;
+}
+
+.menu-sair:hover {
+    background-color: #297FB8;
+    padding-left: 30px;
+}
+
+.main-wrapper {
+    display: flex;
+}
+
+/* Estilo do conteúdo principal */
+.main-content {
+    margin-left: 80px; /* Define o espaço inicial para a barra lateral */
+    padding: 20px;
+    transition: margin-left 0.3s, width 0.3s;
+    width: calc(100% - 80px); /* Ajusta para a largura da barra lateral */
+    margin-top: 20px; /* Espaço para o header fixo */
+}
+
+.sidebar:hover + .main-content {
+    margin-left: 250px; /* Aumenta o conteúdo quando a barra lateral expande */
+    width: calc(100% - 250px);
+}
+
+/* Estilo dos botões */
+.button {
+    background-color: #297FB8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #1D5B8A;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .sidebar:hover {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 60px;
+        width: calc(100% - 60px);
+    }
+
+    .sidebar:hover + .main-content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}

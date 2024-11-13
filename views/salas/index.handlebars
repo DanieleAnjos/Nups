@@ -1,37 +1,68 @@
-<h1 class="text-center my-4">Lista de Salas</h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Salas</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h1 class="text-center text-primary my-4">Lista de Salas</h1>
 
-<div class="text-right mb-3">
-    <a href="/salas/create" class="btn btn-primary">Adicionar Nova Sala</a>
-</div>
+        <!-- Botão Adicionar Nova Sala -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/salas/create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Adicionar Nova Sala
+            </a>
+        </div>
 
-<table class="table table-striped">
-    <thead >
-        <tr>
-            <th>Nome</th>
-            <th>Capacidade</th>
-            <th>Descrição</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each salas}}
-        <tr>
-            <td>{{this.nome}}</td>
-            <td>{{this.capacidade}}</td>
-            <td>{{this.descricao}}</td>
-            <td>
-                <a href="/salas/{{this.id}}/editar" class="btn btn-warning btn-sm">Editar</a>
-                <form action="/salas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta sala?');">Deletar</button>
-                </form>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
+        <!-- Tabela de Salas -->
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Nome</th>
+                        <th>Capacidade</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if salas.length}}
+                        {{#each salas}}
+                            <tr>
+                                <td>{{this.nome}}</td>
+                                <td>{{this.capacidade}}</td>
+                                <td>{{this.descricao}}</td>
+                                <td class="text-center">
+                                    <a href="/salas/{{this.id}}/editar" class="btn btn-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/salas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta sala?');">
+                                            <i class="bi bi-trash"></i> Deletar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Nenhuma sala encontrada.</td>
+                        </tr>
+                    {{/if}}
+                </tbody>
+            </table>
+        </div>
 
-{{#if (eq salas.length 0)}}
-    <div class="alert alert-info text-center" role="alert">
-        Nenhuma sala encontrada.
+        <!-- Mensagem caso não haja salas -->
+        {{#if (eq salas.length 0)}}
+            <div class="alert alert-info text-center" role="alert">
+                Nenhuma sala encontrada.
+            </div>
+        {{/if}}
     </div>
-{{/if}}
+</body>
+</html>

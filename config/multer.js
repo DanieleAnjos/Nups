@@ -48,4 +48,4 @@ const uploadErrorHandler = (err, req, res, next) => {
     next();
 };
 
-module.exports = { upload, uploadErrorHandler };
+module.exports = { upload, uploadErrorHandler }; // Remova o ']' desnecessário

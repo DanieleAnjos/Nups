@@ -1,21 +1,49 @@
-<h1>Adicionar Ajuste de Estoque</h1>
-<form action="/ajustes" method="POST">
-  <label>Produto</label>
-  <select name="produtoId" required>
-    <option value="" disabled {{#unless produtoIdSelecionado}}selected{{/unless}}>Selecione um produto</option>
-    {{#each produtos}}
-    <option value="{{this.id}}" {{#if (eq this.id ../produtoIdSelecionado)}}selected{{/if}}>{{this.nome}}</option>
-    {{/each}}
-  </select>
+<form action="/ajustes" method="POST" class="p-4 shadow-lg rounded-lg bg-light mx-auto" style="max-width: 500px;">
+  <!-- Título do Formulário -->
+  <h4 class="text-center mb-4 text-dark font-weight-bold">Ajuste de Estoque</h4>
 
-  <label>Quantidade</label>
-  <input type="number" name="quantidade" required>
+  <!-- Produto -->
+  <div class="form-group">
+    <label for="produtoId" class="font-weight-bold text-dark">Produto</label>
+    <select name="produtoId" class="form-control custom-select" required>
+      <option value="" disabled selected>Selecione um produto</option>
+      {{#each produtos}}
+        <option value="{{this.id}}">{{this.nome}}</option>
+      {{/each}}
+    </select>
+  </div>
 
-  <label>Tipo de Ajuste</label>
-  <select name="tipo" required>
-    <option value="adição">Adição</option>
-    <option value="ajuste">Ajuste</option>
-  </select>
+  <!-- Tipo de Ajuste -->
+  <div class="form-group">
+    <label for="tipo" class="font-weight-bold text-dark">Tipo de Ajuste</label>
+    <select name="tipo" class="form-control custom-select" required>
+      <option value="" disabled selected>Selecione o tipo de ajuste</option>
+      <option value="entrada">Entrada</option>
+      <option value="saida">Saída</option>
+    </select>
+  </div>
 
-  <button type="submit">Salvar</button>
+  <!-- Quantidade -->
+  <div class="form-group">
+    <label for="quantidade" class="font-weight-bold text-dark">Quantidade</label>
+    <div class="input-group">
+      <input type="number" name="quantidade" class="form-control" required min="1" placeholder="Digite a quantidade">
+      <div class="input-group-append">
+        <span class="input-group-text">unidades</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campo de Data (oculto) -->
+  <input type="hidden" name="data" value="{{currentDate}}">
+
+  <!-- Botão de Voltar -->
+  <a href="/produtos" class="btn btn-secondary btn-block mt-3 py-2 rounded-pill">
+    <i class="fas fa-arrow-left"></i>  Cancelar
+  </a>
+
+  <!-- Botão de Submissão -->
+  <button type="submit" class="btn btn-primary btn-block mt-3 py-2 rounded-pill">
+    <i class="fas fa-check-circle"></i> Realizar Ajuste
+  </button>
 </form>

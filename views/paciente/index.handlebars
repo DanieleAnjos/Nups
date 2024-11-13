@@ -1,69 +1,87 @@
-<h1 class="text-center my-4">Lista de Pacientes</h1>
-<div class="text-right mb-3">
-    <a href="/pacientes/create" class="btn btn-primary">Adicionar Paciente</a>
-</div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pacientes</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Ficha de Acolhimento</h2>
 
-<!-- Formulário de filtro -->
-<form class="mb-4" method="GET" action="/pacientes">
-    <div class="form-row">
-        <div class="col">
-            <label for="nome" class="sr-only">Nome do Paciente</label>
-            <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do Paciente" value="{{query.nome}}">
+        <!-- Botão Adicionar Paciente -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/pacientes/create" class="btn btn-success">
+                <i class="bi bi-person-plus-fill">Cadastrar ficha</i> 
+            </a>
         </div>
-        <div class="col">
-            <label for="matricula" class="sr-only">Matrícula</label>
-            <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Matrícula" value="{{query.matricula}}">
-        </div>
-        <div class="col">
-            <button type="submit" class="btn btn-secondary">
-                <i class="fas fa-filter"></i> Filtrar
-            </button>
+
+        <!-- Formulário de Filtro -->
+        <form action="/pacientes" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do Paciente" value="{{query.nome}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Matrícula" value="{{query.matricula}}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabela de Pacientes -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Status Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if pacientes.length}}
+                        {{#each pacientes}}
+                            <tr>
+                                <td>{{this.id}}</td>
+                                <td>{{this.nome}}</td>
+                                <td>{{this.matricula}}</td>
+                                <td class="text-center">
+                                    <span class="{{#if this.cadastroCompleto}}text-success{{else}}text-danger{{/if}}">
+                                        {{#if this.cadastroCompleto}}Completo{{else}}Incompleto{{/if}}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    
+                                    <a href="/pacientes/perfil/{{this.id}}" class="btn btn-info btn-sm mx-1">
+                                     <i class="bi bi-person-fill"></i> Visualizar
+                                    </a>
+                                    <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1">
+                                            <i class="bi bi-trash"></i> Deletar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhum paciente encontrado.</td>
+                        </tr>
+                    {{/if}}
+                </tbody>
+            </table>
         </div>
     </div>
-</form>
-
-<table class="table table-striped mt-3">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Matrícula</th>
-            <th>Encaminhamento</th>
-            <th>Status Cadastro</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#if pacientes.length}}
-            {{#each pacientes}}
-                <tr>
-                    <td>{{this.id}}</td>
-                    <td>{{this.nome}}</td>
-                    <td>{{this.matricula}}</td>
-                    <td>{{this.encaminhamento}}</td>
-                    <td>
-                        {{#if this.cadastroCompleto}}
-                            Completo
-                        {{else}}
-                            Incompleto
-                        {{/if}}
-                    </td>
-                    <td>
-                        <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm mr-2">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                        </a>
-                        <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este paciente?');" aria-label="Deletar paciente {{this.nome}}">
-                                <i class="fas fa-trash-alt"></i> Deletar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            {{/each}}
-        {{else}}
-            <tr>
-                <td colspan="6" class="text-center">Nenhum paciente encontrado.</td>
-            </tr>
-        {{/if}}
-    </tbody>
-</table>
+</body>
+</html>

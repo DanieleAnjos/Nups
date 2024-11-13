@@ -1,0 +1,104 @@
+<main class="content container mt-5">
+    <div class="row">
+        <!-- Título da Página -->
+        <div class="col-12 text-center">
+            <h1 class="my-4 text-primary">Eventos</h1>
+        </div>
+    </div>
+
+    <!-- Botão para Criar Novo Evento -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/eventos2/create" class="btn btn-primary">Criar Novo Evento</a>
+    </div>
+
+    <!-- Formulário de Busca -->
+<!-- Formulário de Busca -->
+<form action="/eventos" method="GET" class="mb-4">
+    <div class="row">
+        <!-- Campo de Título -->
+        <div class="col-md-6 mb-3">
+            <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
+        </div>
+        
+        <!-- Campo de Data -->
+        <div class="col-md-4 mb-3">
+            <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
+        </div>
+
+        <!-- Botão de Buscar -->
+        <div class="col-md-2 mb-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-secondary w-100">Buscar</button>
+        </div>
+    </div>
+</form>
+
+
+    <!-- Exibir mensagem de erro, se houver -->
+    {{#if errorMessage}}
+        <div class="alert alert-danger" role="alert">{{errorMessage}}</div>
+    {{/if}}
+
+    <!-- Tabela de Eventos -->
+    <div class="table-responsive">
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Data e Hora Início</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each eventos}}
+                    <tr>
+                        <td>{{this.titulo}}</td>
+                        <td>{{this.descricao}}</td>
+                        <td>{{formatDate this.dataHoraInicio}}</td> <!-- Formatação de data -->
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="/eventos/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="/eventos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Você tem certeza que deseja excluir este evento?');">Deletar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {{else}}
+                    <tr>
+                        <td colspan="4" class="text-center">Nenhum evento encontrado.</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginação (se houver) -->
+    <div class="d-flex justify-content-center mt-4">
+        {{#if pagination}}
+            <ul class="pagination">
+                {{#if pagination.prev}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{pagination.prev}}&titulo={{search.titulo}}&dataHoraInicio={{search.dataHoraInicio}}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {{/if}}
+
+                {{#each pagination.pages}}
+                    <li class="page-item {{#if this.active}}active{{/if}}">
+                        <a class="page-link" href="?page={{this.number}}&titulo={{search.titulo}}&dataHoraInicio={{search.dataHoraInicio}}">{{this.number}}</a>
+                    </li>
+                {{/each}}
+
+                {{#if pagination.next}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{pagination.next}}&titulo={{search.titulo}}&dataHoraInicio={{search.dataHoraInicio}}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {{/if}}
+            </ul>
+        {{/if}}
+    </div>
+</main>

@@ -1,5 +1,6 @@
 const Produto = require('../models/Produto');
 const Fornecedor = require('../models/Fornecedor');
+const AjusteEstoque = require('../models/AjusteEstoque');
 const { Op } = require('sequelize');
 
 const produtoController = {
@@ -16,9 +17,27 @@ const produtoController = {
         where.categoria = categoria;
       }
 
-      const produtos = await Produto.findAll({ where });
+      const produtos = await Produto.findAll({
+        where,
+        include: [{
+          model: AjusteEstoque,
+          as: 'ajustesEstoque', 
+          attributes: ['tipo', 'quantidade']
+        }],
+      });
+
+      const produtosComQuantidadeAtual = produtos.map(produto => {
+
+        const quantidadeAjustada = produto.ajustesEstoque.reduce((total, ajuste) => {
+          return total + (ajuste.quantidade || 0);  
+        }, produto.quantidade_inicial);
+
+        produto.quantidade_atual = quantidadeAjustada;
+        return produto;
+      });
+
       res.render('produtos', {
-        produtos,
+        produtos: produtosComQuantidadeAtual,
         query: req.query,
         errorMessage: req.flash('error'),
         successMessage: req.flash('success'),

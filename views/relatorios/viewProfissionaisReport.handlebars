@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Profissionais Cadastrados</title>
+    <style>
+        /* Estilos globais */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Título principal */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo da tabela */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2980b9;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbfc;
+        }
+
+        tr:hover {
+            background-color: #e0ebf5;
+        }
+
+        /* Estilo dos botões */
+        .button, .clear-button {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .clear-button {
+            background-color: #e74c3c;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilos do formulário de filtro */
+        .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-form select,
+        .filter-form input {
+            padding: 8px;
+            font-size: 16px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-form button,
+        .filter-form .clear-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover,
+        .filter-form .clear-button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-form .clear-button {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        input[type="date"], select {
+            padding: 8px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            width: 100%;
+        }
+
+        /* Estilos para a seção de ações */
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        /* Responsividade */
+        @media print {
+            .button {
+                display: none;
+            }
+
+            .filter-form {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Relatório de Profissionais Cadastrados</h1>
+
+        <!-- Formulário de Filtro -->
+        <form method="GET" action="/profissionais/viewReport" class="filter-form">
+            <div>
+                <label for="data">Filtrar por Data de Admissão:</label>
+                <input type="date" name="data" id="data" value="{{query.data}}">
+            </div>
+
+            <div>
+                <label for="profissional">Filtrar Profissional:</label>
+                <select name="profissional" id="profissional">
+                    <option value="">Selecione</option>
+                    {{#each profissionais}}
+                        <option value="{{this.id}}" {{#if (eq this.id ../query.profissional)}}selected{{/if}}>{{this.nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="button">Aplicar Filtros</button>
+                <button type="button" class="clear-button" onclick="clearFilters()">Limpar Filtros</button>
+            </div>
+        </form>
+
+        <!-- Tabela de Profissionais -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Data de Admissão</th>
+                    <th>Cargo</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each profissionais}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td>{{this.nome}}</td>
+                        <td>{{this.dataAdmissao}}</td>
+                        <td>{{this.cargo}}</td>
+                        <td>{{this.telefone}}</td>
+                        <td>{{this.email}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Botão de Impressão -->
+        <div class="actions">
+            <a href="javascript:window.print()" class="button">Imprimir Relatório</a>
+        </div>
+    </div>
+
+    <script>
+        // Função para limpar os filtros
+        function clearFilters() {
+            document.getElementById('data').value = '';
+            document.getElementById('profissional').value = '';
+            window.location.href = '/profissionais/viewReport';
+        }
+
+        window.onload = function() {
+            window.onafterprint = function() {
+                // Opcional: fechar a janela após a impressão
+                // window.close(); 
+            };
+        };
+    </script>
+</body>
+</html>

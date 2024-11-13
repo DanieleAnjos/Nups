@@ -1,9 +1,25 @@
-<main class="content">
-    <header>
-        <h1 class="text-center my-4">Lista de Escalas</h1>
-        <div class="text-right mb-3">
-            <a href="/escalas/create" class="btn btn-primary">Adicionar Escala</a>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Escalas</title>
+    <!-- Incluindo o FullCalendar CSS (caso necessário) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
+
+        <!-- Botão Adicionar Nova Escala -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/escalas/create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Adicionar Escala
+            </a>
         </div>
+
+        <!-- Formulário de filtro -->
         <form method="GET" class="mt-3">
             <div class="form-row">
                 <div class="col">
@@ -18,40 +34,84 @@
                     </select>
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-secondary">Buscar</button>
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
                 </div>
             </div>
         </form>
-    </header>
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Data</th>
-                <th>Horário Início</th>
-                <th>Horário Fim</th>
-                <th>Profissional</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each escalas}}
-            <tr>
-                <td>{{this.id}}</td>
-                <td>{{this.data}}</td>
-                <td>{{this.horarioInicio}}</td>
-                <td>{{this.horarioFim}}</td>
-                <td>{{this.admin.nome}}</td>
-                <td>
-                    <a href="/escalas/{{this.id}}/edit" class="btn btn-warning">Editar</a>
-                    <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</main>
 
-<script src="https://kit.fontawesome.com/a076d05399.js" defer></script>
+        <!-- Exibição de Mensagem de Erro -->
+        {{#if errorMessage}}
+            <div class="alert alert-danger mt-3" role="alert">{{errorMessage}}</div>
+        {{/if}}
+
+        <!-- Tabela de Escalas -->
+        <div class="table-responsive mt-3">
+            <table class="table table-hover table-striped table-bordered">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Horário Início</th>
+                        <th>Horário Fim</th>
+                        <th>Profissional</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each escalas}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.data}}</td>
+                            <td>{{this.horarioInicio}}</td>
+                            <td>{{this.horarioFim}}</td>
+                            <td>{{this.profissional.nome}}</td>
+                            <td class="text-center">
+                                <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Calendário -->
+        <div id="calendar" class="mt-5"></div>
+    </div>
+
+    <!-- Script do FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+
+            const events = [
+                {{#each escalas}}
+                    {
+                        title: '{{this.profissional.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}', // Título do evento
+                        start: '{{this.data}}T{{this.horarioInicio}}', // Data e horário de início
+                        end: '{{this.data}}T{{this.horarioFim}}', // Data e horário de término
+                    },
+                {{/each}}
+            ];
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['dayGrid', 'interaction'],  // Plugins para a visualização e interação com o calendário
+                initialView: 'dayGridMonth',  // Exibir a visão mensal do calendário
+                events: events, // Atribuindo os eventos à configuração do calendário
+                editable: true,  // Permite arrastar eventos no calendário
+                droppable: true, // Permite que eventos sejam arrastados
+                locale: 'pt-br', // Configurar a localização para português
+            });
+
+            calendar.render();  // Renderizar o calendário na página
+        });
+    </script>
+</body>
+</html>

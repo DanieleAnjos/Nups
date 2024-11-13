@@ -1,6 +1,10 @@
 const Escala = require('../models/Escala');
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize'); 
+const fs = require('fs');
+
+const puppeteer = require('puppeteer');
+
 
 const escalaController = {
   index: async (req, res) => {
@@ -37,6 +41,8 @@ const escalaController = {
       res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
     }
   },  
+
+  
 
   create: async (req, res) => {
     try {
@@ -180,7 +186,97 @@ const escalaController = {
       console.error('Erro ao excluir a escala:', error);
       res.render('escalas/index', { errorMessage: 'Erro ao excluir a escala.' });
     }
-  }
-};
+  },
+
+
+    generateEscalaReport: async (req, res) => {
+      try {
+        const { data, profissional } = req.query;
+        const where = {};
+  
+        if (data) {
+          where.data = data;
+        }
+  
+        if (profissional) {
+          where.adminId = profissional;
+        }
+  
+        const escalas = await Escala.findAll({
+          where,
+          include: [{ model: Profissional, as: 'admin' }],
+        });
+  
+        if (escalas.length === 0) {
+          return res.status(404).send('Nenhuma escala encontrada para os filtros aplicados.');
+        }
+  
+        let htmlContent = '<h1>Relatório de Escalas</h1><table border="1" cellpadding="5" cellspacing="0"><thead><tr><th>Data</th><th>Horário Início</th><th>Horário Fim</th><th>Profissional</th></tr></thead><tbody>';
+        escalas.forEach(escala => {
+          htmlContent += `<tr><td>${escala.data}</td><td>${escala.horarioInicio}</td><td>${escala.horarioFim}</td><td>${escala.admin ? escala.admin.nome : 'Profissional não encontrado'}</td></tr>`;
+        });
+        htmlContent += '</tbody></table>';
+  
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent);
+        const pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+        });
+  
+        await browser.close();
+  
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=relatorio_escalas.pdf');
+        res.end(pdfBuffer);
+      } catch (error) {
+        console.error('Erro ao gerar o relatório em PDF:', error);
+        res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+      }
+    },
+  
+    viewEscalasReport: async (req, res) => {
+      try {
+          const { data, horarioInicio, horarioFim, profissional } = req.query;
+  
+          const where = {};
+  
+          if (data) {
+              where.data = data; 
+          }
+  
+          if (horarioInicio) {
+              where.horarioInicio = { [Op.gte]: horarioInicio }; 
+          }
+  
+          if (horarioFim) {
+              where.horarioFim = { [Op.lte]: horarioFim }; 
+          }
+  
+          if (profissional) {
+              where.adminId = profissional; 
+          }
+
+          if (!data) {
+            delete where.data;
+          }
+  
+          const escalas = await Escala.findAll({ 
+              where, 
+              include: [{ model: Profissional, as: 'admin' }] 
+          });
+  
+          const profissionais = await Profissional.findAll();
+  
+          res.render('relatorios/viewEscalasReport', { escalas, profissionais, query: req.query, layout: false });
+      } catch (error) {
+          console.error('Erro ao gerar o relatório de escalas:', error);
+          res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+      }
+  }};
+
+  
+
 
 module.exports = escalaController;

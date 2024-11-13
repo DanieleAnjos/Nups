@@ -4,159 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}} - NUPS</title>
+  
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f8f9fa;
-      display: flex;
-      height: 100vh;
-      margin: 0;
-    }
+  <link rel="stylesheet" href="/CSS/styles.css">
 
-    .sidebar {
-      width: 100px;
-      height: 100vh;
-      background-color: #343a40;
-      transition: width 0.3s;
-      position: relative;
-    }
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.3/main.min.css" rel="stylesheet" />
 
-    .sidebar:hover {
-      width: 200px;
-    }
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.3/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.3/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.3/main.min.js"></script>
 
-    .sidebar .nav-link {
-      color: white;
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      font-size: 15px;
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    .sidebar .nav-link i {
-      margin-right: 10px;
-      font-size: 20px;
-    }
-
-    .sidebar .nav-link span {
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .sidebar:hover .nav-link span {
-      opacity: 1;
-    }
-
-    .sidebar .logo {
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .sidebar .nav-link.active {
-      background-color: #495057; /* Destaque para o link ativo */
-    }
-
-    .content {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      background-color: #007bff;
-      color: white;
-      border-radius: 5px;
-      margin-bottom: 15px;
-    }
-
-    .header h1 {
-      margin: 0;
-    }
-
-    .header .btn {
-      background-color: #28a745;
-      color: white;
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 200px;
-      }
-      .sidebar .nav-link span {
-        opacity: 1;
-      }
-    }
-  </style>
 </head>
 
 <body>
-  <nav class="sidebar">
-    <div class="logo">NUPS</div>
-    <div class="nav flex-column">
-      <a href="/profissionais" class="nav-link" aria-label="Gerenciar Profissionais">
-        <i class="fas fa-user-md"></i>
-        <span>Profissionais</span>
-      </a>
-      <a href="/pacientes" class="nav-link" aria-label="Gerenciar Pacientes">
-        <i class="fas fa-users"></i>
-        <span>Pacientes</span>
-      </a>
-      <a href="/atendimentos" class="nav-link" aria-label="Gerenciar Atendimentos">
-        <i class="fas fa-calendar-check"></i>
-        <span>Atendimentos</span>
-      </a>
-      <a href="/ocorrencias" class="nav-link" aria-label="Gerenciar Ocorrências">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span>Ocorrências</span>
-      </a>
-      <a href="/produtos" class="nav-link" aria-label="Gerenciar Estoque">
-        <i class="fas fa-boxes"></i>
-        <span>Estoque</span>
-      </a>
-      <a href="/salas" class="nav-link" aria-label="Salas">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Cadastro de Salas</span>
-      </a>
-      <a href="/reservas" class="nav-link" aria-label="Gerenciar Reservas de Salas">
-        <i class="fas fa-door-open"></i>
-        <span>Salas</span>
-      </a>
-      <a href="/escalas" class="nav-link" aria-label="Gerenciar Escalas">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Escalas</span>
-      </a>
-      <a href="/eventos" class="nav-link" aria-label="Eventos">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Eventos</span>
-      </a>
+    {{#unless esconderHeader}}
+      {{>header}}
+    {{/unless}}  
 
+  <div class="main-wrapper">
+<nav class="sidebar">
+  <ul class="menu">
+    {{log cargo}} <!-- Debug do valor de user.cargo -->
+    {{#ifEquals cargo "Administrador"}}
+      <li><a href="/dashboard/adm"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
+      <li><a href="/pacientes"><i class="fas fa-user icon"></i> <span>Ficha de Acolhimento</span></a></li>
+      <li><a href="/profissionais"><i class="fas fa-user icon"></i> <span>Profissionais</span></a></li>
+      <li><a href="/reservas"><i class="fas fa-user icon"></i><span>Reserva de salas</span></a></li>
+      <li><a href="/relatorios"><i class="fas fa-chart-line icon"></i> <span>Relatórios</span></a></li>
+    {{/ifEquals}}
 
-    </div>
-  </nav>
+    {{#ifEquals cargo "Assistente social"}}
+      <li><a href="/dashboard/assistente-social"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
+      <li><a href="/pacientes"><i class="fas fa-user icon"></i> <span>Ficha de Acolhimento</span></a></li>
+      <li><a href="/escalas"><i class="fas fa-user icon"></i><span>Escalas</span></a></li>
+      <li><a href="/reservas"><i class="fas fa-user icon"></i><span>Reserva de salas</span></a></li>
+    {{/ifEquals}}
 
-  <main class="content">
-    
-    {{#if errorMessage}}
+    <li class="menu-sair"><a href="/auth/logout"><i class="fas fa-sign-out-alt icon"></i> <span>Sair</span></a></li>
+  </ul>
+</nav>
+
+    <main class="main-content">
+      {{#if errorMessage}}
         <div class="alert alert-danger">{{errorMessage}}</div>
-    {{/if}}
+      {{/if}}
 
-    {{{body}}}
-  </main>
+      {{{body}}}
 
-  <script src="https://kit.fontawesome.com/a076d05399.js" defer></script>
+    </main>
+  </div>
+
+  <!-- Custom JavaScript -->
+  <script src="/JS/script.js"></script>
 </body>
+<footer></footer>
 </html>

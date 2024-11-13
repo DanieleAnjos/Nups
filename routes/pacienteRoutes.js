@@ -4,6 +4,8 @@ const pacienteController = require('../controllers/pacienteController');
 
 router.get('/', pacienteController.index);
 
+router.get('/perfil/:id', pacienteController.perfil);
+
 router.get('/create', pacienteController.create);
 router.post('/', pacienteController.store);
 

@@ -1,47 +1,82 @@
-<h2 class="text-center my-4">Lista de Ocorrências</h2>
-<div class="text-right mb-3">
-  <a href="/ocorrencias/create" class="btn btn-primary mt-3">Adicionar Nova Ocorrência</a>
-</div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ocorrências</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Lista de Ocorrências</h2>
 
-<!-- Formulário de Filtro -->
-<form action="/ocorrencias" method="GET" class="mb-4">
-  <div class="row">
-    <div class="col-md-3">
-      <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
-    </div>
-    <div class="col-md-3">
-      <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
-    </div>
-  </div>
-  <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
-</form>
+        <!-- Botão Adicionar Nova Ocorrência -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/ocorrencias/create" class="btn btn-primary">
+                <i class="bi bi-plus-circle">Adicionar Nova Ocorrência</i> 
+            </a>
+        </div>
 
-<table class="table table-striped">
-  <tr>
-    <th>ID</th>
-    <th>Data</th>
-    <th>Relatório</th>
-    <th>Horário de Chegada</th>
-    <th>Horário de Saída</th>
-    <th>Profissional</th>
-    <th>Ações</th>
-  </tr>
-  <tbody>
-    {{#each ocorrencias}}
-      <tr>
-        <td>{{this.id}}</td>
-        <td>{{this.data}}</td>
-        <td>{{this.relatorio}}</td>
-        <td>{{this.horarioChegada}}</td>
-        <td>{{this.horarioSaida}}</td>
-        <td>{{this.profissional.nome}}</td>
-        <td>
-          <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
-          <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-danger btn-sm">Remover</button>
-          </form>
-        </td>
-      </tr>
-    {{/each}}
-  </tbody>
-</table>
+        <!-- Formulário de Filtro -->
+        <form action="/ocorrencias" method="GET" class="mb-4" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
+                </div>
+                <div class="col-mb-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i>Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabela de Ocorrências -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Relatório</th>
+                        <th>Horário de Chegada</th>
+                        <th>Horário de Saída</th>
+                        <th>Profissional</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each ocorrencias}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.data}}</td>
+                            <td>{{this.relatorio}}</td>
+                            <td>{{this.horarioChegada}}</td>
+                            <td>{{this.horarioSaida}}</td>
+                            <td>{{this.profissional.nome}}</td>
+                            <td class="text-center">
+                                <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta ocorrência?');">
+                                        <i class="bi bi-trash"></i> Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Nenhuma ocorrência encontrada.</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

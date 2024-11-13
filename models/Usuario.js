@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Profissional = require('../models/Profissional');
-
+const Profissional = require('../models/Profissional'); 
 
 const Usuario = sequelize.define('Usuario', {
   id: {
@@ -29,14 +28,18 @@ const Usuario = sequelize.define('Usuario', {
   profissionalId: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'Profissional', 
+      model: 'profissional',  
       key: 'id',
     },
     onDelete: 'CASCADE',
   },
 }, {
+  sequelize,
+  modelName: 'Usuario',
   tableName: 'usuarios',
   timestamps: true,
 });
+
+Usuario.belongsTo(Profissional, { foreignKey: 'profissionalId' });
 
 module.exports = Usuario;

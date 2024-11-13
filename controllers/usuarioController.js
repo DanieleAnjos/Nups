@@ -79,7 +79,7 @@ exports.resetPassword = async (req, res) => {
         const user = await Usuario.findOne({
             where: {
                 resetToken: token,
-                resetTokenExpires: { [sequelize.Op.gt]: Date.now() }, // Token não expirado
+                resetTokenExpires: { [sequelize.Op.gt]: Date.now() }, 
             },
         });
 

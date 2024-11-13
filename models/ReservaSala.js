@@ -51,7 +51,6 @@ const ReservaSala = sequelize.define('ReservaSala', {
   timestamps: true 
 });
 
-// Associações
 ReservaSala.belongsTo(Sala, {
   foreignKey: 'salaId',
   as: 'sala' 

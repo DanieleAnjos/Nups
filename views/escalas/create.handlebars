@@ -1,33 +1,50 @@
-<main class="content">
-    <h1>Criar Nova Escala</h1>
-    <form action="/escalas" method="POST">
-        <div class="form-group">
-            <label for="data">Data:</label>
-            <input type="date" name="data" class="form-control" required>
+<main class="content container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="text-center my-4 text-primary">Nova Escala</h1>
+                    <form action="/escalas" method="POST">
+
+                        <!-- Campo Data -->
+                        <div class="mb-3">
+                            <label for="data" class="form-label">Data:</label>
+                            <input type="date" name="data" class="form-control" required>
+                        </div>
+
+                        <!-- Campo Horário Início -->
+                        <div class="mb-3">
+                            <label for="horarioInicio" class="form-label">Horário Início:</label>
+                            <input type="time" name="horarioInicio" class="form-control" required>
+                        </div>
+
+                        <!-- Campo Horário Fim -->
+                        <div class="mb-3">
+                            <label for="horarioFim" class="form-label">Horário Fim:</label>
+                            <input type="time" name="horarioFim" class="form-control" required>
+                        </div>
+
+                        <!-- Campo Profissional -->
+                        <div class="mb-3">
+                            <label for="adminId" class="form-label">Profissional:</label>
+                            <select name="adminId" class="form-select" required>
+                                <option value="" disabled selected>Selecione o Profissional</option>
+                                {{#each profissionais}}
+                                    <option value="{{this.id}}">{{this.nome}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Criar</button>
+                            <a href="/escalas" class="btn btn-secondary">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="horarioInicio">Horário Início:</label>
-            <input type="time" name="horarioInicio" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="horarioFim">Horário Fim:</label>
-            <input type="time" name="horarioFim" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="adminId">Profissional:</label>
-            <select name="adminId" class="form-control" required>
-                {{#each profissionais}}
-                <option value="{{this.id}}">{{this.nome}}</option>
-                {{/each}}
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Criar</button>
-    </form>
-
+    </div>
 </main>
 
 <script src="https://kit.fontawesome.com/a076d05399.js" defer></script>

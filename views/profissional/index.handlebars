@@ -1,50 +1,84 @@
-<h2 class="text-center my-4">Lista de Profissionais</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Profissionais</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Lista de Profissionais</h2>
 
-<div class="text-right mb-3">
-    <a href="/profissionais/create" class="btn btn-primary">Adicionar Profissional</a>
-</div>
-
-<!-- Formulário de Filtro -->
-<form action="/profissionais" method="GET" class="mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <input type="text" name="nome" placeholder="Nome" class="form-control" value="{{query.nome}}">
+        <!-- Botão Adicionar Profissional -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/profissionais/create" class="btn btn-success">
+                <i class="bi bi-person-plus-fill"></i> Adicionar Profissional
+            </a>
         </div>
-        <div class="col-md-4">
-            <input type="text" name="cargo" placeholder="Cargo" class="form-control" value="{{query.cargo}}">
+
+        <!-- Formulário de Filtro -->
+        <form action="/profissionais" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="text" name="nome" placeholder="Nome" class="form-control" value="{{query.nome}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="text" name="cargo" placeholder="Cargo" class="form-control" value="{{query.cargo}}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabela de Profissionais -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Matrícula</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Cargo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if profissionais.length}}
+                        {{#each profissionais}}
+                            <tr>
+                                <td>{{this.id}}</td>
+                                <td>{{this.matricula}}</td>
+                                <td>{{this.nome}}</td>
+                                <td>{{this.email}}</td>
+                                <td>{{this.cargo}}</td>
+                                <td class="text-center">
+                                    <a href="/profissionais/perfil/{{this.id}}" class="btn btn-info btn-sm mx-1">
+                                        <i class="bi bi-eye"></i> Visualizar
+                                    </a>
+                                    <a href="/profissionais/edit/{{this.id}}" class="btn btn-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/profissionais/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1">
+                                            <i class="bi bi-trash"></i> Deletar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Nenhum profissional encontrado.</td>
+                        </tr>
+                    {{/if}}
+                </tbody>
+            </table>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
-</form>
-
-<table class="table table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Cargo</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#if profissionais.length}}
-            {{#each profissionais}}
-                <tr>
-                    <td>{{this.nome}}</td>
-                    <td>{{this.email}}</td>
-                    <td>{{this.cargo}}</td>
-                    <td>
-                        <a href="/profissionais/edit/{{this.id}}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="/profissionais/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
-                        </form>
-                    </td>
-                </tr>
-            {{/each}}
-        {{else}}
-            <tr>
-                <td colspan="4" class="text-center">Nenhum profissional encontrado.</td>
-            </tr>
-        {{/if}}
-    </tbody>
-</table>
+</body>
+</html>

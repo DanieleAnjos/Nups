@@ -1,27 +1,46 @@
-<h1 class="text-center my-4">Login</h1>
+   
+   <!DOCTYPE html>
+   <html lang="pt-br">
+   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/CSS/Styles_Login.css">
+   </head>
+   <body>
+     <div class="login-container">
+    <!-- Logo da Empresa -->
+    <img src="/IMG/pisico-removebg-preview.png" alt="Logo da Empresa" class="logo">
+    
+    <h1>Login</h1>
 
-<!-- Exibe mensagens de erro ou sucesso -->
-{{#if error_msg}}
-    <div class="alert alert-danger text-center" role="alert" aria-live="polite">{{error_msg}}</div>
-{{/if}}
-{{#if success_msg}}
-    <div class="alert alert-success text-center" role="alert" aria-live="polite">{{success_msg}}</div>
-{{/if}}
+    <!-- Exibe mensagens de erro ou sucesso -->
+    {{#if error_msg}}
+        <div class="message error" aria-live="polite">{{error_msg}}</div>
+    {{/if}}
+    {{#if success_msg}}
+        <div class="message success" aria-live="polite">{{success_msg}}</div>
+    {{/if}}
 
-<div class="container d-flex justify-content-center">
     <!-- Formulário de login -->
-    <form action="/auth/login" method="POST" aria-labelledby="loginForm" class="mt-4 p-4 border rounded shadow-sm bg-light" style="max-width: 400px; width: 100%;">
-
-        <div class="form-group mb-3">
-            <label for="usuario" class="form-label">Usuário:</label>
-            <input type="text" id="usuario" name="usuario" class="form-control" autocomplete="username" required autofocus>
+    <form action="/auth/login" method="POST">
+        <div>
+            
+            <input type="text" id="usuario" name="usuario" placeholder="Usuário" autocomplete="username" required autofocus>
         </div>
 
-        <div class="form-group mb-4">
-            <label for="senha" class="form-label">Senha:</label>
-            <input type="password" id="senha" name="senha" class="form-control" autocomplete="current-password" required>
+        <div>
+           
+            <input type="password" id="senha"  placeholder="Senha"  name="senha" autocomplete="current-password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <button type="submit" >Login</button>
     </form>
 </div>
+
+
+    
+
+    
+   </body>
+   </html>

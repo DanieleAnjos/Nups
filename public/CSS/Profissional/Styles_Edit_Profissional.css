@@ -1,0 +1,144 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Configuração da área principal */
+.container {
+    max-width: 1000px; 
+    margin: 0 auto;
+    padding: 30px; 
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos do título */
+.container h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Estilos de formulário */
+form {
+    background-color: #ffffff;
+    padding: 25px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width:1000px;
+}
+
+/* Fieldset e legend */
+fieldset {
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-size: 18px;
+    font-weight: bold;
+    color: #34495e;
+    padding: 0 10px;
+}
+
+/* Grupo de formulários */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Estilo dos inputs e selects */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group select,
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Foco nos inputs */
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus,
+.form-group input[type="number"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+}
+
+/* Estilo para o input de matrícula */
+.form-group input[type="number"] {
+    -webkit-appearance: none;  
+    -moz-appearance: textfield; 
+}
+
+.form-group input[type="number"]::-webkit-outer-spin-button,
+.form-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-group input[type="number"]:focus {
+    background-color: #ecf3fd; 
+}
+
+/* Estilos do botão */
+.btn {
+    width: 50%;
+    background-color: #3498db;
+    color: #ffffff;
+    font-size: 18px;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    margin-left: 200px; 
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 16px;
+        padding: 10px;
+        margin-left: 0; 
+        width: 100%; 
+    }
+}

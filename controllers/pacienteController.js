@@ -1,5 +1,9 @@
 const Paciente = require('../models/Paciente');
+const Atendimento = require('../models/Atendimento');
+const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize'); 
+const Encaminhamento = require('../models/Encaminhamento');
+const { upload, uploadErrorHandler } = require('../config/multer');
 
 exports.index = async (req, res) => {
   try {
@@ -23,36 +27,64 @@ exports.index = async (req, res) => {
   }
 };
 
-exports.create = (req, res) => {
-  res.render('paciente/create');
-};
-
-exports.store = async (req, res) => {
+exports.create = async (req, res) => {
   try {
-    const { nome, matricula, dataNascimento, sexo, cpf, encaminhamento, numeroProcesso, ...dadosBasicos } = req.body; // Desestruturar os campos
-
-    if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !encaminhamento ||!numeroProcesso) {
-      return res.status(400).send('Os campos nome, matrícula, data de nascimento, sexo, CPF e encaminhamento são obrigatórios.');
-    }
-
-    const paciente = await Paciente.create({
-      nome,
-      matricula,
-      dataNascimento,
-      sexo,
-      cpf,
-      encaminhamento,
-      numeroProcesso,
-      ...dadosBasicos,
-      cadastroCompleto: false, 
-    });
-
-    res.redirect(`/pacientes`);
+    const atendimentos = await Atendimento.findAll();
+    res.render('paciente/create', { atendimentos });
   } catch (error) {
-    console.error('Erro ao criar paciente:', error);
-    res.status(500).send('Erro ao criar paciente. Verifique os dados e tente novamente.');
+    console.error('Erro ao buscar os atendimentos:', error);
+    res.render('paciente/create', { errorMessage: 'Erro ao buscar os encaminhamentos.' });
   }
 };
+
+exports.store = [
+  upload.single('imagem'),
+  uploadErrorHandler, 
+  async (req, res) => {
+    try {
+      if (req.file) {
+        console.log('Arquivo carregado:', req.file); 
+      } else {
+        console.log('Nenhum arquivo foi carregado.'); 
+      }
+
+      const { matricula, dataNascimento, sexo, cpf, rg, observacoes, ...dadosBasicos } = req.body;
+
+      if (!matricula || !dataNascimento || !sexo || !rg || !cpf) {
+        return res.status(400).send('Os campos nome, matrícula, data de nascimento, sexo e CPF são obrigatórios.');
+      }
+
+
+      let atendimento = await Atendimento.findOne({ where: { matricula } });
+
+      if (!atendimento) {
+        return res.status(400).send('Atendimento não encontrado para a matrícula fornecida.');
+      }
+
+      const nome = atendimento.nome;
+      const numeroProcesso = atendimento.numeroProcesso;
+
+      const imagePath = req.file ? req.file.filename : null;
+
+      await Paciente.create({
+        nome,
+        matricula,
+        dataNascimento,
+        sexo,
+        cpf,
+        numeroProcesso,
+        imagePath, 
+        ...dadosBasicos,
+        cadastroCompleto: false,
+      });
+
+      res.redirect(`/pacientes`);
+    } catch (error) {
+      console.error('Erro ao criar paciente:', error);
+      res.status(500).json({ message: 'Erro ao criar paciente. Verifique os dados e tente novamente.', error: error.message });
+    }
+  }
+];
 
 
 
@@ -100,5 +132,31 @@ exports.delete = async (req, res) => {
   } catch (error) {
     console.error('Erro ao deletar paciente:', error);
     res.status(500).send('Erro ao deletar paciente. Tente novamente mais tarde.');
+  }
+};
+
+exports.perfil = async (req, res) => {
+  const { id } = req.params; 
+  try {
+    const paciente = await Paciente.findByPk(id, {
+      include: [{
+        model: Atendimento,
+        include: [{
+          model: Profissional,  
+          as: 'profissional',   
+        }],
+        required: false
+      }]
+    });
+    
+
+    if (paciente) {
+      return res.render('paciente/perfil', { paciente });
+    } else {
+      return res.status(404).send('Paciente não encontrado.');
+    }
+  } catch (error) {
+    console.error('Erro ao buscar perfil do paciente:', error);
+    return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };

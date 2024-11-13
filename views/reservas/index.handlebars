@@ -1,69 +1,93 @@
-<h2 class="text-center my-4">Reservas</h2>
-<div class="text-right mb-3">
-    <a href="/reservas/create" class="btn btn-primary">Cadastrar Reserva</a>
-</div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Reservas</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Reserva de Salas</h2>
 
-<!-- Formulário de filtro -->
-<form class="mb-4" method="GET" action="/reservas">
-    <div class="form-row">
-        <div class="col">
-            <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+        <!-- Botão Cadastrar Reserva -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/reservas/create" class="btn btn-primary">
+                <i class="bi bi-calendar-plus"></i> Cadastrar Reserva
+            </a>
         </div>
-        <div class="col">
-            <select name="salaId" class="form-control">
-                <option value="">Sala</option>
-                {{#each salas}}
-                    <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
-                {{/each}}
-            </select>
-        </div>
-        <div class="col">
-            <select name="profissionalId" class="form-control">
-                <option value="">Profissional</option>
-                {{#each profissionais}}
-                    <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
-                {{/each}}
-            </select>
-        </div>
-        <div class="col">
-            <button type="submit" class="btn btn-secondary">Filtrar</button>
+
+        <!-- Formulário de Filtro -->
+        <form class="mb-4" method="GET" action="/reservas">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+                </div>
+                <div class="col-md-3">
+                    <select name="salaId" class="form-control">
+                        <option value="">Sala</option>
+                        {{#each salas}}
+                            <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="profissionalId" class="form-control">
+                        <option value="">Profissional</option>
+                        {{#each profissionais}}
+                            <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-secondary mt-3">Filtrar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabela de Reservas -->
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Data</th>
+                        <th>Horário Inicial</th>
+                        <th>Horário Final</th>
+                        <th>Sala</th>
+                        <th>Profissional</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if reservas.length}}
+                        {{#each reservas}}
+                            <tr>
+                                <td>{{data}}</td>
+                                <td>{{horarioInicial}}</td>
+                                <td>{{horarioFinal}}</td>
+                                <td>{{sala.nome}}</td>
+                                <td>{{profissionalNome}}</td>
+                                <td class="text-center">
+                                    <a href="/reservas/{{id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/reservas/{{id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Você tem certeza que deseja deletar esta reserva?');">
+                                            <i class="bi bi-trash"></i> Deletar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Nenhuma reserva encontrada.</td>
+                        </tr>
+                    {{/if}}
+                </tbody>
+            </table>
         </div>
     </div>
-</form>
-
-<br>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Data</th>
-      <th>Horário Inicial</th>
-      <th>Horário Final</th>
-      <th>Sala</th>
-      <th>Profissional</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#if reservas.length}}
-      {{#each reservas}}
-        <tr>
-          <td>{{data}}</td>
-          <td>{{horarioInicial}}</td>  
-          <td>{{horarioFinal}}</td>    
-          <td>{{sala.nome}}</td> 
-          <td>{{profissionalNome}}</td> 
-          <td>
-            <a href="/reservas/{{id}}/edit" class="btn btn-warning btn-sm">Editar</a>
-            <form action="/reservas/{{id}}?_method=DELETE" method="POST" style="display:inline;">
-              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Você tem certeza que deseja deletar esta reserva?');">Deletar</button>
-            </form>
-          </td>
-        </tr>
-      {{/each}}
-    {{else}}
-      <tr>
-        <td colspan="6" class="text-center">Nenhuma reserva encontrada.</td>
-      </tr>
-    {{/if}}
-  </tbody>
-</table>
+</body>
+</html>

@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware de autenticação
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];  // Verifica se o token está no formato 'Bearer <token>'
+  const token = authHeader && authHeader.split(' ')[1];  
   
   if (!token) {
     return res.status(401).json({ message: 'Acesso negado. Token não fornecido.' });
@@ -16,7 +15,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// Middleware para verificar se é administrador
 function authorizeAdmin(req, res, next) {
   if (!req.user || req.user.cargo !== 'Administrador') {
     return res.status(403).json({ message: 'Acesso negado. Apenas administradores podem acessar esta rota.' });

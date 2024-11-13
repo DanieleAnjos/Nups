@@ -1,4 +1,4 @@
-<h2>Editar Paciente</h2>
+<h2 class="text-center mb-4">Editar Paciente</h2>
 
 <form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST" onsubmit="setCurrentDate()">
     <input type="hidden" name="_method" value="PUT"> 
@@ -9,17 +9,17 @@
 
         <div class="form-group">
             <label for="nome">Nome:</label>
-            <input type="text" class="form-control" name="nome" id="nome" value="{{paciente.nome}}" required>
+            <input type="text" class="form-control" name="nome" id="nome" value="{{paciente.nome}}" required readonly>
         </div>
 
         <div class="form-group">
             <label for="matricula">Matrícula:</label>
-            <input type="text" class="form-control" name="matricula" id="matricula" value="{{paciente.matricula}}" required>
+            <input type="text" class="form-control" name="matricula" id="matricula" value="{{paciente.matricula}}" required readonly>
         </div>
 
         <div class="form-group">
             <label for="dataNascimento">Data de Nascimento:</label>
-            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required>
+            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required readonly>
         </div>
 
         <div class="form-group">
@@ -47,6 +47,11 @@
         </div>
 
         <div class="form-group">
+            <label for="rg">RG:</label>
+            <input type="text" class="form-control" name="rg" id="rg" value="{{paciente.rg}}" required pattern="\d{9}">
+        </div>
+
+        <div class="form-group">
             <label for="telefone">Telefone:</label>
             <input type="text" class="form-control" name="telefone" id="telefone" value="{{paciente.telefone}}" required pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
         </div>
@@ -65,9 +70,9 @@
         <legend>Imagem do Paciente</legend>
         <div class="form-group">
             <label for="imagemPaciente">Carregar Imagem:</label>
-            <input type="file" class="form-control" name="imagemPaciente" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
+            <input type="file" class="form-control" name="imagem" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
             <small class="form-text text-muted">Formato aceito: JPG, PNG, GIF.</small>
-            <img id="imagemPreview" src="{{paciente.imagemPaciente}}" alt="Pré-visualização da Imagem" style="margin-top:10px; max-width:200px;">
+            <img id="imagemPreview" src="{{paciente.imagePath}}" alt="Pré-visualização da Imagem" style="margin-top:10px; max-width:200px;">
         </div>
     </fieldset>
 
@@ -338,22 +343,6 @@
 </div>
 
 </fieldset>
-
-<fieldset class="border p-4 mb-4">
-    <div class="form-group">
-        <label for="encaminhamento">Encaminhamento</label>
-        <select class="form-control" name="encaminhamento" id="encaminhamento">
-            {{#ifEquals paciente.encaminhamento 'Psicologia'}}
-                <option value="Psicologia" selected>Psicologia</option>
-                <option value="Serviço Social">Serviço Social</option>
-            {{else}}
-                <option value="Psicologia">Psicologia</option>
-                <option value="Serviço Social" selected>Serviço Social</option>
-            {{/ifEquals}}
-        </select>
-    </div>
-</fieldset>
-
         
 
     <button type="submit" class="btn btn-primary">Salvar Alterações</button>

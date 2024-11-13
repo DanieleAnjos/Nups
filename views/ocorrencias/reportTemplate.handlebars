@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Ocorrências</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    table th, table td {
+      text-align: center;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 12px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center">Relatório de Ocorrências</h1>
+
+    <!-- Exibir data e hora de geração do PDF -->
+    <p><strong>Data e Hora de Geração:</strong> {{dataGeracao}}</p>
+
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Data</th>
+          <th scope="col">Profissional</th>
+          <th scope="col">Relatório</th>
+          <th scope="col">Horário de Chegada</th>
+          <th scope="col">Horário de Saída</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each ocorrencias}}
+          <tr>
+            <td>{{this.data}}</td>
+            <td>{{this.profissional.nome}}</td>
+            <td>{{this.relatorio}}</td>
+            <td>{{this.horarioChegada}}</td>
+            <td>{{this.horarioSaida}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>Relatório gerado em {{dataGeracao}}</p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

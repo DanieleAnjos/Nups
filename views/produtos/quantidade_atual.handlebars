@@ -1,0 +1,24 @@
+<h1>Quantidade Atual de Produtos</h1>
+
+{{#if produtos.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th>Categoria</th>
+        <th>Quantidade Atual</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each produtos}}
+        <tr>
+          <td>{{this.nome}}</td>
+          <td>{{this.categoria}}</td>
+          <td>{{this.quantidadeAtual}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{else}}
+  <p>Nenhum produto encontrado.</p>
+{{/if}}

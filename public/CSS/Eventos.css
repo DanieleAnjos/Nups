@@ -1,0 +1,123 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #F2F2F2;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+    margin-top: 100px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #072C47;
+    margin-bottom: 20px;
+}
+
+#container-pesquisa {
+    margin: 20px 0;
+}
+
+#pesquisa {
+    width: 50%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#container-cartoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.cartao {
+    background-color: #FFF;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 320px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 15px;
+    transition: transform 0.2s;
+}
+
+.cartao:hover {
+    transform: scale(1.05);
+}
+
+.imagem-cartao {
+    width: 100%;
+    height: 180px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.etiqueta {
+    background-color: #297FB8;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.informacoes-autor {
+    display: flex;
+    align-items: center;
+}
+
+.imagem-autor {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.cartao h2 {
+    font-size: 1.5em;
+    margin: 10px 0;
+    color: #072C47;
+}
+
+.cartao p {
+    font-size: 1em;
+    color: #333;
+    margin: 5px 0;
+}
+
+.leia-mais {
+    display: inline-block;
+    margin: 10px;
+    padding: 7px 10px;
+    background-color: #007BFF;
+    color: #FFFFFF;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    font-weight: bold;
+    font-size: 1.1em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100px;
+}
+
+.leia-mais:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
