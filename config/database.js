@@ -6,11 +6,11 @@ const { Sequelize } = require('sequelize');
 
 // Usar variáveis de ambiente para credenciais sensíveis
 const sequelizeConfig = {
-  host: process.env.DB_HOST || 'nups-db.database.windows.net', // Host do banco de dados na Azure
-  port: process.env.DB_PORT || 1433,  // Porta padrão para SQL Server
-  database: process.env.DB_NAME || 'Nups_db', 
-  username: process.env.DB_USER || 'admin_nups',           
-  password: process.env.DB_PASSWORD || 'Code2nup',           
+  host: process.env.DB_HOST , // Host do banco de dados na Azure
+  port: process.env.DB_PORT ,  // Porta padrão para SQL Server
+  database: process.env.DB_NAME , 
+  username: process.env.DB_USER ,           
+  password: process.env.DB_PASSWORD,           
   dialect: 'mssql', // Dialeto para SQL Server
   dialectOptions: {
     options: {
