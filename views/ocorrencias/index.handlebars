@@ -12,13 +12,13 @@
 
         <!-- Botão Adicionar Nova Ocorrência -->
         <div class="d-flex justify-content-end mb-3">
-            <a href="/ocorrencias/create" class="btn btn-primary">
+            <a href="/ocorrencias/create" class="btn btn-success">
                 <i class="bi bi-plus-circle">Adicionar Nova Ocorrência</i> 
             </a>
         </div>
 
-        <!-- Formulário de Filtro -->
-        <form action="/ocorrencias" method="GET" class="mb-4" class="mb-4 p-3 border rounded shadow-sm bg-light">
+
+                <form action="/ocorrencias" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
                 <div class="col-md-5 mb-2">
                     <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
@@ -26,9 +26,9 @@
                 <div class="col-md-5 mb-2">
                     <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
                 </div>
-                <div class="col-mb-2">
+                <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-filter"></i>Filtrar
+                        <i class="bi bi-filter"></i> Filtrar
                     </button>
                 </div>
             </div>
@@ -41,10 +41,10 @@
                     <tr class="text-center">
                         <th>ID</th>
                         <th>Data</th>
-                        <th>Relatório</th>
+                        <th>Profissional</th>
                         <th>Horário de Chegada</th>
                         <th>Horário de Saída</th>
-                        <th>Profissional</th>
+                        <th>Relatório</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -53,20 +53,26 @@
                         <tr>
                             <td>{{this.id}}</td>
                             <td>{{this.data}}</td>
-                            <td>{{this.relatorio}}</td>
+                            <td>{{this.profissional.nome}}</td>
                             <td>{{this.horarioChegada}}</td>
                             <td>{{this.horarioSaida}}</td>
-                            <td>{{this.profissional.nome}}</td>
+                            <td>{{this.relatorio}}</td>
+
                             <td class="text-center">
-                                <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta ocorrência?');">
-                                        <i class="bi bi-trash"></i> Remover
-                                    </button>
-                                </form>
+
+                                    {{#if user.role}}
+                                        {{#if (eq user.role 'administrador')}}
+                                            <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                                <i class="bi bi-pencil-square"></i> Editar
+                                            </a>
+                                            <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta ocorrência?');">
+                                                    <i class="bi bi-trash"></i> Remover
+                                                </button>
+                                            </form>
+                                        {{/if}}
+                                    {{/if}}
                             </td>
                         </tr>
                     {{else}}
@@ -80,3 +86,45 @@
     </div>
 </body>
 </html>
+
+    <style>
+body {
+    background-color: #f4f6f9;
+    font-family: 'Roboto', sans-serif;
+    color: #4b4b4b;
+}
+h2 {
+    font-weight: 700;
+    color: #0056b3;
+}
+.table th {
+    background-color: #e9ecef;
+    color: #333;
+}
+.btn-primary {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+.btn-primary:hover {
+    background-color: #004494;
+}
+
+.btn-success {
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+.btn-success i {
+    margin-right: 8px;
+}
+
+
+.table-responsive {
+    overflow-x: auto;
+}
+.table-hover tbody tr:hover {
+    background-color: #f1f4f9;
+}
+
+
+    </style>

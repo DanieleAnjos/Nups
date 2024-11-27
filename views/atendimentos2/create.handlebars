@@ -1,0 +1,64 @@
+<h1 class="text-center my-4">Criar Atendimento</h1>
+
+<div class="container">
+  <form action="/atendimentos2/criar" method="POST">
+    
+        <div class="form-group">
+      <label for="nomePaciente">Nome do Paciente:</label>
+      <input type="text" name="nomePaciente" id="nomePaciente" class="form-control" oninput="buscarPacientePorNome()" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="matriculaPaciente">Matrícula do Paciente:</label>
+      <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control" oninput="buscarPacientePorMatricula()" required>
+    </div>
+
+
+
+    <div class="form-group">
+      <label for="nomeProfissional">Nome do Profissional:</label>
+      <select name="nomeProfissional" id="nomeProfissional" class="form-control" required>
+        <option value="">Selecione um Profissional</option>
+        {{#each profissionais}}
+          <option value="{{this.nome}}">{{this.nome}} - {{this.cargo}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="registroAtendimento">Registro do Atendimento:</label>
+      <input type="text" name="registroAtendimento" id="registroAtendimento" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label for="discussaoCaso">Discussão do Caso:</label>
+      <textarea name="discussaoCaso" id="discussaoCaso" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-success btn-lg">
+        Criar Atendimento
+      </button>
+    </div>
+  </form>
+</div>
+<script>
+  // Função para buscar paciente por nome e preencher matrícula automaticamente
+  function buscarPacientePorNome() {
+    const nomePaciente = document.getElementById('nomePaciente').value;
+    
+    if (nomePaciente.length > 3) {  // A busca só é realizada após digitar 3 caracteres
+        $.ajax({
+        url: '/atendimentos2/buscarPaciente?nome=' + nomePaciente,  // 'nomePaciente' deve ter o valor correto
+        method: 'GET',
+        success: function(data) {
+            $('#matriculaPaciente').val(data.matricula);  // Preenche a matrícula
+        },
+        error: function() {
+            $('#matriculaPaciente').val('');
+            alert('Paciente não encontrado!');
+        }
+        });
+    }
+  }
+</script>

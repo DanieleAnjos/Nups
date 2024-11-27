@@ -1,9 +1,14 @@
 const Profissional = require('../models/Profissional');
+const Notificacao = require('../models/Notificacao');
+
 const { ValidationError } = require('sequelize');
 const { Op } = require('sequelize');
 const puppeteer = require('puppeteer');
 const path = require('path');
 const { upload, uploadErrorHandler } = require('../config/multer'); 
+const Encaminhamento = require('../models/Encaminhamento');
+const Atendimento2 = require('../models/Atendimento2');
+const Ocorrencia = require('../models/Ocorrencia');
 
 
 
@@ -104,40 +109,55 @@ exports.store = async (req, res) => {
     }
 
     try {
+      const { nome, email, cpf } = req.body;
+
+      // Validação de campos obrigatórios
+      if (!nome || !email || !cpf || nome.trim() === "" || email.trim() === "" || cpf.trim() === "") {
+        req.flash('error_msg', 'Por favor, preencha todos os campos obrigatórios.');
+        return res.redirect('/profissionais/create');
+      }
+
       const imagePath = req.file ? req.file.path : null;
 
-      const profissional = await Profissional.create({
-        ...req.body,  
-        imagePath, 
+      // Criação do profissional
+      await Profissional.create({
+        ...req.body,
+        imagePath,
       });
 
       req.flash('success_msg', 'Profissional criado com sucesso!');
-      res.redirect('/profissionais'); // Redireciona para a lista de profissionais
+      return res.redirect('/profissionais'); // Redireciona para a lista de profissionais
     } catch (error) {
       console.error('Erro ao criar profissional:', error);
-      if (error instanceof ValidationError) {
-        const validationErrors = error.errors.map(err => err.message);
+
+      // Verificação de erros de validação
+      if (error.name === 'SequelizeValidationError') {
+        const validationErrors = error.errors.map((err) => err.message);
         req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
       } else {
         req.flash('error_msg', 'Erro ao criar o profissional.');
       }
-      res.redirect('/profissionais/create'); // Redireciona para a criação em caso de erro
+
+      return res.redirect('/profissionais/create'); // Redireciona para a página de criação em caso de erro
     }
   });
 };
 
 
-
-
-
 exports.edit = async (req, res) => {
   try {
     const profissional = await Profissional.findByPk(req.params.id);
+
     if (!profissional) {
       req.flash('error_msg', 'Profissional não encontrado.');
       return res.redirect('/profissionais');
     }
-    res.render('profissional/edit', { profissional: profissional.get({ plain: true }), error_msg: req.flash('error_msg') });
+
+    res.render('profissional/edit', {
+      profissional: profissional.get({ plain: true }),
+      error_msg: req.flash('error_msg'),
+      success_msg: req.flash('success_msg'),
+    });
   } catch (error) {
     console.error('Erro ao buscar profissional:', error);
     req.flash('error_msg', 'Erro ao buscar o profissional.');
@@ -146,29 +166,85 @@ exports.edit = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  try {
-    const profissional = await Profissional.findByPk(req.params.id);
-    if (!profissional) {
-      req.flash('error_msg', 'Profissional não encontrado.');
-      return res.redirect('/profissionais');
+  upload.single('imagem')(req, res, async (err) => {
+    if (err) {
+      req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
+      return res.redirect(`/profissionais/edit/${req.params.id}`);
     }
 
-    await profissional.update(req.body);
-    req.flash('success_msg', 'Profissional atualizado com sucesso!');
-    res.redirect('/profissionais');
-  } catch (error) {
-    console.error('Erro ao atualizar profissional:', error);
-    if (error instanceof ValidationError) {
-      const validationErrors = error.errors.map(err => err.message);
-      req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
-    } else {
-      req.flash('error_msg', 'Erro ao atualizar o profissional.');
+    try {
+      const profissional = await Profissional.findByPk(req.params.id);
+
+      if (!profissional) {
+        req.flash('error_msg', 'Profissional não encontrado.');
+        return res.redirect('/profissionais');
+      }
+
+      // Extração dos dados enviados pelo formulário
+      const {
+        nome,
+        email,
+        rg,
+        cpf,
+        dataNascimento,
+        sexo,
+        estadoCivil,
+        matricula,
+        dataAdmissao,
+        cargo,
+        vinculo,
+        contatoEmergenciaNome,
+        telefoneContatoEmergencia,
+      } = req.body;
+
+      console.log(req.body);  // Para verificar os dados recebidos
+
+      // Verificar campos obrigatórios
+      if (!nome || !email || !cpf || nome.trim() === "" || email.trim() === "" || cpf.trim() === "") {
+        const errorMessage = 'Campos obrigatórios não preenchidos.';
+        console.error(errorMessage, { nome, email, cpf });
+        req.flash('error_msg', errorMessage);
+        return res.redirect(`/profissionais/edit/${req.params.id}`);
+      }
+
+      // Atualização dos dados
+      const imagePath = req.file ? req.file.path : profissional.imagePath; // Mantém a imagem antiga se não houver nova
+      await profissional.update({
+        nome,
+        email,
+        rg,
+        cpf,
+        dataNascimento,
+        sexo,
+        estadoCivil,
+        matricula,
+        dataAdmissao,
+        cargo,
+        vinculo,
+        contatoEmergenciaNome,
+        telefoneContatoEmergencia,
+        imagePath, // Atualiza o caminho da imagem se uma nova for enviada
+      });
+
+      req.flash('success_msg', 'Profissional atualizado com sucesso!');
+      res.redirect('/profissionais');
+    } catch (error) {
+      console.error('Erro ao atualizar profissional:', error);
+
+      if (error instanceof ValidationError) {
+        // Capturando erros de validação do Sequelize
+        const validationErrors = error.errors.map(err => err.message);
+        console.error('Erros de validação do Sequelize:', validationErrors);
+        req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+      } else {
+        console.error('Erro inesperado ao atualizar profissional:', error);
+        req.flash('error_msg', 'Erro ao atualizar o profissional.');
+      }
+
+      res.redirect(`/profissionais/edit/${req.params.id}`);
     }
-    res.redirect(`/profissionais/edit/${req.params.id}`);
-  }
+  });
 };
-
-
 
 
 
@@ -242,20 +318,97 @@ exports.delete = async (req, res) => {
       res.status(500).send('Erro ao exibir o relatório. Tente novamente mais tarde.');
     }
   } ; 
-
   exports.show = async (req, res) => {
     try {
       const profissional = await Profissional.findByPk(req.params.id);
-      
+  
       if (!profissional) {
         req.flash('error_msg', 'Profissional não encontrado.');
         return res.redirect('/profissionais');
       }
-      
-      res.render('profissional/perfil', { profissional: profissional.get({ plain: true }) });
+  
+      const encaminhamentos = await Encaminhamento.findAll({
+        where: {
+          nomeProfissional: profissional.nome, 
+        },
+        order: [['createdAt', 'DESC']], 
+      });
+  
+      const atendimentos = await Atendimento2.findAll({
+        where: {
+          profissionalId: profissional.id, 
+        },
+        order: [['dataAtendimento', 'DESC']], 
+      });
+
+      const ocorrencias = await Ocorrencia.findAll({
+        where: { profissionalId: profissional.id },
+        order: [['data', 'DESC']],
+      });
+  
+      res.render('profissional/perfil', {
+        profissional: profissional.get({ plain: true }),
+        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
+        atendimentos: atendimentos.map(a => a.get({ plain: true })),
+        ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
+
+      });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);
       req.flash('error_msg', 'Erro ao buscar detalhes do profissional.');
       res.redirect('/profissionais');
     }
   };
+  
+
+  exports.showPerfil = async (req, res) => {
+    try {
+      const profissionalLogado = req.user; 
+  
+      const profissional = await Profissional.findByPk(req.params.id);
+  
+      if (!profissional) {
+        req.flash('error_msg', 'Profissional não encontrado.');
+        return res.redirect('/profissionais');
+      }
+  
+      if (profissional.id !== profissionalLogado.id) {
+        req.flash('error_msg', 'Você não tem permissão para visualizar este perfil.');
+        return res.redirect('/profissionais');
+      }
+  
+      const encaminhamentos = await Encaminhamento.findAll({
+        where: {
+          nomeProfissional: profissional.nome, 
+        },
+        order: [['createdAt', 'DESC']], 
+      });
+  
+      const atendimentos = await Atendimento2.findAll({
+        where: {
+          profissionalId: profissional.id, 
+        },
+        order: [['dataAtendimento', 'DESC']], 
+      });
+
+      const ocorrencias = await Ocorrencia.findAll({
+        where: { profissionalId: profissional.id },
+        order: [['data', 'DESC']],
+      });
+  
+      res.render('profissional/meu_perfil', {
+        profissional: profissional.get({ plain: true }),
+        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
+        atendimentos: atendimentos.map(a => a.get({ plain: true })),
+        ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
+
+      });
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do profissional:', error);
+      req.flash('error_msg', 'Erro ao buscar detalhes do profissional.');
+      res.redirect('/profissionais');
+    }
+  };
+  
+
+

@@ -1,70 +1,46 @@
 <h2 class="text-center mb-4">Editar Paciente</h2>
 
-<form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST" onsubmit="setCurrentDate()">
-    <input type="hidden" name="_method" value="PUT"> 
-    <input type="hidden" name="dataAtendimento" id="dataAtendimento">
+<form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST" onsubmit="setCurrentDate()" class="needs-validation">
+  <input type="hidden" name="_method" value="PUT">
+  <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
-    <fieldset class="border p-4 mb-4">
-        <legend>Informações Pessoais</legend>
-
+  <!-- Informações Pessoais -->
+  <fieldset class="border p-4 mb-4 rounded shadow-sm">
+    <legend class="w-auto px-3 text-primary font-weight-bold">Informações Pessoais</legend>
+    <div class="row mb-3">
+      <div class="col-md-6">
         <div class="form-group">
-            <label for="nome">Nome:</label>
-            <input type="text" class="form-control" name="nome" id="nome" value="{{paciente.nome}}" required readonly>
+          <label for="nome" class="form-label">Nome:</label>
+          <input type="text" class="form-control bg-light" name="nome" id="nome" value="{{paciente.nome}}" required >
         </div>
-
+      </div>
+      <div class="col-md-6">
         <div class="form-group">
-            <label for="matricula">Matrícula:</label>
-            <input type="text" class="form-control" name="matricula" id="matricula" value="{{paciente.matricula}}" required readonly>
+          <label for="matricula" class="form-label">Matrícula:</label>
+          <input type="text" class="form-control bg-light" name="matricula" id="matricula" value="{{paciente.matricula}}" required readonly>
         </div>
-
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
         <div class="form-group">
-            <label for="dataNascimento">Data de Nascimento:</label>
-            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required readonly>
+          <label for="dataNascimento" class="form-label">Data de Nascimento:</label>
+          <input type="date" class="form-control bg-light" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required >
         </div>
-
+      </div>
+      <div class="col-md-6">
         <div class="form-group">
-            <label for="sexo">Sexo:</label>
-            <select class="form-control" name="sexo" id="sexo" required>
-                <option value="Masculino" {{#if (eq paciente.sexo 'Masculino')}}selected{{/if}}>Masculino</option>
-                <option value="Feminino" {{#if (eq paciente.sexo 'Feminino')}}selected{{/if}}>Feminino</option>
-                <option value="Outro" {{#if (eq paciente.sexo 'Outro')}}selected{{/if}}>Outro</option>
-            </select>
+          <label for="sexo" class="form-label">Sexo:</label>
+          <select class="form-select" name="sexo" id="sexo" required>
+            <option value="Masculino" {{#if (eq paciente.sexo 'Masculino')}}selected{{/if}}>Masculino</option>
+            <option value="Feminino" {{#if (eq paciente.sexo 'Feminino')}}selected{{/if}}>Feminino</option>
+            <option value="Outro" {{#if (eq paciente.sexo 'Outro')}}selected{{/if}}>Outro</option>
+          </select>
         </div>
+      </div>
+    </div>
+  </fieldset>
 
-        <div class="form-group">
-            <label for="escolaridade">Escolaridade:</label>
-            <select class="form-control" name="escolaridade" id="escolaridade" required>
-                <option value="Ensino Fundamental" {{#if (eq paciente.escolaridade 'Ensino Fundamental')}}selected{{/if}}>Ensino Fundamental</option>
-                <option value="Ensino Médio" {{#if (eq paciente.escolaridade 'Ensino Médio')}}selected{{/if}}>Ensino Médio</option>
-                <option value="Superior" {{#if (eq paciente.escolaridade 'Superior')}}selected{{/if}}>Superior</option>
-                <option value="Pós-Graduação" {{#if (eq paciente.escolaridade 'Pós-Graduação')}}selected{{/if}}>Pós-Graduação</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="cpf">CPF:</label>
-            <input type="text" class="form-control" name="cpf" id="cpf" value="{{paciente.cpf}}" required pattern="\d{11}" title="Digite um CPF válido com 11 números">
-        </div>
-
-        <div class="form-group">
-            <label for="rg">RG:</label>
-            <input type="text" class="form-control" name="rg" id="rg" value="{{paciente.rg}}" required pattern="\d{9}">
-        </div>
-
-        <div class="form-group">
-            <label for="telefone">Telefone:</label>
-            <input type="text" class="form-control" name="telefone" id="telefone" value="{{paciente.telefone}}" required pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
-        </div>
-
-        <div class="form-group">
-            <label for="tipoTelefone">Tipo de Telefone:</label>
-            <select class="form-control" name="tipoTelefone" id="tipoTelefone" required>
-                <option value="Celular" {{#if (eq paciente.tipoTelefone 'Celular')}}selected{{/if}}>Celular</option>
-                <option value="Residencial" {{#if (eq paciente.tipoTelefone 'Residencial')}}selected{{/if}}>Residencial</option>
-                <option value="Comercial" {{#if (eq paciente.tipoTelefone 'Comercial')}}selected{{/if}}>Comercial</option>
-            </select>
-        </div>
-    </fieldset>
 
     <fieldset class="border p-4 mb-4">
         <legend>Imagem do Paciente</legend>

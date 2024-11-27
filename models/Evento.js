@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Imagem = require('../models/Imagem');
 
 class Evento extends Model {}
 
@@ -46,5 +47,8 @@ Evento.init({
     modelName: 'Evento',
     timestamps: true,
 });
+
+Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
+Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
 
 module.exports = Evento;

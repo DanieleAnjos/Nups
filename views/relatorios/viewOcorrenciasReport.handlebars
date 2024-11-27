@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório de Ocorrências</title>
     <style>
-        /* Corpo da página */
+        /* Estilos globais */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
-            background-color: #f4f6f8;
+            background-color: #f4f6f9;
             color: #333;
         }
 
@@ -18,23 +18,15 @@
             color: #2c3e50;
             font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 10px;
-        }
-
-        /* Parágrafo de descrição */
-        p {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #555;
             margin-bottom: 20px;
         }
 
         /* Container principal */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
@@ -50,9 +42,9 @@
         }
 
         th, td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
-            font-size: 1rem;
+            font-size: 0.95rem;
             border-bottom: 1px solid #ddd;
         }
 
@@ -70,20 +62,20 @@
             background-color: #e0ebf5;
         }
 
-        /* Botões */
+        /* Estilo dos botões */
         .button, .clear-button {
-            padding: 8px 16px;
+            padding: 10px 18px;
             font-size: 0.9rem;
             border-radius: 6px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-top: 10px;
         }
 
         .button {
             background-color: #4CAF50;
             color: white;
-            margin-top: 10px;
         }
 
         .button:hover {
@@ -93,26 +85,62 @@
         .clear-button {
             background-color: #e74c3c;
             color: white;
-            margin-left: 10px;
+            margin-left: 8px;
         }
 
         .clear-button:hover {
             background-color: #c0392b;
         }
 
-        /* Formulário de filtro */
+        /* Estilos do formulário de filtro */
         .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .filter-form div {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-form select,
+        .filter-form input {
+            padding: 8px;
+            font-size: 16px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-form button,
+        .filter-form .clear-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover,
+        .filter-form .clear ```html
+        .clear-button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-form .clear-button {
+            background-color: #f44336;
+            margin-left: 10px;
         }
 
         label {
@@ -122,31 +150,25 @@
         }
 
         input[type="date"], select {
-            padding: 10px;
+            padding: 8px;
             font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #fff;
             color: #333;
+            width: 100%;
         }
 
+        /* Estilos para a seção de ações */
         .actions {
             display: flex;
             justify-content: center;
             margin-top: 20px;
+            gap: 10px;
         }
 
         /* Responsividade */
-        @media (max-width: 768px) {
-            .filter-form {
-                flex-direction: column;
-            }
-            .filter-form div {
-                width: 100%;
-            }
-        }        
-        
-        @media print {
+                @media print {
             .button {
                 display: none;
             }
@@ -161,15 +183,14 @@
     <div class="container">
         <h1>Relatório de Ocorrências</h1>
 
-
-        <!-- Formulário de Filtro -->
-        <form method="GET" action="/ocorrencias/viewReport" class="filter-form">
+        <form method="GET"  action="/ocorrencias/viewReport" class="filter-form">
             <div>
                 <label for="data">Filtrar por Data:</label>
                 <input type="date" name="data" id="data" value="{{query.data}}">
             </div>
+
             <div>
-                <label for="profissional">Filtrar por Profissional:</label>
+                <label for="profissional">Filtrar por Profissional:</label><br>
                 <select name="profissional" id="profissional">
                     <option value="">Selecione</option>
                     {{#each profissionais}}
@@ -177,6 +198,7 @@
                     {{/each}}
                 </select>
             </div>
+
             <div class="actions">
                 <button type="submit" class="button">Aplicar Filtros</button>
                 <button type="button" class="clear-button" onclick="clearFilters()">Limpar Filtros</button>

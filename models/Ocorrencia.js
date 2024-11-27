@@ -13,7 +13,7 @@ Ocorrencia.init({
   data: {
     type: DataTypes.DATEONLY,
     allowNull: false,
-    defaultValue: () => new Date().toISOString().split('T')[0], // Data atual
+    defaultValue: () => new Date().toISOString().split('T')[0], 
   },
   relatorio: {
     type: DataTypes.TEXT,

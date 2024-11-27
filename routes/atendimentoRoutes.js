@@ -23,5 +23,7 @@ router.post('/', atendimentoController.store);
 router.get('/:id/edit', atendimentoController.edit);
 router.put('/:id', atendimentoController.update);
 router.delete('/:id', atendimentoController.destroy);
+router.get('/dashboard', atendimentoController.dash);
+
 
 module.exports = router;

@@ -1,33 +1,59 @@
-<h1>Editar Produto</h1>
-<form action="/produtos/{{produto.id}}?_method=PUT" method="POST" class="mt-4">
-    <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" value="{{produto.nome}}" required minlength="3" maxlength="255" class="form-control">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h4 class="mb-2">Editar dados do produto</h4>
+                </div>
+                <div class="card-body">
+                    <form action="/produtos/{{produto.id}}?_method=PUT" method="POST" class="mt-4">
+                        <!-- Campo Nome -->
+                        <div class="form-group mb-4">
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" id="nome" name="nome" value="{{produto.nome}}" required minlength="3" maxlength="255" class="form-control">
+                        </div>
+
+                        <!-- Campo Quantidade -->
+                        <div class="form-group mb-3">
+                            <label for="quantidade_inicial" class="form-label">Quantidade:</label>
+                            <input type="number" id="quantidade_inicial" name="quantidade_inicial" value="{{produto.quantidade_inicial}}" required min="1" class="form-control shadow-sm">
+                        </div>
+
+                        <!-- Campo Descrição -->
+                        <div class="form-group mb-3">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <textarea id="descricao" name="descricao" required minlength="10" maxlength="500" class="form-control">{{produto.descricao}}</textarea>
+                        </div>
+
+                        <!-- Campo Categoria -->
+                        <div class="form-group mb-3">
+                            <label for="categoria" class="form-label">Categoria:</label>
+                            <select id="categoria" name="categoria" required class="form-select shadow-sm">
+                                <option value="" disabled>Selecione uma categoria</option>
+                                <option value="Papelaria" {{#if (eq produto.categoria 'Papelaria')}}selected{{/if}}>Papelaria</option>
+                                <option value="Higiene" {{#if (eq produto.categoria 'Higiene')}}selected{{/if}}>Higiene</option>
+                                <option value="Alimentos" {{#if (eq produto.categoria 'Alimentos')}}selected{{/if}}>Alimentos</option>
+                                <option value="Eletrônicos" {{#if (eq produto.categoria 'Eletrônicos')}}selected{{/if}}>Eletrônicos</option>
+                                <option value="Limpeza" {{#if (eq produto.categoria 'Limpeza')}}selected{{/if}}>Limpeza</option>
+                                <option value="Outros" {{#if (eq produto.categoria 'Outros')}}selected{{/if}}>Outros</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo Fornecimento -->
+                        <div class="form-group mb-4">
+                            <label for="fornecimento" class="form-label">Fornecimento:</label>
+                            <input type="text" id="fornecimento" name="fornecimento" value="{{produto.fornecimento}}" required class="form-control">
+                        </div>
+
+                        <!-- Botão de Submissão -->
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="/produtos" class="btn btn-outline-secondary px-4">Voltar</a>
+                            <button type="submit" class="btn btn-primary px-4">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" required minlength="10" maxlength="500" class="form-control">{{produto.descricao}}</textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria" required class="form-control">
-            <option value="" disabled>Selecione uma categoria</option>
-            <option value="Papelaria" {{#if (eq produto.categoria 'Papelaria')}}selected{{/if}}>Papelaria</option>
-            <option value="Higiene" {{#if (eq produto.categoria 'Higiene')}}selected{{/if}}>Higiene</option>
-            <option value="Alimentos" {{#if (eq produto.categoria 'Alimentos')}}selected{{/if}}>Alimentos</option>
-            <option value="Eletrônicos" {{#if (eq produto.categoria 'Eletrônicos')}}selected{{/if}}>Eletrônicos</option>
-            <option value="Limpeza" {{#if (eq produto.categoria 'Limpeza')}}selected{{/if}}>Limpeza</option>
-            <option value="Outros" {{#if (eq produto.categoria 'Outros')}}selected{{/if}}>Outros</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="fornecimento">Fornecimento:</label>
-        <input type="text" id="fornecimento" name="fornecimento" value="{{produto.fornecimento}}" required class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-success">Salvar Alterações</button>
-</form>
-
+</div>

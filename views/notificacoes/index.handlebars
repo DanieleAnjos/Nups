@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificações</title>
+  <!-- Bootstrap CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    .card {
+      margin-bottom: 20px;
+    }
+    .empty-message {
+      text-align: center;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">Notificações</h1>
+
+    {{#if notificacoes.length}}
+      {{#each notificacoes}}
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><strong>Mensagem:</strong> {{mensagem}}</h5>
+            <p class="card-text">
+              <strong>Data de Envio:</strong> {{formatDate dataEnvio}}
+            </p>
+            <form action="/notificacoes/markAsRead/{{id}}" method="POST">
+              <button type="submit" class="btn btn-primary btn-sm" aria-label="Marcar como lida">
+                Marcar como lida
+              </button>
+            </form>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <p class="empty-message">Você não tem notificações.</p>
+    {{/if}}
+
+    <div class="text-center mt-4">
+      <a href="/dashboard" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Voltar ao Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies (Popper.js, jQuery) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

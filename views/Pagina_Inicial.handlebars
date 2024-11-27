@@ -21,9 +21,8 @@
         <img src="/IMG/Psychologist-bro (1).png" alt="Imagem representativa do Núcleo Psicossocial">
     </div>
 </main>
-<div>
-</div>
-<section  id="quem-somos">
+
+<section id="quem-somos">
     <div class="imagem-quemsomos">
         <img src="/IMG/Business mission-bro (1).png" alt="Imagem que representa a missão">
     </div>
@@ -37,7 +36,7 @@
     </div>
 </section>
 
-<section id="valores"><br><br><br>
+<section id="valores">
     <h2 class="titulo-valores">Nossos <span class="Cores_texto">Valores</span> </h2>
     <div class="cards-container">
         <div class="card">
@@ -93,7 +92,7 @@
 
         <div class="formulario">
             <h3>Agende uma Consulta</h3>
-            <form class="formulario-contato">
+                <form action="/contato/enviar" method="POST"  class="formulario-contato">
                 <label for="nome">Seu Nome:</label>
                 <input type="text" id="nome" name="nome" required>
                 
@@ -112,4 +111,59 @@
 <script src="/JS/Pagina_Inicial.js"></script>    
 </body>
 </html>
+
+
+
+{{#if success_msg}}
+  <script>
+    window.onload = function() {
+      // Verificar permissão de notificação
+      if (Notification.permission === "granted") {
+        new Notification("Sucesso", {
+          body: "{{success_msg}}",
+          icon: "/IMG/icon.png"
+        });
+      } else {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            new Notification("Sucesso", {
+              body: "{{success_msg}}",
+              icon: "/IMG/icon.png"
+            });
+          }
+        });
+      }
+
+      // Limpar o parâmetro da URL após mostrar a notificação
+      history.replaceState(null, '', window.location.pathname);
+    }
+  </script>
+{{/if}}
+
+{{#if error_msg}}
+  <script>
+    window.onload = function() {
+      // Verificar permissão de notificação
+      if (Notification.permission === "granted") {
+        new Notification("Erro", {
+          body: "{{error_msg}}",
+          icon: "/IMG/icon.png"
+        });
+      } else {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            new Notification("Erro", {
+              body: "{{error_msg}}",
+              icon: "/IMG/icon.png"
+            });
+          }
+        });
+      }
+
+      // Limpar o parâmetro da URL após mostrar a notificação
+      history.replaceState(null, '', window.location.pathname);
+    }
+  </script>
+{{/if}}
+
 

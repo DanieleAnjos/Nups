@@ -1,46 +1,63 @@
-   
-   <!DOCTYPE html>
-   <html lang="pt-br">
-   <head>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="/CSS/Styles_Login.css">
-   </head>
-   <body>
-     <div class="login-container">
-    <!-- Logo da Empresa -->
-    <img src="/IMG/pisico-removebg-preview.png" alt="Logo da Empresa" class="logo">
-    
-    <h1>Login</h1>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Logo da Empresa -->
+        <img src="/IMG/pisico-removebg-preview.png" alt="Logo da Empresa" class="logo">
+        
+        <h1>Login</h1>
 
-    <!-- Exibe mensagens de erro ou sucesso -->
-    {{#if error_msg}}
-        <div class="message error" aria-live="polite">{{error_msg}}</div>
-    {{/if}}
-    {{#if success_msg}}
-        <div class="message success" aria-live="polite">{{success_msg}}</div>
-    {{/if}}
+        <!-- Exibe mensagens de erro ou sucesso -->
+        {{#if error_msg}}
+            <div class="message error" aria-live="polite">{{error_msg}}</div>
+        {{/if}}
+        {{#if success_msg}}
+            <div class="message success" aria-live="polite">{{success_msg}}</div>
+        {{/if}}
 
-    <!-- Formulário de login -->
-    <form action="/auth/login" method="POST">
-        <div>
-            
-            <input type="text" id="usuario" name="usuario" placeholder="Usuário" autocomplete="username" required autofocus>
+        <!-- Formulário de login -->
+        <form action="/auth/login" method="POST">
+            <div>
+                <input type="text" id="usuario" name="usuario" placeholder="Usuário" autocomplete="username" required autofocus>
+            </div>
+
+            <div>
+                <input type="password" id="senha" name="senha" placeholder="Senha" autocomplete="current-password" required>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Botão de Esqueceu a senha -->
+        <div class="forgot-password">
+            <a href="/auth/forgot" class="forgot-link">Esqueceu a senha?</a>
         </div>
+    </div>
+</body>
+</html>
 
-        <div>
-           
-            <input type="password" id="senha"  placeholder="Senha"  name="senha" autocomplete="current-password" required>
-        </div>
+<style>
+.forgot-password {
+    margin-top: 15px;
+    text-align: center;
+}
 
-        <button type="submit" >Login</button>
-    </form>
-</div>
+.forgot-link {
+    font-size: 0.9rem;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
 
 
-    
-
-    
-   </body>
-   </html>
+</style>

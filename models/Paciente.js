@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); 
+const sequelize = require('../config/database');
 const Atendimento = require('../models/Atendimento');
-const axios = require('axios');  // Certifique-se de que o axios está instalado
-
-
+const Profissional = require('../models/Profissional');
+const axios = require('axios');
 
 const Paciente = sequelize.define('Paciente', {
   id: {
@@ -14,42 +13,42 @@ const Paciente = sequelize.define('Paciente', {
   dataHoraAtendimento: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW, 
+    defaultValue: DataTypes.NOW,
   },
   matricula: {
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: true,
     validate: {
-      isInt: true, 
+      isInt: true,
     },
   },
   numeroProcesso: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
-    },
+    unique: true,
+  },
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      len: [3, 255], 
+      len: [3, 255],
     },
   },
   dataNascimento: {
     type: DataTypes.DATE,
     allowNull: false,
     validate: {
-      isDate: true, 
+      isDate: true,
       isBefore: {
-        args: new Date().toISOString().slice(0, 10), 
-        msg: "A data de nascimento não pode ser no futuro."
+        args: new Date().toISOString().slice(0, 10),
+        msg: "A data de nascimento não pode ser no futuro.",
       },
     },
   },
   sexo: {
     type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
-    allowNull: false
+    allowNull: false,
   },
   escolaridade: {
     type: DataTypes.ENUM('Ensino Fundamental', 'Ensino Médio', 'Superior'),
@@ -70,8 +69,6 @@ const Paciente = sequelize.define('Paciente', {
       },
     },
   },
-
-
   bairro: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -82,23 +79,21 @@ const Paciente = sequelize.define('Paciente', {
   },
   estado: {
     type: DataTypes.STRING,
-    allowNull: true, 
+    allowNull: true,
     validate: {
-      isEmptyOrValid(value) {
-        if (value && (value.length !== 2 || !/^[A-Za-z]+$/.test(value))) {
-          throw new Error("O estado deve ter exatamente 2 caracteres e conter apenas letras.");
-        }
+      is: {
+        args: /^[A-Z]{2}$/,
+        msg: "O estado deve ter exatamente 2 caracteres alfabéticos maiúsculos.",
       },
     },
   },
-  
   numero: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   complemento: {
     type: DataTypes.STRING,
-    allowNull: true, 
+    allowNull: true,
   },
   cpf: {
     type: DataTypes.STRING,
@@ -106,8 +101,8 @@ const Paciente = sequelize.define('Paciente', {
     unique: true,
     validate: {
       is: {
-        args: /^[0-9]{11}$/, 
-        msg: "O CPF deve conter 11 números."
+        args: /^[0-9]{11}$/,
+        msg: "O CPF deve conter 11 números.",
       },
     },
   },
@@ -116,8 +111,8 @@ const Paciente = sequelize.define('Paciente', {
     allowNull: true,
     validate: {
       is: {
-        args: /^[0-9]{9}$/, 
-        msg: "O RG deve conter 9 números."
+        args: /^[0-9]{9}$/,
+        msg: "O RG deve conter 9 números.",
       },
     },
   },
@@ -132,8 +127,6 @@ const Paciente = sequelize.define('Paciente', {
       },
     },
   },
-  
-
   tipoTelefone: {
     type: DataTypes.ENUM('Celular', 'Residencial', 'Comercial'),
     allowNull: true,
@@ -144,7 +137,7 @@ const Paciente = sequelize.define('Paciente', {
   },
   telefoneContato: {
     type: DataTypes.STRING,
-    allowNull: true, 
+    allowNull: true,
     validate: {
       isEmptyOrValid(value) {
         if (value && !/^[0-9]{10,11}$/.test(value)) {
@@ -153,7 +146,6 @@ const Paciente = sequelize.define('Paciente', {
       },
     },
   },
-  
   parentesco: {
     type: DataTypes.ENUM('Pai', 'Mãe', 'Filho', 'Cônjuge', 'Outro'),
     allowNull: true,
@@ -280,54 +272,37 @@ const Paciente = sequelize.define('Paciente', {
   },
   imagePath: {
     type: DataTypes.STRING,
-    allowNull: true, 
-  }
-}, {
-  tableName: 'paciente', 
-  timestamps: true, 
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'Ativo',
+  },
 });
 
-
-Paciente.prototype.fillAddressFromCep = async function () {
-  if (this.cep) {
-    try {
-      const response = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
-      const { logradouro, bairro, localidade, uf } = response.data;
-      
-      this.endereco = logradouro;
-      this.bairro = bairro;
-      this.cidade = localidade;
-      this.estado = uf;
-    } catch (error) {
-      throw new Error('Não foi possível buscar o endereço pelo CEP.');
-    }
-  }
-};
-
-
-Paciente.fillFromAtendimento = async function (matricula) {
+Paciente.fillAddressFromCep = async function (cep) {
   try {
-    const atendimento = await Atendimento.findOne({ where: { matricula } });
-    if (atendimento) {
-      return {
-        nome: atendimento.nomePaciente,
-        numeroProcesso: atendimento.numeroProcesso,
-      };
-    }
-    return null;
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    const { logradouro, bairro, localidade, uf } = response.data;
+    return { logradouro, bairro, cidade: localidade, estado: uf };
   } catch (error) {
-    console.error("Erro ao buscar atendimento:", error);
-    throw error;
+    throw new Error('Erro ao buscar o endereço');
   }
 };
 
-Paciente.associate = (models) => {
-  Paciente.belongsTo(models.Profissional, { foreignKey: 'profissionalId' });
-  };
+Paciente.fillFromAtendimento = async function (atendimentoId) {
+  const atendimento = await Atendimento.findByPk(atendimentoId);
+  if (atendimento) {
+    return {
+      nome: atendimento.nomePaciente,
+      numeroProcesso: atendimento.numeroProcesso,
+    };
+  }
+  return null;
+};
 
-
-(async () => {
-  await sequelize.sync(); 
-})();
+Paciente.belongsTo(Profissional);
+Paciente.hasMany(Atendimento);
 
 module.exports = Paciente;

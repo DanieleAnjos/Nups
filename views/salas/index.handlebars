@@ -6,16 +6,51 @@
     <title>Lista de Salas</title>
 </head>
 <body>
-    <div class="container mt-5">
-        <!-- Título da página -->
+            <div class="container mt-5">
+                <!-- Título da página -->
+                <div id="messages-container">
+            {{#if error_msg}}
+                <div class="alert alert-danger">
+                    {{error_msg}}
+                </div>
+            {{/if}}
+
+            {{#if success_msg}}
+                <div class="alert alert-success">
+                    {{success_msg}}
+                </div>
+            {{/if}}
+        </div>
         <h1 class="text-center text-primary my-4">Lista de Salas</h1>
 
-        <!-- Botão Adicionar Nova Sala -->
         <div class="d-flex justify-content-end mb-3">
-            <a href="/salas/create" class="btn btn-primary">
+            <a href="/salas/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Nova Sala
             </a>
         </div>
+
+
+                <!-- Formulário de Filtro -->
+        <form action="/salas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <label for="filtroNome" class="form-label">Buscar por Nome:</label>
+                    <input type="text" name="nome" id="filtroNome" class="form-control" placeholder="Digite o nome da sala" value="{{query.nome}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <label for="filtroCapacidade" class="form-label">Buscar por Capacidade:</label>
+                    <input type="number" name="capacidade" id="filtroCapacidade" class="form-control" placeholder="Digite a capacidade" value="{{query.capacidade}}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end justify-content-between">
+                    <button type="submit" class="btn btn-primary flex-grow-1 me-2">Filtrar</button>
+                    <a href="/salas" class="btn btn-secondary flex-grow-1">Limpar</a>
+                </div>
+            </div>
+        </form>
+
+
+        <!-- Botão Adicionar Nova Sala -->
+
 
         <!-- Tabela de Salas -->
         <div class="table-responsive">
@@ -49,9 +84,6 @@
                             </tr>
                         {{/each}}
                     {{else}}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">Nenhuma sala encontrada.</td>
-                        </tr>
                     {{/if}}
                 </tbody>
             </table>

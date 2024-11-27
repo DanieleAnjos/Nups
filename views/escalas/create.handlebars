@@ -1,33 +1,35 @@
-<main class="content container mt-5">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="text-center my-4 text-primary">Nova Escala</h1>
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h2 class="my-2">Criar Nova Escala</h2>
+                </div>
+                                <div class="card-body">
                     <form action="/escalas" method="POST">
 
                         <!-- Campo Data -->
-                        <div class="mb-3">
-                            <label for="data" class="form-label">Data:</label>
-                            <input type="date" name="data" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="data" class="form-label">Data</label>
+                            <input type="date" name="data" id="data" class="form-control shadow-sm" required>
                         </div>
 
                         <!-- Campo Horário Início -->
-                        <div class="mb-3">
-                            <label for="horarioInicio" class="form-label">Horário Início:</label>
-                            <input type="time" name="horarioInicio" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="horarioInicio" class="form-label">Horário de Início</label>
+                            <input type="time" name="horarioInicio" id="horarioInicio" class="form-control shadow-sm" required>
                         </div>
 
                         <!-- Campo Horário Fim -->
-                        <div class="mb-3">
-                            <label for="horarioFim" class="form-label">Horário Fim:</label>
-                            <input type="time" name="horarioFim" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="horarioFim" class="form-label">Horário de Término</label>
+                            <input type="time" name="horarioFim" id="horarioFim" class="form-control shadow-sm" required>
                         </div>
 
                         <!-- Campo Profissional -->
-                        <div class="mb-3">
-                            <label for="adminId" class="form-label">Profissional:</label>
-                            <select name="adminId" class="form-select" required>
+                        <div class="mb-4">
+                            <label for="adminId" class="form-label">Profissional</label>
+                            <select name="adminId" id="adminId" class="form-select shadow-sm" required>
                                 <option value="" disabled selected>Selecione o Profissional</option>
                                 {{#each profissionais}}
                                     <option value="{{this.id}}">{{this.nome}}</option>
@@ -36,15 +38,14 @@
                         </div>
 
                         <!-- Botões -->
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-primary">Criar</button>
-                            <a href="/escalas" class="btn btn-secondary">Voltar</a>
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="/escalas" class="btn btn-outline-secondary px-4">Voltar</a>
+                            <button type="submit" class="btn btn-primary px-4">Salvar</button>
                         </div>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
-
-<script src="https://kit.fontawesome.com/a076d05399.js" defer></script>
+</div>

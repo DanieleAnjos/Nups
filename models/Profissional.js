@@ -16,7 +16,7 @@ const Profissional = sequelize.define('Profissional', {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: false,
     validate: {
       isEmail: true,
     },
@@ -47,11 +47,11 @@ const Profissional = sequelize.define('Profissional', {
     },
   },
   cpf: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(11), // CPF fixado para 11 caracteres
     allowNull: false,
     unique: true,
     validate: {
-      is: /^[0-9]{11}$/, 
+      is: /^[0-9]{11}$/,
     },
   },
   dataNascimento: {

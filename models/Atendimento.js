@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // Ajuste o caminho conforme necessário
 const Profissional = require('../models/Profissional'); // Modelo Profissional
 const Paciente = require('../models/Paciente');
-const Encaminhamento = require('../models/Encaminhamento'); ///
+const Encaminhamento = require('../models/Encaminhamento'); // Modelo Encaminhamento
 
 const Atendimento = sequelize.define('Atendimento', {
   id: {
@@ -56,29 +56,38 @@ const Atendimento = sequelize.define('Atendimento', {
   timestamps: true,
   hooks: {
     async afterCreate(atendimento, options) {
-        try {
-          const profissional = await Profissional.findByPk(atendimento.profissionalId);
-          await Encaminhamento.create({
-            nomePaciente: atendimento.nomePaciente,
-            matriculaPaciente: atendimento.matricula.toString(),
-            nomeProfissional: profissional ? profissional.nome : null,
-            profissaoProfissional: atendimento.encaminhamento,
-            assuntoAcolhimento: atendimento.assunto,
-            descricao: atendimento.registroAtendimento,
-            statusAcolhimento: 'Pendente',
-            atendimentoId: atendimento.id,
-          });
-        } catch (error) {
-          console.error('Erro ao criar o encaminhamento:', error);
-        }
-    }
-  }
+      try {
+        // Buscando o profissional responsável pelo atendimento
+        const profissional = await Profissional.findByPk(atendimento.profissionalId);
+
+        // Criando o encaminhamento relacionado ao atendimento
+        await Encaminhamento.create({
+          nomePaciente: atendimento.nomePaciente,
+          matriculaPaciente: atendimento.matricula.toString(),
+          nomeProfissional: profissional ? profissional.nome : null,
+          profissaoProfissional: atendimento.encaminhamento,
+          assuntoAcolhimento: atendimento.assunto,
+          descricao: atendimento.registroAtendimento,
+          statusAcolhimento: 'Pendente', // Status inicial do encaminhamento
+          atendimentoId: atendimento.id, // Relacionando o encaminhamento ao atendimento
+        });
+      } catch (error) {
+        console.error('Erro ao criar o encaminhamento:', error);
+      }
+    },
+  },
+});
+
+Atendimento.belongsTo(Profissional, {
+  foreignKey: 'profissionalId',
+  as: 'profissional' // Definindo um alias explícito
 });
 
 
-Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
 
-
-
+// Definindo a associação entre Atendimento e Profissional
+Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId' });
+// Definindo a associação entre Atendimento e Encaminhamento
+Atendimento.hasMany(Encaminhamento, { foreignKey: 'atendimentoId' });
 
 module.exports = Atendimento;

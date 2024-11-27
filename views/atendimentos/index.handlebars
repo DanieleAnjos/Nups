@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Atendimentos</title>
+    <title>Atendimentos encaminhados</title>
 </head>
 <body>
     <div class="container mt-5">
         <!-- Título da página -->
-        <h2 class="text-center text-primary my-4">Lista de Atendimentos</h2>
+        <h2 class="text-center text-primary my-4">Atendimentos encaminhados</h2>
 
         <!-- Filtro de busca -->
         <div class="d-flex justify-content-between mb-3">
@@ -21,7 +21,7 @@
             
             <!-- Botão Novo Atendimento -->
             <a href="/atendimentos/create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Novo Atendimento
+                <i class="bi bi-plus-circle"></i> Novo Encaminhamento
             </a>
         </div>
 
@@ -30,35 +30,40 @@
             <table class="table table-hover table-striped table-bordered mt-3">
                 <thead class="table-primary">
                     <tr class="text-center">
-                        <th>ID</th>
+                        <th>Data</th>
                         <th>Paciente</th>
-                        <th>Profissional</th>
                         <th>Assunto</th>
+                        <th>Profissional</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each atendimentos}}
                         <tr>
-                            <td>{{this.id}}</td>
+                            <td>{{formatDate this.createdAt}}</td>
                             <td>{{this.nomePaciente}}</td>
-                            <td>{{this.profissional.nome}}</td> <!-- Nome do profissional -->
                             <td>{{this.assunto}}</td>
+                            <td>{{this.profissional.nome}}</td> <!-- Nome do profissional -->
                             <td class="text-center">
-                                <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este atendimento?');">
-                                        <i class="bi bi-trash"></i> Deletar
-                                    </button>
-                                </form>
+
+                                    {{#if user.role}}
+                                        {{#if (eq user.role 'administrador')}}
+                                            <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                                <i class="bi bi-pencil-square"></i> Editar
+                                             </a>
+                                        <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                            <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este atendimento?');">
+                                                <i class="bi bi-trash"></i> Deletar
+                                            </button>
+                                        </form>
+                                        {{/if}}
+                                    {{/if}}
                             </td>
                         </tr>
                     {{else}}
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum atendimento encontrado.</td>
+                            <td colspan="5" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
                         </tr>
                     {{/each}}
                 </tbody>

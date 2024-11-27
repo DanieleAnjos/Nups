@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); 
-const Atendimento = require('../models/Atendimento');  
+const Atendimento = require('../models/Atendimento'); 
+ // Adjust path as necessary
 
 const Encaminhamento = sequelize.define('Encaminhamento', {
   id: {
@@ -21,34 +22,29 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     allowNull: false,
   },
   profissaoProfissional: {
-    type: DataTypes.ENUM('Assistente social', 'Psicólogo', 'Psiquiatra'),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   assuntoAcolhimento: {
-    type: DataTypes.ENUM('Acolhimento de disparo', 'Acolhimento psicossocial', 'Exposição negativa na mídia'),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   descricao: {
     type: DataTypes.TEXT,
-    allowNull: true,
+    allowNull: false,
   },
   statusAcolhimento: {
     type: DataTypes.ENUM('Pendente', 'Realizado'),
-    allowNull: false,
     defaultValue: 'Pendente',
   },
   atendimentoId: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'Atendimentos',  
+      model: 'Atendimentos', // The table name (it should match the one in the DB)
       key: 'id',
     },
     allowNull: false,
   },
-}, {
-  sequelize,
-  timestamps: true,
 });
-
 
 module.exports = Encaminhamento;

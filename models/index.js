@@ -1,37 +1,29 @@
-const sequelize = require('../config/database');
-const Paciente = require('./Paciente');
-const Atendimento = require('./Atendimento');
-const Evento = require('./Evento');
-const Imagem = require('./Imagem');
-const Produto = require('./Produto');
-const AjusteEstoque = require('./AjusteEstoque');
-
-Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
-Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
-Paciente.belongsTo(Atendimento, { foreignKey: 'matricula' }); 
-Atendimento.hasMany(Paciente, { foreignKey: 'matricula' });
-
-Produto.hasMany(AjusteEstoque, {
-    foreignKey: 'produtoId',
-    as: 'ajustesEstoque',  
-  });
-  
-  AjusteEstoque.belongsTo(Produto, {
-    foreignKey: 'produtoId',
-    targetKey: 'id',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-    as: 'produto'  
-  });
-  
-  
-
-module.exports = {
-    sequelize,
+module.exports = (sequelize) => {
+  const { 
     Paciente,
     Atendimento,
     Evento,
     Imagem,
     Produto,
     AjusteEstoque,
+    Profissional,
+    Mensagem,
+    Atendimento2,
+    Usuario,
+    Encaminhamento,
+  } = sequelize.models;
+
+  // Relacionamento entre Evento e Imagem
+  Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
+  Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
+
+  // Relacionamento entre Atendimento e Profissional
+  Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
+
+  // Relacionamento entre Atendimento e Paciente
+  Atendimento.belongsTo(Paciente, { foreignKey: 'pacienteId', as: 'paciente' });
+  Paciente.hasMany(Atendimento, { foreignKey: 'pacienteId' });
+
+  // Relacionamento entre Atendimento e Encaminhamento
+  Atendimento.belongsTo(Encaminhamento, { foreignKey: 'encaminhamentoId', as: 'encaminhamento' });
 };

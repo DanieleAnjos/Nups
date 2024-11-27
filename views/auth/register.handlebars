@@ -1,38 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Usuário</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 500px;
+            margin-top: 100px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #343a40; /* Cor do título */
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
 <div class="container">
-        <h1>Criar Usuário</h1>
+    <h1>Criar Usuário</h1>
 
-        {{#if error_msg}}
-            <div class="alert alert-danger">
-                {{error_msg}}
-            </div>
-        {{/if}}
+    {{#if error_msg}}
+        <div class="alert alert-danger">
+            {{error_msg}}
+        </div>
+    {{/if}}
 
-        {{#if success_msg}}
-            <div class="alert alert-success">
-                {{success_msg}}
-            </div>
-        {{/if}}
+    {{#if success_msg}}
+        <div class="alert alert-success">
+            {{success_msg}}
+        </div>
+    {{/if}}
 
-        <form action="/auth/register" method="POST">
-            <div class="form-group">
-                <label for="usuario">Nome de Usuário:</label>
-                <input type="text" id="usuario" name="usuario" required>
-            </div>
-            <div class="form-group">
-                <label for="senha">Senha:</label>
-                <input type="password" id="senha" name="senha" required>
-            </div>
-            <div class="form-group">
-                <label for="profissionalId">Profissional:</label>
-                <select id="profissionalId" name="profissionalId" required>
-                    <option value="">Selecione um profissional</option>
-                    {{#each profissionais}}
-                        <option value="{{this.id}}">{{this.nome}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <button type="submit">Criar Usuário</button>
-        </form>
+    <form action="/auth/register" method="POST">
+        <div class="form-group">
+            <label for="usuario">Nome de Usuário:</label>
+            <input type="text" id="usuario" name="usuario" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="profissionalId">Profissional:</label>
+            <select id="profissionalId" name="profissionalId" class="form-control" required>
+                <option value="">Selecione um profissional</option>
+                {{#each profissionais}}
+                    <option value="{{this.id}}">{{this.nome}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Criar Usuário</button>
+    </form>
+</div>
 
-        <p>Já tem uma conta? <a href="/auth/login">Faça login aqui</a></p>
-    </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 const Paciente = require('../models/Paciente');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional');
+const Atendimento2 = require('../models/Atendimento2');
+
+
 const { Op } = require('sequelize'); 
 const Encaminhamento = require('../models/Encaminhamento');
 const { upload, uploadErrorHandler } = require('../config/multer');
@@ -27,6 +30,28 @@ exports.index = async (req, res) => {
   }
 };
 
+exports.index2 = async (req, res) => {
+  try {
+    const { nome, matricula } = req.query; 
+
+    const where = {}; 
+
+    if (nome) {
+      where.nome = { [Op.like]: `%${nome}%` }; 
+    }
+
+    if (matricula) {
+      where.matricula = matricula; 
+    }
+
+    const pacientes = await Paciente.findAll({ where });
+    res.render('paciente/lista', { pacientes, query: req.query }); 
+  } catch (error) {
+    console.error('Erro ao listar pacientes:', error);
+    res.status(500).send('Erro ao listar pacientes. Por favor, tente novamente mais tarde.');
+  }
+};
+
 exports.create = async (req, res) => {
   try {
     const atendimentos = await Atendimento.findAll();
@@ -36,13 +61,16 @@ exports.create = async (req, res) => {
     res.render('paciente/create', { errorMessage: 'Erro ao buscar os encaminhamentos.' });
   }
 };
-
 exports.store = [
   upload.single('imagem'),
   uploadErrorHandler, 
   async (req, res) => {
     try {
       if (req.file) {
+        // Valida se o arquivo é uma imagem
+        if (!req.file.mimetype.startsWith('image/')) {
+          return res.status(400).send('Por favor, carregue apenas arquivos de imagem.');
+        }
         console.log('Arquivo carregado:', req.file); 
       } else {
         console.log('Nenhum arquivo foi carregado.'); 
@@ -61,14 +89,14 @@ exports.store = [
         return res.status(400).send('Atendimento não encontrado para a matrícula fornecida.');
       }
 
-      const nome = atendimento.nome;
+      const nome = atendimento.nomePaciente; 
       const numeroProcesso = atendimento.numeroProcesso;
 
       const imagePath = req.file ? req.file.filename : null;
 
       await Paciente.create({
         nome,
-        matricula,
+        matricula, 
         dataNascimento,
         sexo,
         cpf,
@@ -78,13 +106,22 @@ exports.store = [
         cadastroCompleto: false,
       });
 
+      const encaminhamento = await Encaminhamento.findOne({ where: { atendimentoId: atendimento.id } });
+
+      if (encaminhamento) {
+        encaminhamento.statusAcolhimento = 'Realizado';
+        await encaminhamento.save();
+      }
+
       res.redirect(`/pacientes`);
     } catch (error) {
       console.error('Erro ao criar paciente:', error);
-      res.status(500).json({ message: 'Erro ao criar paciente. Verifique os dados e tente novamente.', error: error.message });
+      return res.status(500).json({ message: 'Erro ao criar paciente. Verifique os dados e tente novamente.', error: error.message });
     }
   }
 ];
+
+
 
 
 
@@ -138,20 +175,18 @@ exports.delete = async (req, res) => {
 exports.perfil = async (req, res) => {
   const { id } = req.params; 
   try {
-    const paciente = await Paciente.findByPk(id, {
-      include: [{
-        model: Atendimento,
-        include: [{
-          model: Profissional,  
-          as: 'profissional',   
-        }],
-        required: false
-      }]
-    });
-    
+    const paciente = await Paciente.findByPk(id);
 
     if (paciente) {
-      return res.render('paciente/perfil', { paciente });
+      const atendimentos = await Atendimento2.findAll({
+        where: { matriculaPaciente: paciente.matricula }, 
+        include: [{
+          model: Profissional,
+          as: 'profissional',
+        }],
+      });
+
+      return res.render('paciente/perfil', { paciente, atendimentos });
     } else {
       return res.status(404).send('Paciente não encontrado.');
     }
@@ -160,3 +195,4 @@ exports.perfil = async (req, res) => {
     return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };
+

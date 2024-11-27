@@ -1,4 +1,3 @@
-{{!-- Exibindo o perfil do paciente --}}
 <div class="profile-container">
   <div class="profile-card">
     <div class="profile-header">
@@ -11,7 +10,7 @@
       </div>
       <h1 class="profile-name">{{paciente.nome}}</h1>
     </div>
-    
+
     <div class="profile-content">
       <div class="info-section">
         <h2>Informações Pessoais</h2>
@@ -24,10 +23,10 @@
           <div class="info-item">
             <i class="fas fa-calendar-alt"></i>
             <span class="label">Data de Nascimento:</span>
-            <span class="value">{{paciente.dataNascimento}}</span>
+            <span class="value">{{formatDate paciente.dataNascimento}}</span>
           </div>
           <div class="info-item">
-          <i class="fas fa-calendar-alt"></i>
+            <i class="fas fa-venus-mars"></i>
             <span class="label">Sexo:</span>
             <span class="value">{{paciente.sexo}}</span>
           </div>
@@ -43,17 +42,19 @@
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
-            <span class="label">Matricula:</span>
+            <span class="label">Matrícula:</span>
             <span class="value">{{paciente.matricula}}</span>
           </div>
         </div>
       </div>
+
       <div class="info-section">
         <h2>Histórico Médico</h2>
         <div class="medical-history">
           <p>{{paciente.observacoes}}</p>
         </div>
       </div>
+
       <div class="info-section">
         <h2>Endereço</h2>
         <div class="address-container">
@@ -61,6 +62,7 @@
           <p>{{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}</p>
         </div>
       </div>
+
       <div class="info-section">
         <h2>Contato de Emergência</h2>
         <div class="emergency-contact">
@@ -69,27 +71,78 @@
         </div>
       </div>
     </div>
-    <div class="action-buttons">
-      <a href="/pacientes" class="back-button">
-        <i class="fas fa-arrow-left"></i> Voltar para a lista
-      </a>
-    </div>
+  </div>
+
+  <!-- Atendimentos -->
+  <div class="attendances-section">
+    <h2>Atendimentos</h2>
+    {{#if atendimentos}}
+      <table class="attendances-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Profissional</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each atendimentos as |atendimento|}}
+            <tr class="attendance-item">
+              <td>{{formatDate atendimento.dataAtendimento}}</td>
+              <td>{{atendimento.profissional.nome}}</td>
+              <td>{{atendimento.registroAtendimento}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p>Este paciente não possui atendimentos registrados.</p>
+    {{/if}}
   </div>
 </div>
 
 <style>
+  .attendances-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background-color: #ffffff;
+  }
+
+  .attendances-table th, .attendances-table td {
+    padding: 1rem;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+
+  .attendances-table th {
+    background-color: #f3f4f6;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .attendance-item:hover {
+    background-color: #f9fafb;
+  }
+
+  .attendances-section {
+    margin-top: 40px;
+  }
+
   .profile-container {
     min-height: 100vh;
     padding: 2rem;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+    flex-direction: column;
+    align-items: center;
     font-family: 'Inter', sans-serif;
   }
+
   .profile-card {
-    width: 100%;
-    max-width: 900px;
+    width: 1000px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -97,6 +150,7 @@
     position: relative;
     margin-top: 2rem;
   }
+
   .profile-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 3rem 2rem;
@@ -104,12 +158,14 @@
     color: white;
     position: relative;
   }
+
   .image-container {
     position: relative;
     width: 150px;
     height: 150px;
     margin: 0 auto 1.5rem;
   }
+
   .profile-image {
     width: 100%;
     height: 100%;
@@ -118,12 +174,14 @@
     border: 4px solid white;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
+
   .profile-name {
     font-size: 2.2rem;
     font-weight: 700;
     margin: 0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
   .profile-badge {
     display: inline-block;
     background: rgba(255, 255, 255, 0.2);
@@ -133,12 +191,15 @@
     margin-top: 0.5rem;
     backdrop-filter: blur(5px);
   }
+
   .profile-content {
     padding: 2rem;
   }
+
   .info-section {
     margin-bottom: 2.5rem;
   }
+
   .info-section h2 {
     color: #2d3748;
     font-size: 1.5rem;
@@ -147,6 +208,7 @@
     position: relative;
     padding-bottom: 0.5rem;
   }
+
   .info-section h2::after {
     content: '';
     position: absolute;
@@ -157,11 +219,13 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 3px;
   }
+
   .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
   }
+
   .info-item {
     display: flex;
     align-items: center;
@@ -171,77 +235,57 @@
     border-radius: 12px;
     transition: transform 0.2s ease;
   }
+
   .info-item:hover {
     transform: translateY(-2px);
   }
+
   .info-item i {
     color: #667eea;
     font-size: 1.2rem;
   }
+
   .label {
     color: #64748b;
     font-weight: 500;
   }
+
   .value {
     color: #1e293b;
     font-weight: 600;
     margin-left: auto;
   }
+
   .address-container {
     background: #f8fafc;
     padding: 1.5rem;
     border-radius: 12px;
   }
+
   .address-container p {
     margin: 0.5rem 0;
     color: #1e293b;
   }
+
   .emergency-contact {
     background: #fff5f5;
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid #fed7d7;
   }
+
   .emergency-contact p {
     margin: 0.5rem 0;
     color: #c53030;
   }
-  .action-buttons {
-    padding: 2rem;
-    background: #f8fafc;
-    text-align: center;
-  }
-  .back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: #667eea;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-  .back-button:hover {
-    background: #5a67d8;
-    transform: translateY(-2px);
-  }
+
   @media (max-width: 768px) {
     .profile-container {
       padding: 1rem;
     }
+
     .profile-card {
-      margin-top: 1rem;
-    }
-    .profile-header {
-      padding: 2rem 1rem;
-    }
-    .profile-name {
-      font-size: 1.8rem;
-    }
-    .info-grid {
-      grid-template-columns: 1fr;
+      width: 100%;
     }
   }
 </style>

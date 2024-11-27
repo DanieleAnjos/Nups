@@ -1,5 +1,4 @@
 const Produto = require('../models/Produto');
-const Fornecedor = require('../models/Fornecedor');
 const AjusteEstoque = require('../models/AjusteEstoque');
 const { Op } = require('sequelize');
 
@@ -21,16 +20,21 @@ const produtoController = {
         where,
         include: [{
           model: AjusteEstoque,
-          as: 'ajustesEstoque', 
-          attributes: ['tipo', 'quantidade']
+          as: 'ajustesEstoque',
+          attributes: ['tipo', 'quantidade'],
         }],
       });
 
       const produtosComQuantidadeAtual = produtos.map(produto => {
+        let quantidadeAjustada = produto.quantidade_inicial;
 
-        const quantidadeAjustada = produto.ajustesEstoque.reduce((total, ajuste) => {
-          return total + (ajuste.quantidade || 0);  
-        }, produto.quantidade_inicial);
+        produto.ajustesEstoque.forEach(ajuste => {
+          if (ajuste.tipo === 'entrada') {
+            quantidadeAjustada += ajuste.quantidade || 0;
+          } else if (ajuste.tipo === 'saida') {
+            quantidadeAjustada -= ajuste.quantidade || 0;
+          }
+        });
 
         produto.quantidade_atual = quantidadeAjustada;
         return produto;
@@ -51,8 +55,7 @@ const produtoController = {
 
   create: async (req, res) => {
     try {
-      const fornecedores = await Fornecedor.findAll();
-      res.render('produtos/create', { fornecedores });
+      res.render('produtos/create');
     } catch (error) {
       console.error('Erro ao carregar fornecedores:', error);
       req.flash('error', 'Erro ao carregar fornecedores.');
@@ -75,10 +78,9 @@ const produtoController = {
   edit: async (req, res) => {
     try {
       const produto = await Produto.findByPk(req.params.id);
-      const fornecedores = await Fornecedor.findAll();
 
       if (produto) {
-        res.render('produtos/edit', { produto, fornecedores });
+        res.render('produtos/edit', { produto});
       } else {
         req.flash('error', 'Produto não encontrado');
         res.redirect('/produtos');

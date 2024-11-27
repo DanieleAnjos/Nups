@@ -10,11 +10,12 @@ const cors = require('cors');
 const passport = require('./config/passportConfig'); 
 const argon2 = require('argon2'); 
 const Profissional = require('./models/Profissional');
+const sequelize = require('./config/database');  // Supondo que você tenha a instância do sequelize configurada
+
 
 const authRoutes = require('./routes/authRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const escalaRoutes = require('./routes/escalaRoutes');
-const fornecedorRoutes = require('./routes/fornecedorRoutes');
 const produtoRoutes = require('./routes/produtoRoutes');
 const ajusteEstoqueRoutes = require('./routes/ajusteEstoqueRoutes');
 const atendimentoRoutes = require('./routes/atendimentoRoutes');
@@ -26,25 +27,34 @@ const eventoRoutes = require('./routes/eventoRoutes');
 const encaminhamentosRoutes = require('./routes/encaminhamentosRoutes');
 const relatoriosRoutes = require('./routes/relatoriosRoutes');
 const profissionalRoutes = require('./routes/profissionalRoutes');
-
+const mensagemRoutes = require('./routes/mensagemRoutes');
+const atendimentos2Routes = require('./routes/atendimentos2Routes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const notificacaoRoutes = require('./routes/notificacaoRoutes');
+const graficosRoutes = require('./routes/graficosRoutes');
+const contatoRoutes = require('./routes/contatoRoutes');
+ 
 
 
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
 const PORT = process.env.PORT || 3002;
+const { format } = require('date-fns');
+const { ptBR } = require('date-fns/locale');
+
 const hbs = engine({
-    defaultLayout: 'main',  
-    layoutsDir: path.join(__dirname, 'views', 'layouts'), 
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
     partialsDir: [
-        path.join(__dirname, 'views', 'partials'),      
-        path.join(__dirname, 'views', 'partials', 'public')  
+        path.join(__dirname, 'views', 'partials'),
+        path.join(__dirname, 'views', 'partials', 'public')
     ],
     helpers: {
         eq: (a, b) => a === b,
         ifCond: (v1, v2, options) => (v1 === v2 ? options.fn(this) : options.inverse(this)),
         ifEquals: (arg1, arg2, options) => (arg1 === arg2 ? options.fn(this) : options.inverse(this)),
-        
+
         formatDate: (date) => {
             if (!date) return '';
             const d = new Date(date);
@@ -62,9 +72,18 @@ const hbs = engine({
             const day = String(d.getDate()).padStart(2, '0');
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
-            return `${day}/${month}/${year} ${hours}:${minutes}`; 
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
         },
-        
+
+        formatDateWithFns: (date) => {
+            if (!date) return '';
+            return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
+        },
+
+        isActive: function(currentPath, expectedPath) {
+            return currentPath === expectedPath ? 'active' : '';
+        },
+
         json: function(context) {
             return JSON.stringify(context);
         }
@@ -74,6 +93,7 @@ const hbs = engine({
         allowProtoMethodsByDefault: true
     }
 });
+
 
 
 
@@ -126,9 +146,18 @@ app.get('/Quem_Somos',function(req, res)  {
     res.render('Quem_Somos', {layout: 'public/public-layout'});
 });
 
-app.get('/Pagina_Inicial',function(req, res)  {
-    res.render('Pagina_Inicial', {layout: 'public/public-layout'});
+app.get('/Pagina_Inicial', function(req, res) {
+    const { error_msg, success_msg } = req.query; // Captura as mensagens na query string
+    
+    // Passa as mensagens para o template Handlebars
+    res.render('Pagina_Inicial', {
+        layout: 'public/public-layout',
+        error_msg: error_msg || null,  // Se não houver mensagem de erro, passa null
+        success_msg: success_msg || null // Se não houver mensagem de sucesso, passa null
+    });
 });
+
+app.use('/contato', contatoRoutes);
 
 
 app.use(async (req, res, next) => {
@@ -212,22 +241,47 @@ const accessControl = {
         '/encaminhamentos',
         '/relatorios',  
         '/estoque',
+        '/mensagens',
         '/produtos',
+        '/atendimentos2',
+        '/notificacoes',
+        '/graficos',
+        '/usuarios',
+        '/auth/lista',
     ],
     'Assistente social': [
         '/dashboard/assistente-social',
         '/atendimentos',
         '/ocorrencias',
-        '/salas',
+        '/mensagens',
         '/pacientes',
+        '/reservas',
+        '/atendimentos2',
+        '/profissionais/meu_perfil',
+
     ],
     'Psicólogo': [
         '/dashboard/psicologo-psiquiatra',
         '/dashboard/psicologo',
+        '/atendimentos',
+        '/ocorrencias',
+        '/mensagens',
+        '/pacientes',
+        '/reservas',
+        '/atendimentos2',
+        '/profissionais/meu_perfil',
+
     ],
     'Psiquiatra': [
         '/dashboard/psicologo-psiquiatra',
         '/dashboard/psicologo',
+        '/atendimentos',
+        '/ocorrencias',
+        '/mensagens',
+        '/pacientes',
+        '/reservas',
+        '/atendimentos2',
+        '/profissionais/meu_perfil',
     ],
 };
 
@@ -235,7 +289,6 @@ const accessControl = {
 app.use('/profissionais', profissionalRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/escalas', escalaRoutes);
-app.use('/fornecedores', fornecedorRoutes);
 app.use('/produtos', produtoRoutes);
 app.use('/ajustes', ajusteEstoqueRoutes);
 app.use('/atendimentos', atendimentoRoutes);
@@ -246,6 +299,12 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/eventos2', eventoRoutes);
 app.use('/encaminhamentos', encaminhamentosRoutes);
 app.use('/relatorios', relatoriosRoutes);
+app.use('/mensagens', mensagemRoutes);
+app.use('/atendimentos2', atendimentos2Routes);
+app.use('/notificacoes', notificacaoRoutes);
+app.use('/graficos', graficosRoutes);
+app.use('/auth', usuarioRoutes);
+
 
 app.use((req, res) => {
     res.status(404).render('404'); 
@@ -259,3 +318,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+sequelize.sync({ alter: true })
+  .then(() => console.log('Tabelas sincronizadas ou alteradas'))
+  .catch(err => console.error('Erro ao sincronizar tabelas:', err));

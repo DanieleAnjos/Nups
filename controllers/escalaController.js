@@ -8,39 +8,49 @@ const puppeteer = require('puppeteer');
 
 const escalaController = {
   index: async (req, res) => {
-    try {
-      const { data, horarioInicio, horarioFim, profissional } = req.query;
-  
-      const where = {};
-  
-      if (data) {
-        where.data = data; 
+      try {
+          const { data, horarioInicio, horarioFim, profissional } = req.query;
+
+          const where = {};
+
+          if (data) {
+              where.data = data;
+          }
+
+          if (horarioInicio) {
+              where.horarioInicio = { [Op.gte]: horarioInicio };
+          }
+
+          if (horarioFim) {
+              where.horarioFim = { [Op.lte]: horarioFim };
+          }
+
+          const include = [{
+              model: Profissional,
+              as: 'admin', 
+              attributes: ['nome'], 
+              where: profissional ? { id: profissional } : undefined, 
+          }];
+
+          const escalas = await Escala.findAll({
+              where,
+              include,
+          });
+
+          const profissionais = await Profissional.findAll();
+          res.render('escalas/index', {
+              escalas,
+              profissionais,
+              query: req.query,
+          });
+      } catch (error) {
+          console.error('Erro ao listar escalas:', error);
+          res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
       }
+  },
+
   
-      if (horarioInicio) {
-        where.horarioInicio = { [Op.gte]: horarioInicio }; 
-      }
   
-      if (horarioFim) {
-        where.horarioFim = { [Op.lte]: horarioFim }; 
-      }
-  
-      if (profissional) {
-        where.adminId = profissional; 
-      }
-  
-      const escalas = await Escala.findAll({ 
-        where, 
-        include: [{ model: Profissional, as: 'admin' }] 
-      });
-      
-      const profissionais = await Profissional.findAll(); 
-      res.render('escalas/index', { escalas, profissionais, query: req.query }); 
-    } catch (error) {
-      console.error('Erro ao listar escalas:', error);
-      res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
-    }
-  },  
 
   
 

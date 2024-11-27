@@ -1,123 +1,262 @@
-<h1>Criar Atendimento</h1>
-<form action="/atendimentos" method="POST">
-    <div>
-        <label for="matricula">Matrícula:</label>
-        <input type="number" id="matricula" name="matricula" required>
-    </div>
-    <div>
-        <label for="nomePaciente">Nome do Paciente:</label>
-        <input type="text" id="nomePaciente" name="nomePaciente" required>
-    </div>
-    <div>
-        <label for="numeroProcesso">Número do Processo:</label>
-        <input type="text" id="numeroProcesso" name="numeroProcesso" required>
-    </div>
-    <div>
-        <label for="telefone">Telefone:</label>
-        <input type="text" id="telefone" name="telefone" placeholder="10 ou 11 dígitos">
-    </div>
-    <div>
-        <label for="assunto">Assunto:</label>
-        <select id="assunto" name="assunto" required>
-            <option value="Acolhimento de disparo">Acolhimento de disparo</option>
-            <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
-            <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-        </select>
-    </div>
-    <div>
-        <label for="registroAtendimento">Registro de Atendimento:</label>
-        <textarea id="registroAtendimento" name="registroAtendimento" required></textarea>
-    </div>
-    <div>
-        <label for="encaminhamento">Encaminhamento:</label>
-        <select id="encaminhamento" name="encaminhamento" onchange="atualizarProfissionais()">
-            <option value="">Selecione</option>
-            <option value="Psicólogo">Psicologia</option>
-            <option value="'Assistente social">'Assistente social</option>
-            <option value="Psiquiatra">Psiquiatria</option>
-        </select>
-    </div>
-    <div>
-        <label for="profissionalId">Profissional:</label>
-          <select id="profissionalId" name="profissionalId" required>
-              <option value="">Selecione um profissional</option>
-              {{#each profissionais}}
-                  <option value="{{this.id}}" data-cargo="{{this.cargo}}">{{this.nome}}</option>
-              {{/each}}
-          </select>
-    </div>
-    <div>
-        <button type="submit">Criar Atendimento</button>
-    </div>
-</form>
 
-<script>
-    function salvarDadosFormulario() {
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 900px;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #3f37cd;
+        }
+        .form-control, .form-select, textarea {
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-custom {
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group .form-control {
+            margin-top: 8px;
+        }
+        .btn-link {
+            padding: 0;
+            font-size: 16px;
+        }
+    </style>
+
+<div class="container">
+<div id="messages-container">
+    {{#if error_msg}}
+        <div class="alert alert-danger">
+            {{error_msg}}
+        </div>
+    {{/if}}
+
+    {{#if success_msg}}
+        <div class="alert alert-success">
+            {{success_msg}}
+        </div>
+    {{/if}}
+</div>
+
+
+    <h1>Cadastrar Acolhimento</h1>
+    <form action="/atendimentos" method="POST" id="formAtendimento">
+        <!-- Matrícula -->
+        <div class="form-section">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="matricula">Matrícula:</label>
+                        <input type="number" id="matricula" name="matricula" class="form-control" required>
+                        <div id="matriculaError" class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="numeroProcesso">Número do Processo:</label>
+                        <input type="text" id="numeroProcesso" name="numeroProcesso" class="form-control" required>
+                        <div id="numeroProcessoError" class="text-danger"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nome do Paciente -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="nomePaciente">Nome do Paciente:</label>
+                <input type="text" id="nomePaciente" name="nomePaciente" class="form-control" required>
+                <div id="nomePacienteError" class="text-danger"></div>
+            </div>
+        </div>
+
+        <!-- Telefone -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" class="form-control" placeholder="10 ou 11 dígitos">
+                <div id="telefoneError" class="text-danger"></div>
+            </div>
+        </div>
+
+        <!-- Assunto -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="assunto">Assunto:</label>
+                <select id="assunto" name="assunto" class="form-select" required>
+                    <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+                    <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+                    <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Registro de Atendimento -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="registroAtendimento">Registro de Atendimento:</label>
+                <textarea id="registroAtendimento" name="registroAtendimento" class="form-control" required rows="4"></textarea>
+                <div id="registroAtendimentoError" class="text-danger"></div>
+            </div>
+        </div>
+
+        <!-- Encaminhamento -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="encaminhamento">Encaminhamento:</label>
+                <select id="encaminhamento" name="encaminhamento" class="form-select" onchange="atualizarProfissionais()" required>
+                    <option value="">Selecione</option>
+                    <option value="Psicólogo">Psicologia</option>
+                    <option value="Assistente social">Assistente social</option>
+                    <option value="Psiquiatra">Psiquiatria</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Profissional -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="profissionalId">Profissional:</label>
+                <select id="profissionalId" name="profissionalId" class="form-select" required>
+                    <option value="">Selecione um profissional</option>
+                    {{#each profissionais}}
+                        <option value="{{this.id}}" data-cargo="{{this.cargo}}">{{this.nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+
+        <!-- Botão de Submissão -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-custom">Criar Atendimento</button>
+        </div>
+    </form>
+</div>
+
+    <script>
+
+        function atualizarProfissionais() {
+            const encaminhamentoSelect = document.getElementById('encaminhamento');
+            const encaminhamentoSelecionado = encaminhamentoSelect.value;
+
+            // Salva os dados do formulário antes de buscar profissionais
+            salvarDadosFormulario();
+
+            // Faz a requisição para buscar os profissionais
+            fetch(`/api/profissionais?encaminhamento=${encaminhamentoSelecionado}`)
+                .then(response => response.json())
+                .then(data => {
+                    const profissionaisContainer = document.getElementById('profissionaisContainer');
+                    profissionaisContainer.innerHTML = ''; // Limpa os profissionais anteriores
+
+                    if (data.length > 0) {
+                        const ul = document.createElement('ul');
+
+                        data.forEach(profissional => {
+                            const li = document.createElement('li');
+                            li.textContent = `${profissional.nome} - ${profissional.cargo}`;
+                            ul.appendChild(li);
+                        });
+
+                        profissionaisContainer.appendChild(ul);
+                    } else {
+                        profissionaisContainer.textContent = 'Nenhum profissional encontrado.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar profissionais:', error);
+                });
+        }
+
+        document.getElementById('formAtendimento').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o envio do formulário para validação
+
+        let isValid = true;
+
+        // Resetando mensagens de erro
+        document.querySelectorAll('.text-danger').forEach(function(errorElement) {
+            errorElement.textContent = '';
+        });
+
+        // Matrícula
         const matricula = document.getElementById('matricula').value;
-        const nomePaciente = document.getElementById('nomePaciente').value;
+        if (matricula <= 0) {
+            document.getElementById('matriculaError').textContent = 'A matrícula deve ser um número positivo.';
+            isValid = false;
+        }
+
+        // Número de Processo (válido como texto alfanumérico)
         const numeroProcesso = document.getElementById('numeroProcesso').value;
+        const processoPattern = /^[A-Za-z0-9]+$/;
+        if (!processoPattern.test(numeroProcesso)) {
+            document.getElementById('numeroProcessoError').textContent = 'O número do processo deve conter apenas letras e números.';
+            isValid = false;
+        }
+
+        // Nome do Paciente
+        const nomePaciente = document.getElementById('nomePaciente').value;
+        if (nomePaciente.trim() === '') {
+            document.getElementById('nomePacienteError').textContent = 'O nome do paciente é obrigatório.';
+            isValid = false;
+        }
+
+        // Telefone (válido como 10 ou 11 dígitos)
         const telefone = document.getElementById('telefone').value;
-        const assunto = document.getElementById('assunto').value;
+        const telefonePattern = /^[0-9]{10,11}$/;
+        if (telefone && !telefonePattern.test(telefone)) {
+            document.getElementById('telefoneError').textContent = 'O telefone deve ter 10 ou 11 dígitos.';
+            isValid = false;
+        }
+
+        // Registro de Atendimento
         const registroAtendimento = document.getElementById('registroAtendimento').value;
+        if (registroAtendimento.trim() === '') {
+            document.getElementById('registroAtendimentoError').textContent = 'O registro de atendimento é obrigatório.';
+            isValid = false;
+        }
+
+        // Encaminhamento
         const encaminhamento = document.getElementById('encaminhamento').value;
+        if (!encaminhamento) {
+            alert('O encaminhamento é obrigatório.');
+            isValid = false;
+        }
 
-        // Armazena os dados no localStorage
-        localStorage.setItem('matricula', matricula);
-        localStorage.setItem('nomePaciente', nomePaciente);
-        localStorage.setItem('numeroProcesso', numeroProcesso);
-        localStorage.setItem('telefone', telefone);
-        localStorage.setItem('assunto', assunto);
-        localStorage.setItem('registroAtendimento', registroAtendimento);
-        localStorage.setItem('encaminhamento', encaminhamento);
-    }
+        // Profissional
+        const profissionalId = document.getElementById('profissionalId').value;
+        if (!profissionalId) {
+            alert('O profissional é obrigatório.');
+            isValid = false;
+        }
 
-    function atualizarProfissionais() {
-        const encaminhamentoSelect = document.getElementById('encaminhamento');
-        const encaminhamentoSelecionado = encaminhamentoSelect.value;
+        // Se tudo estiver válido, submete o formulário
+        if (isValid) {
+            this.submit();
+        }
+    });
 
-        // Salva os dados do formulário antes de buscar profissionais
-        salvarDadosFormulario();
-
-        // Faz a requisição para buscar os profissionais
-        fetch(`/api/profissionais?encaminhamento=${encaminhamentoSelecionado}`)
-            .then(response => response.json())
-            .then(data => {
-                const profissionaisContainer = document.getElementById('profissionaisContainer');
-                profissionaisContainer.innerHTML = ''; // Limpa os profissionais anteriores
-
-                if (data.length > 0) {
-                    const ul = document.createElement('ul');
-
-                    data.forEach(profissional => {
-                        const li = document.createElement('li');
-                        li.textContent = `${profissional.nome} - ${profissional.cargo}`;
-                        ul.appendChild(li);
-                    });
-
-                    profissionaisContainer.appendChild(ul);
-                } else {
-                    profissionaisContainer.textContent = 'Nenhum profissional encontrado.';
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao buscar profissionais:', error);
-            });
-    }
-
-    // Função para restaurar os dados do formulário do localStorage
-    function restaurarDadosFormulario() {
-        document.getElementById('matricula').value = localStorage.getItem('matricula') || '';
-        document.getElementById('nomePaciente').value = localStorage.getItem('nomePaciente') || '';
-        document.getElementById('numeroProcesso').value = localStorage.getItem('numeroProcesso') || '';
-        document.getElementById('telefone').value = localStorage.getItem('telefone') || '';
-        document.getElementById('assunto').value = localStorage.getItem('assunto') || '';
-        document.getElementById('registroAtendimento').value = localStorage.getItem('registroAtendimento') || '';
-        document.getElementById('encaminhamento').value = localStorage.getItem('encaminhamento') || '';
-    }
-
-    // Chama a função para restaurar os dados quando a página carregar
-    window.onload = restaurarDadosFormulario;
-
-    // Adiciona o evento para finalizar o atendimento ao sair da página
-    window.addEventListener('beforeunload', finalizarAtendimento);
-</script>
+    </script>

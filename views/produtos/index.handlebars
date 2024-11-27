@@ -12,19 +12,19 @@
 
         <!-- Botão Adicionar Novo Produto -->
         <div class="d-flex justify-content-end mb-3">
-            <a href="/produtos/create" class="btn btn-primary">
+            <a href="/produtos/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Novo Produto
             </a>
         </div>
 
-        <!-- Formulário de Filtro -->
-        <form class="mb-4" method="GET" action="/produtos">
+
+        <form action="/produtos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-5 mb-2">
                     <input type="text" name="nome" class="form-control" placeholder="Nome do Produto" value="{{query.nome}}">
                 </div>
-                <div class="col-md-3">
-                    <select name="categoria" class="form-control">
+                <div class="col-md-5 mb-2">
+                        <select name="categoria" class="form-control">
                         <option value="">Selecione uma Categoria</option> <!-- Opção padrão -->
                         <option value="Papelaria" {{#if (eq 'Papelaria' query.categoria)}}selected{{/if}}>Papelaria</option>
                         <option value="Higiene" {{#if (eq 'Higiene' query.categoria)}}selected{{/if}}>Higiene</option>
@@ -34,8 +34,10 @@
                         <option value="Outros" {{#if (eq 'Outros' query.categoria)}}selected{{/if}}>Outros</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-secondary mt-3">Filtrar</button>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i> Filtrar
+                    </button>
                 </div>
             </div>
         </form>
@@ -80,7 +82,7 @@
                         </tr>
                     {{else}}
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum produto encontrado.</td>
+                            <td colspan="7" class="text-center text-muted">Nenhum produto encontrado.</td>
                         </tr>
                     {{/each}}
                 </tbody>

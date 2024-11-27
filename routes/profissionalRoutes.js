@@ -15,6 +15,7 @@ router.get('/viewReport', profissionalController.viewProfissionaisReport);
 
 router.get('/perfil/:id', profissionalController.show);
 
+router.get('/meu_perfil/:id', profissionalController.showPerfil);
 
 
 

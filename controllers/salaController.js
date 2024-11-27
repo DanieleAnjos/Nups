@@ -1,19 +1,35 @@
 const Sala = require('../models/Sala');
+const ReservaSala = require('../models/ReservaSala');
 
 module.exports = {
 
-    listarSalas: async (req, res) => {
+  listarSalas: async (req, res) => {
     try {
-      const salas = await Sala.findAll();
-      res.render('salas', { salas });
-    } catch (error) {
-      res.status(500).send('Erro ao listar salas.');
-    }
-  },
+        const { nome, capacidade } = req.query;
 
-  formularioCriar: (req, res) => {
+        let where = {};
+
+        if (nome) {
+            where.nome = { [Op.iLike]: `%${nome}%` }; 
+        }
+
+        if (capacidade) {
+            where.capacidade = capacidade; 
+        }
+
+        const salas = await Sala.findAll({ where });
+
+        res.render('salas', { salas, query: { nome, capacidade } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao listar salas.');
+    }
+},
+
+formularioCriar: (req, res) => {
     res.render('salas/create');
-  },
+},
+
 
   criarSala: async (req, res) => {
     try {
@@ -50,10 +66,34 @@ module.exports = {
 
   deletarSala: async (req, res) => {
     try {
-      await Sala.destroy({ where: { id: req.params.id } });
-      res.redirect('/salas');
+        const salaId = parseInt(req.params.id, 10);
+
+        if (isNaN(salaId)) {
+            req.flash('error', 'ID de sala inválido.');
+            return res.redirect('/salas');
+        }
+
+        const reservasAssociadas = await ReservaSala.count({ where: { salaId } });
+
+        if (reservasAssociadas > 0) {
+            req.flash('error', 'A sala possui reservas ativas. Cancele as reservas antes de deletar.');
+            return res.redirect('/salas');
+        }
+
+        const sala = await Sala.findByPk(salaId);
+        if (!sala) {
+            req.flash('error', 'Sala não encontrada.');
+            return res.redirect('/salas');
+        }
+
+        await sala.destroy();
+        req.flash('success', 'Sala deletada com sucesso.');
+        res.redirect('/salas');
     } catch (error) {
-      res.status(500).send('Erro ao deletar sala.');
+        console.error('Erro ao deletar sala:', error);
+        req.flash('error', 'Erro ao deletar sala. Tente novamente mais tarde.');
+        res.redirect('/salas');
     }
-  },
+},
+
 };

@@ -1,0 +1,78 @@
+<h1 class="text-center my-4">Enviar Mensagem</h1>
+
+<div class="container shadow-sm p-4 rounded bg-light">
+  <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate>
+    <!-- Campo oculto para Remetente -->
+    <input type="hidden" name="remetenteId" value="{{user.id}}">
+
+    <!-- Destinatário -->
+    <div class="mb-4">
+      <label for="destinatarioId" class="form-label h5"><i class="bi bi-person-fill"></i> Destinatário:</label>
+      <select name="destinatarioId" id="destinatarioId" class="form-select" required>
+        <option value="" selected disabled>Selecione um destinatário</option>
+        {{#each profissionais}}
+          <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
+        {{/each}}
+      </select>
+      <div class="invalid-feedback">Por favor, selecione um destinatário.</div>
+    </div>
+
+    <!-- Cargo do Destinatário -->
+    <div class="mb-4">
+      <label for="destinatarioCargo" class="form-label h5"><i class="bi bi-briefcase-fill"></i> Cargo do Destinatário:</label>
+      <select name="destinatarioCargo" id="destinatarioCargo" class="form-select" required>
+        <option value="" selected disabled>Escolha um cargo</option>
+        <option value="Administrador">Administrador</option>
+        <option value="Assistente social">Assistente social</option>
+        <option value="Psicólogo">Psicólogo</option>
+        <option value="Psiquiatra">Psiquiatra</option>
+        <!-- Adicione outras opções de cargos conforme necessário -->
+      </select>
+      <div class="invalid-feedback">Por favor, escolha o cargo do destinatário.</div>
+    </div>
+
+    <!-- Assunto -->
+    <div class="mb-4">
+      <label for="assunto" class="form-label h5"><i class="bi bi-envelope-fill"></i> Assunto:</label>
+      <input type="text" name="assunto" id="assunto" class="form-control" placeholder="Digite o assunto" required>
+      <div class="invalid-feedback">Por favor, insira o assunto.</div>
+    </div>
+
+    <!-- Corpo da Mensagem -->
+    <div class="mb-4">
+      <label for="corpo" class="form-label h5"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
+      <textarea name="corpo" id="corpo" class="form-control" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
+      <div class="invalid-feedback">Por favor, insira a mensagem.</div>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="d-flex justify-content-center gap-3">
+      <button type="submit" class="btn btn-success btn-lg shadow-sm">
+        <i class="bi bi-send-fill"></i> Enviar
+      </button>
+      <a href="/mensagens" class="btn btn-outline-secondary btn-lg shadow-sm">
+        <i class="bi bi-arrow-left-circle"></i> Voltar
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<script>
+  // Adicionando validação do Bootstrap
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+
+    Array.from(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>

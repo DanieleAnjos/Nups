@@ -8,29 +8,25 @@
 
     <!-- Botão para Criar Novo Evento -->
     <div class="d-flex justify-content-end mb-3">
-        <a href="/eventos2/create" class="btn btn-primary">Criar Novo Evento</a>
+        <a href="/eventos2/create" class="btn btn-success">Criar Novo Evento</a>
     </div>
 
     <!-- Formulário de Busca -->
-<!-- Formulário de Busca -->
-<form action="/eventos" method="GET" class="mb-4">
-    <div class="row">
-        <!-- Campo de Título -->
-        <div class="col-md-6 mb-3">
-            <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
-        </div>
-        
-        <!-- Campo de Data -->
-        <div class="col-md-4 mb-3">
-            <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
-        </div>
-
-        <!-- Botão de Buscar -->
-        <div class="col-md-2 mb-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-secondary w-100">Buscar</button>
-        </div>
-    </div>
-</form>
+        <form action="/eventos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
 
 
     <!-- Exibir mensagem de erro, se houver -->

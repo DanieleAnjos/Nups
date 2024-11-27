@@ -1,4 +1,5 @@
-const { Evento, Imagem } = require('../models'); 
+const Evento = require('../models/Evento');
+const Imagem = require('../models/Imagem');
 const { Op } = require('sequelize'); 
 const upload = require('../config/multer'); 
 

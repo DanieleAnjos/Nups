@@ -10,7 +10,7 @@ exports.login = (req, res, next) => {
       }
       if (!user) {
           console.log('Usuário não encontrado ou senha incorreta');
-          req.flash('error_msg', 'Usuário não encontrado ou senha incorreta');
+          req.flash('error', 'Usuário não encontrado ou senha incorreta');
           return res.redirect('/auth/login');
       }
 
@@ -21,34 +21,31 @@ exports.login = (req, res, next) => {
           }
 
           try {
-              // Carrega o profissional associado ao usuário autenticado
-              const profissional = await Profissional.findByPk(user.profissionalId);
+
+            const profissional = await Profissional.findByPk(user.profissionalId);
 
               if (!profissional) {
-                  req.flash('error_msg', 'Profissional não encontrado');
+                  req.flash('error', 'Profissional não encontrado');
                   return res.redirect('/');
               }
 
-              // Atribui o cargo ao usuário na sessão
               user.cargo = profissional.cargo;
-              req.user = user; // Atualiza a sessão com o cargo do profissional
+              req.user = user; 
 
               console.log('Cargo do profissional:', profissional.cargo);
 
-              // Define o dashboard de acordo com o cargo do profissional
-              let redirectRoute = '/dashboard/adm'; // Rota padrão para administradores
+              let redirectRoute = '/dashboard/adm'; 
               if (profissional.cargo === 'Assistente social') {
                   redirectRoute = '/dashboard/assistente-social';
               } else if (profissional.cargo === 'Psicólogo' || profissional.cargo === 'Psiquiatra') {
                   redirectRoute = '/dashboard/psicologo-psiquiatra';
               }
 
-              // Redireciona para o dashboard específico
               return res.redirect(redirectRoute);
 
           } catch (error) {
               console.error('Erro ao buscar o profissional:', error);
-              req.flash('error_msg', 'Erro ao verificar o cargo do profissional.');
+              req.flash('error', 'Erro ao verificar o cargo do profissional.');
               return res.redirect('/');
           }
       });
@@ -81,7 +78,7 @@ exports.ensureAuthenticated = (req, res, next) => {
           console.log('Usuário é assistente social');
           if (req.originalUrl.startsWith('/dashboard/adm')) {
               console.log('Assistente social não tem acesso ao painel de admin');
-              req.flash('error_msg', 'Você não tem permissão para acessar essa página.');
+              req.flash('error', 'Você não tem permissão para acessar essa página.');
               return res.redirect('/'); 
           }
           return next(); 
@@ -89,18 +86,20 @@ exports.ensureAuthenticated = (req, res, next) => {
           console.log('Usuário é Psicólogo ou Psiquiatra');
           if (req.originalUrl.startsWith('/dashboard/adm')) {
               console.log('Psicólogo/Psiquiatra não tem acesso ao painel de admin');
-              req.flash('error_msg', 'Você não tem permissão para acessar essa página.');
+              req.flash('error', 'Você não tem permissão para acessar essa página.');
               return res.redirect('/'); 
           }
           return next(); 
       } else {
           console.log('Cargo desconhecido');
-          req.flash('error_msg', 'Você não tem permissão para acessar essa página.');
+          req.flash('error', 'Você não tem permissão para acessar essa página.');
           return res.redirect('/'); 
       }
   }
 
   console.log('Usuário não autenticado, redirecionando de volta');
-  req.flash('error_msg', 'Você precisa estar logado para acessar essa página.');
+  req.flash('error', 'Você precisa estar logado para acessar essa página.');
   res.redirect('/auth/login');
 };
+
+

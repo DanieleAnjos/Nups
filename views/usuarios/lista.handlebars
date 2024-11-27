@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuários</title>
+
+    <!-- Adicionando o Bootstrap -->
+
+    <!-- Estilos personalizados -->
+    <style>
+        .container-custom {
+            margin-top: 30px;
+        }
+
+        .user-item {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .user-item strong {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .no-users {
+            text-align: center;
+            font-size: 18px;
+            color: #e74c3c;
+        }
+
+        .logout-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-custom">
+        <h1 class="text-center mb-4">Lista de Usuários</h1>
+
+        {{#if usuarios.length}}
+            <div class="list-group">
+                {{#each usuarios}}
+                    <div class="user-item">
+                        <strong>Nome do Usuário:</strong> {{usuario}} <br>
+                        <strong>Profissional Vinculado:</strong> 
+                        {{#if Profissional}}{{Profissional.nome}}{{else}}Nenhum profissional vinculado{{/if}}
+                    </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <p class="no-users">Não há usuários cadastrados.</p>
+        {{/if}}
+
+        <div class="logout-btn">
+            <a href="/dashboard/adm" class="btn btn-primary">Voltar</a>
+        </div>
+    </div>
+
+    <!-- Adicionando o script do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

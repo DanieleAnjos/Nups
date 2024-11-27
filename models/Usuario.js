@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Profissional = require('../models/Profissional'); 
+const Profissional = require('./Profissional'); // Corrigir o caminho, se necessário
 
 const Usuario = sequelize.define('Usuario', {
   id: {
@@ -28,18 +28,16 @@ const Usuario = sequelize.define('Usuario', {
   profissionalId: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'profissional',  
+      model: Profissional,
       key: 'id',
     },
     onDelete: 'CASCADE',
   },
 }, {
-  sequelize,
-  modelName: 'Usuario',
   tableName: 'usuarios',
   timestamps: true,
 });
 
-Usuario.belongsTo(Profissional, { foreignKey: 'profissionalId' });
+Usuario.belongsTo(Profissional, { foreignKey: 'profissionalId', onDelete: 'CASCADE' });
 
 module.exports = Usuario;

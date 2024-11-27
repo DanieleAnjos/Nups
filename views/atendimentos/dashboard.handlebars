@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Atendimentos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Dashboard de Atendimentos</h1>
+
+    <!-- Gráfico de Atendimentos por Profissional -->
+    <div>
+      <h3>Atendimentos por Profissional</h3>
+      <canvas id="chartProfissional" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Gráfico de Atendimentos por Mês -->
+    <div>
+      <h3>Atendimentos por Mês</h3>
+      <canvas id="chartMes" width="400" height="200"></canvas>
+    </div>
+
+    <a href="/atendimentos">Ver todos os atendimentos</a>
+  </div>
+
+  <script>
+    // Dados para o gráfico de Atendimentos por Profissional
+    const atendimentosPorProfissionalData = {{ JSON.stringify(atendimentosPorProfissional) }};
+    const nomesProfissionais = atendimentosPorProfissionalData.map(item => item.profissional.nome);
+    const totalAtendimentosPorProfissional = atendimentosPorProfissionalData.map(item => item.totalAtendimentos);
+
+    // Gráfico de Atendimentos por Profissional
+    const ctxProfissional = document.getElementById('chartProfissional').getContext('2d');
+    new Chart(ctxProfissional, {
+      type: 'bar',
+      data: {
+        labels: nomesProfissionais,
+        datasets: [{
+          label: 'Total de Atendimentos',
+          data: totalAtendimentosPorProfissional,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Dados para o gráfico de Atendimentos por Mês
+    const atendimentosPorMesData = {{ JSON.stringify(atendimentosPorMes) }};
+    const meses = atendimentosPorMesData.map(item => item.mes);
+    const totalAtendimentosPorMes = atendimentosPorMesData.map(item => item.totalAtendimentos);
+
+    // Gráfico de Atendimentos por Mês
+    const ctxMes = document.getElementById('chartMes').getContext('2d');
+    new Chart(ctxMes, {
+      type: 'line',
+      data: {
+        labels: meses,
+        datasets: [{
+          label: 'Total de Atendimentos por Mês',
+          data: totalAtendimentosPorMes,
+          fill: false,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.1
+        }]
+      }
+    });
+  </script>
+</body>
+</html>

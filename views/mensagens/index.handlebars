@@ -1,0 +1,185 @@
+<h1 class="text-center my-5">Caixa de Entrada</h1>
+
+<!-- Botão de enviar nova mensagem -->
+<div class="d-flex justify-content-end mb-4">
+    <a href="/mensagens/enviar" class="btn btn-primary shadow">
+        <i class="bi bi-plus-circle"></i> Enviar Nova Mensagem
+    </a>
+</div>
+
+<!-- Exibe mensagens não arquivadas -->
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span>Mensagens Recebidas</span>
+        <span class="badge bg-light text-primary">{{mensagensNaoArquivadas.length}}</span>
+    </div>
+    <div class="card-body">
+        {{#if mensagensNaoArquivadas.length}}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Assunto</th>
+                        <th>Remetente</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each mensagensNaoArquivadas}}
+                    <tr>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="text-primary text-decoration-none fw-bold">
+                                {{this.assunto}}
+                            </a>
+                        </td>
+                        <td>{{this.remetente.nome}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="/mensagens/{{this.id}}/responder" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-reply"></i> Responder
+                            </a>
+                            <a href="/mensagens/{{this.id}}/arquivar" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-archive"></i> Arquivar
+                            </a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-center text-muted">Você não tem mensagens recebidas.</p>
+        {{/if}}
+    </div>
+</div>
+
+<!-- Botão para alternar exibição de mensagens arquivadas -->
+<div class="text-end mb-3">
+    <button id="toggleArquivadas" class="btn btn-outline-primary">
+        Mostrar Mensagens Arquivadas
+    </button>
+</div>
+
+<!-- Mensagens Arquivadas -->
+<div id="mensagensArquivadasContainer" class="card shadow mb-4" style="display: none;">
+    <div class="card-header bg-secondary text-white">
+        Mensagens Arquivadas
+    </div>
+    <div class="card-body">
+        {{#if mensagensArquivadas.length}}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Assunto</th>
+                        <th>Remetente</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each mensagensArquivadas}}
+                    <tr>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="text-primary text-decoration-none fw-bold">
+                                {{this.assunto}}
+                            </a>
+                        </td>
+                        <td>{{this.remetente.nome}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <a href="/mensagens/{{this.id}}/desarquivar" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-arrow-up-circle"></i> Desarquivar
+                            </a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-center text-muted">Você não tem mensagens arquivadas.</p>
+        {{/if}}
+    </div>
+</div>
+
+<!-- Botão para alternar exibição de mensagens enviadas -->
+<div class="text-end mb-3">
+    <button id="toggleEnviadas" class="btn btn-outline-primary">
+        Mostrar Mensagens Enviadas
+    </button>
+</div>
+
+<!-- Mensagens Enviadas -->
+<div id="mensagensEnviadasContainer" class="card shadow mb-4" style="display: none;">
+    <div class="card-header bg-primary text-white">
+        Mensagens Enviadas
+    </div>
+    <div class="card-body">
+        {{#if mensagensEnviadas.length}}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Assunto</th>
+                        <th>Destinatário</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each mensagensEnviadas}}
+                    <tr>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="text-primary text-decoration-none fw-bold">
+                                {{this.assunto}}
+                            </a>
+                        </td>
+                        <td>{{this.destinatario.nome}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>
+                            {{#if this.visualizada}}
+                            <span class="badge bg-success">Visualizada</span>
+                            {{else}}
+                            <span class="badge bg-warning text-dark">Não Visualizada</span>
+                            {{/if}}
+                        </td>
+                        <td>
+                            <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-center text-muted">Você não tem mensagens enviadas.</p>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    // Alterna exibição de mensagens arquivadas
+    document.getElementById("toggleArquivadas").addEventListener("click", function () {
+        const container = document.getElementById("mensagensArquivadasContainer");
+        container.style.display = container.style.display === "none" ? "block" : "none";
+        this.textContent = container.style.display === "none" ? "Mostrar Mensagens Arquivadas" : "Ocultar Mensagens Arquivadas";
+    });
+
+    // Alterna exibição de mensagens enviadas
+    document.getElementById("toggleEnviadas").addEventListener("click", function () {
+        const container = document.getElementById("mensagensEnviadasContainer");
+        container.style.display = container.style.display === "none" ? "block" : "none";
+        this.textContent = container.style.display === "none" ? "Mostrar Mensagens Enviadas" : "Ocultar Mensagens Enviadas";
+    });
+</script>

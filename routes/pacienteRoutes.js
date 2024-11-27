@@ -4,6 +4,9 @@ const pacienteController = require('../controllers/pacienteController');
 
 router.get('/', pacienteController.index);
 
+router.get('/lista', pacienteController.index2);
+
+
 router.get('/perfil/:id', pacienteController.perfil);
 
 router.get('/create', pacienteController.create);

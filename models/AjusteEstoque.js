@@ -42,4 +42,6 @@ AjusteEstoque.init({
   timestamps: false,  
 });
 
+
+
 module.exports = AjusteEstoque;

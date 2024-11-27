@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráfico de Pacientes por Período</title>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
+
+  <!-- Incluindo o Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Garantir que o gráfico tenha tamanho fixo */
+#grafico {
+  width: 400px;  /* Largura fixa */
+  height: 300px; /* Altura fixa */
+  margin: 400px; /* Centralizar o gráfico */
+}
+
+  </style>
+</head>
+<body>
+  <h1>Quantidade de Pacientes por Período</h1>
+
+  <!-- Exibir o total de pacientes cadastrados -->
+  <h2>Total de Pacientes Cadastrados: {{totalPacientes}}</h2>
+
+  <!-- Tabela de Dados -->
+  <table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+      <tr>
+
+      </tr>
+    </thead>
+    <tbody>
+      {{#each labels}}
+        <tr>
+          <td>{{this}}</td>
+          <td>{{lookup ../data @index}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Contêiner para o gráfico -->
+  <canvas id="grafico"></canvas>
+
+  <script>
+    // Passando as variáveis JSON do servidor para o frontend
+    const labels = JSON.parse('{{{labels}}}');  // Usar três chaves para evitar escape
+    const data = JSON.parse('{{{data}}}');     // Usar três chaves para evitar escape
+
+    // Verificação dos dados no console
+    console.log('Labels:', labels);
+    console.log('Data:', data);
+
+    // Criar gráfico com Chart.js
+    const ctx = document.getElementById('grafico').getContext('2d');
+    const grafico = new Chart(ctx, {
+      type: 'bar', // Tipo de gráfico (barras)
+      data: {
+        labels: labels, // Mês/Ano
+        datasets: [{
+          label: 'Quantidade de Pacientes',
+          data: data, // Quantidade de pacientes
+          backgroundColor: 'rgba(54, 162, 235, 0.6)', // Cor das barras
+          borderColor: 'rgba(54, 162, 235, 1)', // Cor da borda das barras
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true, // Desabilitar o ajuste de proporção automática
+        scales: {
+          y: {
+            beginAtZero: true, // Iniciar o eixo Y no zero
+            title: {
+              display: true,
+              text: 'Quantidade de Pacientes'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Mês/Ano'
+            }
+          }
+        }
+      }
+    });
+
+    // Forçar o gráfico a ajustar seu tamanho
+    window.addEventListener('resize', function() {
+      grafico.resize();
+    });
+
+
+    
+  </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>

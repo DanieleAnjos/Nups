@@ -1,43 +1,83 @@
-<h1>Criar Novo Produto</h1>
-<form action="/produtos" method="POST" class="mt-4">
-    <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required minlength="3" maxlength="255" class="form-control">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h4 class="mb-2">Criar Novo Produto</h4>
+                </div>
+                <div class="card-body">
+                    <form action="/produtos" method="POST" class="mt-4">
+                        <!-- Campo Nome -->
+                        <div class="form-group mb-4">
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" id="nome" name="nome" required minlength="3" maxlength="255" class="form-control shadow-sm">
+                        </div>
+
+                        <!-- Campo Quantidade -->
+                        <div class="form-group mb-3">
+                            <label for="quantidade_inicial" class="form-label">Quantidade:</label>
+                            <input type="number" id="quantidade_inicial" name="quantidade_inicial" required min="1" class="form-control shadow-sm">
+                        </div>
+
+                        <!-- Campo Descrição -->
+                        <div class="form-group mb-3">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <textarea id="descricao" name="descricao" required minlength="10" maxlength="500" class="form-control shadow-sm"></textarea>
+                        </div>
+
+                        <!-- Campo Categoria -->
+                        <div class="form-group mb-3">
+                            <label for="categoria" class="form-label">Categoria:</label>
+                            <select id="categoria" name="categoria" required class="form-select shadow-sm">
+                                <option value="" disabled selected>Selecione uma categoria</option>
+                                <option value="Papelaria">Papelaria</option>
+                                <option value="Higiene">Higiene</option>
+                                <option value="Alimentos">Alimentos</option>
+                                <option value="Eletrônicos">Eletrônicos</option>
+                                <option value="Limpeza">Limpeza</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo para nova categoria -->
+                        <div id="outraCategoriaDiv" style="display: none;" class="form-group mb-3">
+                            <label for="novaCategoria" class="form-label">Informe a nova categoria:</label>
+                            <input type="text" name="novaCategoria" id="novaCategoriaInput" class="form-control shadow-sm" placeholder="Digite a nova categoria">
+                        </div>
+
+                        <!-- Campo Fornecimento -->
+                        <div class="form-group mb-4">
+                            <label for="fornecimento" class="form-label">Fornecimento:</label>
+                            <input type="text" id="fornecimento" name="fornecimento" required class="form-control shadow-sm">
+                        </div>
+
+                        <!-- Botão de Submissão -->
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="/produtos" class="btn btn-outline-secondary px-4">Voltar</a>
+                            <button type="submit" class="btn btn-primary px-4">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        <label for="quantidade_inicial">Quantidade:</label>
-        <input type="number" id="quantidade_inicial" name="quantidade_inicial" required min="1" class="form-control">
-    </div>
+<!-- Script para mostrar campo de nova categoria -->
+<script>
+    document.getElementById('categoria').addEventListener('change', function () {
+        var outraCategoriaDiv = document.getElementById('outraCategoriaDiv');
+        if (this.value === 'Outros') {
+            outraCategoriaDiv.style.display = 'block';  // Exibe o campo para nova categoria
+        } else {
+            outraCategoriaDiv.style.display = 'none';   // Esconde o campo
+        }
+    });
+</script>
 
-    <div class="form-group">
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" required minlength="10" maxlength="500" class="form-control"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" name="categoria" required class="form-control">
-            <option value="" disabled selected>Selecione uma categoria</option>
-            <option value="Papelaria">Papelaria</option>
-            <option value="Higiene">Higiene</option>
-            <option value="Alimentos">Alimentos</option>
-            <option value="Eletrônicos">Eletrônicos</option>
-            <option value="Limpeza">Limpeza</option>
-            <option value="Outros">Outros</option>
-        </select>
-    </div>
-
-    <div id="outraCategoriaDiv" style="display: none;">
-        <label for="novaCategoria">Informe a nova categoria:</label>
-        <input type="text" name="novaCategoria" id="novaCategoriaInput" class="form-control" placeholder="Digite a nova categoria">
-    </div>
-
-    <div class="form-group">
-        <label for="fornecimento">Fornecimento:</label>
-        <input type="text" id="fornecimento" name="fornecimento" required class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-success">Salvar</button>
-</form>
-
+<style>
+    .mt-5 {
+    margin-top: 1rem !important;
+    };
+</style>

@@ -1,5 +1,11 @@
 <h1 class="text-center mt-5">Lista de Encaminhamentos</h1>
 <div class="container mt-4">
+        {{#if error_msg}}
+            <div class="message error" aria-live="polite">{{error_msg}}</div>
+        {{/if}}
+        {{#if success_msg}}
+            <div class="message success" aria-live="polite">{{success_msg}}</div>
+        {{/if}}
     <table class="table table-striped table-bordered">
         <thead >
             <tr>
@@ -8,7 +14,8 @@
                 <th>Nome do Paciente</th>
                 <th>Nome do Profissional</th>
                 <th>Assunto Aconhimento</th>
-                <th>Status</th>
+                <th>Status Acolhimento</th>
+                <th>Visualizado</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -21,7 +28,9 @@
                     <td>{{this.nomeProfissional}}</td>
                     <td>{{this.assuntoAcolhimento}}</td>
                     <td>{{this.statusAcolhimento}}</td>
+                    <td>{{this.visualizado}}</td>
                     <td>
+                        <a href="/encaminhamentos/{{this.id}}/visualizar" class="btn btn-info btn-sm">Marcar como Visualizado</a>
                         <a href="/encaminhamentos/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
                         <form action="/encaminhamentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Deletar</button>

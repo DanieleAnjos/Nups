@@ -20,17 +20,19 @@ body {
     top: 0;
     z-index: 100;
     box-shadow: none;
-    transition: opacity 0.5s ease, transform 0.5s ease; 
+    transition: opacity 0.10s ease, transform 0.10s ease;
+    will-change: opacity, transform;
 }
+
 
 /* Classe para esconder a navbar parcialmente */
 .hidden {
-    opacity: 0.5; 
+    opacity: 0.10; 
 }
 
 /* Efeito quando o mouse passa sobre a navbar */
 .navbar:hover {
-    opacity: 1; 
+    opacity: 5; 
 }
 
 .logo {

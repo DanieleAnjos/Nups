@@ -9,4 +9,7 @@ router.get('/:id/edit', EncaminhamentoController.edit);
 router.put('/:id', EncaminhamentoController.update); 
 router.delete('/:id', EncaminhamentoController.destroy);
 
+router.get('/:id/visualizar', EncaminhamentoController.marcarVisualizado);
+ 
+
 module.exports = router;
