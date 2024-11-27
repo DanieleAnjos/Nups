@@ -1,23 +1,22 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "app.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "app.js"
-      }
-    ],
-    "env": {
-      "DB_HOST": "nups-db.database.windows.net",
-      "DB_PORT": "1433",
-      "DB_NAME": "Nups_db",
-      "DB_USER": "admin_nups",
-      "DB_PASSWORD": "Code2nup"
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@vercel/node"
     }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.js"
+    }
+  ],
+  "env": {
+    "DB_HOST": "nups-db.database.windows.net",
+    "DB_PORT": "1433",
+    "DB_NAME": "Nups_db",
+    "DB_USER": "admin_nups",
+    "DB_PASSWORD": "Code2nup"
   }
-  
+}
