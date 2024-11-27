@@ -4,13 +4,8 @@ require('dotenv').config();  // Carrega as variáveis do arquivo .env
 
 const { Sequelize } = require('sequelize');
 
-import * as tedious from 'tedious';
-
-
 // Usar variáveis de ambiente para credenciais sensíveis
 const sequelizeConfig = {
-  
-  dialectModule: tedious,
   host: process.env.DB_HOST , // Host do banco de dados na Azure
   port: process.env.DB_PORT ,  // Porta padrão para SQL Server
   database: process.env.DB_NAME , 
