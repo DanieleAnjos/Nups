@@ -42,9 +42,11 @@
     "pdfkit": "^0.15.1",
     "pdfkit-table": "^0.1.99",
     "puppeteer": "^23.7.0",
+    "rimraf": "^6.0.1",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
-    "tedious": "^18.6.1"
+    "tedious": "^18.6.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

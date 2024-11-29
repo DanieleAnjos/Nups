@@ -25,7 +25,5 @@
     "NPM_TIMEOUT": "600000",
     "NPM_CONFIG_FETCH_RETRIES": "5"
 
-  },
-  "installCommand": "npm ci --legacy-peer-deps"
-
+  }
 }
