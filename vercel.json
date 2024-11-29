@@ -22,7 +22,8 @@
     "DB_USER": "admin_nups",
     "DB_PASSWORD": "Code2nup",
     "NPM_CONFIG_CACHE": "/tmp/npm-cache",
-    "NPM_TIMEOUT": "60000"
+    "NPM_TIMEOUT": "60000",
+    "NPM_CONFIG_FETCH_RETRIES": "5"
 
   }
 }
