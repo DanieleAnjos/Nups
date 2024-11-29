@@ -3,7 +3,9 @@
   "builds": [
     {
       "src": "app.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "NPM_CONFIG_CACHE": "/tmp/npm-cache"
+
     }
   ],
   "routes": [
