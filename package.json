@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm install tedious",
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "install": "npm install --legacy-peer-deps"
+  "start": "node app.js",
+  "dev": "nodemon app.js"
 
   },
   "keywords": [],
