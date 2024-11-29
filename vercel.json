@@ -3,9 +3,7 @@
   "builds": [
     {
       "src": "app.js",
-      "use": "@vercel/node",
-      "NPM_CONFIG_CACHE": "/tmp/npm-cache"
-
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -19,6 +17,7 @@
     "DB_PORT": "1433",
     "DB_NAME": "Nups_db",
     "DB_USER": "admin_nups",
-    "DB_PASSWORD": "Code2nup"
+    "DB_PASSWORD": "Code2nup",
+    "NPM_CONFIG_CACHE": "/tmp/npm-cache"
   }
 }
