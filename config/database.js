@@ -9,7 +9,7 @@ const ensurePackageInstalled = (packageName) => {
   } catch (error) {
     console.log(`Instalando ${packageName}...`);
     try {
-      execSync(`npm install ${packageName}`, { stdio: 'inherit' });
+      execSync(`npm install ${packageName} --cache /tmp/npm-cache --loglevel verbose`, { stdio: 'inherit' });
       console.log(`${packageName} instalado com sucesso.`);
     } catch (installError) {
       console.error(`Erro ao instalar o pacote ${packageName}:`, installError.message);
