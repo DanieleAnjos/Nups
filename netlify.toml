@@ -1,6 +1,6 @@
 [build]
   publish = "public" # Diretório para arquivos estáticos (se aplicável)
-  command = "npm run build"
+  command = "echo 'Nothing to build'" # Ignorar o processo de build
   functions = "functions"  # Localização das funções serverless
 
 
