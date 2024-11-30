@@ -33,15 +33,17 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const notificacaoRoutes = require('./routes/notificacaoRoutes');
 const graficosRoutes = require('./routes/graficosRoutes');
 const contatoRoutes = require('./routes/contatoRoutes');
- 
-
-
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
 const PORT = process.env.PORT || 10000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+});
 
 const hbs = engine({
     defaultLayout: 'main',
@@ -112,9 +114,17 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
-    saveUninitialized: false,
-    cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
-}));
+    store: sessionStore,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 24, // 1 dia
+    },
+})
+);
+
+sessionStore.sync();
+
 
 app.use(passport.initialize());
 app.use(passport.session());
