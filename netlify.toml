@@ -1,12 +1,14 @@
 [build]
-  publish = "public"
-  command = "npm run build"
+  publish = "public" # Diretório para arquivos estáticos (se aplicável)
+  command = "echo 'Nothing to build'" # Ignorar o processo de build
   functions = "functions"  # Localização das funções serverless
+
 
 [build.environment]
   NODE_VERSION = "20.5.0"
 
 [[redirects]]
   from = "/*"
-  to = "/auth/login"
+  to = "/index.html"
   status = 200
+
