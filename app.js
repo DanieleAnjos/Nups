@@ -39,7 +39,7 @@ const contatoRoutes = require('./routes/contatoRoutes');
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 10000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 
