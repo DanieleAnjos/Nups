@@ -322,3 +322,5 @@ app.listen(PORT, () => {
 sequelize.sync({ alter: true })
   .then(() => console.log('Tabelas sincronizadas ou alteradas'))
   .catch(err => console.error('Erro ao sincronizar tabelas:', err));
+
+  module.exports = app;
