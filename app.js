@@ -114,6 +114,7 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
+    saveUninitialized: false, 
     store: sessionStore,
     cookie: {
         httpOnly: true,
