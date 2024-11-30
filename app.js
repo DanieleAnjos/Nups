@@ -169,8 +169,7 @@ app.get('/Pagina_Inicial', function(req, res) {
 });
 
 app.use('/contato', contatoRoutes);
-
-app.use('/atendimentos2', atendimentos2Routes);
+app.use('/profissionais', profissionalRoutes);
 
 
 
@@ -241,7 +240,6 @@ app.use(async (req, res, next) => {
 const accessControl = {
     'Administrador': [
         '/dashboard/adm',
-        '/profissionais',
         '/pacientes',
         '/escalas',
         '/fornecedores', 
@@ -257,6 +255,7 @@ const accessControl = {
         '/estoque',
         '/mensagens',
         '/produtos',
+        '/atendimentos2',
         '/notificacoes',
         '/graficos',
         '/usuarios',
@@ -299,7 +298,6 @@ const accessControl = {
 };
 
 
-app.use('/profissionais', profissionalRoutes);
 app.use('/pacientes', pacienteRoutes);
 app.use('/escalas', escalaRoutes);
 app.use('/produtos', produtoRoutes);
@@ -313,6 +311,7 @@ app.use('/eventos2', eventoRoutes);
 app.use('/encaminhamentos', encaminhamentosRoutes);
 app.use('/relatorios', relatoriosRoutes);
 app.use('/mensagens', mensagemRoutes);
+app.use('/atendimentos2', atendimentos2Routes);
 app.use('/notificacoes', notificacaoRoutes);
 app.use('/graficos', graficosRoutes);
 app.use('/auth', usuarioRoutes);
