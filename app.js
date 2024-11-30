@@ -170,6 +170,9 @@ app.get('/Pagina_Inicial', function(req, res) {
 
 app.use('/contato', contatoRoutes);
 
+app.use('/atendimentos2', atendimentos2Routes);
+
+
 
 app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
@@ -254,7 +257,6 @@ const accessControl = {
         '/estoque',
         '/mensagens',
         '/produtos',
-        '/atendimentos2',
         '/notificacoes',
         '/graficos',
         '/usuarios',
@@ -311,7 +313,6 @@ app.use('/eventos2', eventoRoutes);
 app.use('/encaminhamentos', encaminhamentosRoutes);
 app.use('/relatorios', relatoriosRoutes);
 app.use('/mensagens', mensagemRoutes);
-app.use('/atendimentos2', atendimentos2Routes);
 app.use('/notificacoes', notificacaoRoutes);
 app.use('/graficos', graficosRoutes);
 app.use('/auth', usuarioRoutes);
