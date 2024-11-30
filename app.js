@@ -322,16 +322,16 @@ app.listen(PORT, () => {
 (async () => {
     try {
       await sequelize.authenticate();
-      console.log('Conexão bem-sucedida.');
+      console.log('Conexão estabelecida com sucesso.');
   
-      // Sincroniza apenas tabelas não existentes
-      await sequelize.sync();
+      await sequelize.sync(); // Sincronização sem alterar tabelas existentes
       console.log('Tabelas sincronizadas com sucesso.');
+  
+      // Inicie o servidor somente após configurar o banco
     } catch (error) {
-      console.error('Erro ao sincronizar tabelas:', error);
-    } finally {
-      await sequelize.close();
+      console.error('Erro ao configurar a aplicação:', error);
     }
   })();
   
+
   module.exports = app;
