@@ -1,0 +1,12 @@
+[build]
+  publish = "public"
+  command = "npm run build"
+  functions = "functions"  # Localização das funções serverless
+
+[build.environment]
+  NODE_VERSION = "20.5.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/auth/login"
+  status = 200
