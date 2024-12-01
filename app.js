@@ -102,7 +102,14 @@ const hbs = engine({
 app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    maxAge: '30d', // Cache por 30 dias
+    setHeaders: function (res, path) {
+        if (path.endsWith('.js') || path.endsWith('.css')) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache de 1 ano para arquivos JS/CSS
+        }
+    }
+}));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -129,6 +136,14 @@ sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+    // Para páginas dinâmicas
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
 
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
