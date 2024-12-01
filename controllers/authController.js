@@ -71,36 +71,6 @@ exports.logout = (req, res, next) => {
   });
 };
 
-exports.ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    console.log('Usuário autenticado');
-
-    const profissional = req.user;
-
-    // Role-based access control logic
-    const roleAccess = {
-      'Administrador': () => next(),
-      'Assistente social': () => checkAccess('assistente-social', '/dashboard/adm', req, res, next),
-      'Psicólogo': () => checkAccess('psicologo', '/dashboard/adm', req, res, next),
-      'Psiquiatra': () => checkAccess('psiquiatra', '/dashboard/adm', req, res, next),
-    };
-
-    const accessControl = roleAccess[profissional.cargo];
-
-    if (accessControl) {
-      return accessControl();
-    } else {
-      console.log('Cargo desconhecido');
-      req.flash('error', 'Você não tem permissão para acessar essa página.');
-      return res.redirect('/');
-    }
-  }
-
-  console.log('Usuário não autenticado, redirecionando de volta');
-  req.flash('error', 'Você precisa estar logado para acessar essa página.');
-  res.redirect('/auth/login');
-};
-
 // Helper function to check role-based access
 function checkAccess(role, restrictedRoute, req, res, next) {
   if (req.originalUrl.startsWith(restrictedRoute)) {

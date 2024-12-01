@@ -153,6 +153,8 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
+app.use('/auth', usuarioRoutes);
+
 
 app.get('/NupsNews',function(req, res)  {
     res.render('NupsNews', { layout: 'public/public-layout'} );
@@ -322,7 +324,6 @@ app.use('/mensagens', mensagemRoutes);
 app.use('/atendimentos2', atendimentos2Routes);
 app.use('/notificacoes', notificacaoRoutes);
 app.use('/graficos', graficosRoutes);
-app.use('/auth', usuarioRoutes);
 
 
 app.use((req, res) => {
