@@ -21,7 +21,6 @@ exports.login = (req, res, next) => {
       }
 
       try {
-        // Check if the profissionalId exists in the user object
         if (!user.profissionalId) {
           req.flash('error', 'Informações de profissional não encontradas.');
           return res.redirect('/auth/login');
@@ -40,6 +39,7 @@ exports.login = (req, res, next) => {
 
         console.log('Cargo do profissional:', profissional.cargo);
 
+        // Role-based redirect
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
           'Assistente social': '/dashboard/assistente-social',
@@ -49,7 +49,7 @@ exports.login = (req, res, next) => {
 
         const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard/adm';
 
-        console.log('Redirecionando para:', redirectRoute); 
+        console.log('Redirecionando para:', redirectRoute);
         return res.redirect(redirectRoute);
 
       } catch (error) {
@@ -65,55 +65,34 @@ exports.logout = (req, res, next) => {
   req.logout((err) => {
     if (err) {
       console.error('Erro ao fazer logout:', err);
-      return next(err); 
+      return next(err);
     }
-    res.redirect('/'); 
+    res.redirect('/');
   });
 };
 
 exports.ensureAuthenticated = (req, res, next) => {
-  console.log('Autenticação autorizada para a rota:', req.originalUrl);
-
   if (req.isAuthenticated()) {
     console.log('Usuário autenticado');
-    const profissional = req.user; 
 
+    const profissional = req.user;
+
+    // Role-based access control logic
     const roleAccess = {
       'Administrador': () => next(),
-      'Assistente social': () => {
-        if (req.originalUrl.startsWith('/dashboard/adm')) {
-          console.log('Assistente social não tem acesso ao painel de admin');
-          req.flash('error', 'Você não tem permissão para acessar essa página.');
-          return res.redirect('/'); 
-        }
-        next();
-      },
-      'Psicólogo': () => {
-        if (req.originalUrl.startsWith('/dashboard/adm')) {
-          console.log('Psicólogo não tem acesso ao painel de admin');
-          req.flash('error', 'Você não tem permissão para acessar essa página.');
-          return res.redirect('/'); 
-        }
-        next();
-      },
-      'Psiquiatra': () => {
-        if (req.originalUrl.startsWith('/dashboard/adm')) {
-          console.log('Psiquiatra não tem acesso ao painel de admin');
-          req.flash('error', 'Você não tem permissão para acessar essa página.');
-          return res.redirect('/'); 
-        }
-        next();
-      }
+      'Assistente social': () => checkAccess('assistente-social', '/dashboard/adm', req, res, next),
+      'Psicólogo': () => checkAccess('psicologo', '/dashboard/adm', req, res, next),
+      'Psiquiatra': () => checkAccess('psiquiatra', '/dashboard/adm', req, res, next),
     };
 
-    // Use role-based access control
     const accessControl = roleAccess[profissional.cargo];
+
     if (accessControl) {
       return accessControl();
     } else {
       console.log('Cargo desconhecido');
       req.flash('error', 'Você não tem permissão para acessar essa página.');
-      return res.redirect('/'); 
+      return res.redirect('/');
     }
   }
 
@@ -121,3 +100,13 @@ exports.ensureAuthenticated = (req, res, next) => {
   req.flash('error', 'Você precisa estar logado para acessar essa página.');
   res.redirect('/auth/login');
 };
+
+// Helper function to check role-based access
+function checkAccess(role, restrictedRoute, req, res, next) {
+  if (req.originalUrl.startsWith(restrictedRoute)) {
+    console.log(`${role} não tem acesso ao painel de admin`);
+    req.flash('error', 'Você não tem permissão para acessar essa página.');
+    return res.redirect('/');
+  }
+  next();
+}
