@@ -1,25 +1,31 @@
 require('dotenv').config(); // Carrega as variáveis do arquivo .env
 const { execSync } = require('child_process');
 
-// Função para verificar e instalar pacotes necessários
+/**
+ * Função para verificar e instalar pacotes necessários
+ * @param {string} packageName - Nome do pacote a ser verificado/instalado.
+ */
 const ensurePackageInstalled = (packageName) => {
   try {
+    // Verifica se o pacote já está instalado
     require.resolve(packageName);
-    console.log(`${packageName} já está instalado.`);
+    console.log(`[INFO] O pacote "${packageName}" já está instalado.`);
   } catch (error) {
-    console.log(`Instalando ${packageName}...`);
+    console.log(`[INFO] O pacote "${packageName}" não foi encontrado. Iniciando instalação...`);
     try {
+      // Instala o pacote se não estiver presente
       execSync(`npm install ${packageName} --cache /tmp/npm-cache --loglevel verbose`, { stdio: 'inherit' });
-      console.log(`${packageName} instalado com sucesso.`);
+      console.log(`[SUCCESS] O pacote "${packageName}" foi instalado com sucesso.`);
     } catch (installError) {
-      console.error(`Erro ao instalar o pacote ${packageName}:`, installError.message);
-      process.exit(1); // Encerra a aplicação em caso de erro
+      console.error(`[ERROR] Não foi possível instalar o pacote "${packageName}":`, installError.message);
+      process.exit(1); // Encerra o processo em caso de falha
     }
   }
 };
 
-// Garantir que o pacote `tedious` esteja instalado
-ensurePackageInstalled('tedious');
+// Garante que os pacotes necessários estejam instalados
+const requiredPackages = ['tedious', 'passport', 'passport-local', 'express-session'];
+requiredPackages.forEach(ensurePackageInstalled);
 
 const { Sequelize } = require('sequelize');
 
