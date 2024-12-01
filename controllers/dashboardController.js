@@ -17,11 +17,13 @@ adm: async (req, res) => {
     const profissional = await Profissional.findByPk(req.user.profissionalId);
     if (!profissional) {
       req.flash('error_msg', 'Profissional não encontrado');
+      console.log( 'Profissional não encontrado');
       return res.redirect('/'); 
     }
     res.render('dashboard/adm', { user: req.user, cargo: profissional.cargo });
   } catch (error) {
     req.flash('error_msg', 'Erro ao carregar informações do profissional');
+    console.log('erro ao carregar informações do profissional ')
     res.redirect('/');
   }
 },
