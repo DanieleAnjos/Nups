@@ -142,7 +142,7 @@ app.use((req, res, next) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.removeHeader('X-Powered-By'); // Remover cabeçalho X-Powered-By
+    res.removeHeader('x-powered-by'); // Remover cabeçalho X-Powered-By
     next();
 });
 
