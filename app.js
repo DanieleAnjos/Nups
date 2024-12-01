@@ -153,9 +153,6 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
-app.get('/', (req, res) => {
-    res.redirect('/auth/login');
-});
 
 app.get('/NupsNews',function(req, res)  {
     res.render('NupsNews', { layout: 'public/public-layout'} );
@@ -168,7 +165,7 @@ app.get('/Quem_Somos',function(req, res)  {
     res.render('Quem_Somos', {layout: 'public/public-layout'});
 });
 
-app.get('/Pagina_Inicial', function(req, res) {
+app.get('/', function(req, res) {
     const { error_msg, success_msg } = req.query; // Captura as mensagens na query string
     
     // Passa as mensagens para o template Handlebars
@@ -337,7 +334,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Algo deu errado!'); 
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
 
