@@ -121,12 +121,14 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
-    saveUninitialized: false, 
+    saveUninitialized: true, 
     store: sessionStore,
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60 * 24, // 1 dia
+        domain: 'nups.onrender.com' 
+        
     },
 })
 );
