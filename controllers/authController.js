@@ -41,6 +41,7 @@ exports.login = (req, res, next) => {
                   redirectRoute = '/dashboard/psicologo-psiquiatra';
               }
 
+              console.log('Redirecionando para:', redirectRoute); 
               return res.redirect(redirectRoute);
 
           } catch (error) {
