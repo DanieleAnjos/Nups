@@ -30,7 +30,6 @@ passport.use(new LocalStrategy({
     }
 }));
 
-
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
@@ -40,17 +39,20 @@ passport.deserializeUser(async (id, done) => {
         const user = await Usuario.findByPk(id, {
             include: {
                 model: Profissional,
-                attributes: ['cargo']  // Certifique-se de incluir o cargo aqui
+                attributes: ['cargo'] 
             }
         });
-        if (user && user.Profissional) {
-            user.cargo = user.Profissional.cargo; // Atribui o cargo ao objeto do usuário
+
+        if (user) {
+            
+            user.cargo = user.Profissional ? user.Profissional.cargo : null; 
         }
-        done(null, user);
+
+        done(null, user); 
     } catch (error) {
+        console.error('Erro ao desserializar o usuário:', error);
         done(error, null);
     }
 });
-
 
 module.exports = passport;
