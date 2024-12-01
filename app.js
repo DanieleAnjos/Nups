@@ -36,7 +36,7 @@ const contatoRoutes = require('./routes/contatoRoutes');
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -337,8 +337,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Algo deu errado!'); 
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
 
 sequelize.sync()
