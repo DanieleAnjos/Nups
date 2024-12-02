@@ -174,7 +174,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth', cors(corsOptions), authRoutes);
+app.use('/auth', authRoutes);
 
 app.use('/auth', usuarioRoutes);
 
