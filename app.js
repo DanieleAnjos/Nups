@@ -116,6 +116,15 @@ app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+
+app.use(cors(corsOptions));
+
+var corsOptions = {
+    origin: 'https://nups-summer-moon-5282.fly.dev',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }
+
+  
 app.use(flash());
 
 app.use(session({
@@ -151,7 +160,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth', authRoutes);
+app.use('/auth'. cors(corsOptions), authRoutes);
 
 app.use('/auth', usuarioRoutes);
 
