@@ -118,14 +118,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 
-app.use(cors(corsOptions));
+
 
 var corsOptions = {
-    origin: 'https://nups-summer-moon-5282.fly.dev',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  }
-
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'https://nups-summer-moon-5282.fly.dev',
+        'https://nups.onrender.com'
+      ];
+      
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Não permitido por CORS'));
+      }
+    },
+    optionsSuccessStatus: 200 // Alguns navegadores mais antigos (IE11, algumas SmartTVs) falham com o status 204
+  };
   
+
+app.use(cors(corsOptions));
+
 app.use(flash());
 
 app.use(session({
