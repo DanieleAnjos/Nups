@@ -62,8 +62,11 @@ router.get('/login', (req, res) => {
 
 
 
-router.post('/login', authController.login);
-
+router.post('/login', (req, res, next) => {
+    console.log('Iniciando autenticação');
+    authController.login(req, res, next);
+  });
+  
 
 router.get('/logout', authController.logout);
 

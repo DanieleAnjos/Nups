@@ -124,7 +124,8 @@ var corsOptions = {
     origin: function (origin, callback) {
       const allowedOrigins = [
         'https://nups-summer-moon-5282.fly.dev',
-        'https://nups.onrender.com'
+        'https://nups.onrender.com',
+        'http://localhost:3000'
       ];
       
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
@@ -359,7 +360,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+    console.log(`Servidor rodando na porta http://localhost:${PORT}`);
 });
 
 sequelize.sync()
