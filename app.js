@@ -117,6 +117,7 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
+
 app.use(cors(corsOptions));
 
 var corsOptions = {
@@ -160,7 +161,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth'. cors(corsOptions), authRoutes);
+app.use('/auth', cors(corsOptions), authRoutes);
 
 app.use('/auth', usuarioRoutes);
 
