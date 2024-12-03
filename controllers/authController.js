@@ -1,7 +1,7 @@
 const Profissional = require('../models/Profissional');
 const passport = require('passport');
 const argon2 = require('argon2');
-const { checkProfissional } = require('../utils');  // Ajuste o caminho conforme necessário
+const { checkProfissional } = require('../utils');
 
 
 exports.login = (req, res, next) => {
@@ -25,15 +25,17 @@ exports.login = (req, res, next) => {
       console.log('Sessão após login:', req.session);
     
       try {
-        const profissional = await checkProfissional(user); // Reutilizando a função
+        const profissional = await checkProfissional(user); 
+        if (!profissional) {
+          req.flash('error', 'Profissional não encontrado.');
+          return res.redirect('/auth/login');
+        }
 
-        // Atribuir cargo ao usuário
         user.cargo = profissional.cargo;
         req.user = user;
 
         console.log('Cargo do profissional:', profissional.cargo);
 
-        // Mapeamento de cargos para rotas
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
           'Assistente social': '/dashboard/assistente-social',
@@ -66,7 +68,6 @@ exports.logout = (req, res, next) => {
   });
 };
 
-// Helper function to check role-based access
 function checkAccess(role, restrictedRoute, req, res, next) {
   if (req.originalUrl.startsWith(restrictedRoute)) {
     console.log(`${role} não tem acesso ao painel de admin`);

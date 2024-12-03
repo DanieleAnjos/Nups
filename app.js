@@ -40,7 +40,7 @@ const PORT = process.env.PORT || 3000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const { checkProfissional } = require('./utils');  // Ajuste o caminho conforme necessário
+const { checkProfissional } = require('./utils'); 
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -112,10 +112,10 @@ app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    maxAge: '30d', // Cache por 30 dias
+    maxAge: '30d', 
     setHeaders: function (res, path) {
         if (path.endsWith('.js') || path.endsWith('.css')) {
-            res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache de 1 ano para arquivos JS/CSS
+            res.setHeader('Cache-Control', 'public, max-age=31536000'); 
         }
     }
 }));
@@ -143,7 +143,7 @@ var corsOptions = {
         callback(new Error('Não permitido por CORS'));
       }
     },
-    optionsSuccessStatus: 200 // Alguns navegadores mais antigos (IE11, algumas SmartTVs) falham com o status 204
+    optionsSuccessStatus: 200 
   };
   
 
@@ -170,7 +170,7 @@ app.use((req, res, next) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.removeHeader('x-powered-by'); // Remover cabeçalho X-Powered-By
+    res.removeHeader('x-powered-by'); 
     next();
 });
 
@@ -201,20 +201,18 @@ app.get('/Quem_Somos',function(req, res)  {
 });
 
 app.get('/', function(req, res) {
-    const { error_msg, success_msg } = req.query; // Captura as mensagens na query string
+    const { error_msg, success_msg } = req.query; 
     
-    // Passa as mensagens para o template Handlebars
     res.render('Pagina_Inicial', {
         layout: 'public/public-layout',
-        error_msg: error_msg || null,  // Se não houver mensagem de erro, passa null
-        success_msg: success_msg || null // Se não houver mensagem de sucesso, passa null
+        error_msg: error_msg || null,  
+        success_msg: success_msg || null 
     });
 });
 
 app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
 
- // Definindo as rotas permitidas para cada cargo
 const accessControl = {
     'Administrador': [
       '/dashboard/adm',
@@ -255,7 +253,6 @@ const accessControl = {
     ]
   };
   
-  // Middleware de controle de acesso
   app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
   
@@ -265,12 +262,11 @@ const accessControl = {
   
     if (req.isAuthenticated()) {
       try {
-        const profissional = await checkProfissional(req.user); // Verificar o profissional
+        const profissional = await checkProfissional(req.user); 
   
         const cargo = profissional.cargo;
         const permittedRoutes = accessControl[cargo];
   
-        // Verificar se a rota solicitada está permitida para o cargo
         if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
           return next();
         } else {

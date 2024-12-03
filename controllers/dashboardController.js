@@ -1,59 +1,41 @@
 const Profissional = require('../models/Profissional');
 
-const checkUserAndProfissional = (req, res) => {
+const checkUserAndProfissional = async (req, res, next) => {
   if (!req.user || !req.user.profissionalId) {
     req.flash('error_msg', 'Usuário não autenticado ou profissional não associado.');
-    res.redirect('/auth/login');
-    return false;
+    return res.redirect('/auth/login');
   }
-  return true;
-};
 
-const loadProfissional = async (userId) => {
   try {
-    return await Profissional.findByPk(userId);
+    const profissional = await Profissional.findByPk(req.user.profissionalId);
+    if (!profissional) {
+      req.flash('error_msg', 'Profissional não encontrado');
+      return res.redirect('/');
+    }
+    req.profissional = profissional;
+    next();
   } catch (error) {
     console.error('Erro ao carregar profissional:', error);
-    return null;
+    req.flash('error_msg', 'Erro ao carregar os dados do profissional');
+    return res.redirect('/');
   }
 };
 
 const dashboardController = {
-  adm: async (req, res) => {
-    if (!checkUserAndProfissional(req, res)) return;
-
-    const profissional = await loadProfissional(req.user.profissionalId);
-    if (!profissional) {
-      req.flash('error_msg', 'Profissional não encontrado');
-      return res.redirect('/');
-    }
-
-    res.render('dashboard/adm', { user: req.user, cargo: profissional.cargo });
+  adm: (req, res) => {
+    res.render('dashboard/adm', { user: req.user, cargo: req.profissional.cargo });
   },
 
-  assistenteSocial: async (req, res) => {
-    if (!checkUserAndProfissional(req, res)) return;
-
-    const profissional = await loadProfissional(req.user.profissionalId);
-    if (!profissional) {
-      req.flash('error_msg', 'Profissional não encontrado');
-      return res.redirect('/');
-    }
-
-    res.render('dashboard/assistente-social', { user: req.user, cargo: profissional.cargo });
+  assistenteSocial: (req, res) => {
+    res.render('dashboard/assistente-social', { user: req.user, cargo: req.profissional.cargo });
   },
 
-  psicologoPsiquiatra: async (req, res) => {
-    if (!checkUserAndProfissional(req, res)) return;
-
-    const profissional = await loadProfissional(req.user.profissionalId);
-    if (!profissional) {
-      req.flash('error_msg', 'Profissional não encontrado');
-      return res.redirect('/');
-    }
-
-    res.render('dashboard/psicologo-psiquiatra', { user: req.user, cargo: profissional.cargo });
+  psicologoPsiquiatra: (req, res) => {
+    res.render('dashboard/psicologo-psiquiatra', { user: req.user, cargo: req.profissional.cargo });
   }
 };
 
-module.exports = dashboardController;
+module.exports = {
+  dashboardController,
+  checkUserAndProfissional
+};
