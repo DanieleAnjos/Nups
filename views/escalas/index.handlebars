@@ -55,7 +55,6 @@
             <table class="table table-hover table-striped table-bordered">
                 <thead class="table-primary">
                     <tr class="text-center">
-                        <th>ID</th>
                         <th>Data</th>
                         <th>Horário Início</th>
                         <th>Horário Fim</th>
@@ -66,10 +65,9 @@
                 <tbody>
                     {{#each escalas}}
                         <tr>
-                            <td>{{this.id}}</td>
-                            <td>{{this.data}}</td>
-                            <td>{{this.horarioInicio}}</td>
-                            <td>{{this.horarioFim}}</td>
+                            <td>{{formatDate this.data}}</td>
+                            <td>{{formatTime this.horarioInicio}}</td>
+                            <td>{{formatTime this.horarioFim}}</td>
                             <td>{{this.admin.nome}}</td>
                             <td class="text-center">
                                 <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">

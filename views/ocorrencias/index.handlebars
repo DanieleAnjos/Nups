@@ -39,7 +39,6 @@
             <table class="table table-hover table-striped table-bordered mt-3">
                 <thead class="table-primary">
                     <tr class="text-center">
-                        <th>ID</th>
                         <th>Data</th>
                         <th>Profissional</th>
                         <th>Horário de Chegada</th>
@@ -51,11 +50,10 @@
                 <tbody>
                     {{#each ocorrencias}}
                         <tr>
-                            <td>{{this.id}}</td>
-                            <td>{{this.data}}</td>
-                            <td>{{this.profissional.nome}}</td>
-                            <td>{{this.horarioChegada}}</td>
-                            <td>{{this.horarioSaida}}</td>
+                            <td>{{formatDate this.data}}</td>
+                            <td>{{ this.profissional.nome}}</td>
+                            <td>{{formatTime this.horarioChegada}}</td>
+                            <td>{{formatTime this.horarioSaida}}</td>
                             <td>{{this.relatorio}}</td>
 
                             <td class="text-center">

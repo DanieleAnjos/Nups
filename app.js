@@ -154,9 +154,12 @@ app.use(session({
     secret: 'secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
+    store: sessionStore,  // Passando o sessionStore para o Express
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+    },
 }));
-
 
 sessionStore.sync();
 

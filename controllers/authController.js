@@ -20,44 +20,47 @@ exports.login = (req, res, next) => {
         return next(err);
       }
 
+      console.log('Sessão após login:', req.session);
+    
       try {
         if (!user.profissionalId) {
           req.flash('error', 'Informações de profissional não encontradas.');
           return res.redirect('/auth/login');
         }
-
+    
         const profissional = await Profissional.findByPk(user.profissionalId);
-
+    
         if (!profissional) {
+          console.error(`Profissional com ID ${user.profissionalId} não encontrado.`);
           req.flash('error', 'Profissional não encontrado.');
           return res.redirect('/');
         }
-
-        // Assign cargo to user object
+    
+        // Atribuir cargo ao usuário
         user.cargo = profissional.cargo;
         req.user = user;
-
+    
         console.log('Cargo do profissional:', profissional.cargo);
-
-        // Role-based redirect
+    
+        // Mapeamento de cargos para rotas
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
           'Assistente social': '/dashboard/assistente-social',
           'Psicólogo': '/dashboard/psicologo-psiquiatra',
           'Psiquiatra': '/dashboard/psicologo-psiquiatra'
         };
-
-        const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard/adm';
-
+    
+        const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard';
+    
         console.log('Redirecionando para:', redirectRoute);
         return res.redirect(redirectRoute);
-
+    
       } catch (error) {
         console.error('Erro ao buscar o profissional:', error);
         req.flash('error', 'Erro ao verificar o cargo do profissional.');
         return res.redirect('/');
       }
-    });
+    });    
   })(req, res, next);
 };
 

@@ -85,12 +85,24 @@ const sequelize = new Sequelize(sequelizeConfig.database, sequelizeConfig.userna
 
 // Função de teste de conexão
 const testConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Conexão estabelecida com sucesso.');
-  } catch (error) {
-    console.error('Não foi possível conectar ao banco de dados:', error.message);
-    process.exit(1); // Encerra a aplicação em caso de falha na conexão
+  let attempts = 0;
+  const maxAttempts = 5;
+
+  while (attempts < maxAttempts) {
+    try {
+      await sequelize.authenticate();
+      console.log('Conexão estabelecida com sucesso.');
+      break;
+    } catch (error) {
+      attempts++;
+      console.error(`Falha ao conectar ao banco de dados (tentativa ${attempts}/${maxAttempts}):`, error.message);
+      if (attempts >= maxAttempts) {
+        console.error('Número máximo de tentativas alcançado. A aplicação será encerrada.');
+        process.exit(1);
+      }
+      // Aguarda 5 segundos antes de tentar novamente
+      await new Promise(res => setTimeout(res, 5000));
+    }
   }
 };
 

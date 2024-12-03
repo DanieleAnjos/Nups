@@ -2,7 +2,6 @@ const AjusteEstoque = require('../models/AjusteEstoque');
 const Produto = require('../models/Produto');
 const { sequelize } = require('../models');
 
-
 exports.index = async (req, res) => {
   try {
     const ajustes = await AjusteEstoque.findAll({ include: 'produto' });
@@ -23,7 +22,6 @@ exports.create = async (req, res) => {
     res.status(500).send('Erro ao carregar produtos para o formulário de criação.');
   }
 };
-
 
 exports.store = async (req, res) => {
   const t = await sequelize.transaction();
@@ -53,8 +51,6 @@ exports.store = async (req, res) => {
 
     let novaQuantidade = produto.quantidade_inicial;
 
-    console.log(`Estoque inicial: ${novaQuantidade}`);
-
     if (tipo === 'saida') {
       if (produto.quantidade_inicial < quantidadeConvertida) {
         req.flash('error', 'Quantidade de saída maior do que o estoque disponível.');
@@ -69,8 +65,6 @@ exports.store = async (req, res) => {
       req.flash('error', 'Tipo de ajuste inválido.');
       return res.redirect('/ajustes');
     }
-
-    console.log(`Estoque após o ajuste: ${novaQuantidade}`);
 
     produto.quantidade_inicial = novaQuantidade;
     await produto.save({ transaction: t });
@@ -123,6 +117,7 @@ exports.update = async (req, res) => {
     res.status(500).send('Erro ao atualizar ajuste de estoque.'); 
   }
 };
+
 exports.destroy = async (req, res) => {
   const t = await sequelize.transaction();  // Iniciar transação
 
@@ -160,8 +155,3 @@ exports.destroy = async (req, res) => {
     res.status(500).send('Erro ao excluir ajuste de estoque.');  // Erro geral de sistema
   }
 };
-
-
-
-
-
