@@ -1,6 +1,8 @@
 const Profissional = require('../models/Profissional');
 const passport = require('passport');
 const argon2 = require('argon2');
+const { checkProfissional } = require('../utils');  // Ajuste o caminho conforme necessário
+
 
 exports.login = (req, res, next) => {
   passport.authenticate('local', async (err, user, info) => {
@@ -39,7 +41,7 @@ exports.login = (req, res, next) => {
           'Psiquiatra': '/dashboard/psicologo-psiquiatra'
         };
 
-        const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard';
+        const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard/adm';
 
         console.log('Redirecionando para:', redirectRoute);
         return res.redirect(redirectRoute);

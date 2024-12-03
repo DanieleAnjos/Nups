@@ -40,6 +40,7 @@ const PORT = process.env.PORT || 3000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const { checkProfissional } = require('./utils');  // Ajuste o caminho conforme necessário
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -213,22 +214,48 @@ app.get('/', function(req, res) {
 app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
 
-
-const checkProfissional = async (usuario) => {
-    if (!usuario || !usuario.profissionalId) {
-      console.log('Usuário ou profissionalId não encontrado');
-      throw new Error('Usuário ou profissional não encontrado');
-    }
-  
-    const profissional = await Profissional.findByPk(usuario.profissionalId);
-    if (!profissional) {
-      console.log('Profissional não encontrado');
-      throw new Error('Profissional não encontrado');
-    }
-  
-    return profissional;
+ // Definindo as rotas permitidas para cada cargo
+const accessControl = {
+    'Administrador': [
+      '/dashboard/adm',
+      '/pacientes',
+      '/escalas',
+      '/fornecedores',
+      '/ajustes',
+      '/atendimentos',
+      '/ocorrencias',
+      '/salas',
+      '/reservas',
+      '/dashboard',
+      '/eventos2',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque'
+    ],
+    'Assistente social': [
+      '/dashboard/assistente-social',
+      '/pacientes',
+      '/ajustes',
+      '/atendimentos',
+      '/relatorios'
+    ],
+    'Psicólogo': [
+      '/dashboard/psicologo-psiquiatra',
+      '/pacientes',
+      '/ajustes',
+      '/atendimentos',
+      '/relatorios'
+    ],
+    'Psiquiatra': [
+      '/dashboard/psicologo-psiquiatra',
+      '/pacientes',
+      '/ajustes',
+      '/atendimentos',
+      '/relatorios'
+    ]
   };
   
+  // Middleware de controle de acesso
   app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
   
@@ -237,40 +264,24 @@ const checkProfissional = async (usuario) => {
     }
   
     if (req.isAuthenticated()) {
-      console.log('Usuário autenticado');
-  
       try {
         const profissional = await checkProfissional(req.user); // Verificar o profissional
-  
-        const dashboardRoutes = {
-          'Administrador': '/dashboard/adm',
-          'Assistente social': '/dashboard/assistente-social',
-          'Psicólogo': '/dashboard/psicologo-psiquiatra',
-          'Psiquiatra': '/dashboard/psicologo-psiquiatra'
-        };
   
         const cargo = profissional.cargo;
         const permittedRoutes = accessControl[cargo];
   
+        // Verificar se a rota solicitada está permitida para o cargo
         if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
           return next();
         } else {
-          if (req.originalUrl === '/') {
-            const redirectRoute = dashboardRoutes[cargo];
-            if (redirectRoute) {
-              return res.redirect(redirectRoute);
-            }
-          }
-  
           console.log('Acesso negado: Você não tem permissão para acessar esta página');
           req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
           return res.redirect('/');
         }
-  
       } catch (err) {
         console.error('Erro ao verificar o profissional:', err);
-        req.flash('error_msg', err.message || 'Erro ao verificar as permissões do profissional.');
-        return res.redirect('/'); 
+        req.flash('error_msg', 'Erro ao verificar as permissões do profissional.');
+        return res.redirect('/');
       }
     }
   
@@ -278,68 +289,6 @@ const checkProfissional = async (usuario) => {
     res.redirect('/auth/login');
   });
   
-
-
-
-const accessControl = {
-    'Administrador': [
-        '/dashboard/adm',
-        '/pacientes',
-        '/escalas',
-        '/fornecedores', 
-        '/ajustes', 
-        '/atendimentos',
-        '/ocorrencias',
-        '/salas',
-        '/reservas',
-        '/dashboard',
-        '/eventos2', 
-        '/encaminhamentos',
-        '/relatorios',  
-        '/estoque',
-        '/mensagens',
-        '/produtos',
-        '/atendimentos2',
-        '/notificacoes',
-        '/graficos',
-        '/usuarios',
-        '/auth/lista',
-    ],
-    'Assistente social': [
-        '/dashboard/assistente-social',
-        '/atendimentos',
-        '/ocorrencias',
-        '/mensagens',
-        '/pacientes',
-        '/reservas',
-        '/atendimentos2',
-        '/profissionais/meu_perfil',
-
-    ],
-    'Psicólogo': [
-        '/dashboard/psicologo-psiquiatra',
-        '/dashboard/psicologo',
-        '/atendimentos',
-        '/ocorrencias',
-        '/mensagens',
-        '/pacientes',
-        '/reservas',
-        '/atendimentos2',
-        '/profissionais/meu_perfil',
-
-    ],
-    'Psiquiatra': [
-        '/dashboard/psicologo-psiquiatra',
-        '/dashboard/psicologo',
-        '/atendimentos',
-        '/ocorrencias',
-        '/mensagens',
-        '/pacientes',
-        '/reservas',
-        '/atendimentos2',
-        '/profissionais/meu_perfil',
-    ],
-};
 
 
 app.use('/pacientes', pacienteRoutes);
