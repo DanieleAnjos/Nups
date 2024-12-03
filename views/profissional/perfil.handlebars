@@ -20,74 +20,71 @@
           <div class="info-item">
             <i class="fas fa-envelope"></i>
             <span class="label">Email: </span>
-            <span class="value"> {{profissional.email}}</span>
+            <span class="value"> &nbsp;{{profissional.email}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-calendar-alt"></i>
-            <span class="label">Admissão:</span>
-            <span class="value"> {{profissional.dataAdmissao}}</span>
+            <span class="label">Admissão: </span>
+            <span class="value"> &nbsp;{{ formatDate profissional.dataAdmissao}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone"></i>
             <span class="label">Telefone: </span>
-            <span class="value">{{profissional.telefone}}</span>
+            <span class="value">&nbsp;{{profissional.telefone}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
             <span class="label">CPF: </span>
-            <span class="value">{{profissional.cpf}}</span>
+            <span class="value">&nbsp;{{profissional.cpf}}</span>
           </div>
-          
+          <div class="info-item">
+            <p class="info-single">
+              <i class="fas fa-map-marker-alt"></i>
+              <span class="label">Endereço: </span>
+              {{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
+            </p>
+          </div>
         </div>
-              <div class="info-item">
-        <p class="info-single">
-          <i class="fas fa-map-marker-alt"></i>
-          <span class="label">Endereço: </span>
-          {{profissional.endereco}}, <br> {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
-        </p>
       </div>
 
-        
-      </div>
       <div class="info-section">
-        <h2>Dados Bancarios</h2>
+        <h2>Dados Bancários</h2>
         <div class="info-grid">
           <div class="info-item">
-            <i class="fas fa-calendar-alt"></i>
+            <i class="fas fa-building"></i>
             <span class="label">Banco: </span>
-            <span class="value"> {{profissional.banco}}</span>
+            <span class="value">&nbsp;{{profissional.nomeBanco}}</span>
           </div>
           <div class="info-item">
-            <i class="fas fa-envelope"></i>
+            <i class="fas fa-credit-card"></i>
             <span class="label">Conta: </span>
-            <span class="value"> {{profissional.contaBanco}}</span>
+            <span class="value">&nbsp;{{profissional.contaBanco}}</span>
           </div>
           <div class="info-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span class="label">Agencia: </span>
-            <span class="value"> {{profissional.agencia}}</span>
+            <i class="fas fa-university"></i>
+            <span class="label">Agência: </span>
+            <span class="value">&nbsp;{{profissional.agencia}}</span>
           </div>
         </div>
       </div>
 
       <div class="info-section">
         <h2>Contato de Emergência</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <i class="fas fa-ambulance"></i>
-              {{profissional.contatoEmergenciaNome}}
-            </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-ambulance"></i>
+            <span class="label"> &nbsp;{{profissional.contatoEmergenciaNome}}</span>
+          </div>
           <div class="info-item">
             <i class="fas fa-phone-alt"></i>
-            {{profissional.telefoneContatoEmergencia}}
-        </div>
+            <span class="label"> &nbsp;{{profissional.telefoneContatoEmergencia}}</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div>
-    <br>
-  </div>
+</div>
+
 <div class="container mt-4">
   <!-- Tabs -->
   <ul class="nav nav-tabs justify-content-center" id="profileTabs" role="tablist">
@@ -118,33 +115,33 @@
         </div>
         <div class="card-body">
           {{#if encaminhamentos.length}}
-                          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Paciente</th>
-                  <th>Assunto</th>
-                  <th>Status</th>
-                  <th>Visualizado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#each encaminhamentos}}
-                <tr>
-                  <td>{{formatDate createdAt}}</td>
-                  <td>{{nomePaciente}}</td>
-                  <td>{{assuntoAcolhimento}}</td>
-                  <td>{{statusAcolhimento}}</td>
-                  <td>{{#if visualizado}}Sim{{else}}Não{{/if}}</td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Paciente</th>
+                    <th>Assunto</th>
+                    <th>Status</th>
+                    <th>Visualizado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each encaminhamentos}}
+                    <tr>
+                      <td>{{formatDate createdAt}}</td>
+                      <td>{{nomePaciente}}</td>
+                      <td>{{assuntoAcolhimento}}</td>
+                      <td>{{statusAcolhimento}}</td>
+                      <td>{{#if visualizado}}Sim{{else}}Não{{/if}}</td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
           {{else}}
             <p>Nenhum encaminhamento encontrado para este profissional.</p>
           {{/if}}
-          </div>
         </div>
       </div>
     </div>
@@ -157,31 +154,31 @@
         </div>
         <div class="card-body">
           {{#if atendimentos.length}}
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Paciente</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#each atendimentos}}
-                <tr>
-                  <td>{{formatDate dataAtendimento}}</td>
-                  <td>{{nomePaciente}}</td>
-                  <td>
-                    <a href="/atendimento/{{id}}" target="_blank" class="btn btn-primary btn-sm">Visualizar detalhes</a>
-                  </td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Paciente</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each atendimentos}}
+                    <tr>
+                      <td>{{formatDate dataAtendimento}}</td>
+                      <td>{{nomePaciente}}</td>
+                      <td>
+                        <a href="/atendimento/{{id}}" target="_blank" class="btn btn-primary btn-sm">Visualizar detalhes</a>
+                      </td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
           {{else}}
             <p>Sem atendimentos relacionados.</p>
           {{/if}}
-          </div>
         </div>
       </div>
     </div>
@@ -194,37 +191,35 @@
         </div>
         <div class="card-body">
           {{#if ocorrencias.length}}
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Relatório</th>
-                  <th>Horário de Chegada</th>
-                  <th>Horário de Saída</th>
-                </tr>
-              </thead>
-              <tbody>
-                {{#each ocorrencias}}
-                <tr>
-                  <td>{{formatDate data}}</td>
-                  <td>{{relatorio}}</td>
-                  <td>{{horarioChegada}}</td>
-                  <td>{{horarioSaida}}</td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Relatório</th>
+                    <th>Horário de Chegada</th>
+                    <th>Horário de Saída</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each ocorrencias}}
+                    <tr>
+                      <td>{{formatDate data}}</td>
+                      <td>{{relatorio}}</td>
+                      <td>{{formatTime horarioChegada}}</td>
+                      <td>{{formatTime horarioSaida}}</td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
           {{else}}
             <p>Sem ocorrências relacionadas.</p>
           {{/if}}
-          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
 
 
   <div class="action-buttons">

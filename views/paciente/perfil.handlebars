@@ -1,5 +1,5 @@
 <div class="profile-container">
-  <div class="profile-card">
+  <div class="profile-card justify-content-center">
     <div class="profile-header">
       <div class="image-container">
         {{#if paciente.imagePath}}
@@ -8,284 +8,420 @@
           <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image">
         {{/if}}
       </div>
-      <h1 class="profile-name">{{paciente.nome}}</h1>
+      <div class="profile-info">
+        <h1 class="profile-name">{{paciente.nome}}</h1>
+        <span class="profile-badge">{{paciente.status}}</span>
+      </div>
     </div>
-
     <div class="profile-content">
       <div class="info-section">
         <h2>Informações Pessoais</h2>
         <div class="info-grid">
           <div class="info-item">
             <i class="fas fa-envelope"></i>
-            <span class="label">Email:</span>
-            <span class="value">{{paciente.email}}</span>
+            <span class="label">Email: </span>
+            <span class="value"> &nbsp;{{paciente.email}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-calendar-alt"></i>
-            <span class="label">Data de Nascimento:</span>
-            <span class="value">{{formatDate paciente.dataNascimento}}</span>
-          </div>
-          <div class="info-item">
-            <i class="fas fa-venus-mars"></i>
-            <span class="label">Sexo:</span>
-            <span class="value">{{paciente.sexo}}</span>
+            <span class="label">Data de Nascimento: </span>
+            <span class="value"> &nbsp;{{ formatDate paciente.dataNascimento}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone"></i>
-            <span class="label">Telefone:</span>
-            <span class="value">{{paciente.telefone}}</span>
+            <span class="label">Telefone: </span>
+            <span class="value">&nbsp;{{paciente.telefone}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
-            <span class="label">CPF:</span>
-            <span class="value">{{paciente.cpf}}</span>
+            <span class="label">CPF: </span>
+            <span class="value">&nbsp; {{paciente.cpf}}</span>
           </div>
           <div class="info-item">
-            <i class="fas fa-id-card"></i>
-            <span class="label">Matrícula:</span>
-            <span class="value">{{paciente.matricula}}</span>
+            <p class="info-single">
+              <i class="fas fa-map-marker-alt"></i>
+              <span class="label">Endereço: </span>
+              {{paciente.endereco}}, <br> {{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}
+            </p>
           </div>
         </div>
       </div>
 
       <div class="info-section">
         <h2>Histórico Médico</h2>
-        <div class="medical-history">
-          <p>{{paciente.observacoes}}</p>
-        </div>
-      </div>
-
-      <div class="info-section">
-        <h2>Endereço</h2>
-        <div class="address-container">
-          <p><i class="fas fa-map-marker-alt"></i> {{paciente.endereco}}</p>
-          <p>{{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-stethoscope"></i>
+            <span class="label">Condição Médica: </span>
+            <span class="value">&nbsp; {{paciente.condicaoMedica}}</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-pills"></i>
+            <span class="label">Medicamentos: </span>
+            <span class="value">&nbsp; {{paciente.medicamentos}}</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-heartbeat"></i>
+            <span class="label">Alergias: </span>
+            <span class="value">&nbsp; {{paciente.alergias}}</span>
+          </div>
         </div>
       </div>
 
       <div class="info-section">
         <h2>Contato de Emergência</h2>
-        <div class="emergency-contact">
-          <p><i class="fas fa-user"></i> {{paciente.nomeContato}}</p>
-          <p><i class="fas fa-phone-alt"></i> {{paciente.telefoneContato}}</p>
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-ambulance"></i>
+            <span class="label">Nome: </span>
+            <span class="value">{{paciente.contatoEmergenciaNome}}</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone-alt"></i>
+            <span class="label">Telefone: </span>
+            <span class="value">{{paciente.telefoneContatoEmergencia}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+<!-- Atendimentos -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Atendimentos</h2>
+    </div>
+    <div class="card-body">
+      {{#if atendimentos}}
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Profissional</th>
+                <th>Registro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each atendimentos as |atendimento|}}
+                <tr class="attendance-item">
+                  <td>{{formatDate atendimento.dataAtendimento}}</td>
+                  <td>{{atendimento.profissional.nome}}</td>
+                  <td>{{atendimento.registroAtendimento}}</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <p>Este paciente não possui atendimentos registrados.</p>
+      {{/if}}
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Atendimentos -->
-  <div class="attendances-section">
-    <h2>Atendimentos</h2>
-    {{#if atendimentos}}
-      <table class="attendances-table">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Profissional</th>
-            <th>Registro</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each atendimentos as |atendimento|}}
-            <tr class="attendance-item">
-              <td>{{formatDate atendimento.dataAtendimento}}</td>
-              <td>{{atendimento.profissional.nome}}</td>
-              <td>{{atendimento.registroAtendimento}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    {{else}}
-      <p>Este paciente não possui atendimentos registrados.</p>
-    {{/if}}
-  </div>
-</div>
+
+
 
 <style>
-  .attendances-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-    background-color: #ffffff;
-  }
-
-  .attendances-table th, .attendances-table td {
-    padding: 1rem;
-    text-align: left;
-    border: 1px solid #ddd;
-  }
-
-  .attendances-table th {
-    background-color: #f3f4f6;
-    color: #333;
-    font-weight: 600;
-  }
-
-  .attendance-item:hover {
-    background-color: #f9fafb;
-  }
-
-  .attendances-section {
-    margin-top: 40px;
-  }
+  .btn-secondary[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
   .profile-container {
-    min-height: 100vh;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     display: flex;
     justify-content: center;
-    align-items: center;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(135deg, #e2ebf0, #9ac4e2);
     font-family: 'Inter', sans-serif;
   }
 
-  .profile-card {
-    width: 1000px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    position: relative;
-    margin-top: 2rem;
-  }
+.profile-card {
+  display: flex;
+  flex-direction: row;
+  max-width: 100%; /* Adapta à largura disponível */
+  width: 1200px; /* Largura máxima */
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 0 auto; /* Centraliza horizontalmente */
+}
 
   .profile-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 3rem 2rem;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #5b9bd5, #4a77e5);
     color: white;
-    position: relative;
+    flex: 0 0 200px; /* Reduz tamanho da lateral */
   }
 
   .image-container {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 1.5rem;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #ffffff;
   }
 
   .profile-image {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
     object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   .profile-name {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin: 0.5rem 0;
   }
 
   .profile-badge {
     display: inline-block;
     background: rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    backdrop-filter: blur(5px);
+    padding: 0.2rem 0.8rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    text-align: center;
   }
 
   .profile-content {
-    padding: 2rem;
+    flex: 1;
+    padding: 3rem; /* Ajuste o padding para melhor espaçamento */
   }
 
   .info-section {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .info-section h2 {
-    color: #2d3748;
     font-size: 1.5rem;
-    margin-bottom: 1.5rem;
     font-weight: 600;
-    position: relative;
-    padding-bottom: 0.5rem;
-  }
-
-  .info-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 3px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 3px;
+    margin-bottom: 0.5rem;
   }
 
   .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .info-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 12px;
-    transition: transform 0.2s ease;
-  }
-
-  .info-item:hover {
-    transform: translateY(-2px);
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 5px;
+    font-size: 1rem;
   }
 
   .info-item i {
-    color: #667eea;
+    color: #5b9bd5;
+    margin-right: 0.5rem;
+  }
+
+  .info-single {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .info-single i {
+    color: #5b9bd5;
+    margin-right: 0.5rem;
+  }
+
+  .action-buttons {
+    margin-top: auto; /* Empurra o botão para a parte inferior */
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .back-button {
+    text-decoration: none;
+    background: #5b9bd5;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+  }
+
+  .back-button:hover {
+    background: #4a77e5;
+  }
+
+  .main-content {
+    margin-left: 80px;
+    padding: 0px;
+    transition: margin-left 0.3s, width 0.3s;
+    width: calc(100% - 80px);
+    margin-top: 0px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 1200px; /* Ajusta a largura máxima do card */
+    height: auto;
+  }
+  .mt-4 {
+    padding-left: 28px;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, #5b9bd5, #4a77e5);
+    color: white;
+    padding: 1rem 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+  }
+
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0;
+  }
+
+  .table th, .table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+
+  .table th {
+    background: #f4f6f8;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+  }
+
+  .table tbody tr:hover {
+    background: #f9f9f9;
+  }
+
+  .status {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: capitalize;
+    color: white;
+  }
+
+  .status.EmAndamento {
+    background: #ffcc00; /* Status em andamento */
+  }
+
+  .status.Concluido {
+    background: #28a745; /* Status concluído */
+  }
+
+  .status.Pendente {
+    background: #dc3545; /* Status pendente */
+  }
+
+  .visualizado.sim {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  .visualizado.nao {
+    color: #dc3545;
+    font-weight: bold;
+  }
+
+  .no-encaminhamentos {
+    text-align: center;
+    color: #777;
+    font-size: 1rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 4px;
+  }
+  
+
+  @media (max-width: 768px) {
+     .profile-card {
+    width: 100%; /* Ocupa toda a largura */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Ajusta sombra */
+  }
+
+  .profile-header {
+    flex-direction: column; /* Coloca imagem e informações em pilha */
+    text-align: center;
+  }
+
+  .profile-name {
     font-size: 1.2rem;
   }
 
-  .label {
-    color: #64748b;
-    font-weight: 500;
+  .info-grid {
+    grid-template-columns: 1fr; /* Apenas uma coluna em telas menores */
   }
 
-  .value {
-    color: #1e293b;
-    font-weight: 600;
-    margin-left: auto;
-  }
-
-  .address-container {
-    background: #f8fafc;
-    padding: 1.5rem;
-    border-radius: 12px;
-  }
-
-  .address-container p {
-    margin: 0.5rem 0;
-    color: #1e293b;
-  }
-
-  .emergency-contact {
-    background: #fff5f5;
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #fed7d7;
-  }
-
-  .emergency-contact p {
-    margin: 0.5rem 0;
-    color: #c53030;
-  }
-
-  @media (max-width: 768px) {
-    .profile-container {
-      padding: 1rem;
+    .table th, .table td {
+      padding: 0.5rem 0.8rem;
     }
 
-    .profile-card {
-      width: 100%;
+    .card {
+      width: 400px; /* Ajusta a largura para 95% da tela em dispositivos menores */
+      height: auto;
+    }
+
+    .card-body {
+      flex-direction: column;
     }
   }
+
+  @media (max-width: 480px) {
+  .profile-card {
+    border-radius: 5px; /* Reduz o arredondamento */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Ajusta sombra para telas pequenas */
+  }
+  .profile-container {
+    padding: 10px;
+  }
+
+  .image-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .profile-name {
+    font-size: 1rem;
+  }
+
+  .info-item {
+    font-size: 0.9rem;
+  }
+  
+}
 </style>
