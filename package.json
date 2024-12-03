@@ -57,9 +57,11 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.9",
     "@types/connect-redis": "^0.0.23",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "nx": "20.1.4"
   },
   "engines": {
     "node": "20.x"
-  }
+  },
+  "nx": {}
 }
