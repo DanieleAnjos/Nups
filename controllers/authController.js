@@ -23,25 +23,14 @@ exports.login = (req, res, next) => {
       console.log('Sessão após login:', req.session);
     
       try {
-        if (!user.profissionalId) {
-          req.flash('error', 'Informações de profissional não encontradas.');
-          return res.redirect('/auth/login');
-        }
-    
-        const profissional = await Profissional.findByPk(user.profissionalId);
-    
-        if (!profissional) {
-          console.error(`Profissional com ID ${user.profissionalId} não encontrado.`);
-          req.flash('error', 'Profissional não encontrado.');
-          return res.redirect('/');
-        }
-    
+        const profissional = await checkProfissional(user); // Reutilizando a função
+
         // Atribuir cargo ao usuário
         user.cargo = profissional.cargo;
         req.user = user;
-    
+
         console.log('Cargo do profissional:', profissional.cargo);
-    
+
         // Mapeamento de cargos para rotas
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
@@ -49,12 +38,12 @@ exports.login = (req, res, next) => {
           'Psicólogo': '/dashboard/psicologo-psiquiatra',
           'Psiquiatra': '/dashboard/psicologo-psiquiatra'
         };
-    
+
         const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard';
-    
+
         console.log('Redirecionando para:', redirectRoute);
         return res.redirect(redirectRoute);
-    
+
       } catch (error) {
         console.error('Erro ao buscar o profissional:', error);
         req.flash('error', 'Erro ao verificar o cargo do profissional.');
@@ -63,6 +52,7 @@ exports.login = (req, res, next) => {
     });    
   })(req, res, next);
 };
+
 
 exports.logout = (req, res, next) => {
   req.logout((err) => {

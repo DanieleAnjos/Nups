@@ -154,12 +154,9 @@ app.use(session({
     secret: 'secret_key',
     resave: false,
     saveUninitialized: false,
-    store: sessionStore,  // Passando o sessionStore para o Express
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-    },
+    cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
+
 
 sessionStore.sync();
 
@@ -217,68 +214,70 @@ app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
 
 
-
-app.use(async (req, res, next) => {
+const checkProfissional = async (usuario) => {
+    if (!usuario || !usuario.profissionalId) {
+      console.log('Usuário ou profissionalId não encontrado');
+      throw new Error('Usuário ou profissional não encontrado');
+    }
+  
+    const profissional = await Profissional.findByPk(usuario.profissionalId);
+    if (!profissional) {
+      console.log('Profissional não encontrado');
+      throw new Error('Profissional não encontrado');
+    }
+  
+    return profissional;
+  };
+  
+  app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
-
+  
     if (publicRoutes.some(route => req.originalUrl.startsWith(route))) {
-        return next();
+      return next();
     }
-
+  
     if (req.isAuthenticated()) {
-        console.log('Usuário autenticado');
-
-        const usuario = req.user;  
-        if (!usuario || !usuario.profissionalId) {
-            console.log('Usuário ou profissionalId não encontrado');
-            req.flash('error_msg', 'Usuário ou profissional não encontrado');
-            return res.redirect('/auth/login'); 
-        }
-
-        try {
-            const profissional = await Profissional.findByPk(usuario.profissionalId); // Buscando o profissional associado
-
-            if (!profissional) {
-                console.log('Profissional não encontrado');
-                req.flash('error_msg', 'Profissional não encontrado');
-                return res.redirect('/');
+      console.log('Usuário autenticado');
+  
+      try {
+        const profissional = await checkProfissional(req.user); // Verificar o profissional
+  
+        const dashboardRoutes = {
+          'Administrador': '/dashboard/adm',
+          'Assistente social': '/dashboard/assistente-social',
+          'Psicólogo': '/dashboard/psicologo-psiquiatra',
+          'Psiquiatra': '/dashboard/psicologo-psiquiatra'
+        };
+  
+        const cargo = profissional.cargo;
+        const permittedRoutes = accessControl[cargo];
+  
+        if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
+          return next();
+        } else {
+          if (req.originalUrl === '/') {
+            const redirectRoute = dashboardRoutes[cargo];
+            if (redirectRoute) {
+              return res.redirect(redirectRoute);
             }
-
-            const dashboardRoutes = {
-                'Administrador': '/dashboard/adm',
-                'Assistente social': '/dashboard/assistente-social',
-                'Psicólogo': '/dashboard/psicologo-psiquiatra',
-                'Psiquiatra': '/dashboard/psicologo-psiquiatra'
-            };
-
-            const cargo = profissional.cargo; 
-            const permittedRoutes = accessControl[cargo];
-
-            if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
-                return next();
-            } else {
-                if (req.originalUrl === '/') {
-                    const redirectRoute = dashboardRoutes[cargo];
-                    if (redirectRoute) {
-                        return res.redirect(redirectRoute);
-                    }
-                }
-
-                console.log('Acesso negado: Você não tem permissão para acessar esta página');
-                req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
-                return res.redirect('/');
-            }
-
-        } catch (err) {
-            console.error('Erro ao verificar o profissional:', err);
-            req.flash('error_msg', 'Erro ao verificar as permissões do profissional.');
-            return res.redirect('/'); 
+          }
+  
+          console.log('Acesso negado: Você não tem permissão para acessar esta página');
+          req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
+          return res.redirect('/');
         }
+  
+      } catch (err) {
+        console.error('Erro ao verificar o profissional:', err);
+        req.flash('error_msg', err.message || 'Erro ao verificar as permissões do profissional.');
+        return res.redirect('/'); 
+      }
     }
-
+  
     req.flash('error_msg', 'Você precisa estar logado para acessar essa página.');
     res.redirect('/auth/login');
-});
+  });
+  
 
 
 
