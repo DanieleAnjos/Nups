@@ -13,6 +13,10 @@ AjusteEstoque.init({
   produtoId: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: 'Produto', // This should match the model name
+      key: 'id',
+    },
   },
   data: {
     type: DataTypes.DATE,
@@ -42,6 +46,10 @@ AjusteEstoque.init({
   timestamps: false,  
 });
 
+Produto.hasMany(AjusteEstoque, {
+  foreignKey: 'produtoId',
+  as: 'ajustesEstoque',
+});
 
 
 module.exports = AjusteEstoque;

@@ -78,10 +78,6 @@ const Atendimento = sequelize.define('Atendimento', {
   },
 });
 
-Atendimento.belongsTo(Profissional, {
-  foreignKey: 'profissionalId',
-  as: 'profissional' // Definindo um alias explícito
-});
 
 
 

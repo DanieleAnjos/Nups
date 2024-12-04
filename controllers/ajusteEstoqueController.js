@@ -1,6 +1,6 @@
 const AjusteEstoque = require('../models/AjusteEstoque');
 const Produto = require('../models/Produto');
-const { sequelize } = require('../models');
+const sequelize = require('../config/database'); // ajuste o caminho conforme necessário
 
 exports.index = async (req, res) => {
   try {
@@ -24,7 +24,7 @@ exports.create = async (req, res) => {
 };
 
 exports.store = async (req, res) => {
-  const t = await sequelize.transaction();
+  const t = await sequelize.transaction();  // Tente usar o sequelize transaction aqui
 
   try {
     const { produtoId, tipo, quantidade, data } = req.body;
@@ -89,6 +89,7 @@ exports.store = async (req, res) => {
   }
 };
 
+
 exports.edit = async (req, res) => {
   try {
     const ajuste = await AjusteEstoque.findByPk(req.params.id);
@@ -117,30 +118,32 @@ exports.update = async (req, res) => {
     res.status(500).send('Erro ao atualizar ajuste de estoque.'); 
   }
 };
-
 exports.destroy = async (req, res) => {
   const t = await sequelize.transaction();  // Iniciar transação
 
   try {
     const ajuste = await AjusteEstoque.findByPk(req.params.id, { transaction: t });
-    
+
     if (!ajuste) {
       return res.status(404).send('Ajuste não encontrado para deletar.');
     }
 
     const produto = await Produto.findByPk(ajuste.produtoId, { transaction: t });
-    
+
     if (!produto) {
       return res.status(404).send('Produto relacionado não encontrado.');
     }
 
     // Atualize o produto de acordo com o tipo de ajuste que foi deletado
+    let novaQuantidade = produto.quantidade_inicial;
+
     if (ajuste.tipo === 'entrada') {
-      produto.quantidade_inicial -= ajuste.quantidade;
+      novaQuantidade -= ajuste.quantidade;
     } else if (ajuste.tipo === 'saida') {
-      produto.quantidade_inicial += ajuste.quantidade;
+      novaQuantidade += ajuste.quantidade;
     }
 
+    produto.quantidade_inicial = novaQuantidade;
     await produto.save({ transaction: t });  // Salva o produto com a quantidade ajustada
 
     await AjusteEstoque.destroy({ where: { id: req.params.id }, transaction: t });  // Deleta o ajuste

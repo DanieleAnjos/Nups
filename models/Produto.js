@@ -1,8 +1,12 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/database');  // Supondo que você tenha a instância do sequelize configurada
-const AjusteEstoque = require('../models/AjusteEstoque');  // Importe o modelo AjusteEstoque aqui
+// models/Produto.js
+const { DataTypes, Model, Sequelize } = require('sequelize');  
+const sequelize = require('../config/database');  // Assuming you have the sequelize instance configured
+const AjusteEstoque = require('./AjusteEstoque'); // Importando o modelo AjusteEstoque
 
-const Produto = sequelize.define('Produto', {
+
+class Produto extends Model {}
+
+Produto.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -56,11 +60,6 @@ const Produto = sequelize.define('Produto', {
   timestamps: true,  
 });
 
-// Agora que o modelo foi criado, defina a associação
-Produto.hasMany(AjusteEstoque, {
-  foreignKey: 'produtoId',
-  as: 'ajustesEstoque'
-});
 
 
-module.exports = Produto;  // Exporte o modelo Produto depois das associações
+module.exports = Produto;  // Export the Produto model

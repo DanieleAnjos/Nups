@@ -16,8 +16,8 @@ const sequelize = require('./config/database');  // Supondo que você tenha a in
 const authRoutes = require('./routes/authRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const escalaRoutes = require('./routes/escalaRoutes');
-const produtoRoutes = require('./routes/produtoRoutes');
 const ajusteEstoqueRoutes = require('./routes/ajusteEstoqueRoutes');
+const produtoRoutes = require('./routes/produtoRoutes');
 const atendimentoRoutes = require('./routes/atendimentoRoutes');
 const ocorrenciaRoutes = require('./routes/ocorrenciaRoutes');
 const salasRoutes = require('./routes/salasRoutes');
@@ -125,7 +125,7 @@ app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
-
+app.set('trust proxy', 1);
 
 
 
@@ -154,6 +154,7 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
+    //store: sessionStore, // Add this line
     saveUninitialized: false,
     cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
@@ -318,7 +319,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Algo deu errado!'); 
+    res.status(500).send(process.env.NODE_ENV === 'production' ? 'Algo deu errado!' : err.stack);
 });
 
 app.listen(PORT, () => {

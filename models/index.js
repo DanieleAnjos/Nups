@@ -26,4 +26,11 @@ module.exports = (sequelize) => {
 
   // Relacionamento entre Atendimento e Encaminhamento
   Atendimento.belongsTo(Encaminhamento, { foreignKey: 'encaminhamentoId', as: 'encaminhamento' });
+
+  Produto.belongsTo(AjusteEstoque);
+
+
+  Produto.hasMany(AjusteEstoque, { foreignKey: 'produtoId' });
+  AjusteEstoque.belongsTo(Produto, { foreignKey: 'produtoId' });
+
 };

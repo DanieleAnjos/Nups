@@ -16,14 +16,13 @@ const produtoController = {
         where.categoria = categoria;
       }
 
-      const produtos = await Produto.findAll({
-        where,
-        include: [{
-          model: AjusteEstoque,
-          as: 'ajustesEstoque',
-          attributes: ['tipo', 'quantidade'],
-        }],
-      });
+        const produtos = await Produto.findAll({
+            include: [{
+                model: AjusteEstoque,
+                required: false // Set to true if you want only products with adjustments
+            }]
+        });
+      
 
       const produtosComQuantidadeAtual = produtos.map(produto => {
         let quantidadeAjustada = produto.quantidade_inicial;
