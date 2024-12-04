@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "npm install passport passport-local express-session tedious",
+    "install-deps": "npm install",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
