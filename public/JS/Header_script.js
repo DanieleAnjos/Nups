@@ -1,5 +1,5 @@
-const navbar = document.querySelector('.navbar');
+//const navbar = document.querySelector('.navbar');
 
-setTimeout(() => {
-    navbar.classList.add('hidden'); 
-}, 4000);
+//setTimeout(() => {
+ //   navbar.classList.add('hidden'); 
+//}, 4000);

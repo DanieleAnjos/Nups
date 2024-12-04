@@ -5,7 +5,6 @@ const fs = require('fs');
 
 const puppeteer = require('puppeteer');
 
-
 const escalaController = {
   index: async (req, res) => {
       try {
@@ -13,6 +12,7 @@ const escalaController = {
 
           const where = {};
 
+          // Filtros de data e horário
           if (data) {
               where.data = data;
           }
@@ -25,34 +25,86 @@ const escalaController = {
               where.horarioFim = { [Op.lte]: horarioFim };
           }
 
+          // Filtro de profissional, se fornecido
           const include = [{
               model: Profissional,
-              as: 'admin', 
-              attributes: ['nome'], 
-              where: profissional ? { id: profissional } : undefined, 
+              as: 'admin',
+              attributes: ['id', 'nome'], // Incluir 'id' para associar com a cor
+              where: profissional ? { id: profissional } : undefined,
           }];
 
+          // Buscar as escalas com base no filtro
           const escalas = await Escala.findAll({
               where,
               include,
           });
 
-          const profissionais = await Profissional.findAll();
-          res.render('escalas/index', {
-              escalas,
-              profissionais,
-              query: req.query,
+          // Função para gerar cor com base no nome (opcional: você pode adicionar variação aqui)
+          function generateColorFromName(name) {
+              let hash = 0;
+              for (let i = 0; i < name.length; i++) {
+                  hash = (hash << 5) - hash + name.charCodeAt(i);
+                  hash |= 0; // Converter para inteiro de 32 bits
+              }
+
+              // Gerar uma cor em formato hexadecimal
+              const color = '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
+              return color;
+          }
+          
+          // Formatar as escalas e gerar cores dinâmicas
+          const escalasFormatadas = escalas.map(escala => {
+              // Garantir que a data seja um objeto Date e manipulá-la como UTC
+
+              const dataFormatada = new Date(escala.data); // A data no banco de dados deve estar em UTC
+
+              dataFormatada.setDate(dataFormatada.getDate() + 1); // Adiciona 1 dia à data
+
+              // Ajustar a data para o formato correto de "YYYY-MM-DD" sem mudanças para o fuso horário local
+              const dataLocal = dataFormatada.toISOString().split('T')[0]; // Ex: 2024-12-20
+
+              // Garantir que horárioInicio e horárioFim sejam do tipo string
+              const horarioInicioFormatado = typeof escala.horarioInicio === 'string' 
+                ? escala.horarioInicio 
+                : new Date(escala.horarioInicio).toISOString().slice(11, 16);
+
+              const horarioFimFormatado = typeof escala.horarioFim === 'string' 
+                ? escala.horarioFim 
+                : new Date(escala.horarioFim).toISOString().slice(11, 16);
+
+              // Gerar a cor se não houver no banco
+              const cor = generateColorFromName(escala.admin.nome);
+
+              return {
+                  ...escala.toJSON(),
+                  data: dataLocal, // Formatar para YYYY-MM-DD sem alterações de fuso horário
+                  horarioInicio: horarioInicioFormatado, // Formatar para HH:mm
+                  horarioFim: horarioFimFormatado, // Formatar para HH:mm
+                  cor, // Cor gerada dinamicamente
+              };
           });
+
+          // Buscar todos os profissionais
+          const profissionais = await Profissional.findAll();
+
+          // Enviar dados para a view, incluindo as escalas e a correspondência de cores
+          res.render('escalas/index', {
+            escalas: escalasFormatadas,
+            profissionais,
+            query: req.query,
+            profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
+                acc[escala.admin.id] = escala.cor;
+                return acc;
+            }, {}))
+        });            
       } catch (error) {
           console.error('Erro ao listar escalas:', error);
           res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
       }
   },
 
-  
-  
 
-  
+
 
   create: async (req, res) => {
     try {

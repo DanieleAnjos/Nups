@@ -8,11 +8,12 @@ exports.login = (req, res, next) => {
   passport.authenticate('local', async (err, user, info) => {
     if (err) {
       console.error('Erro na autenticação:', err);
+      req.flash('error_msg', 'Erro na autenticação');
       return next(err);
     }
     if (!user) {
       console.log('Usuário não encontrado ou senha incorreta');
-      req.flash('error', 'Usuário não encontrado ou senha incorreta');
+      req.flash('error_msg', 'Usuário não encontrado ou senha incorreta');
       return res.redirect('/auth/login');
     }
 
@@ -27,7 +28,7 @@ exports.login = (req, res, next) => {
       try {
         const profissional = await checkProfissional(user); 
         if (!profissional) {
-          req.flash('error', 'Profissional não encontrado.');
+          req.flash('error_msg', 'Profissional não encontrado.');
           return res.redirect('/auth/login');
         }
 
@@ -50,7 +51,7 @@ exports.login = (req, res, next) => {
 
       } catch (error) {
         console.error('Erro ao buscar o profissional:', error);
-        req.flash('error', 'Erro ao verificar o cargo do profissional.');
+        req.flash('error_msg', 'Erro ao verificar o cargo do profissional.');
         return res.redirect('/');
       }
     });    
@@ -64,14 +65,15 @@ exports.logout = (req, res, next) => {
       console.error('Erro ao fazer logout:', err);
       return next(err);
     }
-    res.redirect('/');
+    req.flash('success_msg', 'Logout realizado com sucesso.');
+    res.redirect('/auth/login');
   });
 };
 
 function checkAccess(role, restrictedRoute, req, res, next) {
   if (req.originalUrl.startsWith(restrictedRoute)) {
     console.log(`${role} não tem acesso ao painel de admin`);
-    req.flash('error', 'Você não tem permissão para acessar essa página.');
+    req.flash('error_msg', 'Você não tem permissão para acessar essa página.');
     return res.redirect('/');
   }
   next();

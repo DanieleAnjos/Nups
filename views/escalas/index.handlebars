@@ -13,16 +13,13 @@
 </head>
 <body>
     <div class="container mt-5">
-        <!-- Título da página -->
         <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
 
-        <!-- Botão Adicionar Nova Escala -->
         <div class="d-flex justify-content-end mb-3">
             <a href="/escalas/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Escala
             </a>
         </div>
-
 
         <form action="/escalas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
@@ -45,12 +42,10 @@
             </div>
         </form>
 
-        <!-- Exibição de Mensagem de Erro -->
         {{#if errorMessage}}
             <div class="alert alert-danger mt-3" role="alert">{{errorMessage}}</div>
         {{/if}}
 
-        <!-- Tabela de Escalas -->
         <div class="table-responsive mt-3">
             <table class="table table-hover table-striped table-bordered">
                 <thead class="table-primary">
@@ -66,8 +61,8 @@
                     {{#each escalas}}
                         <tr>
                             <td>{{formatDate this.data}}</td>
-                            <td>{{formatTime this.horarioInicio}}</td>
-                            <td>{{formatTime this.horarioFim}}</td>
+                            <td>{{this.horarioInicio}}</td>
+                            <td>{{this.horarioFim}}</td>
                             <td>{{this.admin.nome}}</td>
                             <td class="text-center">
                                 <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
@@ -85,7 +80,13 @@
             </table>
         </div>
 
-        <!-- Calendário -->
+        <div class="d-flex justify-content-end mb-3">
+            <!-- Botão para alternar visibilidade do calendário -->
+            <button id="toggleCalendar" class="btn btn-secondary">
+                <i class="bi bi-calendar-event"></i> Mostrar/Ocultar Calendário
+            </button>
+        </div>
+
         <div id="calendar" class="mt-5"></div>
 
         {{#if (eq escalas.length 0)}}
@@ -95,35 +96,47 @@
         {{/if}}
     </div>
 
-    <!-- Script para renderizar o FullCalendar -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const toggleCalendarBtn = document.getElementById('toggleCalendar');
 
-            // Formatar os eventos em formato compatível com o FullCalendar
-            const events = [
-                {{#each escalas}}
-                    {
-                        title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}', // Título do evento
-                        start: '{{this.data}}T{{this.horarioInicio}}', // Data e horário de início no formato ISO 8601
-                        end: '{{this.data}}T{{this.horarioFim}}', // Data e horário de término no formato ISO 8601
-                    },
-                {{/each}}
-            ];
+    if (!calendarEl) {
+        console.error("Elemento de calendário não encontrado!");
+        return;
+    }
 
-            // Configuração do FullCalendar
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'interaction'], // Plugins para exibição e interação com o calendário
-                initialView: 'dayGridMonth', // Exibir o calendário no formato de mês
-                events: events, // Passar os eventos para o calendário
-                editable: true, // Permitir edição no calendário
-                droppable: true, // Permitir que eventos sejam arrastados
-                locale: 'pt-br', // Localização em português
-            });
+    const profissionalColors = JSON.parse('{{profissionalColors}}'.replace(/&quot;/g, '"'));
 
-            // Renderizar o calendário
-            calendar.render();
-        });
-    </script>
+    const events = [
+        {{#each escalas}}
+        {
+            title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
+            start: '{{this.data}}T{{this.horarioInicio}}',
+            end: '{{this.data}}T{{this.horarioFim}}',
+            backgroundColor: profissionalColors['{{this.admin.id}}'] || 'gray',
+            borderColor: profissionalColors['{{this.admin.id}}'] || 'gray',
+        },
+        {{/each}}
+    ];
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        locale: 'pt-br',
+        events: events,
+    });
+
+    calendar.render();
+
+    // Função para alternar a visibilidade do calendário
+    toggleCalendarBtn.addEventListener('click', function() {
+        if (calendarEl.style.display === "none") {
+            calendarEl.style.display = "block";
+        } else {
+            calendarEl.style.display = "none";
+        }
+    });
+});
+</script>
 </body>
 </html>

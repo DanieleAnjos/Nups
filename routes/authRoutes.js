@@ -58,6 +58,7 @@ router.post('/register', async (req, res) => {
 router.get('/login', (req, res) => {
     const errorMsg = req.flash('error_msg');
     res.render('auth/login', { errorMsg, layout: false });
+    
   });
 
 

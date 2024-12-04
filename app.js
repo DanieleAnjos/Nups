@@ -186,6 +186,10 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
+app.get('/auth/login',function(req, res)  {
+  res.render('auth/login');
+});
+
 app.use('/auth', usuarioRoutes);
 
 
@@ -228,7 +232,10 @@ const accessControl = {
       '/eventos2',
       '/encaminhamentos',
       '/relatorios',
-      '/estoque'
+      '/estoque',
+      '/produtos',
+      '/mensagens',
+      '/notificacoes',
     ],
     'Assistente social': [
       '/dashboard/assistente-social',
@@ -272,7 +279,7 @@ const accessControl = {
         } else {
           console.log('Acesso negado: Você não tem permissão para acessar esta página');
           req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
-          return res.redirect('/');
+          return res.redirect('/auth/login');
         }
       } catch (err) {
         console.error('Erro ao verificar o profissional:', err);

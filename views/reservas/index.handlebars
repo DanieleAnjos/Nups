@@ -56,10 +56,10 @@
             <thead class="table-primary text-center">
                 <tr>
                     <th>Data</th>
-                    <th>Horário Inicial</th>
-                    <th>Horário Final</th>
                     <th>Sala</th>
                     <th>Profissional</th>
+                    <th>Horário Inicial</th>
+                    <th>Horário Final</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -67,11 +67,11 @@
                 {{#if reservas.length}}
                     {{#each reservas}}
                         <tr>
-                            <td>{{data}}</td>
-                            <td>{{horarioInicial}}</td>
-                            <td>{{horarioFinal}}</td>
+                            <td>{{formatDate data}}</td>
                             <td>{{sala.nome}}</td>
                             <td>{{profissionalNome}}</td>
+                            <td>{{formatTime horarioInicial}}</td>
+                            <td>{{formatTime horarioFinal}}</td>
                             <td class="text-center">
                                 <a href="/reservas/{{id}}/edit" class="btn btn-warning btn-sm mx-1 shadow-sm">
                                     <i class="bi bi-pencil-square"></i> Editar

@@ -22,15 +22,18 @@ const checkUserAndProfissional = async (req, res, next) => {
 };
 
 const dashboardController = {
+
   adm: (req, res) => {
+    console.log(req.user);
     res.render('dashboard/adm', { user: req.user, cargo: req.profissional.cargo });
   },
-
   assistenteSocial: (req, res) => {
+    console.log(req.user);
     res.render('dashboard/assistente-social', { user: req.user, cargo: req.profissional.cargo });
   },
 
   psicologoPsiquiatra: (req, res) => {
+    console.log(req.user);
     res.render('dashboard/psicologo-psiquiatra', { user: req.user, cargo: req.profissional.cargo });
   }
 };
