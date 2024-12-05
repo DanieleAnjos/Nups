@@ -10,6 +10,7 @@ router.get('/', MensagemController.listarMensagensRecebidas);
 
 router.get('/:id', MensagemController.visualizarMensagem);
 
+
 router.get('/:id/responder',  MensagemController.responderMensagem);
 router.post('/:id/responder', MensagemController.enviarResposta);
 

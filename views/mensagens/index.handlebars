@@ -1,3 +1,7 @@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
 <h1 class="text-center my-5">Caixa de Entrada</h1>
 
 <!-- Botão de enviar nova mensagem -->
@@ -181,5 +185,26 @@
         const container = document.getElementById("mensagensEnviadasContainer");
         container.style.display = container.style.display === "none" ? "block" : "none";
         this.textContent = container.style.display === "none" ? "Mostrar Mensagens Enviadas" : "Ocultar Mensagens Enviadas";
+    });
+
+
+       document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
     });
 </script>

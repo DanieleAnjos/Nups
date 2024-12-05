@@ -209,23 +209,22 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Data</th>
-                    <th>Relatório</th>
+                    <th>Profissional</th>
                     <th>Horário Chegada</th>
                     <th>Horário Saída</th>
-                    <th>Profissional</th>
+                    <th>Relatório</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each ocorrencias}}
                 <tr>
-                    <td>{{this.id}}</td>
-                    <td>{{this.data}}</td>
-                    <td>{{this.relatorio}}</td>
-                    <td>{{this.horarioChegada}}</td>
-                    <td>{{this.horarioSaida}}</td>
+                    <td>{{formatDate this.data}}</td>
                     <td>{{this.profissional.nome}}</td>
+                    <td>{{formatHour this.horarioChegada}}</td>
+                    <td>{{formatHour this.horarioSaida}}</td>
+                    <td>{{this.relatorio}}</td>
+
                 </tr>
                 {{/each}}
             </tbody>

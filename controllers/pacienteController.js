@@ -112,8 +112,8 @@ exports.store = [
         encaminhamento.statusAcolhimento = 'Realizado';
         await encaminhamento.save();
       }
-      res.redirect(`/pacientes`);
       req.flash('success_msg', 'Paciente cadastrado com sucesso!');
+      res.redirect(`/pacientes`);
     } catch (error) {
       console.error('Erro ao cadastrar paciente:', error);
       req.flash('error_msg', 'Erro ao cadastrar paciente');

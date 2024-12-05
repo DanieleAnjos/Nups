@@ -98,6 +98,23 @@
       font-style: italic;
       color: #777;
     }
+            .button, .clear-button {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+            .button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
     @media print {
       .button {
         display: none;
@@ -144,10 +161,10 @@
       <thead>
         <tr>
           <th>Data</th>
-          <th>Horário Inicial</th>
-          <th>Horário Final</th>
           <th>Sala</th>
           <th>Profissional</th>
+          <th>Horário Inicial</th>
+          <th>Horário Final</th>
         </tr>
       </thead>
       <tbody>
@@ -155,10 +172,10 @@
           {{#each reservas}}
             <tr>
               <td>{{formatDate this.data}}</td>
-              <td>{{this.horarioInicial}}</td>
-              <td>{{this.horarioFinal}}</td>
               <td>{{this.sala.nome}}</td>
               <td>{{this.profissional.nome}}</td>
+              <td>{{formatHour this.horarioInicial}}</td>
+              <td>{{formatHour this.horarioFinal}}</td>
             </tr>
           {{/each}}
         {{else}}
@@ -170,9 +187,9 @@
     </table>
 
     <!-- Botão de Impressão -->
-    <div class="actions">
-      <a href="javascript:window.print()" class="button">Imprimir Relatório</a>
-    </div>
+        <div class="actions">
+            <a href="javascript:window.print()" class="button">Imprimir Relatório</a>
+        </div>
   </div>
 
   <script>

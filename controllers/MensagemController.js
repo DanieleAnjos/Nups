@@ -74,10 +74,12 @@ module.exports = {
       } else {
         return res.status(400).send('Especifique um destinatário ou um cargo.');
       }
-  
-      res.redirect('/mensagens/index');
+      
+      req.flash('success_msg', 'Mensagem enviada com sucesso!');
+      res.redirect('/mensagens');
     } catch (error) {
       console.error(error);
+      req.flash('error_msg', 'Erro ao enviar mensagem.');
       res.status(500).send('Erro ao enviar mensagem.');
     }
   },

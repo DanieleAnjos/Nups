@@ -19,13 +19,13 @@
                 <!-- Campo Horário de Chegada -->
                 <div class="mb-3">
                     <label for="horarioChegada" class="form-label">Horário de Chegada:</label>
-                    <input type="time" name="horarioChegada" value="{{ocorrencia.horarioChegada}}" required class="form-control">
+                    <input type="time" name="horarioChegada" value="{{formatHour ocorrencia.horarioChegada}}" required class="form-control">
                 </div>
 
                 <!-- Campo Horário de Saída -->
                 <div class="mb-3">
                     <label for="horarioSaida" class="form-label">Horário de Saída:</label>
-                    <input type="time" name="horarioSaida" value="{{ocorrencia.horarioSaida}}" class="form-control">
+                    <input type="time" name="horarioSaida" value="{{formatHour ocorrencia.horarioSaida}}" class="form-control">
                 </div>
 
                 <!-- Campo Profissional -->

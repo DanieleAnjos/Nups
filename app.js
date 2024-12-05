@@ -40,7 +40,7 @@ const PORT = process.env.PORT || 3000;
 const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const { checkProfissional } = require('./utils'); 
+const { checkProfissional } = require('./utils');
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -89,6 +89,11 @@ const hbs = engine({
         formatDateWithFns: (date) => {
             if (!date) return '';
             return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
+        },
+
+        formatHour : (date) => {
+          if (!date) return '';
+          return format(new Date(date), "HH:mm", { locale: ptBR });
         },
 
         isActive: function(currentPath, expectedPath) {
@@ -163,7 +168,7 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
-    store: sessionStore, // Add this line
+    //store: sessionStore, // Add this line
     saveUninitialized: false, // Salvar sessões mesmo que estejam vazias
     cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
@@ -252,7 +257,11 @@ const accessControl = {
       '/pacientes',
       '/ajustes',
       '/atendimentos',
-      '/relatorios'
+      '/relatorios',
+      '/notificacoes',
+      '/mensagens',
+      '/atendimentos2',
+
     ],
     'Psicólogo': [
       '/dashboard/psicologo-psiquiatra',

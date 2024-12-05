@@ -65,8 +65,8 @@ const ocorrenciaController = {
       }
 
       await Ocorrencia.create({ data, relatorio, horarioChegada, horarioSaida, profissionalId });
-      req.flash('success_msg', 'Ocorrência criada com sucesso.');
       res.redirect('/ocorrencias');
+      req.flash('success_msg', 'Ocorrência criada com sucesso.');
     } catch (error) {
       console.error("Erro ao criar ocorrência:", error);
       req.flash('error_msg', 'Erro ao criar ocorrência.');

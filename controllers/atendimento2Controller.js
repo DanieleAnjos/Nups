@@ -48,24 +48,29 @@ const AtendimentoController = {
         profissionalId: profissional.id,
       });
       
+      req.flash('success_msg', 'Atendimento criado com sucesso!');
       res.render('atendimentos2/index');
-      res.status(201).json({ mensagem: 'Atendimento criado com sucesso!', novoAtendimento });
     } catch (error) {
       console.error('Erro ao criar atendimento:', error);
-      res.status(500).json({ mensagem: 'Erro ao criar atendimento.' });
+      req.flash('error_msg', 'Erro ao cadastrar atendimento!');
+      res.redirect('/atendimentos2/index');
     }
   },
 
   listarAtendimentos: async (req, res) => {
     try {
         const atendimentos = await Atendimento2.findAll({
-            include: [
-              { model: Profissional },  
-              { model: Paciente }       
-            ],
-            order: [['dataAtendimento', 'DESC']],
-          });
-          
+          include: [
+            {
+              model: Profissional,
+              as: 'profissional',
+              attributes: ['id', 'nome']
+            },
+            // Você pode adicionar mais modelos aqui se necessário
+          ],
+          order: [['dataAtendimento', 'DESC']]
+        });
+
 
       res.render('atendimentos2/index', { atendimentos });
     } catch (error) {

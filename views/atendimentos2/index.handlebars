@@ -1,98 +1,87 @@
-<h1 class="text-center my-4">Lista de Atendimentos</h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atendimentos</title>
+        
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ6bH8lX1YdVfK2anGQbhMvDOK0gtyWFM5J0n61V9QhZ8kWnZTna4rbUjxdg" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Atendimentos</h2>
 
-<!-- Tabela de Atendimentos -->
-<div class="table-responsive">
-    <table class="table table-hover table-striped table-bordered mt-3">
-        <thead class="table-primary">
-            <tr class="text-center">
-                <th>ID</th>
-                <th>Paciente</th>
-                <th>Profissional</th>
-                <th>Assunto</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each atendimentos}}
-                <tr>
-                    <td class="text-center">{{this.id}}</td>
-                    <td>{{this.nomePaciente}}</td> <!-- Nome do paciente -->
-                    <td>{{this.nomeProfissional}}</td> <!-- Nome do profissional -->
-                    <td>{{this.registroAtendimento}}</td> <!-- Registro do atendimento -->
-                    <td class="text-center">
-                        <!-- Botão Editar -->
-                        <a href="/atendimentos2/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1 text-white" title="Editar atendimento">
-                            <i class="bi bi-pencil-square"></i> Editar
-                        </a>
+        <!-- Filtro de busca -->
+        <div class="d-flex justify-content-between mb-4">
 
-                        <!-- Botão Visualizar -->
-                        <a href="/atendimentos2/detalhes/{{this.id}}" class="btn btn-info btn-sm mx-1 text-white" title="Visualizar atendimento">
-                            <i class="bi bi-eye"></i> Visualizar
-                        </a>
-                    </td>
-                </tr>
-            {{else}}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">Nenhum atendimento encontrado.</td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</div>
+            
+            <!-- Botão Novo Atendimento -->
+            <a href="/atendimentos2/create" class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-plus-circle me-2"></i> Novo Atendimento
+            </a>
+        </div>
 
-<!-- Adicionando estilos customizados -->
-<style>
-    .table th, .table td {
-        padding: 15px; /* Aumentando o padding para melhorar a legibilidade */
-        vertical-align: middle;
-    }
+        <!-- Tabela de Atendimentos -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <th>Data</th>
+                        <th>Paciente</th>
+                        <th>Profissional</th>
+                        <th>Registro do Atendimento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each atendimentos}}
+                        <tr>
+                            <td>{{formatDate this.createdAt}}</td>
+                            <td>{{this.nomePaciente}}</td>
+                            <td>{{this.nomeProfissional}}</td>
+                            <td>{{this.registroAtendimento}}</td>
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    .table th {
-        background-color: #f8f9fa; /* Cor de fundo para o cabeçalho */
-    }
+    <!-- Bootstrap JS (opcional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0v8FqI4Gi2g1twTwF7twIHJlAiSPks1zRuw49YQ9wnVf5ZT6" crossorigin="anonymous"></script>
 
-    .table-hover tbody tr:hover {
-        background-color: #f1f1f1; /* Cor de fundo ao passar o mouse */
-    }
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-    .btn {
-        font-size: 14px; /* Tamanho de fonte para os botões */
-        font-weight: bold; /* Negrito para os botões */
-    }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Exibir SweetAlert2 de erro
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
 
-    .btn:hover {
-        opacity: 0.8; /* Efeito de transparência ao passar o mouse */
-    }
-
-    .btn-info {
-        background-color: #17a2b8;
-        border-color: #17a2b8;
-    }
-
-    .btn-warning {
-        background-color: #ffc107;
-        border-color: #ffc107;
-    }
-
-    .btn-sm {
-        padding: 8px 12px; /* Tamanho do botão */
-    }
-
-    .table-responsive {
-        margin-top: 20px;
-        max-height: 400px; /* Definindo uma altura máxima para a tabela */
-        overflow-y: auto; /* Habilitando o scroll quando necessário */
-    }
-
-    /* Ajuste para telas pequenas */
-    @media (max-width: 767px) {
-        .table th, .table td {
-            font-size: 12px;
-            padding: 8px;
-        }
-
-        .btn-sm {
-            padding: 6px 10px;
-        }
-    }
-</style>
+            // Exibir SweetAlert2 de sucesso
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>
+</body>
+</html>

@@ -3,7 +3,8 @@
 <div class="container shadow-sm p-4 rounded bg-light">
   <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate>
     <!-- Campo oculto para Remetente -->
-    <input type="hidden" name="remetenteId" value="{{user.id}}">
+    <input type="hidden" name="remetenteId" value="{{user.id}}" required>
+    <div class="invalid-feedback">Erro: remetente não definido.</div>
 
     <!-- Destinatário -->
     <div class="mb-4">
@@ -15,20 +16,6 @@
         {{/each}}
       </select>
       <div class="invalid-feedback">Por favor, selecione um destinatário.</div>
-    </div>
-
-    <!-- Cargo do Destinatário -->
-    <div class="mb-4">
-      <label for="destinatarioCargo" class="form-label h5"><i class="bi bi-briefcase-fill"></i> Cargo do Destinatário:</label>
-      <select name="destinatarioCargo" id="destinatarioCargo" class="form-select" required>
-        <option value="" selected disabled>Escolha um cargo</option>
-        <option value="Administrador">Administrador</option>
-        <option value="Assistente social">Assistente social</option>
-        <option value="Psicólogo">Psicólogo</option>
-        <option value="Psiquiatra">Psiquiatra</option>
-        <!-- Adicione outras opções de cargos conforme necessário -->
-      </select>
-      <div class="invalid-feedback">Por favor, escolha o cargo do destinatário.</div>
     </div>
 
     <!-- Assunto -->
@@ -57,10 +44,9 @@
   </form>
 </div>
 
-<!-- Bootstrap Icons -->
+<!-- Bootstrap e Validação -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <script>
-  // Adicionando validação do Bootstrap
   (function () {
     'use strict';
     const forms = document.querySelectorAll('.needs-validation');

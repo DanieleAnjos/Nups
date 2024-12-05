@@ -19,6 +19,9 @@ module.exports = (sequelize) => {
 
   // Relacionamento entre Atendimento e Profissional
   Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
+  
+  Atendimento2.belongsTo(Profissional, { as: 'profissional', foreignKey: 'profissionalId' });
+
 
   // Relacionamento entre Atendimento e Paciente
   Atendimento.belongsTo(Paciente, { foreignKey: 'pacienteId', as: 'paciente' });
