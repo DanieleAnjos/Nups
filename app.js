@@ -163,8 +163,8 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
-    //store: sessionStore, // Add this line
-    saveUninitialized: false,
+   // store: sessionStore, // Add this line
+    saveUninitialized: true, // Salvar sessões mesmo que estejam vazias
     cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
 
@@ -224,8 +224,7 @@ app.get('/', function(req, res) {
     });
 });
 
-app.use('/contato', contatoRoutes);
-app.use('/profissionais', profissionalRoutes);
+
 
 const accessControl = {
     'Administrador': [
@@ -320,6 +319,8 @@ app.use('/mensagens', mensagemRoutes);
 app.use('/atendimentos2', atendimentos2Routes);
 app.use('/notificacoes', notificacaoRoutes);
 app.use('/graficos', graficosRoutes);
+app.use('/contato', contatoRoutes);
+app.use('/profissionais', profissionalRoutes);
 
 
 app.use((req, res) => {
