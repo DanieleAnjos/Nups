@@ -163,8 +163,8 @@ app.use(flash());
 app.use(session({
     secret: 'secret_key',
     resave: false,
-   // store: sessionStore, // Add this line
-    saveUninitialized: true, // Salvar sessões mesmo que estejam vazias
+    store: sessionStore, // Add this line
+    saveUninitialized: false, // Salvar sessões mesmo que estejam vazias
     cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
 
@@ -245,6 +245,7 @@ const accessControl = {
       '/produtos',
       '/mensagens',
       '/notificacoes',
+      '/profissionais',
     ],
     'Assistente social': [
       '/dashboard/assistente-social',
