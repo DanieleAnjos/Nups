@@ -148,10 +148,12 @@ const escalaController = {
       }
 
       await Escala.create({ data, horarioInicio, horarioFim, adminId });
+      req.flash('success_msg','Escala cadastrada com sucesso!');
       res.redirect('/escalas');
     } catch (error) {
       console.error('Erro ao criar a escala:', error);
       const profissionais = await Profissional.findAll(); 
+      req.flash('error_msg','Erro ao criar a escala');
       res.render('escalas/create', {
         profissionais,
         errorMessage: 'Erro ao criar a escala.'
@@ -161,80 +163,85 @@ const escalaController = {
 
   edit: async (req, res) => {
     try {
-      const escala = await Escala.findByPk(req.params.id);
-      const profissionais = await Profissional.findAll();
-
-      if (!escala) {
-        return res.render('escalas/edit', {
-          errorMessage: 'Escala não encontrada.',
-          profissionais
+        const escala = await Escala.findByPk(req.params.id, {
+            include: [{ model: Profissional, as: 'admin' }]
         });
-      }
-
-      res.render('escalas/edit', { escala, profissionais });
-    } catch (error) {
-      console.error('Erro ao buscar a escala:', error);
-      const profissionais = await Profissional.findAll();
-      res.render('escalas/edit', {
-        errorMessage: 'Erro ao buscar a escala.',
-        profissionais
-      });
-    }
-  },
-
-  update: async (req, res) => {
-    try {
-      const { data, horarioInicio, horarioFim, adminId } = req.body;
-      const escala = await Escala.findByPk(req.params.id);
-
-      if (!escala) {
         const profissionais = await Profissional.findAll();
-        return res.render('escalas/edit', {
-          errorMessage: 'Escala não encontrada.',
-          profissionais
-        });
-      }
 
-      const existingScale = await Escala.findOne({
-        where: {
-          id: { [Op.ne]: escala.id }, 
-          data,
-          [Op.or]: [
-            {
-              horarioInicio: { [Op.lt]: horarioFim },
-              horarioFim: { [Op.gt]: horarioInicio },
-            },
-            {
-              horarioInicio: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
-            },
-            {
-              horarioFim: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
-            },
-          ],
-          adminId, 
-        },
-      });
+        if (!escala) {
+            return res.render('escalas/edit', {
+                errorMessage: 'Escala não encontrada.',
+                profissionais
+            });
+        }
 
-      if (existingScale) {
-        const profissionais = await Profissional.findAll(); 
-        return res.render('escalas/edit', {
-          escala,
-          profissionais,
-          errorMessage: 'Este profissional já tem uma escala agendada neste dia e horário.'
-        });
-      }
-
-      await escala.update({ data, horarioInicio, horarioFim, adminId });
-      res.redirect('/escalas');
+        res.render('escalas/edit', { escala, profissionais });
     } catch (error) {
-      console.error('Erro ao atualizar a escala:', error);
-      const profissionais = await Profissional.findAll(); 
-      res.render('escalas/edit', {
-        errorMessage: 'Erro ao atualizar a escala.',
-        profissionais
-      });
+        console.error('Erro ao buscar a escala:', error);
+        const profissionais = await Profissional.findAll();
+        res.render('escalas/edit', {
+            errorMessage: 'Erro ao buscar a escala.',
+            profissionais
+        });
     }
-  },
+},
+
+update: async (req, res) => {
+    try {
+        const { data, horarioInicio, horarioFim, adminId } = req.body;
+        const escala = await Escala.findByPk(req.params.id);
+
+        if (!escala) {
+            const profissionais = await Profissional.findAll();
+            return res.render('escalas/edit', {
+                errorMessage: 'Escala não encontrada.',
+                profissionais
+            });
+        }
+
+        const existingScale = await Escala.findOne({
+            where: {
+                id: { [Op.ne]: escala.id },
+                data,
+                [Op.or]: [
+                    {
+                        horarioInicio: { [Op.lt]: horarioFim },
+                        horarioFim: { [Op.gt]: horarioInicio },
+                    },
+                    {
+                        horarioInicio: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
+                    },
+                    {
+                        horarioFim: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
+                    },
+                ],
+                adminId,
+            },
+        });
+
+        if (existingScale) {
+            const profissionais = await Profissional.findAll();
+            return res.render('escalas/edit', {
+                escala,
+                profissionais,
+                errorMessage: 'Este profissional já tem uma escala agendada neste dia e horário.'
+            });
+        }
+
+        await escala.update({ data, horarioInicio, horarioFim, adminId });
+        req.flash('success_msg', 'Escala atualizada com sucesso!');
+        res.redirect('/escalas');
+    } catch (error) {
+        console.error('Erro ao atualizar a escala:', error);
+        const profissionais = await Profissional.findAll();
+        req.flash('error_msg', 'Erro ao atualizar escala');
+        res.render('escalas/edit', {
+            errorMessage: 'Erro ao atualizar a escala.',
+            profissionais
+        });
+    }
+},
+
 
   destroy: async (req, res) => {
     try {
@@ -243,9 +250,11 @@ const escalaController = {
         return res.render('escalas/index', { errorMessage: 'Escala não encontrada.' });
       }
       await escala.destroy();
+      req.flash('success_msg','Escala excluída com sucesso!');
       res.redirect('/escalas');
     } catch (error) {
       console.error('Erro ao excluir a escala:', error);
+      req.flash('error_msg','Erro ao excluir escala');
       res.render('escalas/index', { errorMessage: 'Erro ao excluir a escala.' });
     }
   },

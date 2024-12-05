@@ -19,6 +19,7 @@ const produtoController = {
         const produtos = await Produto.findAll({
             include: [{
                 model: AjusteEstoque,
+                as: 'ajustesEstoque',
                 required: false // Set to true if you want only products with adjustments
             }]
         });

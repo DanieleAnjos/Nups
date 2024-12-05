@@ -1,81 +1,80 @@
-<div class="profile-container">
+<div class="profile-container container-fluid">
   <div class="profile-card">
-    <div class="profile-header">
-      <div class="image-container">
+    <div class="profile-header row align-items-center">
+      <div class="image-container col-12 col-md-4 text-center">
         {{#if profissional.imagePath}}
-          <img src="/{{profissional.imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image">
+          <img src="/{{profissional.imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image img-fluid rounded-circle">
         {{else}}
-          <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image">
+          <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image img-fluid rounded-circle">
         {{/if}}
       </div>
-      <div class="profile-info">
+      <div class="profile-info col-12 col-md-8 text-center text-md-start">
         <h1 class="profile-name">{{profissional.nome}}</h1>
-        <span class="profile-badge">{{profissional.cargo}}</span>
+        <span class="profile-badge badge bg-primary">{{profissional.cargo}}</span>
       </div>
     </div>
+
     <div class="profile-content">
       <div class="info-section">
         <h2>Informações Pessoais</h2>
-        <div class="info-grid">
-          <div class="info-item">
+        <div class="row">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-envelope"></i>
-            <span class="label">Email: </span>
+            <span class="label">Email:</span>
             <span class="value"> &nbsp;{{profissional.email}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-calendar-alt"></i>
-            <span class="label">Admissão: </span>
-            <span class="value"> &nbsp;{{ formatDate profissional.dataAdmissao}}</span>
+            <span class="label">Admissão:</span>
+            <span class="value"> &nbsp;{{formatDate profissional.dataAdmissao}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-phone"></i>
-            <span class="label">Telefone: </span>
-            <span class="value">&nbsp;{{profissional.telefone}}</span>
+            <span class="label">Telefone:</span>
+            <span class="value"> &nbsp;{{profissional.telefone}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-id-card"></i>
-            <span class="label">CPF: </span>
-            <span class="value">&nbsp;{{profissional.cpf}}</span>
+            <span class="label">CPF:</span>
+            <span class="value"> &nbsp;{{profissional.cpf}}</span>
           </div>
-          <div class="info-item">
-            <p class="info-single">
-              <i class="fas fa-map-marker-alt"></i>
-              <span class="label">Endereço: </span>
-              {{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
-            </p>
+          <div class="col-12 info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span class="label">Endereço:</span>
+            <span class="value">{{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}</span>
           </div>
         </div>
       </div>
 
       <div class="info-section">
         <h2>Dados Bancários</h2>
-        <div class="info-grid">
-          <div class="info-item">
+        <div class="row">
+          <div class="col-12 col-md-4 info-item">
             <i class="fas fa-building"></i>
-            <span class="label">Banco: </span>
-            <span class="value">&nbsp;{{profissional.nomeBanco}}</span>
+            <span class="label">Banco:</span>
+            <span class="value"> &nbsp;{{profissional.nomeBanco}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-4 info-item">
             <i class="fas fa-credit-card"></i>
-            <span class="label">Conta: </span>
-            <span class="value">&nbsp;{{profissional.contaBanco}}</span>
+            <span class="label">Conta:</span>
+            <span class="value"> &nbsp;{{profissional.contaBanco}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-4 info-item">
             <i class="fas fa-university"></i>
-            <span class="label">Agência: </span>
-            <span class="value">&nbsp;{{profissional.agencia}}</span>
+            <span class="label">Agência:</span>
+            <span class="value"> &nbsp;{{profissional.agencia}}</span>
           </div>
         </div>
       </div>
 
       <div class="info-section">
         <h2>Contato de Emergência</h2>
-        <div class="info-grid">
-          <div class="info-item">
+        <div class="row">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-ambulance"></i>
             <span class="label"> &nbsp;{{profissional.contatoEmergenciaNome}}</span>
           </div>
-          <div class="info-item">
+          <div class="col-12 col-md-6 info-item">
             <i class="fas fa-phone-alt"></i>
             <span class="label"> &nbsp;{{profissional.telefoneContatoEmergencia}}</span>
           </div>
@@ -83,151 +82,72 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="container mt-4">
-  <!-- Tabs -->
-  <ul class="nav nav-tabs justify-content-center" id="profileTabs" role="tablist">
-    <li class="nav-item" role="presentation" style="flex: 1;">
-      <button class="nav-link active w-100 text-center" id="encaminhamentos-tab" data-bs-toggle="tab" data-bs-target="#encaminhamentos" type="button" role="tab" aria-controls="encaminhamentos" aria-selected="true">
-        Encaminhamentos
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" style="flex: 1;">
-      <button class="nav-link w-100 text-center" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">
-        Atendimentos
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" style="flex: 1;">
-      <button class="nav-link w-100 text-center" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">
-        Ocorrências
-      </button>
-    </li>
-  </ul>
+  <!-- Tabs Section -->
+  <div class="container mt-4">
+    <ul class="nav nav-tabs justify-content-center" id="profileTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active w-100 text-center" id="encaminhamentos-tab" data-bs-toggle="tab" data-bs-target="#encaminhamentos" type="button" role="tab" aria-controls="encaminhamentos" aria-selected="true">
+          Encaminhamentos
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link w-100 text-center" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">
+          Atendimentos
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link w-100 text-center" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">
+          Ocorrências
+        </button>
+      </li>
+    </ul>
 
-  <!-- Tab Content -->
-  <div class="tab-content mt-4">
-    <!-- Encaminhamentos -->
-    <div class="tab-pane fade show active" id="encaminhamentos" role="tabpanel" aria-labelledby="encaminhamentos-tab">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="h5 mb-0">Encaminhamentos Relacionados</h2>
-        </div>
-        <div class="card-body">
-          {{#if encaminhamentos.length}}
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Paciente</th>
-                    <th>Assunto</th>
-                    <th>Status</th>
-                    <th>Visualizado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {{#each encaminhamentos}}
+    <div class="tab-content mt-4">
+      <!-- Encaminhamentos -->
+      <div class="tab-pane fade show active" id="encaminhamentos" role="tabpanel" aria-labelledby="encaminhamentos-tab">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="h5 mb-0">Encaminhamentos Relacionados</h2>
+          </div>
+          <div class="card-body">
+            {{#if encaminhamentos.length}}
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <td>{{formatDate createdAt}}</td>
-                      <td>{{nomePaciente}}</td>
-                      <td>{{assuntoAcolhimento}}</td>
-                      <td>{{statusAcolhimento}}</td>
-                      <td>{{#if visualizado}}Sim{{else}}Não{{/if}}</td>
+                      <th>Data</th>
+                      <th>Paciente</th>
+                      <th>Assunto</th>
+                      <th>Status</th>
+                      <th>Visualizado</th>
                     </tr>
-                  {{/each}}
-                </tbody>
-              </table>
-            </div>
-          {{else}}
-            <p>Nenhum encaminhamento encontrado para este profissional.</p>
-          {{/if}}
-        </div>
-      </div>
-    </div>
-
-    <!-- Atendimentos -->
-    <div class="tab-pane fade" id="atendimentos" role="tabpanel" aria-labelledby="atendimentos-tab">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="h5 mb-0">Atendimentos</h2>
-        </div>
-        <div class="card-body">
-          {{#if atendimentos.length}}
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Paciente</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {{#each atendimentos}}
-                    <tr>
-                      <td>{{formatDate dataAtendimento}}</td>
-                      <td>{{nomePaciente}}</td>
-                      <td>
-                        <a href="/atendimento/{{id}}" target="_blank" class="btn btn-primary btn-sm">Visualizar detalhes</a>
-                      </td>
-                    </tr>
-                  {{/each}}
-                </tbody>
-              </table>
-            </div>
-          {{else}}
-            <p>Sem atendimentos relacionados.</p>
-          {{/if}}
-        </div>
-      </div>
-    </div>
-
-    <!-- Ocorrências -->
-    <div class="tab-pane fade" id="ocorrencias" role="tabpanel" aria-labelledby="ocorrencias-tab">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="h5 mb-0">Ocorrências</h2>
-        </div>
-        <div class="card-body">
-          {{#if ocorrencias.length}}
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Relatório</th>
-                    <th>Horário de Chegada</th>
-                    <th>Horário de Saída</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {{#each ocorrencias}}
-                    <tr>
-                      <td>{{formatDate data}}</td>
-                      <td>{{relatorio}}</td>
-                      <td>{{formatTime horarioChegada}}</td>
-                      <td>{{formatTime horarioSaida}}</td>
-                    </tr>
-                  {{/each}}
-                </tbody>
-              </table>
-            </div>
-          {{else}}
-            <p>Sem ocorrências relacionadas.</p>
-          {{/if}}
+                  </thead>
+                  <tbody>
+                    {{#each encaminhamentos}}
+                      <tr>
+                        <td>{{formatDate createdAt}}</td>
+                        <td>{{nomePaciente}}</td>
+                        <td>{{assuntoAcolhimento}}</td>
+                        <td>{{statusAcolhimento}}</td>
+                        <td>{{#if visualizado}}Sim{{else}}Não{{/if}}</td>
+                      </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+            {{else}}
+              <p>Nenhum encaminhamento encontrado para este profissional.</p>
+            {{/if}}
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-
-  <div class="action-buttons">
-    <a href="/profissionais" class="back-button">
-      <i class="fas fa-arrow-left"></i> Voltar para a lista
-    </a>
-  </div>
 </div>
+
+
+
 
 
 <!-- Lista de Encaminhamentos -->

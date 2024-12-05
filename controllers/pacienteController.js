@@ -112,11 +112,12 @@ exports.store = [
         encaminhamento.statusAcolhimento = 'Realizado';
         await encaminhamento.save();
       }
-
       res.redirect(`/pacientes`);
+      req.flash('success_msg', 'Paciente cadastrado com sucesso!');
     } catch (error) {
-      console.error('Erro ao criar paciente:', error);
-      return res.status(500).json({ message: 'Erro ao criar paciente. Verifique os dados e tente novamente.', error: error.message });
+      console.error('Erro ao cadastrar paciente:', error);
+      req.flash('error_msg', 'Erro ao cadastrar paciente');
+      res.redirect(`/pacientes`);
     }
   }
 ];
@@ -134,7 +135,8 @@ exports.edit = async (req, res) => {
     res.render('paciente/edit', { paciente });
   } catch (error) {
     console.error('Erro ao editar paciente:', error);
-    res.status(500).send('Erro ao carregar paciente para edição.');
+    req.flash('error_msg', 'Erro ao editar paciente');
+    res.redirect('/pacientes');
   }
 };
 
@@ -150,10 +152,12 @@ exports.update = async (req, res) => {
       cadastroCompleto: true, 
     });
 
+    req.flash('success_msg', 'Paciente atualizado com sucesso!');
     res.redirect('/pacientes');
   } catch (error) {
     console.error('Erro ao atualizar paciente:', error);
-    res.status(500).send('Erro ao atualizar paciente. Verifique os dados e tente novamente.');
+    req.flash('error_msg', 'Erro ao atualizar paciente.');
+    res.redirect('/pacientes');
   }
 };
 

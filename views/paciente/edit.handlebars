@@ -25,7 +25,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="dataNascimento" class="form-label">Data de Nascimento:</label>
-          <input type="date" class="form-control bg-light" name="dataNascimento" id="dataNascimento" value="{{formatDate paciente.dataNascimento}}" required >
+          <input type="date" class="form-control bg-light" name="dataNascimento" id="dataNascimento" value="{{formatDateToInput paciente.dataNascimento}}" required >
         </div>
       </div>
       <div class="col-md-6">
@@ -368,5 +368,6 @@
             fieldElement.style.display = "none";
         }
     }
+
 
 </script>

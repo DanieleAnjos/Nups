@@ -69,7 +69,7 @@ const reservasSalaController = {
       res.render('reservas/create', { salas, profissionais, errorMessage: req.flash('error') });
     } catch (error) {
       console.error('Erro ao carregar salas:', error);
-      req.flash('error', 'Erro ao carregar salas.');
+      req.flash('error_msg', 'Erro ao carregar salas.');
       res.redirect('/reservas');
     }
   },
@@ -108,16 +108,16 @@ const reservasSalaController = {
       });
 
       if (conflitos) {
-        req.flash('error', 'Já existe uma reserva para esta sala neste dia e horário.');
+        req.flash('error_msg', 'Já existe uma reserva para esta sala neste dia e horário.');
         return res.redirect('/reservas/create');
       }
 
       await ReservaSala.create(req.body);
-      req.flash('success', 'Reserva criada com sucesso!');
+      req.flash('success_msg', 'Reserva criada com sucesso!');
       res.redirect('/reservas');
     } catch (error) {
       console.error('Erro ao criar reserva:', error);
-      req.flash('error', 'Erro ao criar reserva.');
+      req.flash('error_msg', 'Erro ao criar reserva.');
       res.redirect('/reservas/create');
     }
   },
@@ -131,14 +131,14 @@ const reservasSalaController = {
       const profissionais = await Profissional.findAll();
 
       if (!reserva) {
-        req.flash('error', 'Reserva não encontrada.');
+        req.flash('error_msg', 'Reserva não encontrada.');
         return res.redirect('/reservas');
       }
 
       res.render('reservas/edit', { reserva, salas, profissionais, errorMessage: req.flash('error') });
     } catch (error) {
       console.error('Erro ao carregar reserva:', error);
-      req.flash('error', 'Erro ao carregar reserva.');
+      req.flash('error_msg', 'Erro ao carregar reserva.');
       res.redirect('/reservas');
     }
   },
@@ -150,7 +150,7 @@ const reservasSalaController = {
       const inicial = new Date(`${data}T${horarioInicial}:00Z`);
       const final = new Date(`${data}T${horarioFinal}:00Z`);
       if (inicial >= final) {
-        req.flash('error', 'O horário inicial deve ser anterior ao horário final.');
+        req.flash('error_msg', 'O horário inicial deve ser anterior ao horário final.');
         return res.redirect(`/reservas/${req.params.id}/edit`);
       }
 
@@ -173,20 +173,20 @@ const reservasSalaController = {
       });
 
       if (conflitos) {
-        req.flash('error', 'Já existe uma reserva para esta sala neste dia e horário.');
+        req.flash('error_msg', 'Já existe uma reserva para esta sala neste dia e horário.');
         return res.redirect(`/reservas/${req.params.id}/edit`);
       }
 
       const [updated] = await ReservaSala.update(req.body, { where: { id: req.params.id } });
       if (updated) {
-        req.flash('success', 'Reserva atualizada com sucesso!');
+        req.flash('success_msg', 'Reserva atualizada com sucesso!');
         return res.redirect('/reservas');
       }
-      req.flash('error', 'Reserva não encontrada.');
+      req.flash('error_msg', 'Reserva não encontrada.');
       res.redirect('/reservas');
     } catch (error) {
       console.error('Erro ao atualizar reserva:', error);
-      req.flash('error', 'Erro ao atualizar reserva.');
+      req.flash('error_msg', 'Erro ao atualizar reserva.');
       res.redirect('/reservas');
     }
   },
@@ -195,14 +195,14 @@ const reservasSalaController = {
     try {
       const deleted = await ReservaSala.destroy({ where: { id: req.params.id } });
       if (deleted) {
-        req.flash('success', 'Reserva deletada com sucesso!');
+        req.flash('success_msg', 'Reserva deletada com sucesso!');
         return res.redirect('/reservas');
       }
-      req.flash('error', 'Reserva não encontrada.');
+      req.flash('error_msg', 'Reserva não encontrada.');
       res.redirect('/reservas');
     } catch (error) {
       console.error('Erro ao deletar reserva:', error);
-      req.flash('error', 'Erro ao deletar reserva.');
+      req.flash('error_msg', 'Erro ao deletar reserva.');
       res.redirect('/reservas');
     }
   },

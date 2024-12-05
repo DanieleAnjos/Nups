@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atendimentos encaminhados</title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -34,7 +38,7 @@
                         <th>Paciente</th>
                         <th>Assunto</th>
                         <th>Profissional</th>
-                        <th>Ações</th>
+                       <!--   <th>Ações</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -43,12 +47,10 @@
                             <td>{{formatDate this.createdAt}}</td>
                             <td>{{this.nomePaciente}}</td>
                             <td>{{this.assunto}}</td>
-                            <td>{{this.profissional.nome}}</td> <!-- Nome do profissional -->
-                            <td class="text-center">
+                            <td>{{this.Profissional.nome}}</td> <!-- Nome do profissional -->
+                        <!--       <td class="text-center">
 
-                                    {{#if user.role}}
-                                        {{#if (eq user.role 'administrador')}}
-                                            <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                         <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
                                                 <i class="bi bi-pencil-square"></i> Editar
                                              </a>
                                         <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
@@ -56,9 +58,7 @@
                                             <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este atendimento?');">
                                                 <i class="bi bi-trash"></i> Deletar
                                             </button>
-                                        </form>
-                                        {{/if}}
-                                    {{/if}}
+                                        </form> -->
                             </td>
                         </tr>
                     {{else}}
@@ -72,3 +72,25 @@
     </div>
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

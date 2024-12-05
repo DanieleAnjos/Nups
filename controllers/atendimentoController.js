@@ -15,12 +15,12 @@ exports.index = async (req, res) => {
       where: {
         [Op.or]: [
           { nomePaciente: { [Op.like]: `%${searchTerm}%` } },
-          { '$profissional.nome$': { [Op.like]: `%${searchTerm}%` } }
+          { '$Profissional.nome$': { [Op.like]: `%${searchTerm}%` } }
         ]
       },
       include: [{
         model: Profissional,
-        as: 'profissional',
+        as: 'Profissional',
         attributes: ['id', 'nome']
       }],
       order: [['createdAt', 'DESC']] 
@@ -47,11 +47,12 @@ exports.create = async (req, res) => {
     const profissionais = await Profissional.findAll({
       where: cargoFiltrado ? { cargo: cargoFiltrado } : {}
     });
-
+    req.flash('success_msg', 'Atendimento criado com sucesso!');
     return res.render('atendimentos/create', { profissionais });
   } catch (error) {
     console.error('Erro ao buscar profissionais:', error);
-    return res.status(500).json({ message: 'Erro ao buscar profissionais.' });
+    req.flash('error_msg', 'Erro ao buscar profissionais');
+    res.redirect('/atendimentos');
   }
 };
 
@@ -97,11 +98,11 @@ exports.store = [
         });
       }
 
-      req.flash('success', 'Atendimento criado com sucesso!');
+      req.flash('success_msg', 'Encaminhamento realizado com sucesso!');
       return res.redirect('/atendimentos');
     } catch (error) {
       console.error('Erro ao criar atendimento:', error);
-      req.flash('error', 'Erro ao criar atendimento. Tente novamente.');
+      req.flash('error_msg', 'Erro ao realizar encaminhamento. Tente novamente.');
       return res.redirect('/atendimentos/create');
     }
   }
@@ -128,10 +129,12 @@ exports.update = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ message: 'Atendimento não encontrado.' });
     }
+    req.flash('success_msg', 'Atendimento atualizado com sucesso!');
     return res.redirect('/atendimentos'); 
   } catch (error) {
+    req.flash('error_msg','Erro ao autualizar atendimento!')
     console.error('Erro ao atualizar atendimento:', error);
-    return res.status(500).json({ message: 'Erro ao atualizar atendimento.' });
+    return res.redirect('/atendimentos'); 
   }
 };
 
@@ -143,10 +146,12 @@ exports.destroy = async (req, res) => {
     if (!deleted) {
       return res.status(404).json({ message: 'Atendimento não encontrado.' });
     }
+    req.flash('success_msg', 'Atendimento deletado com sucesso!');
     return res.redirect('/atendimentos'); 
   } catch (error) {
     console.error('Erro ao deletar atendimento:', error);
-    return res.status(500).json({ message: 'Erro ao deletar atendimento.' });
+    req.flash('error_msg', 'Erro ao deletar atendimento.');
+    return res.redirect('/atendimentos'); 
   }
 };
 

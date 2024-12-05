@@ -30,6 +30,8 @@ module.exports = (sequelize) => {
   Produto.belongsTo(AjusteEstoque);
 
 
+
+
   Produto.hasMany(AjusteEstoque, { foreignKey: 'produtoId' });
   AjusteEstoque.belongsTo(Produto, { foreignKey: 'produtoId' });
 

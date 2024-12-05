@@ -35,9 +35,12 @@ formularioCriar: (req, res) => {
     try {
       const { nome, capacidade, descricao } = req.body;
       await Sala.create({ nome, capacidade, descricao });
+      req.flash('success_msg', 'Sala cadastrado com sucesso!')
       res.redirect('/salas');
     } catch (error) {
-      res.status(500).send('Erro ao criar sala.');
+      req.flash('error_msg', 'Erro ao cadastrar sala!');
+      console.error('Erro ao cadastrar sala:', error);
+      res.redirect('/salas');
     }
   },
 
@@ -58,8 +61,11 @@ formularioCriar: (req, res) => {
     try {
       const { nome, capacidade, descricao } = req.body;
       await Sala.update({ nome, capacidade, descricao }, { where: { id: req.params.id } });
+      req.flash('success_msg', 'Sala atualizada com sucesso!');
       res.redirect('/salas');
     } catch (error) {
+      req.flash('error_msg', 'Erro ao atualizar sala.');
+      console.error('Erro ao atualizar sala:', error);
       res.status(500).send('Erro ao atualizar sala.');
     }
   },
@@ -87,11 +93,11 @@ formularioCriar: (req, res) => {
         }
 
         await sala.destroy();
-        req.flash('success', 'Sala deletada com sucesso.');
+        req.flash('success_msg', 'Sala deletada com sucesso.');
         res.redirect('/salas');
     } catch (error) {
         console.error('Erro ao deletar sala:', error);
-        req.flash('error', 'Erro ao deletar sala. Tente novamente mais tarde.');
+        req.flash('error_msg', 'Erro ao deletar sala. Tente novamente mais tarde.');
         res.redirect('/salas');
     }
 },

@@ -65,10 +65,12 @@ const ocorrenciaController = {
       }
 
       await Ocorrencia.create({ data, relatorio, horarioChegada, horarioSaida, profissionalId });
+      req.flash('success_msg', 'Ocorrência criada com sucesso.');
       res.redirect('/ocorrencias');
     } catch (error) {
       console.error("Erro ao criar ocorrência:", error);
-      res.status(500).send("Erro ao criar ocorrência.");
+      req.flash('error_msg', 'Erro ao criar ocorrência.');
+      res.redirect('/ocorrencias');
     }
   },
 
@@ -112,10 +114,13 @@ const ocorrenciaController = {
       await Ocorrencia.update({ data, relatorio, horarioChegada, horarioSaida, profissionalId }, {
         where: { id: req.params.id }
       });
+      req.flash('success_msg', 'Ocorrência atualizada com sucesso.');
       res.redirect('/ocorrencias');
     } catch (error) {
       console.error(error);
-      res.status(500).send("Erro ao atualizar ocorrência.");
+      req.flash('error_msg', 'Erro ao atualizar ocorrência.');
+      res.redirect('/ocorrencias');
+
     }
   },
 
@@ -128,10 +133,12 @@ const ocorrenciaController = {
       }
 
       await Ocorrencia.destroy({ where: { id: req.params.id } });
+      req.flash('success_msg', 'Ocorrência excluída com sucesso.');
       res.redirect('/ocorrencias');
     } catch (error) {
       console.error(error);
-      res.status(500).send("Erro ao excluir ocorrência.");
+      req.flash('error_msg', 'Erro ao excluir ocorrência.');
+      res.redirect('/ocorrencias');
     }
   },
 

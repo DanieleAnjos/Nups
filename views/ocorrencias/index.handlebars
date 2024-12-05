@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Ocorrências</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -58,8 +61,7 @@
 
                             <td class="text-center">
 
-                                    {{#if user.role}}
-                                        {{#if (eq user.role 'administrador')}}
+
                                             <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
                                                 <i class="bi bi-pencil-square"></i> Editar
                                             </a>
@@ -69,8 +71,6 @@
                                                     <i class="bi bi-trash"></i> Remover
                                                 </button>
                                             </form>
-                                        {{/if}}
-                                    {{/if}}
                             </td>
                         </tr>
                     {{else}}
@@ -126,3 +126,25 @@ h2 {
 
 
     </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

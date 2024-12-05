@@ -43,7 +43,7 @@ const Atendimento = sequelize.define('Atendimento', {
     type: DataTypes.INTEGER,
     references: {
       model: Profissional,
-      key: 'id',
+      as: 'Profissional',
     },
     allowNull: false,
   },
@@ -79,7 +79,7 @@ const Atendimento = sequelize.define('Atendimento', {
 });
 
 
-
+Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'Profissional' }); // Com alias 'Profissional'
 
 // Definindo a associação entre Atendimento e Profissional
 Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId' });
