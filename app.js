@@ -255,6 +255,7 @@ const accessControl = {
       '/mensagens',
       '/notificacoes',
       '/profissionais',
+      '/graficos'
     ],
     'Assistente social': [
       '/dashboard/assistente-social',

@@ -241,8 +241,8 @@
                 {{#each escalas}}
                     <tr>
                         <td>{{formatDate this.data}}</td>
-                        <td>{{formatHour this.horarioInicio}}</td>
-                        <td>{{formatHour this.horarioFim}}</td>
+                        <td>{{ this.horarioInicio}}</td>
+                        <td>{{ this.horarioFim}}</td>
                         <td>{{this.admin.nome}}</td>
                     </tr>
                 {{/each}}

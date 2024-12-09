@@ -48,7 +48,6 @@ exports.registerUser = async (req, res) => {
         res.status(500).send('Erro ao criar o usuário.');
     }
 };
-
 exports.requestPasswordReset = async (req, res) => {
     try {
         const { usuario } = req.body;
@@ -61,36 +60,37 @@ exports.requestPasswordReset = async (req, res) => {
             }
         });
 
-        if (!user) {
-            return res.status(400).render('auth/forgotPassword', { error: 'Usuário não encontrado.' });
+        if (user && user.Profissional && user.Profissional.email) {
+            const token = crypto.randomBytes(32).toString('hex');
+            user.resetToken = token;
+            user.resetTokenExpires = Date.now() + 3600000; // 1 hora
+            await user.save();
+
+            const resetLink = `http://localhost:3002/auth/reset/${token}`;
+
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: user.Profissional.email,  
+                subject: 'Redefinição de Senha',
+                html: `
+                    <h1>Redefinição de Senha</h1>
+                    <p>Clique no link abaixo para redefinir sua senha:</p>
+                    <a href="${resetLink}">Redefinir senha</a>
+                `,
+            });
         }
 
-        if (!user.Profissional || !user.Profissional.email) {
-            return res.status(400).render('auth/forgotPassword', { error: 'Profissional não possui e-mail associado.' });
-        }
-
-        const token = crypto.randomBytes(32).toString('hex');
-        user.resetToken = token;
-        user.resetTokenExpires = Date.now() + 3600000; // 1 hora
-        await user.save();
-
-        const resetLink = `http://localhost:3002/auth/reset/${token}`;
-
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: user.Profissional.email,  
-            subject: 'Redefinição de Senha',
-            html: `
-                <h1>Redefinição de Senha</h1>
-                <p>Clique no link abaixo para redefinir sua senha:</p>
-                <a href="${resetLink}">Redefinir senha</a>
-            `,
+        // Resposta genérica, independente de existir o usuário ou email
+        return res.status(200).render('auth/forgotPassword', { 
+            success: 'Enviamos um email para redefinir sua senha. Se o endereço de email estiver associado a uma conta, você poderá redefinir sua senha.',
+            layout: false 
         });
-
-        return res.status(200).render('auth/forgotPassword', { success: 'Email enviado com sucesso!' });
     } catch (error) {
         console.error(error);
-        return res.status(500).render('auth/forgotPassword', { error: 'Erro ao processar sua solicitação.' });
+        return res.status(500).render('auth/forgotPassword', { 
+            error: 'Erro ao processar sua solicitação.', 
+            layout: false 
+        });
     }
 };
 

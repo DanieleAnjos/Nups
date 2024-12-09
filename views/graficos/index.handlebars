@@ -3,76 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gráfico de Pacientes por Período</title>
-  <script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
-
-  <!-- Incluindo o Chart.js via CDN -->
+  <title>Gráficos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Garantir que o gráfico tenha tamanho fixo */
-#grafico {
-  width: 400px;  /* Largura fixa */
-  height: 300px; /* Altura fixa */
-  margin: 400px; /* Centralizar o gráfico */
-}
+    /* Reset de estilos */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Barra de navegação */
+    nav {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav h1 {
+      font-size: 24px;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Container principal */
+    .container {
+      max-width: 1200px;
+      margin: 80px auto 20px; /* Ajuste para a barra fixa */
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex; /* Flexbox para alinhar os gráficos lado a lado */
+      justify-content: space-between; /* Espaçamento entre os gráficos */
+      flex-wrap: wrap; /* Responsividade: permite que os gráficos empilhem em telas menores */
+    }
+
+    .grafico {
+      width: 48%; /* Tamanho dos gráficos lado a lado */
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      color: #495057;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+
+    canvas {
+      width: 100%; /* A largura dos gráficos será 100% do contêiner */
+      height: 300px; /* Altura fixa para os gráficos */
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 
   </style>
 </head>
 <body>
-  <h1>Quantidade de Pacientes por Período</h1>
 
-  <!-- Exibir o total de pacientes cadastrados -->
-  <h2>Total de Pacientes Cadastrados: {{totalPacientes}}</h2>
+    <h1>Gráficos Operacionais</h1>
 
-  <!-- Tabela de Dados -->
-  <table border="1" cellpadding="10" cellspacing="0">
-    <thead>
-      <tr>
+  <div class="container">
+    <!-- Gráfico de Pacientes -->
+    <div class="grafico">
+      <h2>Servidores Cadastrados por Período</h2>
+      <h3>Total de Servidores: {{totalPacientes}}</h3>
+      <canvas id="graficoPacientes"></canvas>
+    </div>
 
-      </tr>
-    </thead>
-    <tbody>
-      {{#each labels}}
-        <tr>
-          <td>{{this}}</td>
-          <td>{{lookup ../data @index}}</td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
-
-  <!-- Contêiner para o gráfico -->
-  <canvas id="grafico"></canvas>
+    <!-- Gráfico de Encaminhamentos -->
+    <div class="grafico">
+      <h2>Encaminhamentos Realizados por Período</h2>
+      <h3>Total de Encaminhamentos: {{totalEncaminhamentos}}</h3>
+      <canvas id="graficoEncaminhamentos"></canvas>
+    </div>
+  </div>
 
   <script>
-    // Passando as variáveis JSON do servidor para o frontend
-    const labels = JSON.parse('{{{labels}}}');  // Usar três chaves para evitar escape
-    const data = JSON.parse('{{{data}}}');     // Usar três chaves para evitar escape
+    // Dados dos Pacientes
+    const pacientesLabels = JSON.parse('{{{pacientesLabels}}}');
+    const pacientesData = JSON.parse('{{{pacientesData}}}');
 
-    // Verificação dos dados no console
-    console.log('Labels:', labels);
-    console.log('Data:', data);
-
-    // Criar gráfico com Chart.js
-    const ctx = document.getElementById('grafico').getContext('2d');
-    const grafico = new Chart(ctx, {
-      type: 'bar', // Tipo de gráfico (barras)
+    // Criar o gráfico de pacientes
+    const ctxPacientes = document.getElementById('graficoPacientes').getContext('2d');
+    new Chart(ctxPacientes, {
+      type: 'bar',
       data: {
-        labels: labels, // Mês/Ano
+        labels: pacientesLabels,
         datasets: [{
-          label: 'Quantidade de Pacientes',
-          data: data, // Quantidade de pacientes
-          backgroundColor: 'rgba(54, 162, 235, 0.6)', // Cor das barras
-          borderColor: 'rgba(54, 162, 235, 1)', // Cor da borda das barras
-          borderWidth: 1
+          label: 'Servidores Cadastrados',
+          data: pacientesData,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
         }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: true, // Desabilitar o ajuste de proporção automática
         scales: {
           y: {
-            beginAtZero: true, // Iniciar o eixo Y no zero
+            beginAtZero: true,
             title: {
               display: true,
               text: 'Quantidade de Pacientes'
@@ -88,15 +149,44 @@
       }
     });
 
-    // Forçar o gráfico a ajustar seu tamanho
-    window.addEventListener('resize', function() {
-      grafico.resize();
+    // Dados dos Encaminhamentos
+    const encaminhamentosLabels = JSON.parse('{{{encaminhamentosLabels}}}');
+    const encaminhamentosData = JSON.parse('{{{encaminhamentosData}}}');
+
+    // Criar o gráfico de encaminhamentos
+    const ctxEncaminhamentos = document.getElementById('graficoEncaminhamentos').getContext('2d');
+    new Chart(ctxEncaminhamentos, {
+      type: 'line',
+      data: {
+        labels: encaminhamentosLabels,
+        datasets: [{
+          label: 'Encaminhamentos Realizados',
+          data: encaminhamentosData,
+          backgroundColor: 'rgba(153, 102, 255, 0.6)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 1,
+          fill: true,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Quantidade de Encaminhamentos'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Mês/Ano'
+            }
+          }
+        }
+      }
     });
-
-
-    
   </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>

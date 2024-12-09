@@ -10,7 +10,7 @@
       </div>
       <div class="profile-info">
         <h1 class="profile-name">{{paciente.nome}}</h1>
-        <span class="profile-badge">{{paciente.status}}</span>
+          <span class="profile-badge">{{paciente.status}}</span>
       </div>
     </div>
     <div class="profile-content">
@@ -178,23 +178,24 @@
     height: 100%;
     object-fit: cover;
   }
-
-  .profile-name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: center;
-    margin: 0.5rem 0;
-  }
-
-  .profile-badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.2rem 0.8rem;
-    border-radius: 30px;
-    font-size: 0.85rem;
-    text-align: center;
-  }
-
+    .profile-info {
+        text-align: center; /* Centraliza os textos horizontalmente */
+        margin: 20px auto;
+    }
+    .profile-name {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    .profile-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: white;
+        background: #5b9bd5;
+        border-radius: 20px;
+        text-transform: capitalize;
+    }
   .profile-content {
     flex: 1;
     padding: 3rem; /* Ajuste o padding para melhor espaçamento */
@@ -300,6 +301,11 @@
   .table-container {
     overflow-x: auto;
   }
+
+  .table-responsive {
+  overflow-x: auto;
+}
+
 
   .table {
     width: 100%;

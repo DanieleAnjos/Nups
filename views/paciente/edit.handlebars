@@ -1,12 +1,12 @@
-<h2 class="text-center mb-4">Editar Paciente</h2>
 
 <form action="/pacientes/{{paciente.id}}?_method=PUT" method="POST" onsubmit="setCurrentDate()" class="needs-validation">
   <input type="hidden" name="_method" value="PUT">
   <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
   <!-- Informações Pessoais -->
-  <fieldset class="border p-4 mb-4 rounded shadow-sm">
-    <legend class="w-auto px-3 text-primary font-weight-bold">Informações Pessoais</legend>
+    <h2 class="text-center mb-4" style="color: #2980b9;">Editar Dados do Paciente</h2>
+
+    <legend class="w-auto px-3 font-weight-bold">Informações Pessoais</legend>
     <div class="row mb-3">
       <div class="col-md-6">
         <div class="form-group">
@@ -371,3 +371,154 @@
 
 
 </script>
+
+<style>
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  
+}
+
+/* Estilo para o título principal */
+h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+/* Estilos gerais para o formulário */
+form {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width:1000px;
+    margin: 0 auto;
+}
+
+/* Estilo para os fieldsets */
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Estilo para as legendas */
+legend {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    padding: 0 10px;
+    background-color: #f9f9f9;
+}
+
+/* Estilo para as divs com classe .form-group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Estilo para os labels */
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Estilo para os inputs de texto */
+input[type="text"], input[type="date"], input[type="file"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Estilo específico para o campo Escala */
+input[type="number"]#escala {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+/* Estilo para a pré-visualização da imagem */
+#imagemPreview {
+    display: block;
+    margin-top: 10px;
+    max-width: 200px;
+    border-radius: 4px;
+}
+
+/* Estilo para o botão de envio */
+button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+/* Estilo para os campos com elementos de seleção */
+select, input[type="file"] {
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Estilo para os campos de texto (textareas) */
+textarea {
+    padding: 10px;
+    font-size: 14px;
+    height: 120px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Estilo para campos de CPF e telefone com máscara */
+input[pattern] {
+    font-family: 'Courier New', monospace;
+}
+
+/* Estilo para a pré-visualização de imagem e outros campos */
+input[type="file"] {
+    padding: 5px;
+}
+
+/* Ajuste de espaçamento para campos de seleção e opções */
+select {
+    padding: 10px;
+}
+
+/* Estilos específicos para inputs com displays dinâmicos (alergia, doenças, etc) */
+#alergiaMedicamento, #descricaoDoenca, #tipoMedicamento, #terapiaPeriodo, #terapiaMotivo, #tipoAtividadeFisica, #quantidadeFilhos, #idadeFilhos, #deficiencia {
+    display: none;
+}
+
+/* Adicionando algum espaçamento e ajustes */
+form fieldset + fieldset {
+    margin-top: 30px;
+}
+</style>
