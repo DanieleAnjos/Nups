@@ -1,6 +1,20 @@
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pacientes</title>
+    <!-- Bootstrap CSS -->
+    <!-- SweetAlert2 CSS -->
+    <!-- SweetAlert2 JS -->
+</head>
+<body>    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<div class="container my-5">
+
 
 <h1 class="text-center my-5">Caixa de Entrada</h1>
 
@@ -123,7 +137,7 @@
 
 <!-- Mensagens Enviadas -->
 <div id="mensagensEnviadasContainer" class="card shadow mb-4" style="display: none;">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header bg-primary text-white" style="background-color: #2980b9;">
         Mensagens Enviadas
     </div>
     <div class="card-body">
@@ -171,6 +185,9 @@
         {{/if}}
     </div>
 </div>
+</div>
+</body>
+</html>
 
 <script>
     // Alterna exibição de mensagens arquivadas
@@ -208,3 +225,109 @@
         {{/if}}
     });
 </script>
+
+
+
+ <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Estilos gerais */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+        h2 {
+            text-align: center;
+            color: #2980b9;
+            margin-bottom: 20px;
+        }
+
+        .btn-success {
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .bg-primary{
+            background-color: #2980b9;
+            color: #fff;
+        }
+
+        .btn-success i {
+            margin-right: 8px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #e9ecef;
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f4f9;
+        }
+
+        /* Estilos para o formulário de filtro */
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>

@@ -1,40 +1,43 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white text-center rounded-top">
-                    <h2 class="my-2">Criar Nova Escala</h2>
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h4 class="my-2 text-primary">Criar Nova Escala</h4>
                 </div>
-                                <div class="card-body">
-                    <form action="/escalas" method="POST">
-
+                <div class="card-body">
+                    <form action="/escalas" method="POST" class="needs-validation" novalidate>
                         <!-- Campo Data -->
                         <div class="mb-4">
-                            <label for="data" class="form-label">Data</label>
+                            <label for="data" class="form-label fw-bold">Data</label>
                             <input type="date" name="data" id="data" class="form-control shadow-sm" required>
+                            <div class="invalid-feedback">Por favor, insira uma data válida.</div>
                         </div>
 
                         <!-- Campo Horário Início -->
                         <div class="mb-4">
-                            <label for="horarioInicio" class="form-label">Horário de Início</label>
+                            <label for="horarioInicio" class="form-label fw-bold">Horário de Início</label>
                             <input type="time" name="horarioInicio" id="horarioInicio" class="form-control shadow-sm" required>
+                            <div class="invalid-feedback">Por favor, insira o horário de início.</div>
                         </div>
 
                         <!-- Campo Horário Fim -->
                         <div class="mb-4">
-                            <label for="horarioFim" class="form-label">Horário de Término</label>
+                            <label for="horarioFim" class="form-label fw-bold">Horário de Término</label>
                             <input type="time" name="horarioFim" id="horarioFim" class="form-control shadow-sm" required>
+                            <div class="invalid-feedback">Por favor, insira o horário de término.</div>
                         </div>
 
                         <!-- Campo Profissional -->
                         <div class="mb-4">
-                            <label for="adminId" class="form-label">Profissional</label>
+                            <label for="adminId" class="form-label fw-bold">Profissional</label>
                             <select name="adminId" id="adminId" class="form-select shadow-sm" required>
                                 <option value="" disabled selected>Selecione o Profissional</option>
                                 {{#each profissionais}}
                                     <option value="{{this.id}}">{{this.nome}}</option>
                                 {{/each}}
                             </select>
+                            <div class="invalid-feedback">Por favor, selecione um profissional.</div>
                         </div>
 
                         <!-- Botões -->
@@ -43,9 +46,73 @@
                             <button type="submit" class="btn btn-primary px-4">Salvar</button>
                         </div>
                     </form>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Bootstrap Form Validation
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+
+<style>
+    .mt-5 {
+        margin-top: 2rem !important;
+    }
+
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+    }
+
+    .btn {
+        margin-top: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #e2e6ea;
+        border-color: #6c757d;
+    }
+</style>

@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <title>Lista de Salas</title>
 </head>
 <body>
-            
+    <div class="container my-5">
+
         <h1 class="text-center text-primary my-4">Lista de Salas</h1>
 
         <div class="d-flex justify-content-end mb-3">
@@ -20,11 +23,9 @@
         <form action="/salas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
                 <div class="col-md-5 mb-2">
-                    <label for="filtroNome" class="form-label">Buscar por Nome:</label>
                     <input type="text" name="nome" id="filtroNome" class="form-control" placeholder="Digite o nome da sala" value="{{query.nome}}">
                 </div>
                 <div class="col-md-5 mb-2">
-                    <label for="filtroCapacidade" class="form-label">Buscar por Capacidade:</label>
                     <input type="number" name="capacidade" id="filtroCapacidade" class="form-control" placeholder="Digite a capacidade" value="{{query.capacidade}}">
                 </div>
                 <div class="col-md-2 d-flex align-items-end justify-content-between">
@@ -37,43 +38,45 @@
 
         <!-- Botão Adicionar Nova Sala -->
 
-
-        <!-- Tabela de Salas -->
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered mt-3">
-                <thead class="table-primary">
-                    <tr class="text-center">
-                        <th>Nome</th>
-                        <th>Capacidade</th>
-                        <th>Descrição</th>
-                        <th>Ações</th>
+<!-- Tabela de Salas -->
+<div class="table-responsive">
+    <table class="table table-hover table-bordered mt-3">
+        <thead class="table-primary">
+            <tr class="text-center">
+                <th>Nome</th>
+                <th>Capacidade</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if salas.length}}
+                {{#each salas}}
+                    <tr>
+                        <td class="text-nowrap">{{this.nome}}</td>
+                        <td class="text-nowrap">{{this.capacidade}}</td>
+                        <td class="text-nowrap">{{this.descricao}}</td>
+                        <td class="text-center">
+                            <a href="/salas/{{this.id}}/editar" class="btn btn-warning btn-sm mx-1">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <form action="/salas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta sala?');">
+                                    <i class="bi bi-trash"></i> Deletar
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {{#if salas.length}}
-                        {{#each salas}}
-                            <tr>
-                                <td>{{this.nome}}</td>
-                                <td>{{this.capacidade}}</td>
-                                <td>{{this.descricao}}</td>
-                                <td class="text-center">
-                                    <a href="/salas/{{this.id}}/editar" class="btn btn-warning btn-sm mx-1">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
-                                    <form action="/salas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                        <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta sala?');">
-                                            <i class="bi bi-trash"></i> Deletar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {{/each}}
-                    {{else}}
-                    {{/if}}
-                </tbody>
-            </table>
-        </div>
+                {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="4" class="text-center">Nenhuma sala encontrada.</td>
+                </tr>
+            {{/if}}
+        </tbody>
+    </table>
+</div>
 
         <!-- Mensagem caso não haja salas -->
         {{#if (eq salas.length 0)}}
@@ -84,3 +87,114 @@
     </div>
 </body>
 </html>
+
+
+<style>
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+    color: #34495e;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+
+
+
+/* Tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: fixed; /* Melhor controle sobre a largura das células */
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilos para o link "Adicionar Paciente" */
+.text-right {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}
+
+</style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>

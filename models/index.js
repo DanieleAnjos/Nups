@@ -13,24 +13,19 @@ module.exports = (sequelize) => {
     Encaminhamento,
   } = sequelize.models;
 
-  // Relacionamento entre Evento e Imagem
   Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
   Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
 
-  // Relacionamento entre Atendimento e Profissional
   Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
   
   Atendimento2.belongsTo(Profissional, { as: 'profissional', foreignKey: 'profissionalId' });
 
 
-  // Relacionamento entre Atendimento e Paciente
   Atendimento.belongsTo(Paciente, { foreignKey: 'pacienteId', as: 'paciente' });
   Paciente.hasMany(Atendimento, { foreignKey: 'pacienteId' });
 
-  // Relacionamento entre Atendimento e Encaminhamento
   Atendimento.belongsTo(Encaminhamento, { foreignKey: 'encaminhamentoId', as: 'encaminhamento' });
 
-  Produto.belongsTo(AjusteEstoque);
 
 
 

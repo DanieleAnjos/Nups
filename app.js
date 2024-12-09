@@ -10,7 +10,7 @@ const cors = require('cors');
 const passport = require('./config/passportConfig'); 
 const argon2 = require('argon2'); 
 const Profissional = require('./models/Profissional');
-const sequelize = require('./config/database');  // Supondo que você tenha a instância do sequelize configurada
+const sequelize = require('./config/database');  
 
 
 const authRoutes = require('./routes/authRoutes');
@@ -41,6 +41,10 @@ const { format } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { checkProfissional } = require('./utils');
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server);
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -169,7 +173,7 @@ app.use(session({
     secret: 'secret_key',
     resave: false,
     //store: sessionStore, // Add this line
-    saveUninitialized: false, // Salvar sessões mesmo que estejam vazias
+    saveUninitialized: false, 
     cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
 }));
 
@@ -341,6 +345,7 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send(process.env.NODE_ENV === 'production' ? 'Algo deu errado!' : err.stack);
 });
+
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta http://localhost:${PORT}`);

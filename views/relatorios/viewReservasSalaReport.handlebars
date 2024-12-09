@@ -4,101 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Relatório de Reservas de Sala</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 20px;
-      background-color: #f4f6f9;
-      color: #333;
-    }
-    h1 {
-      color: #2c3e50;
-      font-size: 2.5rem;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    .filter-form {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .filter-form label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .filter-form select,
-    .filter-form input {
-      padding: 8px;
-      font-size: 16px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-right: 10px;
-      margin-bottom: 10px;
-    }
-    .filter-form button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .filter-form button:hover {
-      background-color: #45a049;
-    }
-    .actions {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 12px;
-      text-align: left;
-      font-size: 0.95rem;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #2980b9;
-      color: #fff;
-      font-weight: bold;
-    }
-    tr:nth-child(even) {
-      background-color: #f9fbfc;
-    }
-    tr:hover {
-      background-color: #e0ebf5;
-    }
-    .no-data {
-      text-align: center;
-      font-style: italic;
-      color: #777;
-    }
-            .button, .clear-button {
+    <style>
+        /* Estilos globais */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Título principal */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo da tabela */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2980b9;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbfc;
+        }
+
+        tr:hover {
+            background-color: #e0ebf5;
+        }
+
+        /* Estilo dos botões */
+        .button, .clear-button {
             padding: 10px 18px;
             font-size: 0.9rem;
             border-radius: 6px;
@@ -107,7 +72,8 @@
             transition: background-color 0.3s ease;
             margin-top: 10px;
         }
-            .button {
+
+        .button {
             background-color: #4CAF50;
             color: white;
         }
@@ -115,20 +81,126 @@
         .button:hover {
             background-color: #45a049;
         }
-    @media print {
-      .button {
-        display: none;
-      }
-      .filter-form {
-        display: none;
-      }
-    }
-  </style>
+
+        .clear-button {
+            background-color: #e74c3c;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilos do formulário de filtro */
+        .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-form select,
+        .filter-form input {
+            padding: 8px;
+            font-size: 16px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-form button,
+        .filter-form .clear-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover,
+        .filter-form .clear ```html
+        .clear-button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-form .clear-button {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        input[type="date"], select {
+            padding: 8px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            width: 100%;
+        }
+
+        /* Estilos para a seção de ações */
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        /* Responsividade */
+                @media print {
+            .button {
+                display: none;
+            }
+
+            .filter-form {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
   <div class="container">
-    <h1>Relatório de Reservas de Sala</h1>
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+    <!-- Logo à esquerda -->
+    <img src="/IMG/guarda-municipal-de-salvador-logo-7A74B7150E-seeklogo.com.png" alt="Logo" style="width: 80px; height: auto;">
 
+    <!-- Título centralizado -->
+    <div style="text-align: center; flex-grow: 1;">
+        <p style="font-size: 0.9rem; font-weight: bold; color: #34495e; line-height: 1.4; margin-bottom: 5px;">
+            Guarda Civil Municipal <br>
+            Gerência De Desenvolvimento Humano <br>
+            Centro de Valorização <br>
+            Núcleo de Assistência ao Servidor
+        </p>
+        <h2 style="font-size: 1.8rem; font-weight: 500; color: #2c3e50; margin: 0;">
+            Relatório de Salas Reservadas
+        </h2>
+    </div>
+
+    <!-- Logo à direita -->
+    <img src="/IMG/8d633c58242467.Y3JvcCw4OTQsNzAwLDI1Miww.gif" alt="Logo" style="width: 90px; height: auto;">
+</div>
     <!-- Formulário de Filtros -->
     <form class="filter-form" action="/reservas/viewReport" method="GET">
       <div>

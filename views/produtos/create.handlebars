@@ -1,9 +1,9 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white text-center rounded-top">
-                    <h4 class="mb-2">Criar Novo Produto</h4>
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h4 class="my-2 text-primary">Criar Novo Produto</h4>
                 </div>
                 <div class="card-body">
                     <form action="/produtos" method="POST" class="mt-4">
@@ -76,8 +76,51 @@
     });
 </script>
 
+
 <style>
     .mt-5 {
-    margin-top: 1rem !important;
-    };
+        margin-top: 2rem !important;
+    }
+
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+    }
+
+    .btn {
+        margin-top: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border -color: #0056b3;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #e2e6ea;
+        border-color: #6c757d;
+    }
 </style>

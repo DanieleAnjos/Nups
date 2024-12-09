@@ -1,10 +1,10 @@
 const AjusteEstoque = require('../models/AjusteEstoque');
 const Produto = require('../models/Produto');
-const sequelize = require('../config/database'); // ajuste o caminho conforme necessário
+const sequelize = require('../config/database');
 
 exports.index = async (req, res) => {
   try {
-    const ajustes = await AjusteEstoque.findAll({ include: 'produto' });
+    const ajustes = await AjusteEstoque.findAll({ include: 'Produto' });
     res.render('ajustes/index', { ajustes });
   } catch (error) {
     console.error(error); 
@@ -23,8 +23,9 @@ exports.create = async (req, res) => {
   }
 };
 
+
 exports.store = async (req, res) => {
-  const t = await sequelize.transaction();  // Tente usar o sequelize transaction aqui
+  const t = await sequelize.transaction();  
 
   try {
     const { produtoId, tipo, quantidade, data } = req.body;
@@ -56,10 +57,10 @@ exports.store = async (req, res) => {
         req.flash('error', 'Quantidade de saída maior do que o estoque disponível.');
         return res.redirect('/ajustes');
       }
-      novaQuantidade = produto.quantidade_inicial - quantidadeConvertida; 
+      novaQuantidade = produto.quantidade_inicial - quantidadeConvertida;  
     } 
     else if (tipo === 'entrada') {
-      novaQuantidade = produto.quantidade_inicial + quantidadeConvertida; 
+      novaQuantidade = produto.quantidade_inicial + quantidadeConvertida;  
     } 
     else {
       req.flash('error', 'Tipo de ajuste inválido.');
@@ -76,18 +77,19 @@ exports.store = async (req, res) => {
       data: adjustedData,
     }, { transaction: t });
 
-    await t.commit();
+    await t.commit();  
 
     req.flash('success', 'Ajuste realizado com sucesso!');
-    res.redirect('/ajustes');  
+    res.redirect('/produtos');  
   } catch (error) {
-    await t.rollback();
+    await t.rollback(); 
 
     console.error('Erro ao realizar ajuste de estoque:', error);
     req.flash('error', 'Erro ao realizar ajuste de estoque.');
-    res.redirect('/ajustes');
+    res.redirect('/produtos');
   }
 };
+
 
 
 exports.edit = async (req, res) => {
@@ -119,7 +121,7 @@ exports.update = async (req, res) => {
   }
 };
 exports.destroy = async (req, res) => {
-  const t = await sequelize.transaction();  // Iniciar transação
+  const t = await sequelize.transaction();  
 
   try {
     const ajuste = await AjusteEstoque.findByPk(req.params.id, { transaction: t });
@@ -134,7 +136,6 @@ exports.destroy = async (req, res) => {
       return res.status(404).send('Produto relacionado não encontrado.');
     }
 
-    // Atualize o produto de acordo com o tipo de ajuste que foi deletado
     let novaQuantidade = produto.quantidade_inicial;
 
     if (ajuste.tipo === 'entrada') {
@@ -144,17 +145,17 @@ exports.destroy = async (req, res) => {
     }
 
     produto.quantidade_inicial = novaQuantidade;
-    await produto.save({ transaction: t });  // Salva o produto com a quantidade ajustada
+    await produto.save({ transaction: t });  
 
-    await AjusteEstoque.destroy({ where: { id: req.params.id }, transaction: t });  // Deleta o ajuste
+    await AjusteEstoque.destroy({ where: { id: req.params.id }, transaction: t }); 
 
-    await t.commit();  // Commit da transação
+    await t.commit();  
 
-    res.redirect('/ajustes');  // Redireciona para a lista de ajustes
+    res.redirect('/ajustes');  
   } catch (error) {
-    await t.rollback();  // Rollback caso algo falhe
+    await t.rollback();  
 
     console.error('Erro ao excluir ajuste de estoque:', error);
-    res.status(500).send('Erro ao excluir ajuste de estoque.');  // Erro geral de sistema
+    res.status(500).send('Erro ao excluir ajuste de estoque.');  
   }
 };

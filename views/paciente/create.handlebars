@@ -1,8 +1,10 @@
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Ficha de Acolhimento</h2>
 
     <form action="/pacientes" method="POST" onsubmit="setCurrentDate()" enctype="multipart/form-data">
+
+        <h2 class="text-center mb-4" style="color: #2980b9;" style="font-weight: bold;">Ficha de Acolhimento</h2>
+
 
         <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
@@ -37,7 +39,7 @@
 
             <div class="col-md-6 form-group">
                 <label for="sexo">Sexo:</label>
-                <select class="form-control" name="sexo" id="sexo" required>
+                <select class="form-label" name="sexo" id="sexo" required>
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
@@ -49,7 +51,7 @@
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="escolaridade">Escolaridade:</label>
-                <select class="form-control" name="escolaridade" id="escolaridade">
+                <select  class="form-label" name="escolaridade" id="escolaridade">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="Ensino Fundamental">Ensino Fundamental</option>
                     <option value="Ensino Médio">Ensino Médio</option>
@@ -78,7 +80,7 @@
 
         <div class="col-md-6 form-group">
             <label for="tipoTelefone">Tipo de Telefone:</label>
-            <select class="form-control" name="tipoTelefone" id="tipoTelefone" >
+            <select  class="form-label" name="tipoTelefone" id="tipoTelefone"  >
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="Celular">Celular</option>
                 <option value="Residencial">Residencial</option>
@@ -112,12 +114,6 @@
                 <input type="text" class="form-control" name="endereco" id="endereco">
             </div>
 
-            <div class="form-group">
-                <label for="numero">Número:</label>
-                <input type="text" class="form-control" name="numero" id="numero">
-            </div>
-
-
 
             <div class="form-group">
                 <label for="bairro">Bairro:</label>
@@ -132,6 +128,11 @@
             <div class="form-group">
                 <label for="estado">Estado:</label>
                 <input type="text" class="form-control" name="estado" id="estado">
+            </div>
+
+            <div class="form-group">
+                <label for="numero">Número:</label>
+                <input type="text" class="form-control" name="numero" id="numero">
             </div>
 
             <div class="form-group">
@@ -155,7 +156,7 @@
 
             <div class="form-group">
                 <label for="parentesco">Parentesco:</label>
-                <select class="form-control" name="parentesco" id="parentesco">
+                <select  class="form-label" name="parentesco" id="parentesco">
                     <option value="" disabled selected>Selecione o grau de parentesco</option>
                     <option value="Pai">Pai</option>
                     <option value="Mãe">Mãe</option>
@@ -172,7 +173,7 @@
 
             <div class="form-group">
                 <label for="alergia">Possui alergia a algum medicamento?</label>
-                <select class="form-control" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
+                <select  class="form-label" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -186,7 +187,7 @@
 
             <div class="form-group">
                 <label for="doenca">Doenças crônicas:</label>
-                <select class="form-control" name="doenca" id="doenca" onchange="toggleField('doenca', 'descricaoDoenca')">
+                <select  class="form-label" name="doenca" id="doenca" onchange="toggleField('doenca', 'descricaoDoenca')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -200,7 +201,7 @@
 
             <div class="form-group">
                 <label for="medicamentos">Faz uso de medicação de controle?</label>
-                <select class="form-control" name="medicamentos" id="medicamentos" onchange="toggleField('medicamentos', 'tipoMedicamento')">
+                <select  class="form-label" name="medicamentos" id="medicamentos" onchange="toggleField('medicamentos', 'tipoMedicamento')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -214,7 +215,7 @@
 
             <div class="form-group">
                 <label for="terapia">Faz terapia?</label>
-                <select class="form-control" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
+                <select  class="form-label" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -233,7 +234,7 @@
 
             <div class="form-group">
                 <label for="atividadeFisica">Faz atividade física?</label>
-                <select class="form-control" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
+                <select  class="form-label" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -312,7 +313,7 @@
 
         <div class="form-group">
             <label for="familiaDeficiencias">Família com Deficiências:</label>
-            <select class="form-control" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
+            <select  class="form-label" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
@@ -331,7 +332,7 @@
 
         <div class="form-group">
             <label for="filhos">Filhos:</label>
-            <select class="form-control" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
+            <select  class="form-label" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
@@ -350,7 +351,7 @@
 
             <div class="form-group">
             <label for="porteArma">Porte de Arma:</label>
-            <select class="form-control" name="porteArma" id="porteArma">
+            <select  class="form-label" name="porteArma" id="porteArma">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
@@ -359,7 +360,7 @@
 
         <div class="form-group">
             <label for="trabalhoArmado">Trabalho Armado:</label>
-            <select class="form-control" name="trabalhoArmado" id="trabalhoArmado">
+            <select  class="form-label" name="trabalhoArmado" id="trabalhoArmado" class="form-select">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
@@ -368,7 +369,7 @@
 
         <div class="form-group">
             <label for="armaPessoal">Arma Pessoal:</label>
-            <select class="form-control" name="armaPessoal" id="armaPessoal">
+            <select  class="form-label" name="armaPessoal" id="armaPessoal">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="false">Não</option>
                 <option value="true">Sim</option>
@@ -510,3 +511,155 @@
         });
 
     </script>
+
+
+<style>
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  
+}
+
+/* Estilo para o título principal */
+h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+/* Estilos gerais para o formulário */
+form {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width:1000px;
+    margin: 0 auto;
+}
+
+/* Estilo para os fieldsets */
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Estilo para as legendas */
+legend {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    padding: 0 10px;
+    background-color: #f9f9f9;
+}
+
+/* Estilo para as divs com classe .form-group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Estilo para os labels */
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Estilo para os inputs de texto */
+input[type="text"], input[type="date"], input[type="file"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Estilo específico para o campo Escala */
+input[type="number"]#escala {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+/* Estilo para a pré-visualização da imagem */
+#imagemPreview {
+    display: block;
+    margin-top: 10px;
+    max-width: 200px;
+    border-radius: 4px;
+}
+
+/* Estilo para o botão de envio */
+button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+
+/* Estilo para os campos com elementos de seleção */
+select, input[type="file"] {
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Estilo para os campos de texto (textareas) */
+textarea {
+    padding: 10px;
+    font-size: 14px;
+    height: 120px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Estilo para campos de CPF e telefone com máscara */
+input[pattern] {
+    font-family: 'Courier New', monospace;
+}
+
+/* Estilo para a pré-visualização de imagem e outros campos */
+input[type="file"] {
+    padding: 5px;
+}
+
+/* Ajuste de espaçamento para campos de seleção e opções */
+select {
+    padding: 10px;
+}
+
+/* Estilos específicos para inputs com displays dinâmicos (alergia, doenças, etc) */
+#alergiaMedicamento, #descricaoDoenca, #tipoMedicamento, #terapiaPeriodo, #terapiaMotivo, #tipoAtividadeFisica, #quantidadeFilhos, #idadeFilhos, #deficiencia {
+    display: none;
+}
+
+/* Adicionando algum espaçamento e ajustes */
+form fieldset + fieldset {
+    margin-top: 30px;
+}
+</style>

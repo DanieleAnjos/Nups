@@ -1,6 +1,7 @@
-<h1 class="text-center my-4">Enviar Mensagem</h1>
 
-<div class="container shadow-sm p-4 rounded bg-light">
+<div class="container shadow-lg p-5 rounded bg-light">
+  <h1 class="text-center my-4 text-primary">Enviar Mensagem</h1>
+
   <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate>
     <!-- Campo oculto para Remetente -->
     <input type="hidden" name="remetenteId" value="{{user.id}}" required>
@@ -8,8 +9,8 @@
 
     <!-- Destinatário -->
     <div class="mb-4">
-      <label for="destinatarioId" class="form-label h5"><i class="bi bi-person-fill"></i> Destinatário:</label>
-      <select name="destinatarioId" id="destinatarioId" class="form-select" required>
+      <label for="destinatarioId" class="form-label h5 text-secondary"><i class="bi bi-person-fill"></i> Destinatário:</label>
+      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" required>
         <option value="" selected disabled>Selecione um destinatário</option>
         {{#each profissionais}}
           <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
@@ -20,24 +21,24 @@
 
     <!-- Assunto -->
     <div class="mb-4">
-      <label for="assunto" class="form-label h5"><i class="bi bi-envelope-fill"></i> Assunto:</label>
-      <input type="text" name="assunto" id="assunto" class="form-control" placeholder="Digite o assunto" required>
+      <label for="assunto" class="form-label h5 text-secondary"><i class="bi bi-envelope-fill"></i> Assunto:</label>
+      <input type="text" name="assunto" id="assunto" class="form-control shadow-sm" placeholder="Digite o assunto" required>
       <div class="invalid-feedback">Por favor, insira o assunto.</div>
     </div>
 
     <!-- Corpo da Mensagem -->
     <div class="mb-4">
-      <label for="corpo" class="form-label h5"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
-      <textarea name="corpo" id="corpo" class="form-control" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
+      <label for="corpo" class="form-label h5 text-secondary"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
+      <textarea name="corpo" id="corpo" class="form-control shadow-sm" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
       <div class="invalid-feedback">Por favor, insira a mensagem.</div>
     </div>
 
     <!-- Botões de Ação -->
-    <div class="d-flex justify-content-center gap-3">
-      <button type="submit" class="btn btn-success btn-lg shadow-sm">
+    <div class="d-flex justify-content-center gap-4">
+      <button type="submit" class="btn btn-primary btn-lg shadow-lg px-4 py-2">
         <i class="bi bi-send-fill"></i> Enviar
       </button>
-      <a href="/mensagens" class="btn btn-outline-secondary btn-lg shadow-sm">
+      <a href="/mensagens" class="btn btn-outline-dark btn-lg shadow-sm px-4 py-2">
         <i class="bi bi-arrow-left-circle"></i> Voltar
       </a>
     </div>
@@ -62,3 +63,18 @@
     });
   })();
 </script>
+
+<style>
+  h1 {
+    padding-bottom: 10px;
+  }
+
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+</style>

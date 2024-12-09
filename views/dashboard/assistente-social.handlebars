@@ -9,28 +9,36 @@
       <i class="fas fa-calendar-check"></i>
       <span>Atendimentos</span>
     </a>
-    <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>Ocorrências</span>
+    <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
+      <i class="fas fa-calendar-check"></i>
+      <span>Encaminhamentos</span>
+    </a>
+    <a href="/escalas" class="dashboard-card" aria-label="Gerenciar Escalas">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Escalas</span>
     </a>
     <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
       <i class="fas fa-door-open"></i>
       <span>Salas</span>
     </a>
-    <a href="/eventos" class="dashboard-card" aria-label="Eventos">
-      <i class="fas fa-calendar-alt"></i>
-      <span>Eventos</span>
-    </a>
-    <a href="/mensagens" class="dashboard-card" aria-label="Eventos">
-      <i class="fas fa-calendar-alt"></i>
+    <a href="/mensagens" class="dashboard-card" aria-label="Gerenciar Mensagens">
+      <i class="fas fa-envelope"></i>
       <span>Mensagens</span>
+      <span id="message-count" class="notification-badge"
+            style="{{#if mensagensNaoLidas}}display: inline;{{else}}display: none;{{/if}}">
+        {{mensagensNaoLidas}}
+      </span>
     </a>
     <a href="/notificacoes" class="dashboard-card" aria-label="Gerenciar Notificações">
       <i class="fas fa-bell"></i>
       <span>Notificações</span>
+      <span id="notificacao-count" class="notification-badge"
+            style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
+        {{notificacoesNaoLidas}}
+      </span>
     </a>
     <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
-      <i class="fas fa-calendar-alt"></i>
+      <i class="fas fa-user-circle"></i>
       <span>Perfil</span>
     </a>
   </div>
@@ -38,20 +46,25 @@
 
 <style>
   /* Estilo para o container do dashboard */
-.dashboard {
+  .dashboard {
     max-width: 900px;
     margin: auto;
+  }
+
+  h1{
+  color:#297FB8;
+  padding-bottom: 15px;
 }
 
-/* Grid para organizar os cards */
-.dashboard-grid {
+  /* Grid para organizar os cards */
+  .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px;
-}
+  }
 
-/* Estilo dos cards */
-.dashboard-card {
+  /* Estilo dos cards */
+  .dashboard-card {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,44 +75,143 @@
     color: #072C47;
     text-decoration: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+    position: relative; /* Necessário para o badge se posicionar */
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+  }
 
-/* Efeito hover para os cards */
-.dashboard-card:hover {
+  /* Estilo do badge de notificação */
+  .notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: orange;
+    color: white;
+    font-size: 0.75rem;
+    width: 30px;
+    height: px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 2px;
+  }
+
+  /* Exibição condicional do badge */
+  #message-count {
+    display: none;
+  }
+
+  /* Exibe o badge quando a condição de estilo inline for aplicada */
+  .dashboard-card .notification-badge[style*="display: inline;"] {
+    display: inline-flex;
+  }
+
+  /* Efeito hover para os cards */
+  .dashboard-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     background-color: #297FB8;
     color: #ffffff;
-}
+  }
 
-/* Ícone maior para melhor visibilidade */
-.dashboard-card i {
+  /* Ícone maior para melhor visibilidade */
+  .dashboard-card i {
     font-size: 2rem;
     margin-bottom: 10px;
-}
+  }
 
-/* Texto do card */
-.dashboard-card span {
+  /* Texto do card */
+  .dashboard-card span {
     font-size: 1.1rem;
     font-weight: 500;
-}
+  }
 
-/* Estilo responsivo */
-@media (max-width: 576px) {
+  /* Estilo responsivo */
+  @media (max-width: 576px) {
     .dashboard-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 15px;
     }
     .dashboard-card {
-        padding: 15px;
+      padding: 15px;
     }
     .dashboard-card i {
-        font-size: 1.5rem;
+      font-size: 1.5rem;
     }
     .dashboard-card span {
-        font-size: 1rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+
+
+<script>
+
+  async function atualizarContadorMensagens() {
+    try {
+        const response = await fetch('/api/mensagens/nao-lidas', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+            }
+        });
+
+        const text = await response.text(); // Lê a resposta como texto
+        console.log(text); // Verifique o que está sendo retornado
+
+        // Se a resposta for JSON, parseia ela
+        const data = JSON.parse(text); 
+
+        // Verifica se o count existe e é maior que 0
+        const contador = document.getElementById('message-count');
+        if (data.count > 0) {
+            contador.textContent = data.count;  // Atualiza o número de mensagens não lidas
+            contador.style.display = 'inline';  // Exibe o contador
+        } else {
+            contador.style.display = 'none';  // Oculta o contador se não houver mensagens não lidas
+        }
+
+    } catch (error) {
+        console.error('Erro ao buscar as mensagens não lidas:', error);
+    }
+};
+
+
+async function atualizarContadorNotificacoes() {
+    try {
+        const response = await fetch('/notificacoes', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        });
+
+        // Verifica se a resposta é bem-sucedida (status 200)
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+
+        // Verifica o tipo de conteúdo da resposta
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json(); // Converte diretamente para JSON
+            const contador = document.getElementById('notificacao-count');
+            if (data.count > 0) {
+                contador.textContent = data.count;
+                contador.style.display = 'inline';
+            } else {
+                contador.style.display = 'none';
+            }
+        } else {
+            // Caso o conteúdo não seja JSON, imprime a resposta em HTML
+            const text = await response.text();
+            console.error('Resposta inesperada:', text);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar as notificações não lidas:', error);
     }
 }
 
-</style>
+</script>

@@ -47,8 +47,8 @@ exports.index2 = async (req, res) => {
     const pacientes = await Paciente.findAll({ where });
     res.render('paciente/lista', { pacientes, query: req.query }); 
   } catch (error) {
-    console.error('Erro ao listar pacientes:', error);
-    res.status(500).send('Erro ao listar pacientes. Por favor, tente novamente mais tarde.');
+    console.error('Erro ao listar servidores:', error);
+    res.status(500).send('Erro ao listar servidores. Por favor, tente novamente mais tarde.');
   }
 };
 
@@ -112,11 +112,11 @@ exports.store = [
         encaminhamento.statusAcolhimento = 'Realizado';
         await encaminhamento.save();
       }
-      req.flash('success_msg', 'Paciente cadastrado com sucesso!');
+      req.flash('success_msg', 'Servidor cadastrado com sucesso!');
       res.redirect(`/pacientes`);
     } catch (error) {
-      console.error('Erro ao cadastrar paciente:', error);
-      req.flash('error_msg', 'Erro ao cadastrar paciente');
+      console.error('Erro ao cadastrar servidor:', error);
+      req.flash('error_msg', 'Erro ao servidor paciente');
       res.redirect(`/pacientes`);
     }
   }

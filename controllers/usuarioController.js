@@ -20,27 +20,22 @@ exports.registerUser = async (req, res) => {
     try {
         const { usuario, senha, profissionalId } = req.body;
 
-        // Verifica se o profissionalId foi enviado
         if (!profissionalId) {
             return res.status(400).send('Profissional não selecionado.');
         }
 
-        // Verifica se o usuário já existe
         const existingUser = await Usuario.findOne({ where: { usuario } });
         if (existingUser) {
             return res.status(400).send('Usuário já existe.');
         }
 
-        // Verifica se o profissionalId é válido (se o profissional existe no banco)
         const profissional = await Profissional.findByPk(profissionalId);
         if (!profissional) {
             return res.status(400).send('Profissional não encontrado.');
         }
 
-        // Gera o hash da senha
         const hashedPassword = await argon2.hash(senha);
 
-        // Cria o usuário no banco de dados
         await Usuario.create({
             usuario,
             senha: hashedPassword,
@@ -58,12 +53,11 @@ exports.requestPasswordReset = async (req, res) => {
     try {
         const { usuario } = req.body;
 
-        // Verifica se o usuário existe
         const user = await Usuario.findOne({
             where: { usuario },
             include: {
                 model: Profissional,
-                attributes: ['email'],  // Inclui o campo 'email' do profissional
+                attributes: ['email'],  
             }
         });
 
@@ -71,12 +65,10 @@ exports.requestPasswordReset = async (req, res) => {
             return res.status(400).render('auth/forgotPassword', { error: 'Usuário não encontrado.' });
         }
 
-        // Verifica se o profissional tem e-mail associado
         if (!user.Profissional || !user.Profissional.email) {
             return res.status(400).render('auth/forgotPassword', { error: 'Profissional não possui e-mail associado.' });
         }
 
-        // Gera o token para redefinição de senha
         const token = crypto.randomBytes(32).toString('hex');
         user.resetToken = token;
         user.resetTokenExpires = Date.now() + 3600000; // 1 hora
@@ -84,10 +76,9 @@ exports.requestPasswordReset = async (req, res) => {
 
         const resetLink = `http://localhost:3002/auth/reset/${token}`;
 
-        // Envia o e-mail com o link de redefinição
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
-            to: user.Profissional.email,  // Envia para o e-mail do profissional associado ao usuário
+            to: user.Profissional.email,  
             subject: 'Redefinição de Senha',
             html: `
                 <h1>Redefinição de Senha</h1>
@@ -109,14 +100,12 @@ exports.resetPassword = async (req, res) => {
         const { token } = req.params;
         const { senha } = req.body;
 
-        // Busca o usuário com o token de reset e verifica se o token ainda é válido
         const user = await Usuario.findOne({
             where: {
                 resetToken: token
             }
         });
 
-        // Verifica se o usuário foi encontrado e se o resetTokenExpires é válido
         if (!user || !user.resetTokenExpires || user.resetTokenExpires < Date.now()) {
             return res.status(400).send('Token inválido ou expirado.');
         }

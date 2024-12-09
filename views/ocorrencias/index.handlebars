@@ -85,16 +85,49 @@
 </body>
 </html>
 
-    <style>
+  <style>
+
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais */
 body {
+    font-family: 'Arial', sans-serif;
     background-color: #f4f6f9;
-    font-family: 'Roboto', sans-serif;
-    color: #4b4b4b;
+    color: #333;
+    line-height: 1.6;
 }
-h2 {
-    font-weight: 700;
-    color: #0056b3;
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
+
+        h2 {
+            color: #0056b3;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .table {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f1f4f9;
+        }
 .table th {
     background-color: #e9ecef;
     color: #333;

@@ -1,22 +1,21 @@
 const Mensagem = require('../models/Mensagem');
 const Profissional = require('../models/Profissional');
+const moment = require('moment'); // Certifique-se de importar o moment, caso não tenha feito ainda
 
 module.exports = {
-
+  
   exibirFormularioEnvio: async (req, res) => {
     try {
-      console.log('Usuário autenticado:', req.user); 
-  
-      const profissionalId = req.user?.profissionalId; 
+      const profissionalId = req.user?.profissionalId;
       if (!profissionalId) {
         req.flash('error_msg', 'Profissional não encontrado.');
         return res.redirect('/');
       }
-  
+
       const profissionais = await Profissional.findAll({
         attributes: ['id', 'nome', 'cargo'],
       });
-  
+
       res.render('mensagens/enviar', { 
         profissionais,
         user: req.user,
@@ -24,35 +23,34 @@ module.exports = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Erro ao carregar a página de envio de mensagens.');
+      req.flash('error_msg', 'Erro ao carregar a página de envio de mensagens.');
+      res.redirect('/');
     }
   },
 
   enviarMensagem: async (req, res) => {
-    console.log('Dados recebidos no envio de mensagem:', req.body);
-  
-    const { destinatarioCargo, destinatarioId, assunto, corpo } = req.body;
-  
-    const remetenteId = req.user.profissionalId;
-  
-    if (!remetenteId || !assunto || !corpo) {
-      return res.status(400).send('Preencha todos os campos obrigatórios.');
-    }
-  
-    const cargo = destinatarioCargo || null;
-  
     try {
-      if (cargo) {
+      const { destinatarioCargo, destinatarioId, assunto, corpo } = req.body;
+      const remetenteId = req.user.profissionalId;
 
+      if (!remetenteId || !assunto || !corpo) {
+        req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
+        return res.redirect('/mensagens/enviar');
+      }
+
+      const cargo = destinatarioCargo || null;
+
+      if (cargo) {
         const profissionais = await Profissional.findAll({
           where: { cargo },
           attributes: ['id'],
         });
-  
+
         if (profissionais.length === 0) {
-          return res.status(404).send('Nenhum profissional encontrado para o cargo especificado.');
+          req.flash('error_msg', 'Nenhum profissional encontrado para o cargo especificado.');
+          return res.redirect('/mensagens/enviar');
         }
-  
+
         const mensagens = profissionais.map((profissional) => ({
           remetenteId,
           destinatarioId: profissional.id,
@@ -60,10 +58,9 @@ module.exports = {
           assunto,
           corpo,
         }));
-  
+
         await Mensagem.bulkCreate(mensagens);
       } else if (destinatarioId) {
-
         await Mensagem.create({
           remetenteId,
           destinatarioId,
@@ -72,28 +69,29 @@ module.exports = {
           corpo,
         });
       } else {
-        return res.status(400).send('Especifique um destinatário ou um cargo.');
+        req.flash('error_msg', 'Especifique um destinatário ou um cargo.');
+        return res.redirect('/mensagens/enviar');
       }
-      
+
       req.flash('success_msg', 'Mensagem enviada com sucesso!');
       res.redirect('/mensagens');
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Erro ao enviar mensagem.');
-      res.status(500).send('Erro ao enviar mensagem.');
+      res.redirect('/mensagens/enviar');
     }
   },
+
   listarMensagensRecebidas: async (req, res) => {
-    const destinatarioId = req.user?.profissionalId; 
-  
-    if (!destinatarioId) {
-      return res.redirect('/login');  
-    }
-  
     try {
+      const destinatarioId = req.user?.profissionalId; 
+      if (!destinatarioId) {
+        req.flash('error_msg', 'Usuário não autenticado.');
+        return res.redirect('/login');  
+      }
 
       const mensagensNaoArquivadas = await Mensagem.findAll({
-        where: { destinatarioId: destinatarioId, arquivada: false },
+        where: { destinatarioId, arquivada: false },
         include: [
           {
             model: Profissional,
@@ -104,9 +102,9 @@ module.exports = {
         ],
         order: [['createdAt', 'DESC']],  
       });
-  
+
       const mensagensArquivadas = await Mensagem.findAll({
-        where: { destinatarioId: destinatarioId, arquivada: true },
+        where: { destinatarioId, arquivada: true },
         include: [
           {
             model: Profissional,
@@ -117,7 +115,7 @@ module.exports = {
         ],
         order: [['createdAt', 'DESC']], 
       });
-  
+
       const mensagensEnviadas = await Mensagem.findAll({
         where: { remetenteId: destinatarioId },  
         include: [
@@ -130,29 +128,26 @@ module.exports = {
         ],
         order: [['createdAt', 'DESC']],  
       });
-  
+
       res.render('mensagens/index', { 
         mensagensNaoArquivadas, 
         mensagensArquivadas, 
         mensagensEnviadas
-      });  
+      });
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Erro ao carregar a caixa de entrada.');
       res.redirect('/'); 
     }
   },
-  
+
   visualizarMensagem: async (req, res) => {
     try {
       const mensagemId = req.params.id;
       const profissionalId = req.user?.profissionalId; 
 
       const mensagem = await Mensagem.findOne({
-        where: {
-          id: mensagemId,
-          destinatarioId: profissionalId,
-        },
+        where: { id: mensagemId, destinatarioId: profissionalId },
         include: [
           {
             model: Profissional,
@@ -177,26 +172,19 @@ module.exports = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Erro ao carregar a mensagem.');
+      req.flash('error_msg', 'Erro ao carregar a mensagem.');
+      res.redirect('/mensagens');
     }
   },
 
   responderMensagem: async (req, res) => {
     try {
       const mensagemId = req.params.id;
-      const profissionalId = req.user?.profissionalId; 
+      const profissionalId = req.user?.profissionalId;
 
-      // Verificar se a mensagem existe
       const mensagem = await Mensagem.findOne({
         where: { id: mensagemId },
-        include: [
-          {
-            model: Profissional,
-            as: 'remetente',
-            attributes: ['nome', 'cargo'],
-            required: true
-          }
-        ],
+        include: [{ model: Profissional, as: 'remetente' }],
       });
 
       if (!mensagem) {
@@ -210,7 +198,8 @@ module.exports = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Erro ao carregar a página de resposta.');
+      req.flash('error_msg', 'Erro ao carregar a página de resposta.');
+      res.redirect('/mensagens');
     }
   },
 
@@ -237,9 +226,9 @@ module.exports = {
 
       await Mensagem.create({
         remetenteId: profissionalId,
-        destinatarioId: mensagem.remetenteId, 
-        destinatarioCargo: mensagem.remetente.cargo, 
-        assunto: 'Re: ' + mensagem.assunto, 
+        destinatarioId: mensagem.remetenteId,
+        destinatarioCargo: mensagem.remetente.cargo,
+        assunto: 'Re: ' + mensagem.assunto,
         corpo,
         visualizada: false,
         respondida: true,
@@ -249,15 +238,15 @@ module.exports = {
       res.redirect('/mensagens');
     } catch (error) {
       console.error(error);
-      res.status(500).send('Erro ao enviar a resposta.');
+      req.flash('error_msg', 'Erro ao enviar a resposta.');
+      res.redirect(`/mensagens/${req.params.id}/responder`);
     }
   },
 
   arquivarMensagem: async (req, res) => {
-    const { id } = req.params; 
-
     try {
-      const mensagem = await Mensagem.findByPk(id);  
+      const { id } = req.params;
+      const mensagem = await Mensagem.findByPk(id);
 
       if (!mensagem) {
         req.flash('error_msg', 'Mensagem não encontrada.');
@@ -265,7 +254,7 @@ module.exports = {
       }
 
       mensagem.arquivada = true;
-      await mensagem.save();  
+      await mensagem.save();
 
       req.flash('success_msg', 'Mensagem arquivada com sucesso.');
       res.redirect('/mensagens');
@@ -276,11 +265,9 @@ module.exports = {
     }
   },
 
-
   desarquivarMensagem: async (req, res) => {
-    const { id } = req.params;
-
     try {
+      const { id } = req.params;
       const mensagem = await Mensagem.findByPk(id);
 
       if (!mensagem) {
@@ -300,8 +287,22 @@ module.exports = {
     }
   },
 
-  
-  
+  contarMensagensNaoLidas: async (req, res) => {
+    try {
+      const profissionalId = req.user?.profissionalId;
+
+      if (!profissionalId) {
+        return res.status(401).json({ error: 'Usuário não autenticado ou não possui ID de profissional.' });
+      }
+
+      const mensagensNaoLidas = await Mensagem.count({
+        where: { destinatarioId: profissionalId, visualizada: false },
+      });
+
+      res.json({ mensagensNaoLidas });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Erro ao contar mensagens não lidas.' });
+    }
+  },
 };
-  
-  

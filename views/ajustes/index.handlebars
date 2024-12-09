@@ -1,34 +1,151 @@
-<h1>Lista de Ajustes de Estoque</h1>
-<form action="/ajustes/create" method="GET">
-  <button type="submit">Adicionar Ajuste</button>
-</form>
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Produto</th>
-      <th>Quantidade</th>
-      <th>Tipo</th>
-      <th>Data</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each ajustes}}
-    <tr>
-      <td>{{this.id}}</td>
-      <td>{{this.produto.nome}}</td> <!-- Mostra o nome do produto -->
-      <td>{{this.quantidade}}</td>
-      <td>{{this.tipo}}</td>
-      <!-- Formata a data para exibição -->
-      <td>{{formatDateTime this.data}}</td>
-      <td>
-        <a href="/ajustes/{{this.id}}/edit">Editar</a>
-        <form action="/ajustes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit" style="background-color:red; color:white; padding:5px 10px; border:none; cursor:pointer;">Deletar</button>
-        </form>
-      </td>
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Ajustes de Estoque</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      color: #333;
+    }
+
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      color: #333;
+    }
+
+    td {
+      background-color: #fafafa;
+    }
+
+    tr:hover td {
+      background-color: #e9e9e9;
+    }
+
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background-color: #c82333;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    form {
+      display: inline;
+    }
+
+    .form-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Ajustes de Estoque</h1>
+    
+    <!-- Formulário para adicionar um novo ajuste -->
+    <div class="d-flex justify-content-end mb-3">
+      <form action="/ajustes/create" method="GET">
+        <button type="submit" class="btn btn-success">Adicionar Ajuste</button>
+      </form>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Tipo</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each ajustes}}
+          <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.produto.nome}}</td>
+            <td>{{this.quantidade}}</td>
+            <td>{{this.tipo}}</td>
+            <td>{{formatDateTime this.data}}</td>
+            <td class="actions">
+              <a href="/ajustes/{{this.id}}/edit">
+                <button>Editar</button>
+              </a>
+              <form action="/ajustes/{{this.id}}?_method=DELETE" method="POST">
+                <button type="submit" class="btn-delete">Deletar</button>
+              </form>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
+
+<style>
+  h1 {
+    margin-bottom: 20px;
+    color:  #0056b3;
+  }
+</style>

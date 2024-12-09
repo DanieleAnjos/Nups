@@ -3,33 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atendimentos encaminhados</title>
-        
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <title>Atendimentos Encaminhados</title>
+    <style>
+
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+        h2 {
+            color: #0056b3;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .table {
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        tr:hover {
+            background-color: #f1f4f9;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <!-- Título da página -->
-        <h2 class="text-center text-primary my-4">Atendimentos encaminhados</h2>
+        <h2 class="text-center">Atendimentos Encaminhados</h2>
 
-        <!-- Filtro de busca -->
-        <div class="d-flex justify-content-between mb-3">
-            <form action="/atendimentos" method="GET" class="d-flex">
-                <input type="text" name="search" class="form-control" placeholder="Buscar paciente ou profissional..." value="{{searchTerm}}">
-                <button type="submit" class="btn btn-outline-primary ml-2">
-                    <i class="bi bi-search"></i> Buscar
-                </button>
-            </form>
-            
-            <!-- Botão Novo Atendimento -->
-            <a href="/atendimentos/create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Novo Encaminhamento
-            </a>
+        <div class="row mb-3">
+            <div class="col-12 col-md-8 d-flex">
+                <form action="/atendimentos" method="GET" class="d-flex w-100">
+                    <input type="text" name="search" class="form-control" placeholder="Buscar paciente ou profissional..." value="{{searchTerm}}">
+                    <button type="submit" class="btn btn-outline-primary ms-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </form>
+            </div>
+            <div class="col-12 col-md-4 d-flex justify-content-md-end mt-2 mt-md-0">
+                <a href="/atendimentos/create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Novo Encaminhamento
+                </a>
+            </div>
         </div>
 
-        <!-- Tabela de Atendimentos -->
         <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered mt-3">
                 <thead class="table-primary">
@@ -38,7 +77,6 @@
                         <th>Paciente</th>
                         <th>Assunto</th>
                         <th>Profissional</th>
-                       <!--   <th>Ações</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -47,50 +85,38 @@
                             <td>{{formatDate this.createdAt}}</td>
                             <td>{{this.nomePaciente}}</td>
                             <td>{{this.assunto}}</td>
-                            <td>{{this.Profissional.nome}}</td> <!-- Nome do profissional -->
-                        <!--       <td class="text-center">
-
-                                         <a href="/atendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                                <i class="bi bi-pencil-square"></i> Editar
-                                             </a>
-                                        <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                            <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este atendimento?');">
-                                                <i class="bi bi-trash"></i> Deletar
-                                            </button>
-                                        </form> -->
-                            </td>
+                            <td>{{this.Profissional.nome}}</td>
                         </tr>
                     {{else}}
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
+                            <td colspan="4" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
                         </tr>
                     {{/each}}
                 </tbody>
             </table>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>
 </body>
 </html>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        {{#if error_msg}}
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: '{{error_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-        
-        {{#if success_msg}}
-            Swal.fire({
-                icon: 'success',
-                title: 'Sucesso',
-                text: '{{success_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-    });
-</script>

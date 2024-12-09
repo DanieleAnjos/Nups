@@ -16,14 +16,13 @@ const produtoController = {
         where.categoria = categoria;
       }
 
-        const produtos = await Produto.findAll({
-            include: [{
-                model: AjusteEstoque,
-                as: 'ajustesEstoque',
-                required: false // Set to true if you want only products with adjustments
-            }]
-        });
-      
+      const produtos = await Produto.findAll({
+        include: [{
+          model: AjusteEstoque,
+          as: 'ajustesEstoque',
+          required: false 
+        }]
+      });
 
       const produtosComQuantidadeAtual = produtos.map(produto => {
         let quantidadeAjustada = produto.quantidade_inicial;
@@ -65,7 +64,12 @@ const produtoController = {
 
   store: async (req, res) => {
     try {
-      await Produto.create(req.body);
+      const produto = await Produto.create(req.body);
+      
+      if (req.body.quantidade_inicial) {
+        await this.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial);
+      }
+
       req.flash('success', 'Produto criado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
@@ -80,7 +84,7 @@ const produtoController = {
       const produto = await Produto.findByPk(req.params.id);
 
       if (produto) {
-        res.render('produtos/edit', { produto});
+        res.render('produtos/edit', { produto });
       } else {
         req.flash('error', 'Produto não encontrado');
         res.redirect('/produtos');
@@ -94,7 +98,19 @@ const produtoController = {
 
   update: async (req, res) => {
     try {
+      const produto = await Produto.findByPk(req.params.id);
+
+      if (!produto) {
+        req.flash('error', 'Produto não encontrado');
+        return res.redirect('/produtos');
+      }
+
       await Produto.update(req.body, { where: { id: req.params.id } });
+
+      if (req.body.quantidade_inicial) {
+        await this.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial);
+      }
+
       req.flash('success', 'Produto atualizado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
@@ -113,6 +129,34 @@ const produtoController = {
       console.error('Erro ao deletar produto:', error);
       req.flash('error', 'Erro ao deletar produto.');
       res.redirect('/produtos');
+    }
+  },
+
+  ajustarEstoque: async (produtoId, tipo, quantidade) => {
+    try {
+
+      await AjusteEstoque.create({
+        produtoId,
+        tipo,
+        quantidade,
+        data: new Date()
+      });
+
+      const produto = await Produto.findByPk(produtoId);
+
+      let novaQuantidade = produto.quantidade_inicial;
+
+      if (tipo === 'entrada') {
+        novaQuantidade += quantidade;
+      } else if (tipo === 'saida') {
+        novaQuantidade -= quantidade;
+      }
+
+      produto.quantidade_inicial = novaQuantidade;
+      await produto.save();
+    } catch (error) {
+      console.error('Erro ao ajustar estoque:', error);
+      throw new Error('Erro ao ajustar estoque');
     }
   },
 };

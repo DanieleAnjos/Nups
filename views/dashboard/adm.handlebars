@@ -7,14 +7,14 @@
     </a>
     <a href="/pacientes" class="dashboard-card" aria-label="Gerenciar Pacientes">
       <i class="fas fa-users"></i>
-      <span>Pacientes</span>
+      <span>Servidores</span>
     </a>
     <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
       <i class="fas fa-calendar-check"></i>
       <span>Encaminhamentos</span>
     </a>
     <a href="/atendimentos2" class="dashboard-card" aria-label="Gerenciar Atendimentos">
-     <i class="fas fa-clipboard-list"></i>
+      <i class="fas fa-clipboard-list"></i>
       <span>Atendimentos</span>
     </a>
     <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
@@ -44,18 +44,35 @@
     <a href="/mensagens" class="dashboard-card" aria-label="Gerenciar Mensagens">
       <i class="fas fa-envelope"></i>
       <span>Mensagens</span>
+      <span id="message-count" class="notification-badge"
+            style="{{#if mensagensNaoLidas}}display: inline;{{else}}display: none;{{/if}}">
+        {{mensagensNaoLidas}}
+      </span>
     </a>
     <a href="/notificacoes" class="dashboard-card" aria-label="Gerenciar Notificações">
       <i class="fas fa-bell"></i>
       <span>Notificações</span>
+      <span id="notificacao-count" class="notification-badge"
+            style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
+        {{notificacoesNaoLidas}}
+      </span>
+    </a>
+    <a href="/produtos" class="dashboard-card"aria-label="Gerenciar Produtos">
+    <i class="fas fa-shopping-cart"></i>
+      <span>Produtos</span>
+    </a>
+    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
+      <i class="fas fa-user-circle"></i>
+      <span>Perfil</span>
     </a>
   </div>
 </div>
 
+
 <style>
-/* Estilo para o container do dashboard */
+  /* Estilo para o container do dashboard */
 .dashboard {
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
 }
 
@@ -79,11 +96,25 @@
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+  position: relative;
 }
 
-h1{
-  color:#297FB8;
+h1 {
+  color: #297FB8;
   padding-bottom: 15px;
+}
+
+/* Estilo do contador de notificações */
+.notification-badge {
+  background-color: orange;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  padding: 0.1em 0.6em;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: none; /* Inicialmente escondido */
 }
 
 /* Efeito hover para os cards */
@@ -96,7 +127,7 @@ h1{
 
 /* Ícone maior para melhor visibilidade */
 .dashboard-card i {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 10px;
 }
 
@@ -122,10 +153,82 @@ h1{
     padding: 15px;
   }
   .dashboard-card i {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
   .dashboard-card span {
     font-size: 1rem;
   }
 }
+
 </style>
+
+<script>
+
+  async function atualizarContadorMensagens() {
+    try {
+        const response = await fetch('/api/mensagens/nao-lidas', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+            }
+        });
+
+        const text = await response.text(); // Lê a resposta como texto
+        console.log(text); // Verifique o que está sendo retornado
+
+        // Se a resposta for JSON, parseia ela
+        const data = JSON.parse(text); 
+
+        // Verifica se o count existe e é maior que 0
+        const contador = document.getElementById('message-count');
+        if (data.count > 0) {
+            contador.textContent = data.count;  // Atualiza o número de mensagens não lidas
+            contador.style.display = 'inline';  // Exibe o contador
+        } else {
+            contador.style.display = 'none';  // Oculta o contador se não houver mensagens não lidas
+        }
+
+    } catch (error) {
+        console.error('Erro ao buscar as mensagens não lidas:', error);
+    }
+};
+
+
+async function atualizarContadorNotificacoes() {
+    try {
+        const response = await fetch('/notificacoes', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        });
+
+        // Verifica se a resposta é bem-sucedida (status 200)
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+
+        // Verifica o tipo de conteúdo da resposta
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json(); // Converte diretamente para JSON
+            const contador = document.getElementById('notificacao-count');
+            if (data.count > 0) {
+                contador.textContent = data.count;
+                contador.style.display = 'inline';
+            } else {
+                contador.style.display = 'none';
+            }
+        } else {
+            // Caso o conteúdo não seja JSON, imprime a resposta em HTML
+            const text = await response.text();
+            console.error('Resposta inesperada:', text);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar as notificações não lidas:', error);
+    }
+}
+
+</script>

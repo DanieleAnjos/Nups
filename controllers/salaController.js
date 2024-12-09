@@ -35,7 +35,7 @@ formularioCriar: (req, res) => {
     try {
       const { nome, capacidade, descricao } = req.body;
       await Sala.create({ nome, capacidade, descricao });
-      req.flash('success_msg', 'Sala cadastrado com sucesso!')
+      req.flash('success_msg', 'Sala cadastrada com sucesso!')
       res.redirect('/salas');
     } catch (error) {
       req.flash('error_msg', 'Erro ao cadastrar sala!');

@@ -284,7 +284,7 @@ const reservasSalaController = {
       });
 
       if (reservas.length === 0) {
-        return res.status(404).send('Nenhuma reserva encontrada.');
+        res.render('relatorios/viewReservasSalaReport', { layout: false} );
       }
 
       const salas = await Sala.findAll();

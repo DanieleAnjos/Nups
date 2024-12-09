@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <title>{{title}} - NUPS</title>
 
   <!-- Incluindo Handlebars via CDN (somente uma vez) -->
@@ -41,7 +42,7 @@
 
 <body>
   <div class="main-wrapper">
-    <nav class="sidebar">
+      <nav class="sidebar">
       <ul class="menu">
         {{log cargo}} <!-- Debug para verificar o valor do cargo -->
 
@@ -63,6 +64,7 @@
         <li class="menu-sair"><a href="/auth/logout"><i class="fas fa-sign-out-alt icon"></i> <span>Sair</span></a></li>
       </ul>
     </nav>
+  
 
     <main class="main-content">
       {{#if error_msg}} <!-- Verifica a existência da variável error_msg -->
@@ -93,3 +95,14 @@
 </body>
 <footer></footer>
 </html>
+
+<style>
+
+  * {
+    margin: 0;
+    padding: 0;
+}
+
+ 
+
+</style>
