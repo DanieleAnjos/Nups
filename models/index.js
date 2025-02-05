@@ -1,36 +1,36 @@
-module.exports = (sequelize) => {
-  const { 
-    Paciente,
-    Atendimento,
-    Evento,
-    Imagem,
-    Produto,
-    AjusteEstoque,
-    Profissional,
-    Mensagem,
-    Atendimento2,
-    Usuario,
-    Encaminhamento,
-  } = sequelize.models;
+const sequelize = require('../config/database');
 
-  Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
-  Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
+// Importação dos modelos
+const Profissional = require('./Profissional');
+const Encaminhamento = require('./Encaminhamento');
+const Atendimento = require('./Atendimento'); 
+const Documento = require('./Documento');
+const Paciente = require('./Paciente');
+const DiscussaoCaso = require('./DiscussaoCaso');
+const AjusteEstoque = require('./AjusteEstoque'); 
+const Produto = require('./Produto');
 
-  Atendimento.belongsTo(Profissional, { foreignKey: 'profissionalId', as: 'profissional' });
-  
-  Atendimento2.belongsTo(Profissional, { as: 'profissional', foreignKey: 'profissionalId' });
+// Criando um objeto para armazenar os modelos
+const models = {
+  Profissional,
+  Encaminhamento,
+  Atendimento,
+  Documento, // Adicione os outros modelos aqui
+  Paciente, // Adicione os outros modelos aqui
+  DiscussaoCaso, // Adicione os outros modelos aqui
+  AjusteEstoque, // Adicione os outros modelos aqui
+  Produto, // Adicione os outros modelos aqui
+};
 
+// Configurando as associações (evita erro caso um modelo não tenha `associate`)
+Object.keys(models).forEach((modelName) => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models);
+  }
+});
 
-  Atendimento.belongsTo(Paciente, { foreignKey: 'pacienteId', as: 'paciente' });
-  Paciente.hasMany(Atendimento, { foreignKey: 'pacienteId' });
-
-  Atendimento.belongsTo(Encaminhamento, { foreignKey: 'encaminhamentoId', as: 'encaminhamento' });
-
-
-
-
-
-  Produto.hasMany(AjusteEstoque, { foreignKey: 'produtoId' });
-  AjusteEstoque.belongsTo(Produto, { foreignKey: 'produtoId' });
-
+// Exportando os modelos junto com a conexão Sequelize
+module.exports = {
+  sequelize,
+  ...models,
 };

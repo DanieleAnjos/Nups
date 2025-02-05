@@ -1,14 +1,17 @@
 const Profissional = require('../models/Profissional');
 const Notificacao = require('../models/Notificacao');
 
+
 const { ValidationError } = require('sequelize');
 const { Op } = require('sequelize');
 const puppeteer = require('puppeteer');
 const path = require('path');
 const { upload, uploadErrorHandler } = require('../config/multer'); 
 const Encaminhamento = require('../models/Encaminhamento');
-const Atendimento2 = require('../models/Atendimento2');
+const Atendimento = require('../models/Atendimento');
 const Ocorrencia = require('../models/Ocorrencia');
+const Paciente = require('../models/Paciente');
+
 
 
 
@@ -318,6 +321,49 @@ exports.delete = async (req, res) => {
       res.status(500).send('Erro ao exibir o relatório. Tente novamente mais tarde.');
     }
   } ; 
+
+  const xlsx = require('xlsx');
+
+exports.generateExcelReport = async (req, res) => {
+  try {
+    const profissionais = await Profissional.findAll();
+
+    if (profissionais.length === 0) {
+      return res.status(404).send('Nenhum profissional encontrado para gerar o relatório.');
+    }
+
+    // Criar os dados para a planilha
+    const dados = profissionais.map(profissional => ({
+      'ID': profissional.id,
+      'Nome': profissional.nome,
+      'Data de Admissão': new Date(profissional.dataAdmissao).toLocaleDateString(),
+      'Cargo': profissional.cargo,
+      'Telefone': profissional.telefone,
+      'Email': profissional.email,
+    }));
+
+    // Criar uma planilha a partir dos dados
+    const ws = xlsx.utils.json_to_sheet(dados);
+
+    // Criar um arquivo de trabalho
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, 'Profissionais');
+
+    // Gerar o arquivo Excel
+    const excelBuffer = xlsx.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+    // Configurar o cabeçalho para o download
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=relatorio_profissionais.xlsx');
+    res.end(excelBuffer);
+
+  } catch (error) {
+    console.error('Erro ao gerar o relatório de profissionais em Excel:', error);
+    res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+  }
+};
+
+
   exports.show = async (req, res) => {
     try {
       const profissional = await Profissional.findByPk(req.params.id);
@@ -327,31 +373,45 @@ exports.delete = async (req, res) => {
         return res.redirect('/profissionais');
       }
   
+      // Busca os encaminhamentos recebidos pelo profissional
       const encaminhamentos = await Encaminhamento.findAll({
-        where: {
-          nomeProfissional: profissional.nome, 
-        },
-        order: [['createdAt', 'DESC']], 
+        include: [
+          {
+            model: Profissional,
+            as: 'profissionalRecebido',  // Alias correto de profissionalRecebido
+            where: { id: profissional.id },  // Filtra pelo ID do profissional
+          }
+        ],
+        order: [['createdAt', 'DESC']],  // Ordena por data de criação
       });
   
-      const atendimentos = await Atendimento2.findAll({
+      // Busca os atendimentos associados ao profissional
+      const atendimentos = await Atendimento.findAll({
         where: {
-          profissionalId: profissional.id, 
+          profissionalId: profissional.id,
         },
-        order: [['dataAtendimento', 'DESC']], 
+        include: [
+          {
+            model: Paciente,
+            as: 'paciente', // Alias deve ser o mesmo definido no relacionamento
+            attributes: ['id', 'nome', 'matricula'] 
+          }
+        ],
+        order: [['dataAtendimento', 'DESC']],
       });
-
+  
+      // Busca as ocorrências associadas ao profissional
       const ocorrencias = await Ocorrencia.findAll({
         where: { profissionalId: profissional.id },
-        order: [['data', 'DESC']],
+        order: [['data', 'DESC']],  // Ordena por data da ocorrência
       });
   
+      // Renderiza a página com as informações do profissional
       res.render('profissional/perfil', {
-        profissional: profissional.get({ plain: true }),
+        profissional: profissional.get({ plain: true }),  // Transforma o modelo em objeto simples
         encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
         atendimentos: atendimentos.map(a => a.get({ plain: true })),
         ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
-
       });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);
@@ -359,11 +419,17 @@ exports.delete = async (req, res) => {
       res.redirect('/profissionais');
     }
   };
-  
 
+  
   exports.showPerfil = async (req, res) => {
     try {
-      const profissionalLogado = req.user; 
+      // Verifica se o usuário está autenticado
+      if (!req.user) {
+        req.flash('error_msg', 'Você precisa estar logado para acessar esta página.');
+        return res.redirect('/login');  // Redirecionar para a página de login
+      }
+  
+      const profissionalLogado = req.user;  // Profissional logado
   
       const profissional = await Profissional.findByPk(req.params.id);
   
@@ -372,36 +438,52 @@ exports.delete = async (req, res) => {
         return res.redirect('/profissionais');
       }
   
+      // Verifica se o profissional logado é o mesmo que o solicitado
       if (profissional.id !== profissionalLogado.id) {
         req.flash('error_msg', 'Você não tem permissão para visualizar este perfil.');
         return res.redirect('/profissionais');
       }
   
+      // Buscando o encaminhamento pelo ID (provavelmente id do encaminhamento passado na URL)
+      const encaminhamento = await Encaminhamento.findByPk(req.params.encaminhamentoId);
+  
+      if (!encaminhamento) {
+        req.flash('error_msg', 'Encaminhamento não encontrado.');
+      }
+  
+      // Buscar todos os encaminhamentos do profissional, utilizando a associação correta
       const encaminhamentos = await Encaminhamento.findAll({
-        where: {
-          nomeProfissional: profissional.nome, 
-        },
-        order: [['createdAt', 'DESC']], 
+        include: [
+          {
+            model: Profissional,
+            as: 'profissionalRecebido',  // Alias correto do profissionalEnvio
+            where: { nome: profissional.nome },  // Filtra pelo nome do profissional logado
+          }
+        ],
+        order: [['createdAt', 'DESC']],  // Ordena por data de criação
       });
   
-      const atendimentos = await Atendimento2.findAll({
+      // Buscar os atendimentos relacionados ao profissional
+      const atendimentos = await Atendimento.findAll({
         where: {
           profissionalId: profissional.id, 
         },
-        order: [['dataAtendimento', 'DESC']], 
-      });
-
-      const ocorrencias = await Ocorrencia.findAll({
-        where: { profissionalId: profissional.id },
-        order: [['data', 'DESC']],
+        order: [['dataAtendimento', 'DESC']],  // Ordena por data de atendimento
       });
   
+      // Buscar as ocorrências relacionadas ao profissional
+      const ocorrencias = await Ocorrencia.findAll({
+        where: { profissionalId: profissional.id },
+        order: [['data', 'DESC']],  // Ordena por data da ocorrência
+      });
+  
+      // Renderiza a página com os dados do profissional e suas informações
       res.render('profissional/meu_perfil', {
-        profissional: profissional.get({ plain: true }),
-        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
-        atendimentos: atendimentos.map(a => a.get({ plain: true })),
-        ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
-
+        profissional: profissional.get({ plain: true }),  // Transforma o modelo em um objeto simples
+        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })) || [],  // Garante que será um array vazio se não houver encaminhamentos
+        atendimentos: atendimentos.map(a => a.get({ plain: true })) || [],  // Garante que será um array vazio se não houver atendimentos
+        ocorrencias: ocorrencias.map(o => o.get({ plain: true })) || [],  // Garante que será um array vazio se não houver ocorrências
+        encaminhamento: encaminhamento ? encaminhamento.get({ plain: true }) : null, // Garante que será null se não houver encaminhamento
       });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);

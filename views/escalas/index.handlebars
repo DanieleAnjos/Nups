@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Escalas</title>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- SweetAlert2 JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
-    <!-- Incluindo o FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/dist/fullcalendar.min.css" rel="stylesheet" />
-
-    <!-- Incluindo o FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/dist/fullcalendar.min.js"></script>
 </head>
 <body>
@@ -33,7 +28,7 @@
                     <select name="profissional" class="form-control">
                         <option value="">Selecione um Profissional</option>
                         {{#each profissionais}}
-                            <option value="{{this.id}}" {{#ifCond this.id ../query.profissional}}selected{{/ifCond}}>{{this.nome}}</option>
+                            <option value="{{this.id}}" {{#if (eq this.id ../query.profissional)}}selected{{/if}}>{{this.nome}}</option>
                         {{/each}}
                     </select>
                 </div>
@@ -63,7 +58,7 @@
                 <tbody>
                     {{#each escalas}}
                         <tr>
-                            <td>{{formatDate this.data}}</td>
+                            <td>{{OneDate this.data}}</td>
                             <td>{{this.horarioInicio}}</td>
                             <td>{{this.horarioFim}}</td>
                             <td>{{this.admin.nome}}</td>
@@ -84,7 +79,6 @@
         </div>
 
         <div class="d-flex justify-content-end mb-3">
-            <!-- Botão para alternar visibilidade do calendário -->
             <button id="toggleCalendar" class="btn btn-secondary">
                 <i class="bi bi-calendar-event"></i> Mostrar/Ocultar Calendário
             </button>
@@ -99,50 +93,46 @@
         {{/if}}
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
-    const toggleCalendarBtn = document.getElementById('toggleCalendar');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const toggleCalendarBtn = document.getElementById('toggleCalendar');
 
-    if (!calendarEl) {
-        console.error("Elemento de calendário não encontrado!");
-        return;
-    }
+            if (!calendarEl) {
+                console.error("Elemento de calendário não encontrado!");
+                return;
+            }
 
-    const profissionalColors = JSON.parse('{{profissionalColors}}'.replace(/&quot;/g, '"'));
+            const profissionalColors = JSON.parse('{{{profissionalColors}}}');
 
-    const events = [
-        {{#each escalas}}
-        {
-            title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
-            start: '{{this.data}}T{{this.horarioInicio}}',
-            end: '{{this.data}}T{{this.horarioFim}}',
-            backgroundColor: profissionalColors['{{this.admin.id}}'] || 'gray',
-            borderColor: profissionalColors['{{this.admin.id}}'] || 'gray',
-        },
-        {{/each}}
-    ];
+            const events = [
+                {{#each escalas}}
+                {
+                    title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
+                    start: '{{this.data}}T{{this.horarioInicio}}',
+                    end: '{{this.data}}T{{this.horarioFim}}',
+                    backgroundColor: profissionalColors['{{this.admin.id}}'] || 'gray',
+                    borderColor: profissionalColors['{{this.admin.id}}'] || 'gray',
+                },
+                {{/each}}
+            ];
 
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
-        locale: 'pt-br',
-        events: events,
-    });
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'pt-br',
+                events: events,
+            });
 
-    calendar.render();
+            calendar.render();
 
-    // Função para alternar a visibilidade do calendário
-    toggleCalendarBtn.addEventListener('click', function() {
-        if (calendarEl.style.display === "none") {
-            calendarEl.style.display = "block";
-        } else {
-            calendarEl.style.display = "none";
-        }
-    });
-});
-</script>
+            toggleCalendarBtn.addEventListener('click', function () {
+                calendarEl.style.display = calendarEl.style.display === "none" ? "block" : "none";
+            });
+        });
+    </script>
 </body>
 </html>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

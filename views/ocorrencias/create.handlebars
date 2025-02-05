@@ -1,69 +1,45 @@
-    <div class="container mt-5">
-        <!-- Cartão de formulário -->
-            <div class="card-body">
-                <h2 class="card-title text-center text-primary mb-4">Adicionar Nova Ocorrência</h2>
+<div class="container mt-5">
+    <!-- Cartão de formulário -->
+    <div class="card-body">
+        <h2 class="card-title text-center text-primary mb-4">Adicionar Nova Ocorrência</h2>
 
-                <form action="/ocorrencias" method="POST">
+        <form action="/ocorrencias" method="POST">
 
+            <!-- Campo oculto para o ID do profissional logado -->
+            <input type="hidden" name="profissionalId" value="{{profissionalLogado.id}}">
 
-                                    <!-- Campo Profissional -->
-                    <div class="mb-3">
-                        <label for="profissionalId" class="form-label">Profissional:</label>
-                        <select name="profissionalId" required class="form-select" aria-label="Selecione o profissional responsável">
-                            <option value="" disabled selected>Escolha o profissional responsável</option>
-                            {{#each profissionais}}
-                                <option value="{{this.id}}" title="{{this.nome}}">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <!-- Nome do profissional -->
-                                        <span>{{this.nome}}</span>
-                                        <!-- Ícone abaixo do nome -->
-                                        <i class="bi bi-person-fill mt-1"></i>
-                                    </div>
-                                </option>
-                            {{/each}}
-                        </select>
-                    </div>
-
-                    <!-- Campo Data -->
-                    <div class="mb-3">
-                        <label for="data" class="form-label">Data:</label>
-                        <input type="date" name="data" required class="form-control">
-                    </div>
-
-
+            <!-- Campo Data -->
+            <div class="mb-3">
+                <label for="data" class="form-label">Data:</label>
+                <input type="date" name="data" required class="form-control">
+            </div>
 
             <!-- Linha para Horário de Chegada e Horário de Saída -->
             <div class="row mb-4">
-                <!-- Campo Horário de Chegada -->
                 <div class="col-md-6">
                     <label for="horarioChegada" class="form-label">Horário de Chegada:</label>
                     <input type="time" name="horarioChegada" required class="form-control">
                 </div>
-
-                <!-- Campo Horário de Saída -->
                 <div class="col-md-6">
                     <label for="horarioSaida" class="form-label">Horário de Saída:</label>
                     <input type="time" name="horarioSaida" class="form-control">
                 </div>
             </div>
 
-
-
-
-                                        <!-- Campo Relatório -->
-                    <div class="mb-3">
-                        <label for="relatorio" class="form-label">Relatório:</label>
-                        <textarea name="relatorio" required class="form-control" rows="4" placeholder="Descreva os detalhes da ocorrência..."></textarea>
-                    </div>
-
-
-                     <div class="d-flex justify-content-end gap-3">
-                        <a href="/ocorrencias"class="btn btn-outline-secondary px-4">Voltar</a>
-                        <button type="submit" class="btn btn-primary px-4">Salvar Ocorrência</button>
-                    </div>
-                </form>
+            <!-- Campo Relatório -->
+            <div class="mb-3">
+                <label for="relatorio" class="form-label">Relatório:</label>
+                <textarea name="relatorio" required class="form-control" rows="4" placeholder="Descreva os detalhes da ocorrência..."></textarea>
             </div>
+
+            <div class="d-flex justify-content-end gap-3">
+                <a href="/ocorrencias" class="btn btn-outline-secondary px-4">Voltar</a>
+                <button type="submit" class="btn btn-primary px-4">Salvar Ocorrência</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
       <style>
 

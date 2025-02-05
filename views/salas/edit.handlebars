@@ -5,8 +5,9 @@
                 <div class="card-body">
                     <h2 class="card-title text-center text-primary mb-4">Editar Sala</h2>
 
-                    <form action="/salas/{{ sala.id }}" method="POST">
-                        <!-- Método para edição -->
+                    <!-- Formulário para editar sala -->
+                    <form action="/salas/{{ sala.id }}?_method=PUT" method="POST">
+                        <!-- Campo oculto para simular o método PUT -->
                         <input type="hidden" name="_method" value="PUT">
 
                         <!-- Campo Nome -->
@@ -27,6 +28,7 @@
                             <input type="text" id="descricao" name="descricao" maxlength="255" class="form-control" placeholder="Digite uma breve descrição da sala" value="{{ sala.descricao }}">
                         </div>
 
+                        <!-- Botões -->
                         <div class="d-flex justify-content-end gap-3">
                             <a href="/salas" class="btn btn-outline-secondary px-4">Voltar</a>
                             <button type="submit" class="btn btn-primary px-4">Salvar</button>

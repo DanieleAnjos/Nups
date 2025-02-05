@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional');
+const Documento = require('../models/Documento');
 const axios = require('axios');
 
 const Paciente = sequelize.define('Paciente', {
@@ -10,23 +11,12 @@ const Paciente = sequelize.define('Paciente', {
     primaryKey: true,
     autoIncrement: true,
   },
-  dataHoraAtendimento: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
   matricula: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true,
     validate: {
       isInt: true,
     },
-  },
-  numeroProcesso: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
   },
   nome: {
     type: DataTypes.STRING,
@@ -98,7 +88,6 @@ const Paciente = sequelize.define('Paciente', {
   cpf: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     validate: {
       is: {
         args: /^[0-9]{11}$/,
@@ -279,6 +268,11 @@ const Paciente = sequelize.define('Paciente', {
     allowNull: false,
     defaultValue: 'Ativo',
   },
+  statusPaciente: {
+    type: DataTypes.ENUM('Em Atendimento', 'Abandono de Tratamento', 'Alta'),
+    allowNull: true,
+    defaultValue: 'Em Atendimento',
+  },
 });
 
 Paciente.fillAddressFromCep = async function (cep) {
@@ -302,7 +296,14 @@ Paciente.fillFromAtendimento = async function (atendimentoId) {
   return null;
 };
 
-Paciente.belongsTo(Profissional);
-Paciente.hasMany(Atendimento);
+Paciente.hasMany(Documento, { foreignKey: 'pacienteId', as: 'documentos' });
+
+Paciente.associate = (models) => {
+  Paciente.hasMany(models.Atendimento, {
+    foreignKey: 'pacienteId',
+    as: 'atendimentos',
+  });
+};
+
 
 module.exports = Paciente;

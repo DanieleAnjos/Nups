@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Profissionais</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/vanilla-masker@1.1.1/build/vanilla-masker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <style>
         /* Reset básico */
@@ -135,11 +136,10 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr class="text-center">
-                        <th>ID</th>
                         <th>Matrícula</th>
                         <th>Nome</th>
-                        <th>Email</th>
                         <th>Cargo</th>
+                        <th>Status</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -147,13 +147,13 @@
                     {{#if profissionais.length}}
                         {{#each profissionais}}
                             <tr>
-                                <td class="text-center">{{this.id}}</td>
-                                <td class="text-center">{{this.matricula}}</td>
+                                <td>{{this.matricula}}</td>
                                 <td>{{this.nome}}</td>
-                                <td>{{this.email}}</td>
                                 <td>{{this.cargo}}</td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-2">
+                                <td>
+                                    {{this.status}}
+                                <td>
+                                    <div class="d-flex justify-content gap-2">
                                         <a href="/profissionais/perfil/{{this.id}}" class="btn btn-info btn-sm">
                                             <i class="bi bi-eye"></i> Visualizar
                                         </a>
@@ -204,3 +204,4 @@
     </script>
 </body>
 </html> ⬤
+

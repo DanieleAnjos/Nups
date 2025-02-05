@@ -57,9 +57,17 @@ Produto.init({
 }, {
   sequelize,
   modelName: 'Produto',  
+  tableName: 'Produto', // Define o nome da tabela como exatamente 'Produto'
   timestamps: true,  
 });
 
+Produto.associate = (models) => {
+  Produto.hasMany(AjusteEstoque, {
+    foreignKey: 'produtoId',
+    as: 'ajustesEstoque',
+  });
+};
 
 
-module.exports = Produto;  // Export the Produto model
+
+module.exports = Produto;  // Export the Produto modela

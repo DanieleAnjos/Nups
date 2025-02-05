@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussões de Caso</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Discussões de Caso</h2>
+        
+        <a href="/discussoes/create" class="btn btn-primary">Nova Discussão</a>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Conteúdo</th>
+                    <th>Atendimento</th>
+                    <th>Autor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each discussoes}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.conteudo}}</td>
+                    <td>{{this.atendimento.nomePaciente}}</td> <!-- Exibe o nome do paciente do atendimento -->
+                    <td>{{this.autor}}</td>
+                    <td>
+                        <a href="/discussoes/{{this.id}}" class="btn btn-info">Detalhes</a>
+                        <a href="/discussoes/edit/{{this.id}}" class="btn btn-warning">Editar</a>
+                        <form action="/discussoes/delete/{{this.id}}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja deletar?')">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="5" class="text-center">Nenhuma discussão encontrada.</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

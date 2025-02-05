@@ -29,7 +29,7 @@
         </div>
 
         <!-- Campo de Sala -->
-        <div class="col-md-4">
+        <div class="col-md-3">
             <select name="salaId" id="salaId" class="form-select">
                 <option value="">Todas as Salas</option>
                 {{#each salas}}
@@ -39,7 +39,7 @@
         </div>
 
         <!-- Campo de Profissional -->
-        <div class="col-md-4">
+        <div class="col-md-3">
             <select name="profissionalId" id="profissionalId" class="form-select">
                 <option value="">Todos os Profissionais</option>
                 {{#each profissionais}}
@@ -47,15 +47,16 @@
                 {{/each}}
             </select>
         </div>
-    </div>
-
-    <div class="row g-3 mt-3">
+            <div class="col-md-2">
         <!-- Botões -->
         <div class="col-12 d-flex justify-content-end">
             <button type="submit" class="btn btn-primary me-2">Filtrar</button>
             <a href="/reservas" class="btn btn-secondary">Limpar</a>
         </div>
     </div>
+    </div>
+
+
 </form>
 
 

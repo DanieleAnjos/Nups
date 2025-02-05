@@ -7,8 +7,11 @@
                 </div>
                 <div class="card-body">
                     <!-- Formulário -->
-                    <form action="/escalas/{{escala.id}}" method="POST">
-                        <!-- Campo Data -->
+                    <form action="/escalas/{{escala.id}}?_method=PUT" method="POST">
+                    <input type="hidden" name="_method" value="PUT"> 
+
+
+                        <!-- Campo para simular o método PUT -->                        <!-- Campo Data -->
                         <div class="mb-4">
                             <label for="data" class="form-label">Data</label>
                             <input 
@@ -28,7 +31,7 @@
                                 name="horarioInicio" 
                                 id="horarioInicio" 
                                 class="form-control shadow-sm" 
-                                value="{{formatHour escala.horarioInicio}}" 
+                                value="{{ escala.horarioInicio}}" 
                                 required>
                         </div>
 
@@ -40,7 +43,7 @@
                                 name="horarioFim" 
                                 id="horarioFim" 
                                 class="form-control shadow-sm" 
-                                value="{{formatHour escala.horarioFim}}" 
+                                value="{{ escala.horarioFim}}" 
                                 required>
                         </div>
 

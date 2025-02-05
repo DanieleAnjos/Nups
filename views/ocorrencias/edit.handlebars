@@ -1,3 +1,7 @@
+<!-- Toasts Container (Mensagens de Erro) -->
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1050"></div>
+
+
 <div class="container mt-5">
     <div class="card shadow-sm">
         <div class="card-body">
@@ -10,33 +14,35 @@
                     <input type="date" name="data" value="{{ocorrencia.data}}" required class="form-control">
                 </div>
 
-                <!-- Campo Relatório -->
-                <div class="mb-3">
-                    <label for="relatorio" class="form-label">Relatório:</label>
-                    <textarea name="relatorio" required class="form-control" rows="4" placeholder="Descreva os detalhes da ocorrência...">{{ocorrencia.relatorio}}</textarea>
-                </div>
+
 
                 <!-- Campo Horário de Chegada -->
                 <div class="mb-3">
                     <label for="horarioChegada" class="form-label">Horário de Chegada:</label>
-                    <input type="time" name="horarioChegada" value="{{formatHour ocorrencia.horarioChegada}}" required class="form-control">
+                    <input type="time" name="horarioChegada" value="{{ ocorrencia.horarioChegada}}" required class="form-control">
                 </div>
 
                 <!-- Campo Horário de Saída -->
                 <div class="mb-3">
                     <label for="horarioSaida" class="form-label">Horário de Saída:</label>
-                    <input type="time" name="horarioSaida" value="{{formatHour ocorrencia.horarioSaida}}" class="form-control">
+                    <input type="time" name="horarioSaida" value="{{ocorrencia.horarioSaida}}" class="form-control">
                 </div>
 
                 <!-- Campo Profissional -->
-                <div class="mb-3">
+                <div class="mb-3"hidden>
                     <label for="profissionalId" class="form-label">Profissional:</label>
-                    <select name="profissionalId" required class="form-select">
+                    <select name="profissionalId" required class="form-select" >
                         <option value="" disabled selected>Selecione um profissional</option>
                         {{#each profissionais}}
                             <option value="{{this.id}}" {{#if (eq this.id ../ocorrencia.profissionalId)}}selected{{/if}}>{{this.nome}}</option>
                         {{/each}}
                     </select>
+                </div>
+
+                                <!-- Campo Relatório -->
+                <div class="mb-3">
+                    <label for="relatorio" class="form-label">Relatório:</label>
+                    <textarea name="relatorio" required class="form-control" rows="4" placeholder="Descreva os detalhes da ocorrência...">{{ocorrencia.relatorio}}</textarea>
                 </div>
 
                 <!-- Botão de Atualização -->
@@ -51,3 +57,4 @@
 
 <!-- Incluir o script do Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+

@@ -7,76 +7,73 @@ const puppeteer = require('puppeteer');
 
 const escalaController = {
   index: async (req, res) => {
-      try {
-          const { data, horarioInicio, horarioFim, profissional } = req.query;
+    try {
+        const { data, horarioInicio, horarioFim, profissional } = req.query;
 
-          const where = {};
+        const where = {};
 
-          if (data) {
-              where.data = data;
-          }
+        if (data) {
+            where.data = data;
+        }
 
-          if (horarioInicio) {
-              where.horarioInicio = { [Op.gte]: horarioInicio };
-          }
+        if (horarioInicio) {
+            where.horarioInicio = { [Op.gte]: horarioInicio };
+        }
 
-          if (horarioFim) {
-              where.horarioFim = { [Op.lte]: horarioFim };
-          }
+        if (horarioFim) {
+            where.horarioFim = { [Op.lte]: horarioFim };
+        }
 
-          const include = [{
-              model: Profissional,
-              as: 'admin',
-              attributes: ['id', 'nome'], // Incluir 'id' para associar com a cor
-              where: profissional ? { id: profissional } : undefined,
-          }];
+        const include = [{
+            model: Profissional,
+            as: 'admin',
+            attributes: ['id', 'nome'],
+            where: profissional ? { id: profissional } : undefined,
+        }];
 
-          const escalas = await Escala.findAll({
-              where,
-              include,
-          });
+        const escalas = await Escala.findAll({
+            where,
+            include,
+        });
 
-          function generateColorFromName(name) {
-              let hash = 0;
-              for (let i = 0; i < name.length; i++) {
-                  hash = (hash << 5) - hash + name.charCodeAt(i);
-                  hash |= 0; 
-              }
+        function generateColorFromName(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = (hash << 5) - hash + name.charCodeAt(i);
+                hash |= 0;
+            }
+            return '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
+        }
 
-              const color = '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
-              return color;
-          }
-          
-          const escalasFormatadas = escalas.map(escala => {
+        const escalasFormatadas = escalas.map(escala => {
+            const dataFormatada = new Date(escala.data);
+            const dataLocal = dataFormatada.toISOString().split('T')[0];
 
-              const dataFormatada = new Date(escala.data); 
+            dataFormatada.setDate(dataFormatada.getDate() - 2); 
 
-              dataFormatada.setDate(dataFormatada.getDate() + 1); 
 
-              const dataLocal = dataFormatada.toISOString().split('T')[0]; // Ex: 2024-12-20
-
-              const horarioInicioFormatado = typeof escala.horarioInicio === 'string' 
-                ? escala.horarioInicio 
+            const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
+                ? escala.horarioInicio
                 : new Date(escala.horarioInicio).toISOString().slice(11, 16);
 
-              const horarioFimFormatado = typeof escala.horarioFim === 'string' 
-                ? escala.horarioFim 
+            const horarioFimFormatado = typeof escala.horarioFim === 'string'
+                ? escala.horarioFim
                 : new Date(escala.horarioFim).toISOString().slice(11, 16);
 
-              const cor = generateColorFromName(escala.admin.nome);
+            const cor = generateColorFromName(escala.admin.nome);
 
-              return {
-                  ...escala.toJSON(),
-                  data: dataLocal, 
-                  horarioInicio: horarioInicioFormatado, 
-                  horarioFim: horarioFimFormatado, 
-                  cor, 
-              };
-          });
+            return {
+                ...escala.toJSON(),
+                data: dataLocal,
+                horarioInicio: horarioInicioFormatado,
+                horarioFim: horarioFimFormatado,
+                cor,
+            };
+        });
 
-          const profissionais = await Profissional.findAll();
+        const profissionais = await Profissional.findAll();
 
-          res.render('escalas/index', {
+        res.render('escalas/index', {
             escalas: escalasFormatadas,
             profissionais,
             query: req.query,
@@ -84,13 +81,12 @@ const escalaController = {
                 acc[escala.admin.id] = escala.cor;
                 return acc;
             }, {}))
-        });            
-      } catch (error) {
-          console.error('Erro ao listar escalas:', error);
-          res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
-      }
-  },
-
+        });
+    } catch (error) {
+        console.error('Erro ao listar escalas:', error);
+        res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
+    }
+},
 
 
 

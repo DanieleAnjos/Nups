@@ -11,7 +11,6 @@ const Usuario = sequelize.define('Usuario', {
   usuario: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   senha: {
     type: DataTypes.STRING,
@@ -27,11 +26,13 @@ const Usuario = sequelize.define('Usuario', {
   },
   profissionalId: {
     type: DataTypes.INTEGER,
+    allowNull: false,
     references: {
-      model: Profissional,
-      key: 'id',
+      model: 'profissional', // Name of the parent table
+      key: 'id', // Key in the parent table
     },
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   },
 }, {
   tableName: 'usuarios',

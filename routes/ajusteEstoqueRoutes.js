@@ -12,6 +12,6 @@ router.post('/', ajusteEstoqueController.store);
 router.get('/:id/edit', ajusteEstoqueController.edit); 
 router.put('/:id', ajusteEstoqueController.update); 
 
-router.delete(':id', ajusteEstoqueController.destroy); 
+router.delete('/:id', ajusteEstoqueController.destroy); 
 
 module.exports = router;

@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Pacientes</title>
-    <!-- Bootstrap CSS -->
-    <!-- SweetAlert2 CSS -->
+    <title>Lista de Servidores</title>
+        <!-- SweetAlert2 CSS (Opcional, apenas se quiser customizar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container my-5">
@@ -24,7 +26,7 @@
         <form action="/pacientes" method="GET" class="p-3 border rounded shadow-sm bg-light mb-4">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do Paciente" value="{{query.nome}}">
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Nome do Servidor" value="{{query.nome}}">
                 </div>
                 <div class="col-md-4">
                     <input type="text" id="matricula" name="matricula" class="form-control" placeholder="Matrícula" value="{{query.matricula}}">
@@ -44,7 +46,7 @@
                     <tr>
                         <th>Matrícula</th>
                         <th>Nome</th>
-                        <th>Status Cadastro</th>
+                        <th>Status</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -54,11 +56,7 @@
                             <tr>
                                 <td>{{this.matricula}}</td>
                                 <td>{{this.nome}}</td>
-                                <td class="text-center">
-                                    <span class="{{#if this.cadastroCompleto}}text-success{{else}}text-danger{{/if}}">
-                                        {{#if this.cadastroCompleto}}Completo{{else}}Incompleto{{/if}}
-                                    </span>
-                                </td>
+                                <td>{{this.statusPaciente}}</td>
                                 <td class="text-center">
                                     <a href="/pacientes/perfil/{{this.id}}" class="btn btn-info btn-sm">
                                         <i class="bi bi-person-fill"></i> Visualizar
@@ -84,32 +82,35 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Mensagens SweetAlert -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            {{#if error_msg}}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: '{{error_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
 
-            {{#if success_msg}}
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sucesso',
-                    text: '{{success_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
-        });
-    </script>
 </body>
 </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const successMsg = "{{success_msg}}";
+    const errorMsg = "{{error_msg}}";
+
+    if (successMsg) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: successMsg,
+            confirmButtonText: 'Ok'
+        });
+    }
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: errorMsg,
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+</script>
+
 
 
 <style>

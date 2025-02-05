@@ -30,14 +30,14 @@
                         <!-- Campo Horário Inicial -->
                         <div class="mb-4">
                             <label for="horarioInicial" class="form-label fw-bold">Horário Inicial:</label>
-                            <input type="time" name="horarioInicial" id="horarioInicial" class="form-control" value="{{formatHour reserva.horarioInicial}}" required>
+                            <input type="time" name="horarioInicial" id="horarioInicial" class="form-control" value="{{ reserva.horarioInicial}}" required>
                             <div class="invalid-feedback">Por favor, insira o horário inicial.</div>
                         </div>
 
                         <!-- Campo Horário Final -->
                         <div class="mb-4">
                             <label for="horarioFinal" class="form-label fw-bold">Horário Final:</label>
-                            <input type="time" name="horarioFinal" id="horarioFinal" class="form-control" value="{{formatHour reserva.horarioFinal}}" required>
+                            <input type="time" name="horarioFinal" id="horarioFinal" class="form-control" value="{{ reserva.horarioFinal}}" required>
                             <div class="invalid-feedback">Por favor, insira o horário final.</div>
                         </div>
 

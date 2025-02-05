@@ -1,22 +1,58 @@
 const Encaminhamento = require('../models/Encaminhamento');
-const Notificacao = require('../models/Notificacao');  
+const Notificacao = require('../models/Notificacao');
+const Profissional = require('../models/Profissional');
+const Atendimento = require('../models/Atendimento');
+const { Op } = require('sequelize');  // Não se esqueça de importar o operador
+
+const moment = require('moment');
 
 
 exports.index = async (req, res) => {
   try {
-    const encaminhamentos = await Encaminhamento.findAll();
-    res.render('encaminhamentos/index', { encaminhamentos });
+    const { nomePaciente, profissional, data } = req.query;
+
+    const whereConditions = {};
+    
+    if (nomePaciente) {
+      whereConditions.nomePaciente = { [Op.like]: `%${nomePaciente}%` };
+    }
+    
+    if (profissional) {
+      whereConditions[Op.or] = [
+        { '$profissionalEnvio.nome$': { [Op.like]: `%${profissional}%` } },
+        { '$profissionalRecebido.nome$': { [Op.like]: `%${profissional}%` } }
+      ];
+    }
+
+    if (data) {
+      whereConditions.data = data;
+    }
+
+
+    const encaminhamentos = await Encaminhamento.findAll({
+      where: whereConditions,
+      include: [
+        { model: Profissional, as: 'profissionalEnvio' },
+        { model: Profissional, as: 'profissionalRecebido' },
+        { model: Atendimento, as: 'atendimento', include: [
+          { model: Profissional, as: 'profissional' }
+        ]}, 
+      ],
+    });
+
+    res.render('encaminhamentos/index', { encaminhamentos, query: req.query });
+    
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao buscar encaminhamentos:', error);
     res.status(500).send('Erro ao carregar a lista de encaminhamentos');
   }
 };
 
-exports.marcarVisualizado = async (req, res) => {
+
+exports.marcarVisto = async (req, res) => {
   const { id } = req.params;
 
   try {
-
     const encaminhamento = await Encaminhamento.findByPk(id);
 
     if (!encaminhamento) {
@@ -24,82 +60,194 @@ exports.marcarVisualizado = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    encaminhamento.visualizado = true;
+    encaminhamento.visto = true;
     await encaminhamento.save();
 
-    req.flash('success', 'Encaminhamento marcado como visualizado com sucesso!');
+    req.flash('success', 'Encaminhamento marcado como visto com sucesso!');
     res.redirect('/encaminhamentos');
   } catch (error) {
-    console.error('Erro ao marcar encaminhamento como visualizado:', error);
-    
-    req.flash('error', 'Erro ao marcar o encaminhamento como visualizado.');
+    console.error('Erro ao marcar encaminhamento como visto:', error);
+    req.flash('error', 'Erro ao marcar o encaminhamento como visto.');
     res.redirect('/encaminhamentos');
   }
 };
 
 
+exports.create = async (req, res) => {
+  try {
+    // Obtém o ID do profissional que está logado
+    const profissionalIdEnvio = req.user ? req.user.id : null;
 
+    // Buscar profissionais psicólogos (para "Acolhimento de disparo")
+    const profissionaisPsicologia = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Psicólogo", // Filtra pelo cargo
+      },
+    });
 
-exports.create = (req, res) => {
-  res.render('encaminhamentos/create'); 
+    // Buscar profissionais assistentes sociais (para outros assuntos)
+    const profissionaisServicoSocial = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Assistente Social", // Filtra pelo cargo
+      },
+    });
+
+    // Renderiza a view passando os dados
+    res.render("encaminhamentos/create", {
+      profissionalIdEnvio,
+      profissionaisPsicologia,
+      profissionaisServicoSocial,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao carregar os dados para o formulário.");
+  }
 };
+
 
 exports.store = async (req, res) => {
   try {
-    const { nomePaciente, matriculaPaciente, nomeProfissional, profissaoProfissional, assuntoAcolhimento, descricao } = req.body;
+    const {
+      nomePaciente,
+      matriculaPaciente,
+      telefonePaciente,
+      nomeProfissional,
+      assuntoAcolhimento,
+      descricao,
+      profissionalIdEnvio,
+      profissionalIdRecebido,
+      atendimentoId,
+
+    } = req.body;
 
     const novoEncaminhamento = await Encaminhamento.create({
       nomePaciente,
       matriculaPaciente,
+      telefonePaciente,
       nomeProfissional,
-      profissaoProfissional,
       assuntoAcolhimento,
       descricao,
+      profissionalIdEnvio,
+      profissionalIdRecebido,
+      atendimentoId,
+      data: new Date(), // Data atual
+
     });
 
-    const profissional = await Profissional.findOne({ where: { nome: nomeProfissional } });
+    // Notificar o profissional que recebeu o encaminhamento
+    const profissionalRecebido = await Profissional.findByPk(profissionalIdRecebido);
 
-    if (profissional) {
-      const notificar = await Notificacao.create({
+    if (profissionalRecebido) {
+      await Notificacao.create({
         titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
         mensagem: `Você recebeu um novo encaminhamento referente ao paciente ${nomePaciente}.`,
-        profissionalId: profissional.id,  // Associa a notificação ao profissional
+        profissionalId: profissionalIdRecebido,
       });
       console.log('Notificação gerada com sucesso');
     }
 
-    res.redirect('/encaminhamentos'); 
+    req.flash('success', 'Encaminhamento criado com sucesso!');
+    res.redirect('/encaminhamentos');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao criar encaminhamento');
+    req.flash('error', 'Erro ao criar encaminhamento.');
+    res.status(500).redirect('/encaminhamentos/create');
+  }
+};
+
+
+exports.detalhesEncaminhamento = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Busca o encaminhamento pelo ID, incluindo os profissionais e o atendimento
+    const encaminhamento = await Encaminhamento.findByPk(id, {
+      include: [
+        { model: Profissional, as: 'profissionalEnvio' },
+        { model: Profissional, as: 'profissionalRecebido' },
+        { model: Atendimento, as: 'atendimento' },
+      ],
+    });
+
+    if (!encaminhamento) {
+      req.flash('error', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    // Renderiza a view de detalhes com os dados do encaminhamento
+    res.render('encaminhamentos/detalhes', { encaminhamento });
+  } catch (error) {
+    console.error('Erro ao buscar detalhes do encaminhamento:', error);
+    req.flash('error', 'Erro ao carregar detalhes do encaminhamento.');
+    res.status(500).redirect('/encaminhamentos');
   }
 };
 
 exports.edit = async (req, res) => {
   const { id } = req.params;
   try {
-    const encaminhamento = await Encaminhamento.findByPk(id);
+    // Buscar o encaminhamento pelo ID
+    const encaminhamento = await Encaminhamento.findByPk(id, {
+      include: [
+        { model: Profissional, as: 'profissionalEnvio' },
+        { model: Profissional, as: 'profissionalRecebido' },
+        { model: Atendimento, as: 'atendimento' },
+      ],
+    });
+
+    // Verifica se o encaminhamento existe
     if (!encaminhamento) {
-      return res.status(404).send('Encaminhamento não encontrado');
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
     }
-    res.render('encaminhamentos/edit', { encaminhamento });
+
+    // Supondo que o id do profissional esteja armazenado na sessão (req.user)
+    const profissionalIdEnvio = req.user ? req.user.id : null; // Verifica se o usuário está logado
+
+    // Buscar todos os profissionais, excluindo o que está realizando o encaminhamento (profissionalIdEnvio)
+    const profissionaisRecebimento = await Profissional.findAll({
+      where: {
+        id: {
+          [Op.ne]: profissionalIdEnvio,  // Exclui o profissional que está realizando o encaminhamento
+        },
+      },
+    });
+
+    // Renderiza o formulário de edição, passando o encaminhamento e a lista de profissionaisRecebimento
+    res.render('encaminhamentos/edit', { 
+      encaminhamento: encaminhamento.get({ plain: true }),
+      profissionalIdEnvio, 
+      profissionaisRecebimento 
+    });
+
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao carregar encaminhamento para edição');
+    req.flash('error_msg', 'Erro ao carregar encaminhamento para edição.');
+    res.status(500).redirect('/encaminhamentos');
   }
 };
 
+
 exports.update = async (req, res) => {
   const { id } = req.params;
+
   try {
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
+
     if (!updated) {
-      return res.status(404).send('Encaminhamento não encontrado');
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
     }
-    res.redirect('/encaminhamentos'); 
+
+    req.flash('success_msg', 'Encaminhamento atualizado com sucesso!');
+    res.redirect('/encaminhamentos');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Erro ao atualizar encaminhamento');
+    console.error('Erro ao atualizar encaminhamento:', error);
+    req.flash('error_msg', 'Erro ao atualizar encaminhamento.');
+    res.status(500).redirect('/encaminhamentos');
   }
 };
 
@@ -107,12 +255,18 @@ exports.destroy = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Encaminhamento.destroy({ where: { id } });
+
     if (!deleted) {
-      return res.status(404).send('Encaminhamento não encontrado');
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
     }
-    res.redirect('/encaminhamentos'); 
+
+    req.flash('success_msg', 'Encaminhamento deletado com sucesso!');
+    res.redirect('/encaminhamentos');
   } catch (error) {
     console.error(error);
-    res.status(500).send('Erro ao deletar encaminhamento');
+    req.flash('error_msg', 'Erro ao deletar encaminhamento.');
+    res.status(500).redirect('/encaminhamentos');
   }
 };
+

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ6bH8lX1YdVfK2anGQbhMvDOK0gtyWFM5J0n61V9QhZ8kWnZTna4rbUjxdg" crossorigin="anonymous">
+  <!-- Icones do Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container my-5">
+    <form action="/encaminhamentos" method="POST" class="p-4 bg-light rounded shadow-sm">
+
+        <h1 class="text-center my-4 text-primary">Criar Novo Encaminhamento</h1>
+
+        <!-- Nome do Paciente -->
+        <div class="mb-4">
+          <label for="nomePaciente" class="form-label">Nome do Paciente:</label>
+          <input type="text" name="nomePaciente" id="nomePaciente" class="form-control"required>
+        </div>
+
+        <!-- Matrícula do Paciente -->
+        <div class="mb-4">
+          <label for="matriculaPaciente" class="form-label">Matrícula do Paciente:</label>
+          <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control" required>
+        </div>
+
+        <!-- Telefone do Paciente -->
+        <div class="mb-4">
+          <label for="telefonePaciente" class="form-label">Telefone do Paciente:</label>
+          <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required>
+        </div>
+
+        <div class="mb-4">
+          <label for="assuntoAcolhimento" class="form-label">Assunto do Acolhimento:</label>
+          <select class="form-control" name="assuntoAcolhimento" id="assuntoAcolhimento" required>
+            <option value="">Selecione um assunto</option>
+            <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+            <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+            <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+          </select>
+        </div>
+
+        <!-- Descrição -->
+        <div class="mb-4">
+          <label for="descricao" class="form-label">Descrição:</label>
+          <textarea name="descricao" id="descricao" class="form-control" rows="4" required></textarea>
+        </div>
+
+<!-- Profissional de Envio (oculto) -->
+<div class="mb-4" style="display: none;">
+  <label for="profissionalIdEnvio" class="form-label">Profissional de Envio:</label>
+  <input type="hidden" name="profissionalIdEnvio" id="profissionalIdEnvio" value="{{profissionalIdEnvio}}">
+</div>
+
+
+        <!-- Profissional de Recebimento (alterado para 'select') -->
+<!-- Profissional de Recebimento -->
+        <div class="mb-4">
+          <label for="profissionalIdRecebido" class="form-label">Profissional de Recebimento:</label>
+          <select name="profissionalIdRecebido" id="profissionalIdRecebido" class="form-control" required>
+            <option value="">Selecione um profissional</option>
+            <!-- Lista de profissionais será preenchida pelo JavaScript -->
+          </select>
+        </div>
+
+        <!-- Botão de Envio -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success btn-lg">
+            <i class="bi bi-check-circle"></i> Criar Encaminhamento
+          </button>
+        </div>
+    </form>
+  </div>
+
+  <!-- jQuery e Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Função para buscar paciente por nome e preencher matrícula e ID automaticamente
+    function buscarPacientePorNome() {
+      const nomePaciente = document.getElementById('nomePaciente').value;
+      
+      if (nomePaciente.length > 3) {  // A busca só é realizada após digitar 3 caracteres
+        $.ajax({
+          url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,  // Endpoint para buscar paciente por nome
+          method: 'GET',
+          success: function(data) {
+            $('#matriculaPaciente').val(data.matricula);  // Preenche a matrícula
+            $('#pacienteId').val(data.id);  // Preenche o ID do paciente
+          },
+          error: function() {
+            $('#matriculaPaciente').val('');  // Limpa a matrícula
+            $('#pacienteId').val('');  // Limpa o ID do paciente
+            alert('Paciente não encontrado!');
+          }
+        });
+      }
+    }
+
+    // Função para buscar paciente por matrícula e preencher nome e ID automaticamente
+    function buscarPacientePorMatricula() {
+      const matriculaPaciente = document.getElementById('matriculaPaciente').value;
+      
+      if (matriculaPaciente.length > 0) {  // A busca só é realizada se a matrícula for informada
+        $.ajax({
+          url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,  // Endpoint para buscar paciente por matrícula
+          method: 'GET',
+          success: function(data) {
+            $('#nomePaciente').val(data.nome);  // Preenche o nome do paciente
+            $('#pacienteId').val(data.id);  // Preenche o ID do paciente
+          },
+          error: function() {
+            $('#nomePaciente').val('');  // Limpa o nome do paciente
+            $('#pacienteId').val('');  // Limpa o ID do paciente
+            alert('Paciente não encontrado!');
+          }
+        });
+      }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const assuntoSelect = document.getElementById("assuntoAcolhimento");
+    const profissionalSelect = document.getElementById("profissionalIdRecebido");
+
+    // Dados dos profissionais (passados do backend para o frontend)
+    const profissionaisPsicologia = [
+        {{#each profissionaisPsicologia}}
+            { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+    ];
+
+    const profissionaisServicoSocial = [
+        {{#each profissionaisServicoSocial}}
+            { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+    ];
+
+    function atualizarListaProfissionais() {
+        const assuntoSelecionado = assuntoSelect.value;
+
+        // Determinar quais profissionais exibir
+        let profissionais = [];
+        if (assuntoSelecionado === "Acolhimento de disparo") {
+            profissionais = profissionaisPsicologia;
+        } else {
+            profissionais = profissionaisServicoSocial;
+        }
+
+        // Limpar as opções anteriores
+        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+
+        // Adicionar os novos profissionais ao select
+        profissionais.forEach(profissional => {
+            const option = document.createElement("option");
+            option.value = profissional.id;
+            option.textContent = profissional.nome;
+            profissionalSelect.appendChild(option);
+        });
+    }
+
+    // Executar a função ao mudar o assunto
+    assuntoSelect.addEventListener("change", atualizarListaProfissionais);
+
+    // Executar ao carregar a página (caso já tenha um assunto pré-selecionado)
+    atualizarListaProfissionais();
+});
+  </script>
+
+</body>
+</html>

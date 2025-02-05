@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); 
-const Atendimento = require('../models/Atendimento'); 
- // Adjust path as necessary
+const sequelize = require('../config/database');
 
 const Encaminhamento = sequelize.define('Encaminhamento', {
   id: {
@@ -13,17 +11,21 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  data: {
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    defaultValue: () => new Date().toISOString().split('T')[0], 
+  },
   matriculaPaciente: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  nomeProfissional: {
+  telefonePaciente: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  profissaoProfissional: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    validate: {
+      is: /^[0-9]{10,11}$/,
+    },
   },
   assuntoAcolhimento: {
     type: DataTypes.STRING,
@@ -33,18 +35,44 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  statusAcolhimento: {
-    type: DataTypes.ENUM('Pendente', 'Realizado'),
-    defaultValue: 'Pendente',
+  visto: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  profissionalIdEnvio: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  profissionalIdRecebido: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
   atendimentoId: {
     type: DataTypes.INTEGER,
-    references: {
-      model: 'Atendimentos', // The table name (it should match the one in the DB)
-      key: 'id',
-    },
-    allowNull: false,
+    allowNull: true, // Encaminhamento pode ou não estar associado a um atendimento
   },
+}, {
+  tableName: 'encaminhamento',
+  timestamps: true,
 });
 
-module.exports = Encaminhamento;
+// Defina as associações
+Encaminhamento.associate = (models) => {
+  Encaminhamento.belongsTo(models.Profissional, {
+    foreignKey: 'profissionalIdEnvio',
+    as: 'profissionalEnvio',
+  });
+
+  Encaminhamento.belongsTo(models.Profissional, {
+    foreignKey: 'profissionalIdRecebido',
+    as: 'profissionalRecebido',
+  });
+
+  Encaminhamento.belongsTo(models.Atendimento, {
+    foreignKey: 'atendimentoId',
+    as: 'atendimento', // Alias utilizado na associação
+    allowNull: true,
+  });
+};
+
+module.exports = Encaminhamento; // Exporte o modelo corretamente

@@ -1,249 +1,119 @@
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 900px;
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #34495e;
-        }
-        .form-control, .form-select, textarea {
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .form-control:focus, .form-select:focus, textarea:focus {
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        .btn-custom {
-            border-radius: 10px;
-            padding: 10px 20px;
-        }
-        .form-section {
-            margin-bottom: 20px;
-        }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group .form-control {
-            margin-top: 8px;
-        }
-        .btn-link {
-            padding: 0;
-            font-size: 16px;
-        }
-    </style>
+<!-- Adicione o CSS do Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
 
 <div class="container">
+  <div class="card shadow-lg p-4">
+    <h1 class="text-center text-primary mb-4">Cadastrar Atendimento</h1>
+
+    <form action="/atendimentos" method="POST">
+      <!-- Campo oculto para o ID do paciente -->
+      <input type="hidden" name="pacienteId" id="pacienteId">
+
+      <!-- Nome do Paciente (Dropdown com busca) -->
+      <div class="mb-3">
+        <label for="nomePaciente" class="form-label fw-semibold">Nome do Paciente:</label>
+        <select name="nomePaciente" id="nomePaciente" class="form-select select2">
+          <option value="">Digite para buscar um paciente</option>
+          {{#each pacientes}}
+            <option value="{{this.id}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Matrícula do Paciente -->
+      <div class="mb-3">
+        <label for="matriculaPaciente" class="form-label fw-semibold">Matrícula do Paciente:</label>
+        <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control bg-light" readonly>
+      </div>
+
+      <!-- Assunto do Atendimento -->
+      <div class="mb-3">
+        <label for="assuntoAtendimento" class="form-label fw-semibold">Assunto do Atendimento:</label>
+        <input type="text" name="assuntoAtendimento" id="assuntoAtendimento" class="form-control" required>
+      </div>
 
 
-    <h1>Cadastrar Acolhimento</h1>
-    <form action="/atendimentos" method="POST" id="formAtendimento">
-        <!-- Matrícula -->
-        <div class="form-section">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="matricula">Matrícula:</label>
-                        <input type="number" id="matricula" name="matricula" class="form-control" required>
-                        <div id="matriculaError" class="text-danger"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="numeroProcesso">Número do Processo:</label>
-                        <input type="text" id="numeroProcesso" name="numeroProcesso" class="form-control" required>
-                        <div id="numeroProcessoError" class="text-danger"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <!-- Registro do Atendimento -->
+      <div class="mb-3">
+        <label for="registroAtendimento" class="form-label fw-semibold">Registro do Atendimento:</label>
+        <textarea name="registroAtendimento" id="registroAtendimento" class="form-control" rows="4" required></textarea>
+      </div>
 
-        <!-- Nome do Paciente -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="nomePaciente">Nome do Paciente:</label>
-                <input type="text" id="nomePaciente" name="nomePaciente" class="form-control" required>
-                <div id="nomePacienteError" class="text-danger"></div>
-            </div>
-        </div>
-
-        <!-- Telefone -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="telefone">Telefone:</label>
-                <input type="text" id="telefone" name="telefone" class="form-control" placeholder="10 ou 11 dígitos">
-                <div id="telefoneError" class="text-danger"></div>
-            </div>
-        </div>
-
-        <!-- Assunto -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="assunto">Assunto:</label>
-                <select id="assunto" name="assunto" class="form-select" required>
-                    <option value="Acolhimento de disparo">Acolhimento de disparo</option>
-                    <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
-                    <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Registro de Atendimento -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="registroAtendimento">Registro de Atendimento:</label>
-                <textarea id="registroAtendimento" name="registroAtendimento" class="form-control" required rows="4"></textarea>
-                <div id="registroAtendimentoError" class="text-danger"></div>
-            </div>
-        </div>
-
-        <!-- Encaminhamento -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="encaminhamento">Encaminhamento:</label>
-                <select id="encaminhamento" name="encaminhamento" class="form-select" onchange="atualizarProfissionais()" required>
-                    <option value="">Selecione</option>
-                    <option value="Psicólogo">Psicologia</option>
-                    <option value="Assistente social">Assistente social</option>
-                    <option value="Psiquiatra">Psiquiatria</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Profissional -->
-        <div class="form-section">
-            <div class="form-group">
-                <label for="profissionalId">Profissional:</label>
-                <select id="profissionalId" name="profissionalId" class="form-select" required>
-                    <option value="">Selecione um profissional</option>
-                    {{#each profissionais}}
-                        <option value="{{this.id}}" data-cargo="{{this.cargo}}">{{this.nome}}</option>
-                    {{/each}}
-                </select>
-            </div>
-        </div>
-
-        <!-- Botão de Submissão -->
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary btn-custom">Criar Atendimento</button>
-        </div>
+      <!-- Botão de Envio -->
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success btn-lg px-5">
+          <i class="bi bi-check-circle"></i> Cadastrar Atendimento
+        </button>
+      </div>
     </form>
+  </div>
 </div>
 
-    <script>
+<!-- Adicione o JS do Select2 e Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-        function atualizarProfissionais() {
-            const encaminhamentoSelect = document.getElementById('encaminhamento');
-            const encaminhamentoSelecionado = encaminhamentoSelect.value;
-
-            // Salva os dados do formulário antes de buscar profissionais
-            salvarDadosFormulario();
-
-            // Faz a requisição para buscar os profissionais
-            fetch(`/api/profissionais?encaminhamento=${encaminhamentoSelecionado}`)
-                .then(response => response.json())
-                .then(data => {
-                    const profissionaisContainer = document.getElementById('profissionaisContainer');
-                    profissionaisContainer.innerHTML = ''; // Limpa os profissionais anteriores
-
-                    if (data.length > 0) {
-                        const ul = document.createElement('ul');
-
-                        data.forEach(profissional => {
-                            const li = document.createElement('li');
-                            li.textContent = `${profissional.nome} - ${profissional.cargo}`;
-                            ul.appendChild(li);
-                        });
-
-                        profissionaisContainer.appendChild(ul);
-                    } else {
-                        profissionaisContainer.textContent = 'Nenhum profissional encontrado.';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar profissionais:', error);
-                });
-        }
-
-        document.getElementById('formAtendimento').addEventListener('submit', function(event) {
-        event.preventDefault(); // Impede o envio do formulário para validação
-
-        let isValid = true;
-
-        // Resetando mensagens de erro
-        document.querySelectorAll('.text-danger').forEach(function(errorElement) {
-            errorElement.textContent = '';
-        });
-
-        // Matrícula
-        const matricula = document.getElementById('matricula').value;
-        if (matricula <= 0) {
-            document.getElementById('matriculaError').textContent = 'A matrícula deve ser um número positivo.';
-            isValid = false;
-        }
-
-        // Número de Processo (válido como texto alfanumérico)
-        const numeroProcesso = document.getElementById('numeroProcesso').value;
-        const processoPattern = /^[A-Za-z0-9]+$/;
-        if (!processoPattern.test(numeroProcesso)) {
-            document.getElementById('numeroProcessoError').textContent = 'O número do processo deve conter apenas letras e números.';
-            isValid = false;
-        }
-
-        // Nome do Paciente
-        const nomePaciente = document.getElementById('nomePaciente').value;
-        if (nomePaciente.trim() === '') {
-            document.getElementById('nomePacienteError').textContent = 'O nome do paciente é obrigatório.';
-            isValid = false;
-        }
-
-        // Telefone (válido como 10 ou 11 dígitos)
-        const telefone = document.getElementById('telefone').value;
-        const telefonePattern = /^[0-9]{10,11}$/;
-        if (telefone && !telefonePattern.test(telefone)) {
-            document.getElementById('telefoneError').textContent = 'O telefone deve ter 10 ou 11 dígitos.';
-            isValid = false;
-        }
-
-        // Registro de Atendimento
-        const registroAtendimento = document.getElementById('registroAtendimento').value;
-        if (registroAtendimento.trim() === '') {
-            document.getElementById('registroAtendimentoError').textContent = 'O registro de atendimento é obrigatório.';
-            isValid = false;
-        }
-
-        // Encaminhamento
-        const encaminhamento = document.getElementById('encaminhamento').value;
-        if (!encaminhamento) {
-            alert('O encaminhamento é obrigatório.');
-            isValid = false;
-        }
-
-        // Profissional
-        const profissionalId = document.getElementById('profissionalId').value;
-        if (!profissionalId) {
-            alert('O profissional é obrigatório.');
-            isValid = false;
-        }
-
-        // Se tudo estiver válido, submete o formulário
-        if (isValid) {
-            this.submit();
-        }
+<script>
+  $(document).ready(function() {
+    // Inicializa o Select2 para permitir busca dentro do select
+    $('#nomePaciente').select2({
+      placeholder: "Digite para buscar um paciente",
+      allowClear: true,
+      width: '100%'
     });
 
-    </script>
+    // Preenche a matrícula do paciente quando selecionado
+    $('#nomePaciente').on('change', function() {
+      const selectedOption = $(this).find(':selected');
+      $('#matriculaPaciente').val(selectedOption.data('matricula') || '');
+      $('#pacienteId').val(selectedOption.val() || '');
+    });
+  });
+</script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+  }
+
+  .container {
+    max-width: 600px;
+    margin-top: 40px;
+  }
+
+  .card {
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+
+  .form-label {
+    font-weight: 600;
+  }
+
+  .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    border-radius: 6px;
+    transition: 0.3s;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+
+  .select2-container--default .select2-selection--single {
+    height: 38px;
+    border-radius: 6px;
+  }
+</style>

@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const Ocorrencia = require('../models/Ocorrencia');
 const Profissional = require('../models/Profissional');
 const fs = require('fs');
+const xlsx = require('xlsx'); // Adicionando a importação para o Excel
 
 
 const ocorrenciaController = {
@@ -37,15 +38,21 @@ const ocorrenciaController = {
     }
   },
 
-
-
   create: async (req, res) => {
     try {
-      const profissionais = await Profissional.findAll();
-      res.render('ocorrencias/create', { profissionais });
+      if (!req.user) {
+        req.flash('error_msg', 'Usuário não autenticado.');
+        return res.redirect('/login');
+      }
+
+      const profissionalLogado = req.user;
+      return res.render('ocorrencias/create', {
+        profissionalLogado,
+      });
     } catch (error) {
-      console.error(error);
-      res.status(500).send("Erro ao buscar profissionais.");
+      console.error('Erro ao carregar o formulário:', error);
+      req.flash('error_msg', 'Erro ao carregar o formulário de ocorrências.');
+      return res.redirect('/ocorrencias');
     }
   },
 
@@ -54,22 +61,49 @@ const ocorrenciaController = {
       const { data, relatorio, horarioChegada, horarioSaida, profissionalId } = req.body;
 
       if (!data || !relatorio || !horarioChegada || !profissionalId) {
-        return res.status(400).send("Todos os campos são obrigatórios.");
+        req.flash('error_msg', 'Todos os campos obrigatórios devem ser preenchidos.');
+        return res.redirect('back');
       }
 
       const chegada = new Date(`${data}T${horarioChegada}`);
       const saida = horarioSaida ? new Date(`${data}T${horarioSaida}`) : null;
 
       if (saida && saida <= chegada) {
-        return res.status(400).send("O horário de saída deve ser posterior ao horário de chegada.");
+        req.flash('error_msg', 'O horário de saída deve ser posterior ao horário de chegada.');
+        return res.redirect('back');
       }
 
-      await Ocorrencia.create({ data, relatorio, horarioChegada, horarioSaida, profissionalId });
-      res.redirect('/ocorrencias');
+      await Ocorrencia.create({
+        data,
+        relatorio,  // Usando "relatorio" no lugar de "descricao"
+        horarioChegada,
+        horarioSaida,
+        profissionalId
+      });
+
       req.flash('success_msg', 'Ocorrência criada com sucesso.');
+      res.redirect(`/ocorrencias`);
     } catch (error) {
       console.error("Erro ao criar ocorrência:", error);
-      req.flash('error_msg', 'Erro ao criar ocorrência.');
+      req.flash('error_msg', 'Erro ao criar ocorrência. Tente novamente.');
+      return res.redirect('back');
+    }
+  },
+
+  show: async (req, res) => {
+    try {
+      const ocorrencia = await Ocorrencia.findByPk(req.params.id, {
+        include: [{ model: Profissional, as: 'profissional' }]
+      });
+
+      if (!ocorrencia) {
+        return res.status(404).send("Ocorrência não encontrada.");
+      }
+
+      res.render('ocorrencias/detalhes', { ocorrencia: ocorrencia.get({ plain: true }) });
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da ocorrência:', error);
+      req.flash('error_msg', 'Erro ao buscar detalhes da ocorrência.');
       res.redirect('/ocorrencias');
     }
   },
@@ -120,7 +154,6 @@ const ocorrenciaController = {
       console.error(error);
       req.flash('error_msg', 'Erro ao atualizar ocorrência.');
       res.redirect('/ocorrencias');
-
     }
   },
 
@@ -170,8 +203,8 @@ const ocorrenciaController = {
 
       let htmlContent = '<h1>Relatório de Ocorrências</h1><table border="1" cellpadding="5" cellspacing="0"><thead><tr><th>Data</th><th>Descrição</th><th>Profissional</th></tr></thead><tbody>';
       ocorrencias.forEach(ocorrencia => {
-        const dataFormatada = new Date(ocorrencia.data).toLocaleDateString(); // Formata a data
-        htmlContent += `<tr><td>${dataFormatada}</td><td>${ocorrencia.descricao}</td><td>${ocorrencia.profissional ? ocorrencia.profissional.nome : 'Profissional não encontrado'}</td></tr>`;
+        const dataFormatada = new Date(ocorrencia.data).toLocaleDateString();
+        htmlContent += `<tr><td>${dataFormatada}</td><td>${ocorrencia.relatorio}</td><td>${ocorrencia.profissional ? ocorrencia.profissional.nome : 'Profissional não encontrado'}</td></tr>`; // Usando "relatorio"
       });
       htmlContent += '</tbody></table>';
 
@@ -191,48 +224,55 @@ const ocorrenciaController = {
     }
   },
 
+  generateOcorrenciaReportExcel: async (req, res) => {
+    try {
+      const { dataInicio, dataFim, profissional } = req.query;
+      const where = {};
 
-  viewOcorrenciasReport: async (req, res) => {
-  try {
-    const { data, profissional } = req.query;  
-    const where = {};
+      if (dataInicio && dataFim) {
+        where.data = { [Op.between]: [new Date(dataInicio), new Date(dataFim)] };
+      } else if (dataInicio) {
+        where.data = { [Op.gte]: new Date(dataInicio) };
+      } else if (dataFim) {
+        where.data = { [Op.lte]: new Date(dataFim) };
+      }
 
-    if (profissional) {
-      where.profissionalId = profissional;
+      if (profissional) {
+        where.profissionalId = profissional;
+      }
+
+      const ocorrencias = await Ocorrencia.findAll({
+        where,
+        include: [{ model: Profissional, as: 'profissional' }],
+      });
+
+      if (ocorrencias.length === 0) {
+        return res.status(404).send('Nenhuma ocorrência encontrada para os filtros aplicados.');
+      }
+
+      const dataForExcel = ocorrencias.map(ocorrencia => {
+        const dataFormatada = new Date(ocorrencia.data).toLocaleDateString();
+        return {
+          Data: dataFormatada,
+          Descricao: ocorrencia.relatorio, // Usando "relatorio"
+          Profissional: ocorrencia.profissional ? ocorrencia.profissional.nome : 'Profissional não encontrado',
+        };
+      });
+
+      const wb = xlsx.utils.book_new();
+      const ws = xlsx.utils.json_to_sheet(dataForExcel);
+      xlsx.utils.book_append_sheet(wb, ws, 'Ocorrências');
+
+      const excelBuffer = xlsx.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=relatorio_ocorrencias.xlsx');
+      res.end(excelBuffer);
+    } catch (error) {
+      console.error('Erro ao gerar o relatório em Excel:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
     }
-
-    if (data) {
-      where.data = data;  
-    }
-
-    const ocorrencias = await Ocorrencia.findAll({
-      where,
-      include: [{
-        model: Profissional,
-        as: 'profissional',
-        required: true  
-      }]
-    });
-
-    const profissionais = await Profissional.findAll();
-
-    const mensagem = ocorrencias.length === 0 ? 'Nenhuma ocorrência encontrada.' : null;
-
-    res.render('relatorios/viewOcorrenciasReport', {
-      ocorrencias,
-      profissionais,
-      query: req.query, 
-      mensagem,  
-      layout: false
-    });
-
-  } catch (error) {
-    console.error('Erro ao gerar o relatório de ocorrências:', error);
-    res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
   }
-}
 };
-
-
 
 module.exports = ocorrenciaController;

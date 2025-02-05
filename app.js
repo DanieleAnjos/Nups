@@ -16,8 +16,8 @@ const sequelize = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const escalaRoutes = require('./routes/escalaRoutes');
-const ajusteEstoqueRoutes = require('./routes/ajusteEstoqueRoutes');
 const produtoRoutes = require('./routes/produtoRoutes');
+const ajusteEstoqueRoutes = require('./routes/ajusteEstoqueRoutes');
 const atendimentoRoutes = require('./routes/atendimentoRoutes');
 const ocorrenciaRoutes = require('./routes/ocorrenciaRoutes');
 const salasRoutes = require('./routes/salasRoutes');
@@ -28,11 +28,11 @@ const encaminhamentosRoutes = require('./routes/encaminhamentosRoutes');
 const relatoriosRoutes = require('./routes/relatoriosRoutes');
 const profissionalRoutes = require('./routes/profissionalRoutes');
 const mensagemRoutes = require('./routes/mensagemRoutes');
-const atendimentos2Routes = require('./routes/atendimentos2Routes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const notificacaoRoutes = require('./routes/notificacaoRoutes');
 const graficosRoutes = require('./routes/graficosRoutes');
 const contatoRoutes = require('./routes/contatoRoutes');
+const discussaoCasoRoutes = require('./routes/discussaoCasoRoutes');
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
@@ -70,6 +70,16 @@ const hbs = engine({
             const day = String(d.getDate()).padStart(2, '0');
             return `${day}/${month}/${year}`;
         },
+
+        OneDate: (date) => {
+          if (!date) return '';
+          const d = new Date(date);
+          d.setDate(d.getDate() + 1); // Adiciona um dia
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${day}/${month}/${year}`;
+      },
 
         formatDateTime: (date) => {
             if (!date) return '';
@@ -115,7 +125,29 @@ const hbs = engine({
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const day = String(date.getDate()).padStart(2, '0');
           return `${year}-${month}-${day}`;
-      }
+      },
+
+      formatCPF: (cpf) => {
+        if (!cpf) return "";
+        return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+      },
+      formatTelefone: (telefone) => {
+        if (!telefone) return "";
+        return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+      },
+      formatTelefoneContato: (telefoneContato) => {
+        if (!telefoneContato) return "";
+        return telefoneContato.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+      },
+      formatCEP: (cep) => {
+        if (!cep) return "";
+        return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+      },
+
+      formatRg : (rg) => {
+        if (!rg) return "";
+        return rg.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
+      },
     },
     runtimeOptions: {
         allowProtoPropertiesByDefault: true,
@@ -255,17 +287,20 @@ const accessControl = {
       '/mensagens',
       '/notificacoes',
       '/profissionais',
-      '/graficos'
+      '/graficos',
+      '/discussoes',
+
     ],
     'Assistente social': [
       '/dashboard/assistente-social',
       '/pacientes',
       '/ajustes',
       '/atendimentos',
-      '/relatorios',
       '/notificacoes',
       '/mensagens',
-      '/atendimentos2',
+      '/profissionais/meu_perfil/',
+      '/encaminhamentos',
+      '/escalas'
 
     ],
     'Psicólogo': [
@@ -331,11 +366,12 @@ app.use('/eventos2', eventoRoutes);
 app.use('/encaminhamentos', encaminhamentosRoutes);
 app.use('/relatorios', relatoriosRoutes);
 app.use('/mensagens', mensagemRoutes);
-app.use('/atendimentos2', atendimentos2Routes);
 app.use('/notificacoes', notificacaoRoutes);
 app.use('/graficos', graficosRoutes);
 app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
+app.use('/discussoes', discussaoCasoRoutes);
+
 
 
 app.use((req, res) => {
@@ -351,6 +387,9 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta http://localhost:${PORT}`);
 });
+
+sequelize.sync({ alter: true });
+
 
 sequelize.sync()
   .then(() => console.log('Tabelas sincronizadas ou alteradas'))

@@ -52,4 +52,10 @@ Escala.belongsTo(Profissional, {
   as: 'admin' 
 });
 
+Escala.belongsTo(Profissional, {
+  foreignKey: 'profissional_id', 
+  as: 'profissional'
+});
+
+
 module.exports = Escala;

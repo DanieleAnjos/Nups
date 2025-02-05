@@ -1,95 +1,103 @@
-
 <div class="container mt-5">
-
     <form action="/pacientes" method="POST" onsubmit="setCurrentDate()" enctype="multipart/form-data">
-
-        <h2 class="text-center mb-4" style="color: #2980b9;" style="font-weight: bold;">Ficha de Acolhimento</h2>
-
+        <h2 class="text-center mb-4" style="color: #2980b9; font-weight: bold;">Ficha de Acolhimento</h2>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-masker@1.1.1/build/vanilla-masker.min.js"></script>
 
         <input type="hidden" name="dataAtendimento" id="dataAtendimento">
 
-        <fieldset class="border rounded p-4 mb-4">
-            <legend class="w-auto px-2">Informações Pessoais</legend>
+<fieldset class="border rounded p-3 mb-3">
+    <legend class="w-auto px-2">Informações Pessoais</legend>
 
+    <div class="form-group">
+        <label for="nomePaciente">Nome do Paciente:</label>
+        <input type="text" name="nome" id="nomePaciente" class="form-control" oninput="mostrarSugestoes()" required placeholder="Digite o nome do paciente">
+        <div id="sugestoes" class="sugestoes-lista"></div>
+    </div>
 
-        <div class="form-group">
-            <label for="nomePaciente">Nome do Paciente:</label>
-            <input type="text" name="nome" id="nomePaciente" class="form-control" oninput="mostrarSugestoes()" placeholder="Digite o nome do paciente">
-            <div id="sugestoes" class="sugestoes-lista"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="matricula">Matrícula:</label>
+            <input type="text" class="form-control" name="matricula" required id="matricula">
         </div>
-
-            
-        <div class="row">
-            
-            <div class="col-md-6 form-group">
-                <label for="matricula">Matrícula:</label>
-                <input type="text" class="form-control" name="matricula" id="matricula" readonly onblur="buscarDadosPaciente()">
-            </div>
-            <div class="col-md-6 form-group">
-                <label for="numeroProcesso">Número do Processo:</label>
-                <input type="text" class="form-control" name="numeroProcesso" id="numeroProcesso" readonly>
-            </div>
+        <div class="col-md-6">
+            <label for="escolaridade">Escolaridade:</label>
+            <select class="form-control" name="escolaridade" id="escolaridade" required>
+                <option value="" disabled selected>Selecione uma opção</option>
+                <option value="Ensino Fundamental">Ensino Fundamental</option>
+                <option value="Ensino Médio">Ensino Médio</option>
+                <option value="Superior">Superior</option>
+            </select>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="dataNascimento">Data de Nascimento:</label>
-                <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" required>
-            </div>
-
-            <div class="col-md-6 form-group">
-                <label for="sexo">Sexo:</label>
-                <select class="form-label" name="sexo" id="sexo" required>
-                    <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="Masculino">Masculino</option>
-                    <option value="Feminino">Feminino</option>
-                    <option value="Outro">Outro</option>
-                </select>
-            </div>
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <label for="dataNascimento">Data de Nascimento:</label>
+            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" required>
         </div>
-
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="escolaridade">Escolaridade:</label>
-                <select  class="form-label" name="escolaridade" id="escolaridade">
-                    <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="Ensino Fundamental">Ensino Fundamental</option>
-                    <option value="Ensino Médio">Ensino Médio</option>
-                    <option value="Superior">Superior</option>
-                </select>
-            </div>
-
-            <div class="col-md-6 form-group">
-                <label for="cpf">CPF:</label>
-                <input type="text" class="form-control" name="cpf" id="cpf" required pattern="\d{11}" title="Digite um CPF válido com 11 números">
-            </div>
-
-            <div class="col-md-6 form-group">
-                <label for="rg">RG:</label>
-                <input type="text" class="form-control" name="rg" id="rg" required pattern="\d{9}" title="Digite um RG válido com 9 digitos">
-            </div>
-
-
+        <div class="col-md-6">
+            <label for="sexo">Sexo:</label>
+            <select class="form-control" name="sexo" id="sexo" required>
+                <option value="" disabled selected>Selecione uma opção</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+            </select>
         </div>
+    </div>
 
-        <div class="row">
-        <div class="col-md-6 form-group">
-            <label for="telefone">Telefone:</label>
-            <input type="text" class="form-control" name="telefone" id="telefone" pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
-        </div>
+<div class="row mt-2">
+    <div class="col-md-6">
+        <label for="cpf">CPF:</label>
+        <input
+            type="text"
+            class="form-control"
+            name="cpf"
+            id="cpf"
+            required
+            pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+            title="Digite um CPF válido no formato 000.000.000-00"
+        >
+    </div> <!-- Fechamento da div do campo CPF -->
+    <div class="col-md-6">
+        <label for="rg">RG:</label>
+        <input
+            type="text"
+            class="form-control"
+            name="rg"
+            id="rg"
+            required
+            pattern="\d{2}\.\d{3}\.\d{3}-\d{1}"
+            title="Digite um RG válido com 9 dígitos"
+        >
+    </div>
+</div>
 
-        <div class="col-md-6 form-group">
+<div class="row mt-2">
+    <div class="col-md-6">
+        <label for="telefone">Telefone:</label>
+        <input
+            type="text"
+            class="form-control"
+            name="telefone"
+            id="telefone"
+            required
+            pattern="\(\d{2}\) \d{5}-\d{4}"
+            title="Digite um telefone válido no formato (00) 00000-0000"
+        >
+    </div>
+        <div class="col-md-6">
             <label for="tipoTelefone">Tipo de Telefone:</label>
-            <select  class="form-label" name="tipoTelefone" id="tipoTelefone"  >
+            <select class="form-control" name="tipoTelefone" id="tipoTelefone">
                 <option value="" disabled selected>Selecione uma opção</option>
                 <option value="Celular">Celular</option>
                 <option value="Residencial">Residencial</option>
                 <option value="Comercial">Comercial</option>
             </select>
         </div>
-        </div>
+    </div>
+</fieldset>
 
-        </fieldset>
 
         <fieldset class="border p-4 mb-4">
             <legend>Imagem do Paciente</legend>
@@ -100,46 +108,44 @@
                 <img id="imagemPreview" src="#" alt="Pré-visualização da Imagem" style="display:none; margin-top:10px; max-width:200px;">
             </div>
         </fieldset>
+<fieldset class="border p-3 mb-3">
+    <legend>Endereço</legend>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="cep">CEP:</label>
+            <input type="text" class="form-control" name="cep" id="cep" required pattern="\d{5}\-\d{3}\." title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
+        </div>
+        <div class="col-md-8">
+            <label for="endereco">Endereço:</label>
+            <input type="text" class="form-control" name="endereco" id="endereco" required>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <label for="bairro">Bairro:</label>
+            <input type="text" class="form-control" name="bairro" id="bairro" required>
+        </div>
+        <div class="col-md-4">
+            <label for="cidade">Cidade:</label>
+            <input type="text" class="form-control" name="cidade" id="cidade" required>
+        </div>
+        <div class="col-md-4">
+            <label for="estado">Estado:</label>
+            <input type="text" class="form-control" name="estado" id="estado" pattern="[A-Z]{2}" title="O estado deve ter exatamente 2 caracteres alfabéticos maiúsculos." required>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <label for="numero">Número:</label>
+            <input type="text" class="form-control" name="numero" id="numero" required>
+        </div>
+        <div class="col-md-8">
+            <label for="complemento">Complemento:</label>
+            <input type="text" class="form-control" name="complemento" id="complemento">
+        </div>
+    </div>
+</fieldset>
 
-        <fieldset class="border p-4 mb-4">
-            <legend>Endereço</legend>
-
-            <div class="form-group">
-                <label for="cep">CEP:</label>
-                <input type="text" class="form-control" name="cep" id="cep" pattern="\d{8}" title="Digite um CEP válido com 8 números" onblur="buscarEndereco()">
-            </div>
-
-            <div class="form-group">
-                <label for="endereco">Endereço:</label>
-                <input type="text" class="form-control" name="endereco" id="endereco">
-            </div>
-
-
-            <div class="form-group">
-                <label for="bairro">Bairro:</label>
-                <input type="text" class="form-control" name="bairro" id="bairro">
-            </div>
-
-            <div class="form-group">
-                <label for="cidade">Cidade:</label>
-                <input type="text" class="form-control" name="cidade" id="cidade">
-            </div>
-
-            <div class="form-group">
-                <label for="estado">Estado:</label>
-                <input type="text" class="form-control" name="estado" id="estado">
-            </div>
-
-            <div class="form-group">
-                <label for="numero">Número:</label>
-                <input type="text" class="form-control" name="numero" id="numero">
-            </div>
-
-            <div class="form-group">
-                <label for="complemento">Complemento:</label>
-                <input type="text" class="form-control" name="complemento" id="complemento">
-            </div>
-        </fieldset>
 
         <fieldset class="border p-4 mb-4">
             <legend class="w-auto px-2">Contato de Emergência</legend>
@@ -151,12 +157,12 @@
 
             <div class="form-group">
                 <label for="telefoneContato">Telefone:</label>
-                <input type="text" class="form-control" name="telefoneContato" id="telefoneContato" pattern="\d{10,11}" title="Digite um telefone válido com 10 ou 11 números">
+                <input type="text" class="form-control" name="telefoneContato" id="telefoneContato" pattern="\(\d{2}\) \d{5}-\d{4}" title="Digite um telefone válido com 10 ou 11 números">
             </div>
 
             <div class="form-group">
                 <label for="parentesco">Parentesco:</label>
-                <select  class="form-label" name="parentesco" id="parentesco">
+                <select class="form-control" name="parentesco" id="parentesco">
                     <option value="" disabled selected>Selecione o grau de parentesco</option>
                     <option value="Pai">Pai</option>
                     <option value="Mãe">Mãe</option>
@@ -170,10 +176,9 @@
         <fieldset class="border p-4 mb-4">
             <legend class="w-auto px-2">Histórico de Saúde</legend>
 
-
             <div class="form-group">
                 <label for="alergia">Possui alergia a algum medicamento?</label>
-                <select  class="form-label" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
+                <select class="form-control" name="alergia" id="alergia" onchange="toggleField('alergia', 'alergiaMedicamento')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -186,22 +191,8 @@
             </div>
 
             <div class="form-group">
-                <label for="doenca">Doenças crônicas:</label>
-                <select  class="form-label" name="doenca" id="doenca" onchange="toggleField('doenca', 'descricaoDoenca')">
-                    <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="false">Não</option>
-                    <option value="true">Sim</option>
-                </select>
-            </div>
-
-            <div class="form-group" id="descricaoDoenca" style="display:none;">
-                <label for="descricaoDoenca">Descrição da Doença:</label>
-                <input type="text" class="form-control" name="descricaoDoenca" id="descricaoDoencaInput">
-            </div>
-
-            <div class="form-group">
                 <label for="medicamentos">Faz uso de medicação de controle?</label>
-                <select  class="form-label" name="medicamentos" id="medicamentos" onchange="toggleField('medicamentos', 'tipoMedicamento')">
+                <select class="form-control" name="medicamentos" id="medicamentos" onchange="toggleField('medicamentos', 'tipoMedicamento')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -215,7 +206,7 @@
 
             <div class="form-group">
                 <label for="terapia">Faz terapia?</label>
-                <select  class="form-label" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
+                <select class="form-control" name="terapia" id="terapia" onchange="toggleField('terapia', 'terapiaPeriodo', 'terapiaMotivo')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -234,7 +225,7 @@
 
             <div class="form-group">
                 <label for="atividadeFisica">Faz atividade física?</label>
-                <select  class="form-label" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
+                <select class="form-control" name="atividadeFisica" id="atividadeFisica" onchange="toggleField('atividadeFisica', 'tipoAtividadeFisica')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
@@ -252,160 +243,150 @@
             </div>
         </fieldset>
 
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Outras Informações</legend>
 
+            <div class="form-group">
+                <label for="planoSaude">Plano de Saúde:</label>
+                <input type="text" class="form-control" name="planoSaude" id="planoSaude">
+            </div>
 
-    <fieldset class="border p-4 mb-4">
-        <legend class="w-auto px-2">Outras Informações</legend>
+            <div class="form-group">
+                <label for="cartaoSus">Cartão SUS:</label>
+                <input type="text" class="form-control" name="cartaoSus" id="cartaoSus">
+            </div>
 
-        <div class="form-group">
-            <label for="planoSaude">Plano de Saúde:</label>
-            <input type="text" class="form-control" name="planoSaude" id="planoSaude">
-        </div>
+            <div class="form-group">
+                <label for="seguroVida">Seguro de Vida:</label>
+                <input type="text" class="form-control" name="seguroVida" id="seguroVida">
+            </div>
 
-        <div class="form-group">
-            <label for="cartaoSus">Cartão SUS:</label>
-            <input type="text" class="form-control" name="cartaoSus" id="cartaoSus">
-        </div>
+            <div class="form-group">
+                <label for="comoConheceuEmpresa">Como conheceu o NUPS:</label>
+                <input type="text" class="form-control" name="comoConheceuEmpresa" id="comoConheceuEmpresa">
+            </div>
+        </fieldset>
 
-        <div class="form-group">
-            <label for="seguroVida">Seguro de Vida:</label>
-            <input type="text" class="form-control" name="seguroVida" id="seguroVida">
-        </div>
-
-        <div class="form-group">
-            <label for="comoConheceuEmpresa">Como conheceu o NUPS:</label>
-            <input type="text" class="form-control" name="comoConheceuEmpresa" id="comoConheceuEmpresa">
-        </div>
-
-    </fieldset>
-
-    <fieldset class="border p-4 mb-4 ">
-        <legend class="w-auto px-2">Informações de Serviço</legend>
-
-        <div class="form-group">
+       <fieldset class="border p-3 mb-3">
+    <legend class="w-auto px-2">Informações de Serviço</legend>
+    <div class="row">
+        <div class="col-md-6">
             <label for="postoServico">Posto de Serviço:</label>
             <input type="text" class="form-control" name="postoServico" id="postoServico">
         </div>
-
-        <div class="form-group">
+        <div class="col-md-6">
             <label for="escala">Escala:</label>
             <input type="number" class="form-control" name="escala" id="escala">
         </div>
-
-        <div class="form-group">
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-6">
             <label for="tempoServico">Tempo de Serviço:</label>
             <input type="text" class="form-control" name="tempoServico" id="tempoServico">
         </div>
+    </div>
+</fieldset>
 
-        <div class="form-group">
-            <label for="periodoEscala">Período de Escala:</label>
-            <input type="text" class="form-control" name="periodoEscala" id="periodoEscala">
-        </div>
-    </fieldset>
-
-    <fieldset class="border p-4 mb-4 ">
-        <legend class="w-auto px-2">Com quem reside</legend>
-
-        <div class="form-group">
-            <label for="moradia">Moradia:</label>
-            <input type="text" class="form-control" name="moradia" id="moradia">
-        </div>
-
-        <div class="form-group">
-            <label for="familiaDeficiencias">Família com Deficiências:</label>
-            <select  class="form-label" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-        </div>
-
-        <div class="form-group" id="deficiencia" style="display:none;">
-            <label for="deficiencia">Deficiência:</label>
-            <input type="text" class="form-control" name="deficiencia" id="deficienciaInput">
-        </div>
-    </fieldset>
-
-
-    <fieldset class="border p-4 mb-4">
-        <legend class="w-auto px-2">Informações Adicionais</legend>
-
-        <div class="form-group">
-            <label for="filhos">Filhos:</label>
-            <select  class="form-label" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-        </div>
-
-        <div class="form-group" id="quantidadeFilhos" style="display:none;">
-            <label for="quantidadeFilhos">Quantidade de Filhos:</label>
-            <input type="text" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput">
-        </div>
-
-        <div class="form-group" id="idadeFilhos" style="display:none;">
-            <label for="idadeFilhos">Idade dos Filhos:</label>
-            <input type="text" class="form-control" name="idadeFilhos" id="idadeFilhosInput">
-        </div>
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Com quem reside</legend>
 
             <div class="form-group">
-            <label for="porteArma">Porte de Arma:</label>
-            <select  class="form-label" name="porteArma" id="porteArma">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-        </div>
+                <label for="moradia">Moradia:</label>
+                <input type="text" class="form-control" name="moradia" id="moradia">
+            </div>
 
-        <div class="form-group">
-            <label for="trabalhoArmado">Trabalho Armado:</label>
-            <select  class="form-label" name="trabalhoArmado" id="trabalhoArmado" class="form-select">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="familiaDeficiencias">Família com Deficiências:</label>
+                <select class="form-control" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="armaPessoal">Arma Pessoal:</label>
-            <select  class="form-label" name="armaPessoal" id="armaPessoal">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-        </div>
-        
-    </fieldset>
+            <div class="form-group" id="deficiencia" style="display:none;">
+                <label for="deficiencia">Deficiência:</label>
+                <input type="text" class="form-control" name="deficiencia" id="deficienciaInput">
+            </div>
+        </fieldset>
+
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Informações Adicionais</legend>
+
+            <div class="form-group">
+                <label for="filhos">Filhos:</label>
+                <select class="form-control" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="quantidadeFilhos" style="display:none;">
+                <label for="quantidadeFilhos">Quantidade de Filhos:</label>
+                <input type="text" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput">
+            </div>
+
+            <div class="form-group" id="idadeFilhos" style="display:none;">
+                <label for="idadeFilhos">Idade dos Filhos:</label>
+                <input type="text" class="form-control" name="idadeFilhos" id="idadeFilhosInput">
+            </div>
+
+            <div class="form-group">
+                <label for="porteArma">Porte de Arma:</label>
+                <select class="form-control" name="porteArma" id="porteArma">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="trabalhoArmado">Trabalho Armado:</label>
+                <select class="form-control" name="trabalhoArmado" id="trabalhoArmado">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="armaPessoal">Arma Pessoal:</label>
+                <select class="form-control" name="armaPessoal" id="armaPessoal">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
+        </fieldset>
 
         <fieldset class="border rounded p-4 mb-4">
             <legend class="w-auto px-2">Relatório de Atendimento</legend>
 
             <div class="form-group">
-                <label for="observacoes">Relatório:</label>
-                <textarea class="form-control" name="observacoes" id="observacoes" rows="4" placeholder="Descreva o acolhimento"></textarea>
+                <label for="relatorio">Relatório:</label>
+                <textarea class="form-control" name="relatorio" id="relatorio" rows="4" placeholder="Descreva o acolhimento"></textarea>
             </div>
         </fieldset>
 
 
+
         <button type="submit" class="btn btn-primary">Salvar</button>
-
-
     </form>
 </div>
 
-    <script>
-        function toggleField(selectId, ...fieldIds) {
-            const selectElement = document.getElementById(selectId);
-            fieldIds.forEach(fieldId => {
-                const fieldElement = document.getElementById(fieldId);
-                if (selectElement.value === 'true') {
-                    fieldElement.style.display = 'block';
-                } else {
-                    fieldElement.style.display = 'none';
-                }
-            });
-        }
+<script>
+    function toggleField(selectId, ...fieldIds) {
+        const selectElement = document.getElementById(selectId);
+        fieldIds.forEach(fieldId => {
+            const fieldElement = document.getElementById(fieldId);
+            if (selectElement.value === 'true') {
+                fieldElement.style.display = 'block';
+            } else {
+                fieldElement.style.display = 'none';
+            }
+        });
+    }
 
     async function buscarEndereco() {
         const cep = document.getElementById('cep').value.replace('-', '');
@@ -428,238 +409,299 @@
         }
     }
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('imagemPreview');
-            
-            // Verifica se o arquivo é uma imagem
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result; // Definir a imagem na tag <img>
-                    preview.style.display = 'block'; // Exibir a pré-visualização
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none'; // Caso o arquivo não seja uma imagem, esconder a pré-visualização
-            }
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('imagemPreview');
+        
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
         }
+    }
 
-        function setCurrentDate() {
-            const currentDate = new Date().toISOString().split('T')[0]; 
-            document.getElementById('dataAtendimento').value = currentDate;
-        }
+    function setCurrentDate() {
+        const currentDate = new Date().toISOString().split('T')[0];
+        document.getElementById('dataAtendimento').value = currentDate;
+    }
 
     function preencherDadosPaciente() {
         const select = document.getElementById("nome");
         const selectedOption = select.options[select.selectedIndex];
 
-        // Buscar os valores nos atributos data-matricula e data-processo
         const matricula = selectedOption.getAttribute("data-matricula");
         const numeroProcesso = selectedOption.getAttribute("data-processo");
 
-        // Preencher os campos de matrícula e número do processo
         document.getElementById("matricula").value = matricula || "";
         document.getElementById("numeroProcesso").value = numeroProcesso || "";
     }
 
+    const atendimentos = {{{json atendimentos}}};
 
-            // Dados dos atendimentos (renderizados no servidor e passados para o cliente)
-            const atendimentos = {{{json atendimentos}}};
+    function mostrarSugestoes() {
+        const input = document.getElementById("nomePaciente").value.toLowerCase();
+        const sugestoesDiv = document.getElementById("sugestoes");
 
-            function mostrarSugestoes() {
-                const input = document.getElementById("nomePaciente").value.toLowerCase();
-                const sugestoesDiv = document.getElementById("sugestoes");
+        sugestoesDiv.innerHTML = '';
+        sugestoesDiv.style.display = 'none';
 
-                // Limpa as sugestões anteriores
-                sugestoesDiv.innerHTML = '';
-                sugestoesDiv.style.display = 'none';
+        const sugestoes = atendimentos.filter(atendimento =>
+            atendimento.nomePaciente.toLowerCase().includes(input)
+        );
 
-                // Filtra as sugestões com base no texto digitado
-                const sugestoes = atendimentos.filter(atendimento =>
-                    atendimento.nomePaciente.toLowerCase().includes(input)
-                );
-
-                // Se houver sugestões, mostrar a lista
-                if (sugestoes.length > 0) {
-                    sugestoesDiv.style.display = 'block';
-                    sugestoes.forEach(atendimento => {
-                        const item = document.createElement("div");
-                        item.textContent = atendimento.nomePaciente;
-                        item.onclick = () => selecionarPaciente(atendimento);
-                        sugestoesDiv.appendChild(item);
-                    });
-                }
-            }
-
-            function selecionarPaciente(atendimento) {
-            // Preenche os campos de matrícula e número do processo
-            document.getElementById("nomePaciente").value = atendimento.nomePaciente;
-            document.getElementById("matricula").value = atendimento.matricula;
-            document.getElementById("numeroProcesso").value = atendimento.numeroProcesso;
-
-            // Esconde a lista de sugestões
-            document.getElementById("sugestoes").style.display = 'none';
+        if (sugestoes.length > 0) {
+            sugestoesDiv.style.display = 'block';
+            sugestoes.forEach(atendimento => {
+                const item = document.createElement("div");
+                item.textContent = atendimento.nomePaciente;
+                item.onclick = () => selecionarPaciente(atendimento);
+                sugestoesDiv.appendChild(item);
+            });
         }
+    }
 
-        // Esconde a lista de sugestões se o usuário clicar fora dela
-        document.addEventListener("click", function(event) {
-            const sugestoesDiv = document.getElementById("sugestoes");
-            if (!sugestoesDiv.contains(event.target) && event.target.id !== "nomePaciente") {
-                sugestoesDiv.style.display = 'none';
-            }
-        });
+    function selecionarPaciente(atendimento) {
+        document.getElementById("nomePaciente").value = atendimento.nomePaciente;
+        document.getElementById("matricula").value = atendimento.matricula;
+        document.getElementById("numeroProcesso").value = atendimento.numeroProcesso;
 
-    </script>
+        document.getElementById("sugestoes").style.display = 'none';
+    }
+
+    document.addEventListener("click", function(event) {
+        const sugestoesDiv = document.getElementById("sugestoes");
+        if (!sugestoesDiv.contains(event.target) && event.target.id !== "nomePaciente") {
+            sugestoesDiv.style.display = 'none';
+        }
+    });
+
+
+       // Aplicar máscaras após o carregamento da página
+  document.addEventListener("DOMContentLoaded", function () {
+    // Máscara para o telefone (formato: (00) 00000-0000)
+    VMasker(document.getElementById("telefone")).maskPattern("(99) 99999-9999");
+
+    // Máscara para o telefone de contato (formato: (00) 00000-0000)
+    VMasker(document.getElementById("telefoneContato")).maskPattern("(99) 99999-9999");
+
+    // Máscara para o CPF (formato: 000.000.000-00)
+    VMasker(document.getElementById("cpf")).maskPattern("999.999.999-99");
+
+    // Máscara para o CEP (formato: 00000-000)
+    VMasker(document.getElementById("cep")).maskPattern("99999-999");
+  });
+</script>
 
 
 <style>
 
-    * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    color: #333;
-  
-}
-
-/* Estilo para o título principal */
-h2 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
-}
 
 
-/* Estilos gerais para o formulário */
-form {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    width:1000px;
-    margin: 0 auto;
-}
+    h2 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
 
-/* Estilo para os fieldsets */
-fieldset {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
+    form {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-/* Estilo para as legendas */
-legend {
-    font-size: 18px;
-    color: #333;
-    font-weight: bold;
-    padding: 0 10px;
-    background-color: #f9f9f9;
-}
+    fieldset {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
 
-/* Estilo para as divs com classe .form-group */
-.form-group {
-    margin-bottom: 15px;
-}
+    legend {
+        font-size: 18px;
+        color: #333;
+        font-weight: bold;
+        padding: 0 10px;
+        background-color: #f9f9f9;
+    }
 
-/* Estilo para os labels */
-label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #555;
-}
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-/* Estilo para os inputs de texto */
-input[type="text"], input[type="date"], input[type="file"], select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
+    label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 5px;
+        color: #555;
+    }
 
-/* Estilo específico para o campo Escala */
-input[type="number"]#escala {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
+    input[type="text"],
+    input[type="date"],
+    input[type="file"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
 
+    input[type="number"]#escala {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
 
-/* Estilo para a pré-visualização da imagem */
-#imagemPreview {
-    display: block;
-    margin-top: 10px;
-    max-width: 200px;
-    border-radius: 4px;
-}
+    #imagemPreview {
+        display: block;
+        margin-top: 10px;
+        max-width: 200px;
+        border-radius: 4px;
+    }
 
-/* Estilo para o botão de envio */
-button[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 20px;
-}
+    button[type="submit"] {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+    }
 
-button[type="submit"]:hover {
-    background-color: #2980b9;
-}
+    button[type="submit"]:hover {
+        background-color: #2980b9;
+    }
 
-/* Estilo para os campos com elementos de seleção */
-select, input[type="file"] {
-    padding: 10px;
-    font-size: 14px;
-}
+    select,
+    input[type="file"] {
+        padding: 10px;
+        font-size: 14px;
+    }
 
-/* Estilo para os campos de texto (textareas) */
-textarea {
-    padding: 10px;
-    font-size: 14px;
-    height: 120px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-}
+    textarea {
+        padding: 10px;
+        font-size: 14px;
+        height: 120px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+    }
 
-/* Estilo para campos de CPF e telefone com máscara */
-input[pattern] {
-    font-family: 'Courier New', monospace;
-}
+    input[pattern] {
+        font-family: 'Courier New', monospace;
+    }
 
-/* Estilo para a pré-visualização de imagem e outros campos */
-input[type="file"] {
-    padding: 5px;
-}
+    input[type="file"] {
+        padding: 5px;
+    }
 
-/* Ajuste de espaçamento para campos de seleção e opções */
-select {
-    padding: 10px;
-}
+    select {
+        padding: 10px;
+    }
 
-/* Estilos específicos para inputs com displays dinâmicos (alergia, doenças, etc) */
-#alergiaMedicamento, #descricaoDoenca, #tipoMedicamento, #terapiaPeriodo, #terapiaMotivo, #tipoAtividadeFisica, #quantidadeFilhos, #idadeFilhos, #deficiencia {
-    display: none;
-}
+    #alergiaMedicamento,
+    #descricaoDoenca,
+    #tipoMedicamento,
+    #terapiaPeriodo,
+    #terapiaMotivo,
+    #tipoAtividadeFisica,
+    #quantidadeFilhos,
+    #idadeFilhos,
+    #deficiencia {
+        display: none;
+    }
 
-/* Adicionando algum espaçamento e ajustes */
-form fieldset + fieldset {
-    margin-top: 30px;
-}
+    form fieldset + fieldset {
+        margin-top: 30px;
+    }
+
+    /* Estilos responsivos */
+    @media (max-width: 768px) {
+        h2 {
+            font-size: 24px;
+        }
+
+        form {
+            padding: 15px;
+        }
+
+        fieldset {
+            padding: 15px;
+        }
+
+        legend {
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        button[type="submit"] {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h2 {
+            font-size: 20px;
+        }
+
+        form {
+            padding: 10px;
+        }
+
+        fieldset {
+            padding: 10px;
+        }
+
+        legend {
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            font-size: 10px;
+            padding: 6px;
+        }
+
+        button[type="submit"] {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+
+        textarea {
+            height: 80px;
+        }
+    }
 </style>

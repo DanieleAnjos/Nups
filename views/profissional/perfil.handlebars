@@ -1,10 +1,15 @@
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<!-- Inputmask -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
+
 <div class="profile-container container-fluid">
   <div class="profile-card">
     <!-- Profile Header -->
     <div class="profile-header row align-items-center">
       <div class="image-container col-12 col-md-4 text-center">
         {{#if profissional.imagePath}}
-          <img src="/{{profissional.imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image img-fluid rounded-circle">
+          <img src="/uploads/{{profissional.imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image img-fluid rounded-circle">
         {{else}}
           <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image img-fluid rounded-circle">
         {{/if}}
@@ -30,10 +35,10 @@
             <strong>Admissão:</strong>&nbsp; {{formatDate profissional.dataAdmissao}}
           </div>
           <div class="col-12 col-md-6 info-item">
-            <strong>Telefone:</strong>&nbsp; {{profissional.telefone}}
+            <strong>Telefone:</strong>&nbsp; {{formatTelefone profissional.telefone}}
           </div>
           <div class="col-12 col-md-6 info-item">
-            <strong>CPF:</strong>&nbsp; {{profissional.cpf}}
+            <strong>CPF:</strong>&nbsp; {{formatCPF profissional.cpf}}
           </div>
           <div class="col-12 info-item">
             <strong>Endereço:</strong>&nbsp; {{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
@@ -46,7 +51,7 @@
             <strong>Nome:</strong>&nbsp; {{profissional.contatoEmergenciaNome}}
           </div>
           <div class="col-12 col-md-6 info-item">
-            <strong>Telefone:</strong> {{profissional.telefoneContatoEmergencia}}
+            <strong>Telefone:</strong> {{formatTelefone profissional.telefoneContatoEmergencia}}
           </div>
         </div>
       </div>
@@ -91,7 +96,6 @@
                       <th>Data</th>
                       <th>Paciente</th>
                       <th>Assunto</th>
-                      <th>Status</th>
                       <th>Visualizado</th>
                       <th>Ações</th>
                     </tr>
@@ -99,17 +103,17 @@
                   <tbody>
                     {{#each encaminhamentos}}
                       <tr>
-                        <td>{{formatDate createdAt}}</td>
+                        <td>{{formatDateTime createdAt}}</td>
                         <td>{{nomePaciente}}</td>
                         <td>{{assuntoAcolhimento}}</td>
-                        <td>{{statusAcolhimento}}</td>
-                        <td>{{#if visualizado}}Sim{{else}}Não{{/if}}</td>
+                        <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
                         <td>
-                          {{#if visualizado}}
+                          {{#if visto}}
                             <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
                           {{else}}
                             <a href="/encaminhamentos/{{id}}/visualizar" class="btn btn-info btn-sm">Marcar como Visto</a>
                           {{/if}}
+                          <a href="/encaminhamentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
                         </td>
                       </tr>
                     {{/each}}
@@ -137,16 +141,18 @@
                     <tr>
                       <th>Data</th>
                       <th>Paciente</th>
+                      <th>matricula Paciente</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {{#each atendimentos}}
                       <tr>
-                        <td>{{formatDate dataAtendimento}}</td>
-                        <td>{{nomePaciente}}</td>
+                        <td>{{formatDateTime dataAtendimento}}</td>
+                        <td>{{paciente.nome}}</td>
+                        <td>{{paciente.matricula}}</td>
                         <td>
-                          <a href="/atendimento/{{id}}" target="_blank" class="btn btn-primary btn-sm">Visualizar detalhes</a>
+                          <a href="/atendimentos/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
                         </td>
                       </tr>
                     {{/each}}
@@ -173,18 +179,20 @@
                   <thead>
                     <tr>
                       <th>Data</th>
-                      <th>Relatório</th>
                       <th>Horário de Chegada</th>
                       <th>Horário de Saída</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {{#each ocorrencias}}
                       <tr>
                         <td>{{formatDate data}}</td>
-                        <td>{{relatorio}}</td>
-                        <td>{{formatTime horarioChegada}}</td>
-                        <td>{{formatTime horarioSaida}}</td>
+                        <td>{{ horarioChegada}}</td>
+                        <td>{{ horarioSaida}}</td>
+                        <td>
+                          <a href="/ocorrencias/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
+                        </td>
                       </tr>
                     {{/each}}
                   </tbody>
@@ -199,6 +207,17 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $("#telefone").inputmask("(99) 99999-9999");
+    $("#telefoneContatoEmergencia").inputmask("(99) 99999-9999");
+    $("#cpf").inputmask("999.999.999-99");
+    $("#cep").inputmask("99999-999");
+  });
+</script>
+
+
 
 
 

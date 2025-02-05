@@ -14,8 +14,8 @@ router.get('/create', escalaController.create);
 router.post('/', escalaController.store); 
 
 router.get('/:id/edit', escalaController.edit);
-router.put('/:id', escalaController.update); 
 
+router.put('/:id', escalaController.update);
 router.delete('/:id', escalaController.destroy); 
 
 module.exports = router;

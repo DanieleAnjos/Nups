@@ -23,7 +23,6 @@ exports.create = async (req, res) => {
   }
 };
 
-
 exports.store = async (req, res) => {
   const t = await sequelize.transaction();  
 
@@ -32,22 +31,21 @@ exports.store = async (req, res) => {
 
     if (!produtoId || !tipo || !quantidade) {
       req.flash('error', 'Dados inválidos para ajuste.');
-      return res.redirect('/ajustes');
+      return res.redirect('/ajustes/create'); // Corrige para a página de criação
     }
 
     const adjustedData = data ? new Date(data) : new Date(); 
-
     const quantidadeConvertida = parseInt(quantidade, 10); 
 
     if (quantidadeConvertida <= 0 || isNaN(quantidadeConvertida)) {
       req.flash('error', 'A quantidade deve ser um número positivo.');
-      return res.redirect('/ajustes');
+      return res.redirect('/ajustes/create');
     }
 
     const produto = await Produto.findByPk(produtoId, { transaction: t });
     if (!produto) {
       req.flash('error', 'Produto não encontrado.');
-      return res.redirect('/ajustes');
+      return res.redirect('/ajustes/create');
     }
 
     let novaQuantidade = produto.quantidade_inicial;
@@ -55,7 +53,7 @@ exports.store = async (req, res) => {
     if (tipo === 'saida') {
       if (produto.quantidade_inicial < quantidadeConvertida) {
         req.flash('error', 'Quantidade de saída maior do que o estoque disponível.');
-        return res.redirect('/ajustes');
+        return res.redirect('/ajustes/create');
       }
       novaQuantidade = produto.quantidade_inicial - quantidadeConvertida;  
     } 
@@ -64,7 +62,7 @@ exports.store = async (req, res) => {
     } 
     else {
       req.flash('error', 'Tipo de ajuste inválido.');
-      return res.redirect('/ajustes');
+      return res.redirect('/ajustes/create');
     }
 
     produto.quantidade_inicial = novaQuantidade;
@@ -80,17 +78,15 @@ exports.store = async (req, res) => {
     await t.commit();  
 
     req.flash('success', 'Ajuste realizado com sucesso!');
-    res.redirect('/produtos');  
+    res.redirect('/produtos');  // Corrige o redirecionamento
   } catch (error) {
     await t.rollback(); 
 
     console.error('Erro ao realizar ajuste de estoque:', error);
     req.flash('error', 'Erro ao realizar ajuste de estoque.');
-    res.redirect('/produtos');
+    res.redirect('/ajustes/create'); // Corrige para a página de criação
   }
 };
-
-
 
 exports.edit = async (req, res) => {
   try {
@@ -111,6 +107,7 @@ exports.update = async (req, res) => {
   try {
     const [updated] = await AjusteEstoque.update(req.body, { where: { id: req.params.id } });
     if (updated) {
+      req.flash('success', 'Ajuste atualizado com sucesso!');
       res.redirect('/ajustes');
     } else {
       res.status(404).send('Ajuste não encontrado para atualizar.'); 
@@ -120,6 +117,7 @@ exports.update = async (req, res) => {
     res.status(500).send('Erro ao atualizar ajuste de estoque.'); 
   }
 };
+
 exports.destroy = async (req, res) => {
   const t = await sequelize.transaction();  
 
@@ -151,6 +149,7 @@ exports.destroy = async (req, res) => {
 
     await t.commit();  
 
+    req.flash('success', 'Ajuste de estoque excluído com sucesso!');
     res.redirect('/ajustes');  
   } catch (error) {
     await t.rollback();  

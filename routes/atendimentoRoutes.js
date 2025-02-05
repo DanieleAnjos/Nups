@@ -24,6 +24,10 @@ router.get('/:id/edit', atendimentoController.edit);
 router.put('/:id', atendimentoController.update);
 router.delete('/:id', atendimentoController.destroy);
 router.get('/dashboard', atendimentoController.dash);
+router.get('/:id', atendimentoController.show);
+router.get("/buscarPaciente", atendimentoController.buscarPaciente);
+//router.get('/', atendimentoController.stats);
+
 
 
 module.exports = router;

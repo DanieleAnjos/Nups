@@ -3,9 +3,9 @@ const path = require('path');
 const fs = require('fs');
 
 // Verifica se o diretório 'uploads' existe, se não, cria
-const uploadDir = 'uploads/';
+const uploadDir = path.join(__dirname, '../uploads/');
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Configuração do armazenamento
@@ -18,16 +18,16 @@ const storage = multer.diskStorage({
     },
 });
 
-// Filtro para aceitar apenas imagens
+// Filtro para aceitar apenas imagens e documentos
 const fileFilter = (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|gif/; // Adicionando suporte a GIF
+    const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|xlsx|txt/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
 
     if (mimetype && extname) {
         return cb(null, true);
     } else {
-        cb(new Error('Apenas arquivos de imagem (JPEG, PNG, GIF) são permitidos!'));
+        cb(new Error('Apenas arquivos de imagem (JPEG, PNG, GIF) e documentos (PDF, DOC, DOCX, XLSX, TXT) são permitidos!'));
     }
 };
 
@@ -48,4 +48,4 @@ const uploadErrorHandler = (err, req, res, next) => {
     next();
 };
 
-module.exports = { upload, uploadErrorHandler }; // Remova o ']' desnecessário
+module.exports = { upload, uploadErrorHandler };

@@ -46,24 +46,24 @@
                         <th>Profissional</th>
                         <th>Horário de Chegada</th>
                         <th>Horário de Saída</th>
-                        <th>Relatório</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each ocorrencias}}
                         <tr>
-                            <td>{{formatDate this.data}}</td>
+                            <td>{{OneDate this.data}}</td>
                             <td>{{ this.profissional.nome}}</td>
                             <td>{{ this.horarioChegada}}</td>
                             <td>{{ this.horarioSaida}}</td>
-                            <td>{{this.relatorio}}</td>
-
                             <td class="text-center">
 
 
                                             <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
                                                 <i class="bi bi-pencil-square"></i> Editar
+                                            </a>
+                                            <a href="/ocorrencias/{{this.id}}" class="btn btn-warning btn-sm mx-1">
+                                                <i class="bi bi-pencil-square"></i> Detalhes
                                             </a>
                                             <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                                 <input type="hidden" name="_csrf" value="{{csrfToken}}">

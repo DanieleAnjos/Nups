@@ -3,6 +3,8 @@ const axios = require('axios');
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+
+
 const Profissional = sequelize.define('Profissional', {
   id: {
     type: DataTypes.INTEGER,
@@ -13,6 +15,18 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  matricula: {
+    type: DataTypes.INTEGER,
+    allowNull: function () {
+      return this.vinculo === 'Servidor';
+    },
+    unique: function () {
+      return this.vinculo === 'Servidor';
+    },
+    validate: {
+      isInt: true,
+    },
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -21,38 +35,24 @@ const Profissional = sequelize.define('Profissional', {
       isEmail: true,
     },
   },
-  matricula: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    unique: true,
-  },
   dataAdmissao: {
     type: DataTypes.DATEONLY,
     allowNull: false,
   },
   cargo: {
-    type: DataTypes.ENUM('Assistente social', 'Administrador', 'Psicólogo', 'Psiquiatra'),
+    type: DataTypes.ENUM('Assistente social', 'Assistente social Supervisor', 'Administrador', 'Psicólogo', 'Psiquiatra'),
     allowNull: false,
   },
   vinculo: {
     type: DataTypes.ENUM('Servidor', 'Voluntario'),
     allowNull: false,
   },
-  rg:{
+  cpf: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
     validate: {
-      is: /^[0-9]{9}$/, 
-    },
-  },
-  cpf: {
-    type: DataTypes.STRING(11), // CPF fixado para 11 caracteres
-    allowNull: false,
-    unique: true,
-    validate: {
-      is: /^[0-9]{11}$/,
-    },
+      is: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/ // Usando '\d' em vez de '[0-9]'
+    }
   },
   dataNascimento: {
     type: DataTypes.DATEONLY,
@@ -66,24 +66,12 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.ENUM('Casado', 'Solteiro', 'Divorciado'),
     allowNull: true,
   },
-  nomeBanco: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  agencia: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  contaBanco: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
   cep: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      is: /^[0-9]{8}$/, 
-    },
+      is: /^\d{5}-\d{3}$/ // Permite o formato 'XXXXX-XXX'
+    }
   },
   endereco: {
     type: DataTypes.STRING,
@@ -132,10 +120,37 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'Ativo',
+  },
 }, {
-  tableName: 'profissional',
+  tableName: 'profissional', // Nome da tabela no banco de dados
   timestamps: true,
 });
+
+Profissional.associate = (models) => {
+    Profissional.hasMany(models.Atendimento, {
+      foreignKey: 'profissionalId',
+      as: 'atendimentos',
+    });
+
+  Profissional.hasMany(models.Encaminhamento, {
+    foreignKey: 'profissionalIdEnvio',
+    as: 'encaminhamentosEnviados',
+  });
+
+  Profissional.hasMany(models.Encaminhamento, {
+    foreignKey: 'profissionalIdRecebido',
+    as: 'encaminhamentosRecebidos',
+  });
+
+  Profissional.hasMany(models.DiscussaoCaso, {
+     foreignKey: 'autor',
+      as: 'discussaoCasos' });
+
+};
 
 
 Profissional.prototype.isVolunteerTermExpired = function () {

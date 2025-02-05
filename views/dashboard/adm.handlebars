@@ -11,11 +11,11 @@
     </a>
     <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
       <i class="fas fa-calendar-check"></i>
-      <span>Encaminhamentos</span>
-    </a>
-    <a href="/atendimentos2" class="dashboard-card" aria-label="Gerenciar Atendimentos">
-      <i class="fas fa-clipboard-list"></i>
       <span>Atendimentos</span>
+    </a>
+    <a href="/encaminhamentos" class="dashboard-card" aria-label="Gerenciar Encaminhamentos">
+      <i class="fas fa-clipboard-list"></i>
+      <span>Encaminhamentos</span>
     </a>
     <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
       <i class="fas fa-exclamation-circle"></i>
@@ -32,10 +32,6 @@
     <a href="/escalas" class="dashboard-card" aria-label="Gerenciar Escalas">
       <i class="fas fa-calendar-alt"></i>
       <span>Escalas</span>
-    </a>
-    <a href="/eventos2" class="dashboard-card" aria-label="Gerenciar Eventos">
-      <i class="fas fa-calendar-day"></i>
-      <span>Eventos</span>
     </a>
     <a href="/relatorios" class="dashboard-card" aria-label="Gerenciar Relatórios">
       <i class="fas fa-chart-bar"></i>
@@ -65,7 +61,10 @@
       <i class="fas fa-chart-bar"></i> <!-- Ícone de gráficos em vez de perfil -->
       <span>Gráficos</span>
     </a>
-
+    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
+      <i class="fas fa-user-circle"></i>
+      <span>Perfil</span>
+    </a>
   </div>
 </div>
 

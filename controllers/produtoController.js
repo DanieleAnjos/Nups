@@ -67,9 +67,9 @@ const produtoController = {
       const produto = await Produto.create(req.body);
       
       if (req.body.quantidade_inicial) {
-        await this.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial);
+        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial); // Chama diretamente o controller
       }
-
+  
       req.flash('success', 'Produto criado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
@@ -99,18 +99,18 @@ const produtoController = {
   update: async (req, res) => {
     try {
       const produto = await Produto.findByPk(req.params.id);
-
+  
       if (!produto) {
         req.flash('error', 'Produto não encontrado');
         return res.redirect('/produtos');
       }
-
+  
       await Produto.update(req.body, { where: { id: req.params.id } });
-
+  
       if (req.body.quantidade_inicial) {
-        await this.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial);
+        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial); // Chama diretamente o controller
       }
-
+  
       req.flash('success', 'Produto atualizado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
@@ -119,7 +119,7 @@ const produtoController = {
       res.redirect(`/produtos/${req.params.id}/edit`);
     }
   },
-
+  
   destroy: async (req, res) => {
     try {
       await Produto.destroy({ where: { id: req.params.id } });
