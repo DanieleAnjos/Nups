@@ -1,27 +1,18 @@
 <div class="profile-container">
   <div class="profile-card justify-content-center">
     <div class="profile-header">
-<div class="image-container">
-    {{#if paciente.imagePath}}
-        <img src="/uploads/{{paciente.imagePath}}" alt="Foto de {{paciente.nome}}" class="profile-image">
-    {{else}}
-        <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image">
-    {{/if}}
-  
-    
-    <!-- Input de arquivo oculto -->
-    <input 
-        type="file" 
-        id="fileInput" 
-        name="imagem" 
-        accept="image/*" 
-        style="display: none;" 
-        onchange="previewImage(event)"
-    >
-</div>
-      <div class="profile-info">
-        <h1 class="profile-name">{{paciente.nome}}</h1>
+      <div class="header-content">
+        <div class="image-container">
+          {{#if imagePath}}
+            <img src="{{imagePath}}" alt="Foto de {{paciente.nome}}" class="profile-image">
+          {{else}}
+            <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image">
+          {{/if}}
+        </div>
+        <div class="profile-info">
+          <h1 class="profile-name">&nbsp;{{ paciente.nome}}</h1>
           <span class="profile-badge">{{paciente.statusPaciente}}</span>
+        </div>
       </div>
     </div>
     <div class="profile-content">
@@ -30,33 +21,33 @@
         <div class="info-grid">
           <div class="info-item">
             <i class="fas fa-envelope"></i>
-            <span class="label">Nome: </span>
-            <span class="value"> &nbsp;{{paciente.nome}}</span>
+            <span class="label"><strong>Nome: </strong></span>
+            <span class="value">{{paciente.nome}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-calendar-alt"></i>
-            <span class="label">Data de Nascimento: </span>
-            <span class="value"> &nbsp;{{ formatDate paciente.dataNascimento}}</span>
+            <span class="label"><strong>Data de Nascimento: </strong></span>
+            <span class="value">{{formatDate paciente.dataNascimento}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone"></i>
-            <span class="label">Telefone: </span>
-            <span class="value">&nbsp;{{formatTelefone paciente.telefone}}</span>
+            <span class="label"><strong>Telefone: </strong></span>
+            <span class="value">{{formatTelefone paciente.telefone}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
-            <span class="label">RG: </span>
-            <span class="value">&nbsp; {{ formatRg paciente.rg}}</span>
+            <span class="label"><strong>RG: </strong></span>
+            <span class="value">{{formatRg paciente.rg}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
-            <span class="label">CPF: </span>
-            <span class="value">&nbsp; {{formatCPF paciente.cpf}}</span>
+            <span class="label"><strong>CPF: </strong></span>
+            <span class="value">{{formatCPF paciente.cpf}}</span>
           </div>
           <div class="info-item">
             <p class="info-single">
               <i class="fas fa-map-marker-alt"></i>
-              <span class="label">Endereço: </span>
+              <span class="label"><strong>Endereço: </strong></span>
               {{paciente.endereco}}, <br> {{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}
             </p>
           </div>
@@ -68,18 +59,18 @@
         <div class="info-grid">
           <div class="info-item">
             <i class="fas fa-stethoscope"></i>
-            <span class="label">Condição Médica: </span>
-            <span class="value">&nbsp; {{paciente.condicaoMedica}}</span>
+            <span class="label"><strong>Condição Médica: </strong></span>
+            <span class="value">{{paciente.condicaoMedica}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-pills"></i>
-            <span class="label">Medicamentos: </span>
-            <span class="value">&nbsp; {{paciente.medicamentos}}</span>
+            <span class="label"><strong>Medicamentos: </strong></span>
+            <span class="value">{{paciente.medicamentos}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-heartbeat"></i>
-            <span class="label">Alergias: </span>
-            <span class="value">&nbsp; {{paciente.alergias}}</span>
+            <span class="label"><strong>Alergias: </strong></span>
+            <span class="value">{{paciente.alergias}}</span>
           </div>
         </div>
       </div>
@@ -89,161 +80,146 @@
         <div class="info-grid">
           <div class="info-item">
             <i class="fas fa-ambulance"></i>
-            <span class="label">Nome: </span>
-            <span class="value">&nbsp;{{paciente.nomeContato}}</span>
+            <span class="label"><strong>Nome: </strong></span>
+            <span class="value">{{paciente.nomeContato}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone-alt"></i>
-            <span class="label">Telefone: </span>
-            <span class="value">&nbsp;{{formatTelefone paciente.telefoneContato}}</span>
+            <span class="label"><strong>Telefone: </strong></span>
+            <span class="value">{{formatTelefone paciente.telefoneContato}}</span>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <br>
 
-<!-- Atendimentos -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h5 mb-0">Atendimentos</h2>
-  </div>
-  <div class="card-body">
-    {{#if paciente.atendimentos}}
-      <div class="table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Profissional</th>
-              <th>Cargo do profissional</th>
-              <th>Ações</th> <!-- Nova coluna para o botão -->
-            </tr>
-          </thead>
-          <tbody>
-            {{#each paciente.atendimentos as |atendimento|}}
-              <tr class="attendance-item">
-                <td>{{formatDate atendimento.dataAtendimento}}</td>
-                <td>{{atendimento.profissional.nome}}</td>
-                <td>{{atendimento.profissional.cargo}}</td>
-                <td>
-                  <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">
-                    Detalhes
-                  </a>
-                </td>
+  <!-- Atendimentos -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Atendimentos</h2>
+    </div>
+    <div class="card-body">
+      {{#if paciente.atendimentos}}
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Profissional</th>
+                <th>Cargo do profissional</th>
+                <th>Ações</th>
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-    {{else}}
-      <p>Este paciente não possui atendimentos registrados.</p>
-    {{/if}}
+            </thead>
+            <tbody>
+              {{#each paciente.atendimentos as |atendimento|}}
+                <tr class="attendance-item">
+                  <td>{{formatDateTime atendimento.dataAtendimento}}</td>
+                  <td>{{atendimento.profissional.nome}}</td>
+                  <td>{{atendimento.profissional.cargo}}</td>
+                  <td>
+                    <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <p>Este paciente não possui atendimentos registrados.</p>
+      {{/if}}
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h5 mb-0">Documentos do Paciente</h2>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Documentos do Paciente</h2>
+    </div>
+    <div class="card-body">
+      <form action="/pacientes/{{paciente.id}}/upload-documento" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="documento">Carregar Documento:</label>
+          <input type="file" class="form-control" name="documento" id="documento" accept=".pdf,.doc,.docx,.jpg,.png">
+          <small class="form-text text-muted">Formatos aceitos: PDF, DOC, DOCX, JPG, PNG.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar Documento</button>
+      </form>
+    </div>
   </div>
-  <div class="card-body">
-    <form action="/pacientes/{{paciente.id}}/upload-documento" method="POST" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="documento">Carregar Documento:</label>
-        <input type="file" class="form-control" name="documento" id="documento" accept=".pdf,.doc,.docx,.jpg,.png">
-        <small class="form-text text-muted">Formatos aceitos: PDF, DOC, DOCX, JPG, PNG.</small>
-      </div>
-      <button type="submit" class="btn btn-primary">Enviar Documento</button>
-    </form>
-  </div>
-</div>
 
+  <hr>
 
-    <hr>
-
-    <h3>Documentos Carregados</h3>
-    {{#if paciente.documentos}}
-      <div class="documentos-list">
-        {{#each paciente.documentos as |documento|}}
-          <div class="documento-item">
-            <a href="/uploads/{{documento.caminho}}" target="_blank">{{documento.nome}}</a>
-            <button type="button" class="btn btn-danger btn-sm" onclick="deleteDocumento('{{documento.id}}')">Excluir</button>
-          </div>
-        {{/each}}
-      </div>
-    {{else}}
-      <p>Nenhum documento carregado.</p>
-    {{/if}}
-  </div>
+  <h3>Documentos Carregados</h3>
+  {{#if paciente.documentos}}
+    <div class="documentos-list">
+      {{#each paciente.documentos as |documento|}}
+        <div class="documento-item">
+          <a href="/uploads/{{documento.caminho}}" target="_blank">{{documento.nome}}</a>
+          <button type="button" class="btn btn-danger btn-sm" onclick="deleteDocumento('{{documento.id}}')">Excluir</button>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>Nenhum documento carregado.</p>
+  {{/if}}
 </div>
 
 <script>
   function deleteDocumento(documentoId) {
-    // Confirmar se o usuário realmente deseja excluir
     if (confirm('Tem certeza que deseja excluir este documento?')) {
-      // Fazer a requisição DELETE
       fetch(`/pacientes/{{paciente.id}}/delete-documento/${documentoId}`, {
         method: 'DELETE',
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Erro ao excluir documento. Status: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.success) {
-            // Caso sucesso, recarregar a página
-            alert('Documento excluído com sucesso!');
-            location.reload();
-          } else {
-            // Caso falha na exclusão
-            alert('Erro ao excluir documento: ' + data.message || 'Desconhecido');
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao excluir documento:', error);
-          alert('Erro ao excluir documento. Tente novamente.');
-        });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao excluir documento. Status: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          alert('Documento excluído com sucesso!');
+          location.reload();
+        } else {
+          alert('Erro ao excluir documento: ' + data.message || 'Desconhecido');
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao excluir documento:', error);
+        alert('Erro ao excluir documento. Tente novamente.');
+      });
     }
   }
 </script>
 
-
-
 <style>
-.documentos-list {
-  margin-top: 1rem;
-}
+  .documentos-list {
+    margin-top: 1rem;
+  }
 
-.documento-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: #f9f9f9;
-  border-radius: 5px;
-  margin-bottom: 0.5rem;
-}
+  .documento-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+  }
 
-.documento-item a {
-  color: #3498db;
-  text-decoration: none;
-}
+  .documento-item a {
+    color: #3498db;
+    text-decoration: none;
+  }
 
-.documento-item a:hover {
-  text-decoration: underline;
-}
+  .documento-item a:hover {
+    text-decoration: underline;
+  }
 
-.documento-item button {
-  margin-left: 1rem;
-}
-
-  
-  .btn-secondary[disabled] {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
+  .documento-item button {
+    margin-left: 1rem;
+  }
 
   .profile-container {
     display: flex;
@@ -256,32 +232,35 @@
     font-family: 'Inter', sans-serif;
   }
 
-.profile-card {
-  display: flex;
-  flex-direction: row;
-  max-width: 100%; /* Adapta à largura disponível */
-  width: 1200px; /* Largura máxima */
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin: 0 auto; /* Centraliza horizontalmente */
-}
+  .profile-card {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%; /* Adapta à largura disponível */
+    width: 1200px; /* Largura máxima */
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 0 auto; /* Centraliza horizontalmente */
+  }
 
   .profile-header {
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 1.5rem;
     background: linear-gradient(135deg, #5b9bd5, #4a77e5);
     color: white;
-    flex: 0 0 200px; /* Reduz tamanho da lateral */
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center; /* Alinha a imagem e o texto verticalmente */
   }
 
   .image-container {
     width: 120px;
     height: 120px;
-    margin-bottom: 1rem;
+    margin-right: 2rem; /* Espaço entre a imagem e o texto */
     border-radius: 50%;
     overflow: hidden;
     background: #ffffff;
@@ -292,24 +271,27 @@
     height: 100%;
     object-fit: cover;
   }
-    .profile-info {
-        text-align: center; /* Centraliza os textos horizontalmente */
-        margin: 20px auto;
-    }
-    .profile-name {
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
-    .profile-badge {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 14px;
-        font-weight: 600;
-        color: white;
-        background: #5b9bd5;
-        border-radius: 20px;
-        text-transform: capitalize;
-    }
+
+  .profile-info {
+    text-align: left; /* Alinha os textos à esquerda */
+  }
+
+  .profile-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .profile-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: #5b9bd5;
+    border-radius: 20px;
+    text-transform: capitalize;
+  }
+
   .profile-content {
     flex: 1;
     padding: 3rem; /* Ajuste o padding para melhor espaçamento */
@@ -323,6 +305,7 @@
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #297FB8; /* Cor do título */
   }
 
   .info-grid {
@@ -350,11 +333,6 @@
     font-size: 0.9rem;
   }
 
-  .info-single i {
-    color: #5b9bd5;
-    margin-right: 0.5rem;
-  }
-
   .action-buttons {
     margin-top: auto; /* Empurra o botão para a parte inferior */
     text-align: center;
@@ -378,14 +356,6 @@
     background: #4a77e5;
   }
 
-  .main-content {
-    margin-left: 80px;
-    padding: 0px;
-    transition: margin-left 0.3s, width 0.3s;
-    width: calc(100% - 80px);
-    margin-top: 0px;
-  }
-
   .card {
     display: flex;
     flex-direction: column;
@@ -398,9 +368,6 @@
     max-width: 1200px; /* Ajusta a largura máxima do card */
     height: auto;
   }
-  .mt-4 {
-    padding-left: 28px;
-  }
 
   .card-header {
     background: linear-gradient(135deg, #5b9bd5, #4a77e5);
@@ -410,16 +377,6 @@
     font-weight: 600;
     border-bottom: 1px solid #ddd;
   }
-
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .table-responsive {
-  overflow-x: auto;
-}
-
 
   .table {
     width: 100%;
@@ -446,73 +403,36 @@
     background: #f9f9f9;
   }
 
-  .status {
-    display: inline-block;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-transform: capitalize;
-    color: white;
-  }
-
-  .status.EmAndamento {
-    background: #ffcc00; /* Status em andamento */
-  }
-
-  .status.Concluido {
-    background: #28a745; /* Status concluído */
-  }
-
-  .status.Pendente {
-    background: #dc3545; /* Status pendente */
-  }
-
-  .visualizado.sim {
-    color: #28a745;
-    font-weight: bold;
-  }
-
-  .visualizado.nao {
-    color: #dc3545;
-    font-weight: bold;
-  }
-
-  .no-encaminhamentos {
-    text-align: center;
-    color: #777;
-    font-size: 1rem;
-    padding: 1rem;
-    background: #f9f9f9;
-    border-radius: 4px;
-  }
-  
-
   @media (max-width: 768px) {
-     .profile-card {
-    width: 100%; /* Ocupa toda a largura */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Ajusta sombra */
-  }
+    .profile-card {
+      width: 100%; /* Ocupa toda a largura */
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Ajusta sombra */
+    }
 
-  .profile-header {
-    flex-direction: column; /* Coloca imagem e informações em pilha */
-    text-align: center;
-  }
+    .profile-header {
+      flex-direction: column; /* Coloca imagem e informações em pilha */
+      text-align: center;
+    }
 
-  .profile-name {
-    font-size: 1.2rem;
-  }
+    .header-content {
+      flex-direction: column; /* Coloca a imagem acima do texto em telas menores */
+      align-items: center; /* Centraliza os itens */
+    }
 
-  .info-grid {
-    grid-template-columns: 1fr; /* Apenas uma coluna em telas menores */
-  }
+    .profile-name {
+      font-size: 1.5rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr; /* Apenas uma coluna em telas menores */
+    }
 
     .table th, .table td {
       padding: 0.5rem 0.8rem;
     }
 
     .card {
-      width: 400px; /* Ajusta a largura para 95% da tela em dispositivos menores */
+      width: 100%; /* Ajusta a largura para 100% em dispositivos menores */
       height: auto;
     }
 
@@ -522,26 +442,17 @@
   }
 
   @media (max-width: 480px) {
-  .profile-card {
-    border-radius: 5px; /* Reduz o arredondamento */
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Ajusta sombra para telas pequenas */
-  }
-  .profile-container {
-    padding: 10px;
-  }
+    .image-container {
+      width: 80px;
+      height: 80px;
+    }
 
-  .image-container {
-    width: 80px;
-    height: 80px;
-  }
+    .profile-name {
+      font-size: 1.2rem;
+    }
 
-  .profile-name {
-    font-size: 1rem;
+    .info-item {
+      font-size: 0.9rem;
+    }
   }
-
-  .info-item {
-    font-size: 0.9rem;
-  }
-  
-}
 </style>

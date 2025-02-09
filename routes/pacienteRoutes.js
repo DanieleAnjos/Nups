@@ -19,7 +19,7 @@ router.delete('/:id', pacienteController.delete);
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Diretório para armazenar os arquivos
+        cb(null, 'uploads/documents'); // Diretório para armazenar os arquivos
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname)); // Nome único para o arquivo

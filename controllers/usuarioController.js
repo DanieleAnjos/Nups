@@ -56,6 +56,7 @@ exports.requestPasswordReset = async (req, res) => {
             where: { usuario },
             include: {
                 model: Profissional,
+                as: 'profissional',
                 attributes: ['email'],  
             }
         });
@@ -144,3 +145,43 @@ exports.listUsers = async (req, res) => {
 };
 
 
+exports.changePasswordView = (req, res) => {
+    res.render('auth/changePassword', { layout: false });
+};
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { usuario, senhaAtual, novaSenha } = req.body;
+
+        const user = await Usuario.findOne({ where: { usuario } });
+        if (!user) {
+            return res.status(400).render('auth/changePassword', {
+                error: 'Usuário não encontrado.',
+                layout: false
+            });
+        }
+
+        const senhaCorreta = await argon2.verify(user.senha, senhaAtual);
+        if (!senhaCorreta) {
+            return res.status(400).render('auth/changePassword', {
+                error: 'Senha atual incorreta.',
+                layout: false
+            });
+        }
+
+        const hashedNewPassword = await argon2.hash(novaSenha);
+        user.senha = hashedNewPassword;
+        await user.save();
+
+        return res.status(200).render('auth/changePassword', {
+            success: 'Senha alterada com sucesso.',
+            layout: false
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).render('auth/changePassword', {
+            error: 'Erro ao alterar a senha.',
+            layout: false
+        });
+    }
+};

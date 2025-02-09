@@ -124,6 +124,12 @@ exports.store = [
         return res.redirect('/atendimentos/create');
       }
 
+      // Verifica se o profissionalId está definido no usuário logado
+      if (!req.user.profissionalId) {
+        req.flash('error', 'Profissional não associado ao usuário logado.');
+        return res.redirect('/atendimentos/create');
+      }
+
       // Criação do atendimento
       const atendimento = await Atendimento.create({
         nomePaciente: req.body.nomePaciente,
@@ -132,14 +138,14 @@ exports.store = [
         registroAtendimento: req.body.registroAtendimento,
         dataAtendimento: new Date(), // Data atual
         pacienteId: paciente.id, // Relacionamento com o paciente encontrado
-        profissionalId: req.user.id // Profissional logado
+        profissionalId: req.user.profissionalId // Usa o profissionalId do usuário logado
       });
 
       // Criação de notificação para o profissional
       await Notificacao.create({
         titulo: `Novo Atendimento: ${req.body.registroAtendimento}`,
         mensagem: `Você realizou um novo atendimento para o paciente ${req.body.nomePaciente}, matrícula: ${req.body.matriculaPaciente}.`,
-        profissionalId: req.user.id // Notificação para o profissional logado
+        profissionalId: req.user.profissionalId // Notificação para o profissional associado ao usuário logado
       });
 
       // Mensagem de sucesso e redirecionamento

@@ -76,7 +76,7 @@ exports.marcarVisto = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     // Obtém o ID do profissional que está logado
-    const profissionalIdEnvio = req.user ? req.user.id : null;
+    const profissionalIdEnvio = req.user ? req.user.profissionalId : null;
 
     // Buscar profissionais psicólogos (para "Acolhimento de disparo")
     const profissionaisPsicologia = await Profissional.findAll({

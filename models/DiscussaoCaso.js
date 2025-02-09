@@ -23,7 +23,7 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
     allowNull: false,
   },
   autor: {
-    type: DataTypes.INTEGER.UNSIGNED,  // Assegure que o tipo seja o mesmo
+    type: DataTypes.INTEGER,  // Assegure que o tipo seja o mesmo
     allowNull: false,
     references: {
       model: Profissional,  // Referência ao modelo Profissional

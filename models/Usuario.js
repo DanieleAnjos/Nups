@@ -39,6 +39,11 @@ const Usuario = sequelize.define('Usuario', {
   timestamps: true,
 });
 
-Usuario.belongsTo(Profissional, { foreignKey: 'profissionalId', onDelete: 'CASCADE' });
+Usuario.belongsTo(Profissional, {
+  foreignKey: 'profissionalId',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+  as: 'profissional', // Adicione um alias para a associação
+});
 
 module.exports = Usuario;

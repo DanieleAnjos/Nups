@@ -69,7 +69,7 @@ try {
   process.exit(1); 
 }
 
-const sequelize = new Sequelize('nups', 'admin', 'senha12.', {
+const sequelize = new Sequelize('nups_db', 'admin', 'senha12.', {
   host: 'nups.c3o2qsaeqjve.us-east-2.rds.amazonaws.com',
   dialect: 'mysql',
   dialectModule: require('mysql2'), 

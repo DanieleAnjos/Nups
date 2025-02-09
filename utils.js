@@ -7,7 +7,11 @@ async function checkProfissional(usuario) {
     throw new Error('Usuário ou profissional não encontrado');
   }
 
-  const profissional = await Profissional.findByPk(usuario.profissionalId);
+  // Busca o Profissional associado ao Usuário
+  const profissional = await Profissional.findOne({
+    where: { id: usuario.profissionalId }, // Busca pelo ID do Profissional
+  });
+
   if (!profissional) {
     console.log('Profissional não encontrado');
     throw new Error('Profissional não encontrado');

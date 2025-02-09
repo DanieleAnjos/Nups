@@ -2,6 +2,10 @@ const Paciente = require('../models/Paciente');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional');
 const Documento = require('../models/Documento');
+const fs = require('fs');
+const path = require('path');
+
+const { validationResult } = require('express-validator');
 
 
 const { Op } = require('sequelize'); 
@@ -55,62 +59,151 @@ exports.index2 = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const atendimentos = await Atendimento.findAll();
-    res.render('paciente/create', { atendimentos });
+    res.render('paciente/create', {
+       atendimentos,
+       error_msg: req.flash('error_msg'), // Mensagens de erro
+       success_msg: req.flash('success_msg') 
+       });
   } catch (error) {
     console.error('Erro ao buscar os atendimentos:', error);
     res.render('paciente/create', { errorMessage: 'Erro ao buscar os encaminhamentos.' });
   }
 };
 
+
 exports.store = [
-    upload.single('imagem'),
-    uploadErrorHandler,
-    async (req, res) => {
-        try {
-            if (req.file) {
-                if (!req.file.mimetype.startsWith('image/')) {
-                    return res.status(400).send('Por favor, carregue apenas arquivos de imagem.');
-                }
-                console.log('Arquivo carregado:', req.file);
-            } else {
-                console.log('Nenhum arquivo foi carregado.');
-            }
+  upload.single('imagem'),
+  uploadErrorHandler,
+  async (req, res) => {
+    try {
+      // Verifica erros de validação
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map((err) => err.msg);
+        req.flash('error_msg', errorMessages.join('. '));
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
 
-            const { nome, matricula, dataNascimento, sexo, cpf, rg, telefone, telefoneContato, ...dadosBasicos } = req.body;
+      const { nome, matricula, dataNascimento, sexo, cpf, rg, telefone, telefoneContato, ...dadosBasicos } = req.body;
 
-            if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
-                return res.status(400).send('Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
-            }
+      // Validação de campos obrigatórios
+      if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
+        req.flash('error_msg', 'Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
 
-            // Remove formatação dos campos
-            const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
-            const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
-            const cpfLimpo = cpf.replace(/\D/g, '');
-            const rgLimpo = rg.replace(/\D/g, '');
+      // Verifica se o CPF, RG ou matrícula já estão cadastrados
+      const pacienteExistente = await Paciente.findOne({
+        where: {
+          [Op.or]: [{ cpf }, { rg }, { matricula }],
+        },
+      });
 
-            await Paciente.create({
-                nome,
-                matricula,
-                dataNascimento,
-                sexo,
-                cpf: cpfLimpo,
-                rg: rgLimpo,
-                telefone: telefoneLimpo,
-                telefoneContato: telefoneContatoLimpo,
-                imagePath: req.file ? req.file.filename : null,
-                ...dadosBasicos,
-                cadastroCompleto: false,
-            });
+      if (pacienteExistente) {
+        req.flash('error_msg', 'Já existe um paciente com esse CPF, RG ou matrícula.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
 
-            req.flash('success_msg', 'Paciente cadastrado com sucesso!');
-            res.redirect('/pacientes');
-        } catch (error) {
-            console.error('Erro ao cadastrar paciente:', error);
-            req.flash('error_msg', 'Erro ao cadastrar paciente.');
-            res.redirect('/pacientes');
+      // Remove formatação dos campos
+      const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
+      const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
+      const cpfLimpo = cpf.replace(/\D/g, '');
+      const rgLimpo = rg.replace(/\D/g, '');
+
+      // Valida CPF
+      if (cpfLimpo.length !== 11) {
+        req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
+
+      // Valida RG
+      if (rgLimpo.length < 5) {
+        req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
+
+      // Valida telefone
+      if (telefoneLimpo && (telefoneLimpo.length < 10 || telefoneLimpo.length > 11)) {
+        req.flash('error_msg', 'O telefone deve ter entre 10 e 11 dígitos.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
+
+      if (telefoneContatoLimpo && (telefoneContatoLimpo.length < 10 || telefoneContatoLimpo.length > 11)) {
+        req.flash('error_msg', 'O telefone de contato deve ter entre 10 e 11 dígitos.');
+        return res.render('paciente/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
+
+      // Verifica se um arquivo foi enviado e se é uma imagem
+      let imagePath = null;
+      if (req.file) {
+        if (!req.file.mimetype.startsWith('image/')) {
+          req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+          return res.render('paciente/create', {
+            error_msg: req.flash('error_msg'),
+            success_msg: req.flash('success_msg'),
+          });
         }
-    },
+        imagePath = req.file.filename;
+      }
+
+      // Criação do paciente
+      await Paciente.create({
+        nome,
+        matricula,
+        dataNascimento,
+        sexo,
+        cpf: cpfLimpo,
+        rg: rgLimpo,
+        telefone: telefoneLimpo,
+        telefoneContato: telefoneContatoLimpo,
+        imagePath,
+        ...dadosBasicos,
+        cadastroCompleto: false,
+      });
+
+      req.flash('success_msg', 'Paciente cadastrado com sucesso!');
+      res.redirect('/pacientes');
+    } catch (error) {
+      console.error('Erro ao cadastrar paciente:', error);
+
+      if (error.name === 'SequelizeValidationError') {
+        const validationErrors = error.errors.map((err) => err.message);
+        req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+      } else if (error.name === 'SequelizeUniqueConstraintError') {
+        req.flash('error_msg', 'CPF, RG ou matrícula já cadastrados.');
+      } else {
+        req.flash('error_msg', 'Erro ao criar o paciente.');
+      }
+
+      return res.render('paciente/create', {
+        error_msg: req.flash('error_msg'),
+        success_msg: req.flash('success_msg'),
+      });
+    }
+  },
 ];
+
 
 exports.edit = async (req, res) => {
   try {
@@ -132,7 +225,7 @@ exports.update = [
   uploadErrorHandler, // Middleware para tratar erros de upload
   async (req, res) => {
     try {
-      console.log('Dados recebidos:', req.body); // Log para depuração
+      console.log('Dados recebidos para atualização:', req.body);
 
       const paciente = await Paciente.findByPk(req.params.id);
       if (!paciente) {
@@ -144,10 +237,8 @@ exports.update = [
 
       // Verificar campos obrigatórios
       if (!nome || !cpf || !matricula || !dataNascimento || !sexo || !rg) {
-        const errorMessage = 'Os campos nome, CPF, matrícula, data de nascimento, sexo e RG são obrigatórios.';
-        console.error(errorMessage, { nome, cpf, matricula, dataNascimento, sexo, rg });
-        req.flash('error_msg', errorMessage);
-        return res.redirect(`/pacientes/edit/${req.params.id}`);
+        req.flash('error_msg', 'Os campos nome, CPF, matrícula, data de nascimento, sexo e RG são obrigatórios.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
       // Remove formatação dos campos
@@ -156,7 +247,53 @@ exports.update = [
       const cpfLimpo = cpf.replace(/\D/g, '');
       const rgLimpo = rg.replace(/\D/g, '');
 
-      // Atualizar os dados do paciente
+      // Valida CPF
+      if (cpfLimpo.length !== 11) {
+        req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
+      }
+
+      // Valida RG
+      if (rgLimpo.length < 5) {
+        req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
+      }
+
+      // Valida telefone
+      if (telefoneLimpo && (telefoneLimpo.length < 10 || telefoneLimpo.length > 11)) {
+        req.flash('error_msg', 'O telefone deve ter entre 10 e 11 dígitos.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
+      }
+
+      if (telefoneContatoLimpo && (telefoneContatoLimpo.length < 10 || telefoneContatoLimpo.length > 11)) {
+        req.flash('error_msg', 'O telefone de contato deve ter entre 10 e 11 dígitos.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
+      }
+
+      // Verifica se o CPF, RG ou matrícula já estão cadastrados em outro paciente
+      const pacienteExistente = await Paciente.findOne({
+        where: {
+          [Op.or]: [{ cpf: cpfLimpo }, { rg: rgLimpo }, { matricula }],
+          id: { [Op.ne]: req.params.id }, // Exclui o próprio paciente da verificação
+        },
+      });
+
+      if (pacienteExistente) {
+        req.flash('error_msg', 'Já existe um paciente com esse CPF, RG ou matrícula.');
+        return res.redirect(`/pacientes/${req.params.id}/edit`);
+      }
+
+      // Mantém a imagem antiga caso nenhuma nova seja enviada
+      let imagePath = paciente.imagePath;
+      if (req.file) {
+        if (!req.file.mimetype.startsWith('image/')) {
+          req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+          return res.redirect(`/pacientes/${req.params.id}/edit`);
+        }
+        imagePath = req.file.filename;
+      }
+
+      // Atualiza os dados do paciente
       await paciente.update({
         nome,
         cpf: cpfLimpo,
@@ -166,7 +303,7 @@ exports.update = [
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
-        imagePath: req.file ? req.file.filename : paciente.imagePath, // Mantém a imagem existente se nenhuma nova for enviada
+        imagePath,
       });
 
       req.flash('success_msg', 'Paciente atualizado com sucesso.');
@@ -174,21 +311,41 @@ exports.update = [
     } catch (error) {
       console.error('Erro ao atualizar paciente:', error);
       req.flash('error_msg', 'Erro ao atualizar paciente.');
-      res.redirect(`/pacientes/edit/${req.params.id}`);
+      res.redirect(`/pacientes/${req.params.id}/edit`);
     }
   },
 ];
 
-
 exports.delete = async (req, res) => {
   try {
     const paciente = await Paciente.findByPk(req.params.id);
+
     if (!paciente) {
       return res.status(404).send('Paciente não encontrado.');
     }
+
+    // Caminho do diretório de uploads
+    const imagePath = paciente.imagePath ? path.join(__dirname, '../uploads/images/', paciente.imagePath) : null;
+    const documentPath = paciente.documentPath ? path.join(__dirname, '../uploads/documents/', paciente.documentPath) : null;
+
+    // Remover imagem se existir
+    if (imagePath && fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+      console.log(`Imagem deletada: ${imagePath}`);
+    }
+
+    // Remover documento se existir
+    if (documentPath && fs.existsSync(documentPath)) {
+      fs.unlinkSync(documentPath);
+      console.log(`Documento deletado: ${documentPath}`);
+    }
+
+    // Excluir paciente do banco de dados
     await Paciente.destroy({ where: { id: req.params.id } });
+
     req.flash('success_msg', 'Paciente deletado com sucesso.');
     res.redirect('/pacientes');
+
   } catch (error) {
     req.flash('error_msg', 'Erro ao deletar paciente.');
     console.error('Erro ao deletar paciente:', error);
@@ -218,14 +375,25 @@ exports.perfil = async (req, res) => {
       ],
     });
 
-    if (paciente) {
-      return res.render('paciente/perfil', { paciente });
-    } else {
+    // Se paciente for null, retorna 404 antes de acessar qualquer propriedade
+    if (!paciente) {
       return res.status(404).send('Paciente não encontrado.');
     }
+
+    console.log('Caminho da imagem:', paciente.imagePath);
+    console.log('URL da imagem:', `/uploads/images/${paciente.imagePath}`);
+
+    const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
+
+    return res.render('paciente/perfil', { 
+      paciente,
+      imagePath: imagePath, // Constrói a URL corretamente
+    });
+
   } catch (error) {
     console.error('Erro ao buscar perfil do paciente:', error);
     return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };
+
 

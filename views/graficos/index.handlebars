@@ -1,88 +1,232 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Estatísticas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1, h2 {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
       color: #333;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+    .totals {
+      display: flex;
+      justify-content: space-between;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    .totals div {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .chart-container {
+      width: 100%;
+      margin: 20px 0;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-top: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 12px;
       text-align: left;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #3498db;
+      color: white;
+      text-transform: uppercase;
+    }
+    canvas {
+      max-width: 100%;
+      height: 400px;
     }
   </style>
 </head>
 <body>
-  <h1>Estatísticas de Pacientes, Encaminhamentos e Atendimentos</h1>
+  <div class="container">
+    <div class="totals">
+      <div>Total de Pacientes: {{totalPacientes}}</div>
+      <div>Total de Encaminhamentos: {{totalEncaminhamentos}}</div>
+      <div>Total de Atendimentos: {{totalAtendimentos}}</div>
+    </div>
+    <h2>Pacientes por Período</h2>
+    <div class="chart-container">
+      <canvas id="pacientesChart"></canvas>
+    </div>
+    <h2>Encaminhamentos por Período</h2>
+    <div class="chart-container">
+      <canvas id="encaminhamentosChart"></canvas>
+    </div>
+    <h2>Atendimentos por Período</h2>
+    <div class="chart-container">
+      <canvas id="atendimentosChart"></canvas>
+    </div>
+  </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Pass the dynamic data from Handlebars into JavaScript
+    const pacientesLabels = '{{pacientesLabels}}'; // Certifique-se de que isso é um array
+    const pacientesData = '{{pacientesData}}'; // Certifique-se de que isso é um array
+    const encaminhamentosLabels = '{{encaminhamentosLabels}}'; // Certifique-se de que isso é um array
+    const encaminhamentosData = '{{encaminhamentosData}}'; // Certifique-se de que isso é um array
+    const atendimentosLabels = '{{atendimentosLabels}}'; // Certifique-se de que isso é um array
+    const atendimentosData = '{{atendimentosData}}'; // Certifique-se de que isso é um array
 
-  <h2>Pacientes por Período</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Mês/Ano</th>
-        <th>Quantidade de Pacientes</th>
-      </tr>
-    </thead>
-<tbody>
-  {{#each pacientesLabels}}
-    <tr>
-      <td>{{this}}</td>
-      <td>{{lookup ../pacientesData @index}}</td>
-    </tr>
-  {{/each}}
-</tbody>
 
-  </table>
 
-  <h2>Encaminhamentos Realizados por Período</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Mês/Ano</th>
-        <th>Quantidade de Encaminhamentos</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each encaminhamentosLabels}}
-        <tr>
-          <td>{{this}}</td>
-          <td>{{lookup ../encaminhamentosData @index}}</td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+    // Pacientes Chart
+    const pacientesCtx = document.getElementById("pacientesChart").getContext("2d");
+    new Chart(pacientesCtx, {
+      type: "bar",
+      data: {
+        labels: pacientesLabels,
+        datasets: [{
+          label: "Quantidade de Pacientes",
+          data: pacientesData,
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            },
+            grid: {
+              color: "rgba(200, 200, 200, 0.5)"
+            }
+          },
+          x: {
+            grid: {
+              color: "rgba(200, 200, 200, 0.5)"
+            }
+          }
+        }
+      }
+    });
 
-  <h2>Atendimentos por Período</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Mês/Ano</th>
-        <th>Quantidade de Atendimentos</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each atendimentosLabels}}
-        <tr>
-          <td>{{this}}</td>
-          <td>{{lookup ../atendimentosData @index}}</td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+    // Encaminhamentos Chart
+    const encaminhamentosCtx = document.getElementById("encaminhamentosChart").getContext("2d");
+    new Chart(encaminhamentosCtx, {
+      type: "bar",
+      data: {
+        labels: encaminhamentosLabels,
+        datasets: [{
+          label: "Quantidade de Encaminhamentos",
+          data: encaminhamentosData,
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            },
+            grid: {
+              color: "rgba(200, 200, 200, 0.5)"
+            }
+          },
+          x: {
+            grid: {
+              color: "rgba (200, 200, 200, 0.5)"
+            }
+          }
+        }
+      }
+    });
+
+    // Atendimentos Chart
+    const atendimentosCtx = document.getElementById("atendimentosChart").getContext("2d");
+    new Chart(atendimentosCtx, {
+      type: "bar",
+      data: {
+        labels: atendimentosLabels,
+        datasets: [{
+          label: "Quantidade de Atendimentos",
+          data: atendimentosData,
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            },
+            grid: {
+              color: "rgba(200, 200, 200, 0.5)"
+            }
+          },
+          x: {
+            grid: {
+              color: "rgba(200, 200, 200, 0.5)"
+            }
+          }
+        }
+      }
+    });
+  });
+
+    const totalPacientes = pacientesData.reduce((acc, val) => acc + val, 0);
+    const totalEncaminhamentos = encaminhamentosData.reduce((acc, val) => acc + val, 0);
+    const totalAtendimentos = atendimentosData.reduce((acc, val) => acc + val, 0);
+
+    // Exibir totais
+    document.getElementById("totalPacientes").innerText = `Total de Pacientes: ${totalPacientes}`;
+    document.getElementById("totalEncaminhamentos").innerText = `Total de Encaminhamentos: ${totalEncaminhamentos}`;
+    document.getElementById("totalAtendimentos").innerText = `Total de Atendimentos: ${totalAtendimentos}`;
+
+
+  
+</script>
 </body>
 </html>
+

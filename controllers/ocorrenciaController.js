@@ -44,10 +44,14 @@ const ocorrenciaController = {
         req.flash('error_msg', 'Usuário não autenticado.');
         return res.redirect('/login');
       }
-
-      const profissionalLogado = req.user;
+  
+      // Obtém o ID do profissional logado
+      const profissionalId = req.user.profissionalId;
+      console.log('ID do profissional logado:', req.user.profissionalId);
+  
+      // Renderiza a view passando o ID do profissional
       return res.render('ocorrencias/create', {
-        profissionalLogado,
+        profissionalId, // Passa o ID do profissional para a view
       });
     } catch (error) {
       console.error('Erro ao carregar o formulário:', error);

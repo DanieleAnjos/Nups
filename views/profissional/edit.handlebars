@@ -60,11 +60,37 @@
     <form action="/profissionais/{{profissional.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_method" value="PUT">
       
+          {{#if success_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: '{{success_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+
+    <!-- Mensagens de erro -->
+    {{#if error_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: '{{error_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
       <!-- Informações Pessoais -->
       <fieldset class="mb-4">
         <legend class="text-primary mb-3">Informações Pessoais</legend>
         <div class="row g-3">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <label for="nome" class="form-label">Nome:</label>
             <input type="text" class="form-control" name="nome" id="nome" value="{{profissional.nome}}" required>
           </div>
@@ -72,15 +98,19 @@
             <label for="email" class="form-label">Email:</label>
             <input type="email" class="form-control" name="email" id="email" value="{{profissional.email}}" required>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label for="cpf" class="form-label">CPF:</label>
             <input type="text" class="form-control" name="cpf" id="cpf" value="{{profissional.cpf}}" required>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
+            <label for="matricula" class="form-label">Matricula:</label>
+            <input type="text" class="form-control" name="matricula" id="matricula" value="{{profissional.matricula}}" required>
+          </div>
+          <div class="col-md-6">
             <label for="dataNascimento" class="form-label">Data de Nascimento:</label>
             <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" value="{{profissional.dataNascimento}}" required>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label for="sexo" class="form-label">Sexo:</label>
             <select class="form-select" name="sexo" required>
               <option value="Masculino" {{#if (eq profissional.sexo "Masculino")}}selected{{/if}}>Masculino</option>

@@ -2,19 +2,37 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Verifica se o diretório 'uploads' existe, se não, cria
-const uploadDir = path.join(__dirname, '../uploads/');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+// Verifica se os diretórios 'uploads/images' e 'uploads/documents' existem, se não, cria
+const imagesDir = path.join(__dirname, '../uploads/images/');
+const documentsDir = path.join(__dirname, '../uploads/documents/');
+
+if (!fs.existsSync(imagesDir)) {
+    fs.mkdirSync(imagesDir, { recursive: true });
+}
+if (!fs.existsSync(documentsDir)) {
+    fs.mkdirSync(documentsDir, { recursive: true });
 }
 
 // Configuração do armazenamento
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, uploadDir);
+        // Verifica se o arquivo é uma imagem ou um documento e define o diretório de destino
+        const filetypesImages = /jpeg|jpg|png|gif/;
+        const filetypesDocuments = /pdf|doc|docx|xlsx|txt/;
+
+        const isImage = filetypesImages.test(path.extname(file.originalname).toLowerCase()) || filetypesImages.test(file.mimetype);
+        const isDocument = filetypesDocuments.test(path.extname(file.originalname).toLowerCase()) || filetypesDocuments.test(file.mimetype);
+
+        if (isImage) {
+            cb(null, imagesDir); // Salva imagens na pasta 'uploads/images'
+        } else if (isDocument) {
+            cb(null, documentsDir); // Salva documentos na pasta 'uploads/documents'
+        } else {
+            cb(new Error('Apenas arquivos de imagem (JPEG, PNG, GIF) e documentos (PDF, DOC, DOCX, XLSX, TXT) são permitidos!'));
+        }
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}${path.extname(file.originalname)}`); // Renomear arquivo para evitar conflitos
+        cb(null, `${Date.now()}${path.extname(file.originalname)}`); // Renomeia o arquivo para evitar conflitos
     },
 });
 

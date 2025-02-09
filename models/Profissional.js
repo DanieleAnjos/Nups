@@ -150,6 +150,12 @@ Profissional.associate = (models) => {
      foreignKey: 'autor',
       as: 'discussaoCasos' });
 
+      Profissional.hasMany(models.Usuario, {
+        foreignKey: 'profissionalId',
+        as: 'usuarios',
+      });
+      
+      
 };
 
 

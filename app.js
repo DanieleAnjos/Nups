@@ -210,6 +210,8 @@ app.use(session({
 }));
 
 
+
+
 sessionStore.sync();
 
 
@@ -289,6 +291,7 @@ const accessControl = {
       '/profissionais',
       '/graficos',
       '/discussoes',
+      '/usuarios',
 
     ],
     'Assistente social': [
@@ -371,6 +374,7 @@ app.use('/graficos', graficosRoutes);
 app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
 app.use('/discussoes', discussaoCasoRoutes);
+app.use('/usuarios', usuarioRoutes);
 
 
 

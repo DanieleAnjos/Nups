@@ -180,28 +180,30 @@
             </table>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            {{#if error_msg}}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: '{{error_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
-            
-            {{#if success_msg}}
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sucesso',
-                    text: '{{success_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
-        });
-    </script>
 </body>
 </html> ⬤
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const successMsg = "{{success_msg}}";
+    const errorMsg = "{{error_msg}}";
+
+    if (successMsg) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: successMsg,
+            confirmButtonText: 'Ok'
+        });
+    }
+
+    if (errorMsg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: errorMsg,
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+</script>

@@ -27,7 +27,8 @@ router.get('/', async (req, res) => {
 
     const pacientesData = pacientesPorPeriodo.map(paciente => paciente.get('quantidade'));
 
-    const totalPacientes = await Paciente.count();
+    // Calcular total de pacientes a partir dos dados recuperados
+    const totalPacientes = pacientesData.reduce((acc, val) => acc + val, 0);
 
     // Gráfico de Encaminhamentos Realizados (sem filtro de status)
     const encaminhamentosPorPeriodo = await Encaminhamento.findAll({
@@ -47,7 +48,8 @@ router.get('/', async (req, res) => {
 
     const encaminhamentosData = encaminhamentosPorPeriodo.map(encaminhamento => encaminhamento.get('quantidade'));
 
-    const totalEncaminhamentos = await Encaminhamento.count();
+    // Calcular total de encaminhamentos a partir dos dados recuperados
+    const totalEncaminhamentos = encaminhamentosData.reduce((acc, val) => acc + val, 0);
 
     // Gráfico de Atendimentos por Período
     const atendimentosPorPeriodo = await Atendimento.findAll({
@@ -67,7 +69,15 @@ router.get('/', async (req, res) => {
 
     const atendimentosData = atendimentosPorPeriodo.map(atendimento => atendimento.get('quantidade'));
 
-    const totalAtendimentos = await Atendimento.count();
+    // Calcular total de atendimentos a partir dos dados recuperados
+    const totalAtendimentos = atendimentosData.reduce((acc, val) => acc + val, 0);
+
+    console.log('Pacientes Labels:', pacientesLabels);
+    console.log('Pacientes Data:', pacientesData);
+    console.log('Encaminhamentos Labels:', encaminhamentosLabels);
+    console.log('Encaminhamentos Data:', encaminhamentosData);
+    console.log('Atendimentos Labels:', atendimentosLabels);
+    console.log('Atendimentos Data:', atendimentosData);
 
     // Renderizar a view com os dados dos gráficos
     res.render('graficos/index', {
@@ -81,7 +91,6 @@ router.get('/', async (req, res) => {
       atendimentosData,
       totalAtendimentos,
     });
-    
     
   } catch (error) {
     console.error('Erro ao buscar dados para gráficos:', error);

@@ -9,6 +9,7 @@ const Paciente = require('./Paciente');
 const DiscussaoCaso = require('./DiscussaoCaso');
 const AjusteEstoque = require('./AjusteEstoque'); 
 const Produto = require('./Produto');
+const Usuario = require('./Usuario');
 
 // Criando um objeto para armazenar os modelos
 const models = {
@@ -20,6 +21,7 @@ const models = {
   DiscussaoCaso, // Adicione os outros modelos aqui
   AjusteEstoque, // Adicione os outros modelos aqui
   Produto, // Adicione os outros modelos aqui
+  Usuario, // Adicione os outros modelos aqui
 };
 
 // Configurando as associações (evita erro caso um modelo não tenha `associate`)

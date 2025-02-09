@@ -10,5 +10,9 @@ router.post('/reset/:token', usuarioController.resetPassword);
 
 router.get('/lista', usuarioController.listUsers);
 
+router.get('/changePassword', usuarioController.changePasswordView);
+router.post('/changePassword', usuarioController.changePassword);
+
+
 
 module.exports = router;

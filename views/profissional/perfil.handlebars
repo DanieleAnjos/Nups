@@ -1,94 +1,276 @@
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<!-- Inputmask -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil do Profissional</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fa;
+      color: #333;
+    }
 
-<div class="profile-container container-fluid">
+    .profile-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      overflow: hidden;
+    }
+
+
+    .profile-header {
+  background: linear-gradient(135deg, #5b9bd5, #4a77e5);
+  color: white;
+  padding: 2rem;
+  border-radius: 10px; /* Adiciona bordas arredondadas ao cabeçalho */
+}
+
+
+
+.text-blue {
+  color: #007bff; /* Cor azul padrão do Bootstrap */
+}
+
+.text-blue:hover {
+  color: #0056b3; /* Cor azul mais escura ao passar o mouse */
+}
+
+.image-container {
+  width: 100px; /* Tamanho fixo para a imagem */
+  height: 100px; /* Tamanho fixo para a imagem */
+  border-radius: 50%; /* Para manter a imagem circular */
+  margin-right: 2rem; /* Espaço entre a imagem e o texto */
+  overflow: hidden; /* Para garantir que a imagem não ultrapasse o contêiner */
+  border: 4px solid white; /* Borda branca ao redor da imagem */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+}
+
+.profile-image {
+  width: 100%; /* A imagem ocupa 100% do contêiner */
+  height: 100%; /* A imagem ocupa 100% do contêiner */
+  object-fit: cover; /* Para garantir que a imagem preencha o contêiner */
+}
+
+  .profile-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .profile-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    text-transform: capitalize;
+  }
+
+
+    .profile-content {
+      padding: 2rem;
+    }
+
+    .info-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-item {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .info-item strong {
+      color: #5b9bd5;
+    }
+
+    .tab-content {
+      margin-top: 2rem;
+    }
+
+    .card {
+      margin-bottom: 1.5rem;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #5b9bd5, #4a77e5);
+      color: white;
+      padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+    }
+
+    .table th {
+      background: #f4f6f8;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        padding: 1rem;
+      }
+
+      .profile-name {
+        font-size: 1rem;
+      }
+
+      .image-container {
+        width: 80px; /* Ajuste o tamanho conforme necessário */
+        height: 80px; /* Ajuste o tamanho conforme necessário */
+        border-radius: 50%; /* Para manter a imagem circular */
+        overflow: hidden; /* Para garantir que a imagem não ultrapasse o contêiner */
+      }
+
+      .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Para garantir que a imagem preencha o contêiner */
+      }
+
+      .info-item {
+        font-size: 0.9rem;
+      }
+
+      .card-header {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-header {
+        text-align: center;
+      }
+
+      .profile-name {
+        font-size: 1.2rem;
+      }
+
+      .info-item {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="profile-container">
   <div class="profile-card">
     <!-- Profile Header -->
-    <div class="profile-header row align-items-center">
-      <div class="image-container col-12 col-md-4 text-center">
-        {{#if profissional.imagePath}}
-          <img src="/uploads/{{profissional.imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image img-fluid rounded-circle">
-        {{else}}
-          <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image img-fluid rounded-circle">
-        {{/if}}
+<div class="profile-header d-flex align-items-center">
+  <div class="image-container me-4">
+    {{#if imagePath}}
+<img src="{{imagePath}}" alt="Foto de {{profissional.nome}}" class="profile-image">    
+{{else}}
+    <img src="/images/default-profile.png" alt="Foto padrão" class="profile-image">
+    {{/if}}
+  </div>
+  <div>
+    <h1 class="profile-name">&nbsp;{{profissional.nome}}</h1>
+    <span class="profile-badge">{{profissional.cargo}}</span>
+  </div>
+</div>
+
+
+<!-- Profile Content -->
+<div class="profile-content">
+  <div class="info-section">
+    <h2>Informações Pessoais</h2>
+    <div class="row">
+      <div class="col-md-6 info-item">
+        <strong>Nome:</strong> {{profissional.nome}}
       </div>
-        <h1 class="profile-name">{{profissional.nome}}</h1>
-        <div class="profile-badge-container">
-          <span class="profile-badge badge text-center">{{profissional.cargo}}</span>
-        </div>
+      <div class="col-md-6 info-item">
+        <strong>Email:</strong> {{profissional.email}} 
+        <a href="mailto:{{profissional.email}}" class="text-decoration-none text-blue"><i class="fa fa-envelope"></i></a>
+      </div>
+      <div class="col-md-6 info-item">
+        <strong>Admissão:</strong> {{formatDate profissional.dataAdmissao}}
+      </div>
+      <div class="col-md-6 info-item">
+        <strong>Telefone:</strong> {{formatTelefone profissional.telefone}} 
+        <a href="tel:{{formatTelefone profissional.telefone}}" class="text-decoration-none text-blue"><i class="fas fa-phone"></i></a>
+      </div>
+      <div class="col-md-6 info-item">
+        <strong>CPF:</strong> {{formatCPF profissional.cpf}}
+      </div>
+      <div class="col-md-6 info-item">
+        <strong>Endereço:</strong> {{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
+      </div>
     </div>
+  </div>
 
-    <!-- Profile Content -->
-    <div class="profile-content mt-4">
-      <div class="info-section">
-        <h2>Informações Pessoais</h2>
-        <div class="row">
-          <div class="col-12 info-item">
-            <strong>Nome:</strong>&nbsp; {{profissional.nome}}
-          </div>
-          <div class="col-12 col-md-6 info-item">
-            <strong>Email:</strong>&nbsp; {{profissional.email}}
-          </div>
-          <div class="col-12 col-md-6 info-item">
-            <strong>Admissão:</strong>&nbsp; {{formatDate profissional.dataAdmissao}}
-          </div>
-          <div class="col-12 col-md-6 info-item">
-            <strong>Telefone:</strong>&nbsp; {{formatTelefone profissional.telefone}}
-          </div>
-          <div class="col-12 col-md-6 info-item">
-            <strong>CPF:</strong>&nbsp; {{formatCPF profissional.cpf}}
-          </div>
-          <div class="col-12 info-item">
-            <strong>Endereço:</strong>&nbsp; {{profissional.endereco}}, {{profissional.bairro}}, {{profissional.cidade}} - {{profissional.estado}}
-          </div>
-        </div>
-      </div>
-        <h4><strong>Contato de Emergência</strong></h4>
-        <div class="row">
-          <div class="col-12 col-md-6 info-item">
-            <strong>Nome:</strong>&nbsp; {{profissional.contatoEmergenciaNome}}
-          </div>
-          <div class="col-12 col-md-6 info-item">
-            <strong>Telefone:</strong> {{formatTelefone profissional.telefoneContatoEmergencia}}
-          </div>
-        </div>
-      </div>
-      </div>
+  <hr>
 
-  <!-- Tabs Section -->
-  <div class="container mt-4">
-    <ul class="nav nav-tabs justify-content-center" id="profileTabs" role="tablist">
-      <li class="nav-item">
-        <button class="nav-link active" id="encaminhamentos-tab" data-bs-toggle="tab" data-bs-target="#encaminhamentos" type="button" role="tab" aria-controls="encaminhamentos" aria-selected="true">
-          Encaminhamentos
-        </button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">
-          Atendimentos
-        </button>
-      </li>
-      {{#if (eq profissional.cargo "Administrador")}}
+  <h4>Contato de Emergência</h4>
+  <div class="row">
+    <div class="col-md-6 info-item">
+      <strong>Nome:</strong> {{profissional.contatoEmergenciaNome}}
+    </div>
+    <div class="col-md-6 info-item">
+      <strong>Telefone:</strong> {{formatTelefone profissional.telefoneContatoEmergencia}}
+    </div>
+  </div>
+
+  <hr>
+
+  <h4>Informações de Acesso</h4>
+  <div class="row">
+    <div class="col-md-6 info-item">
+      <strong>Usuário:</strong> {{usuario}}
+    </div>
+    <div class="col-md-6 text-end">
+      <a href="/auth/changePassword" class="btn btn-primary"><i class="fas fa-key"></i> Alterar senha</a>
+    </div>
+  </div>
+</div>
+
+    <!-- Tabs Section -->
+    <div class="container mt-4">
+      <ul class="nav nav-tabs justify-content-center" id="profileTabs" role="tablist">
         <li class="nav-item">
-          <button class="nav-link" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">
-            Ocorrências
-          </button>
+          <button class="nav-link active" id="encaminhamentos-tab" data-bs-toggle="tab" data-bs-target="#encaminhamentos" type="button" role="tab" aria-controls="encaminhamentos" aria-selected="true">Encaminhamentos</button>
         </li>
-      {{/if}}
-    </ul>
+        <li class="nav-item">
+          <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">Atendimentos</button>
+        </li>
+        {{#if (eq profissional.cargo "Administrador")}}
+        <li class="nav-item">
+          <button class="nav-link" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">Ocorrências</button>
+        </li>
+        {{/if}}
+      </ul>
 
-    <!-- Tab Content -->
-    <div class="tab-content mt-4">
-      <!-- Encaminhamentos -->
-      <div class="tab-pane fade show active" id="encaminhamentos" role="tabpanel" aria-labelledby="encaminhamentos-tab">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="h5 mb-0">Encaminhamentos Relacionados</h2>
-          </div>
-          <div class="card-body">
-            {{#if encaminhamentos.length}}
+      <!-- Tab Content -->
+      <div class="tab-content mt-4">
+        <!-- Encaminhamentos -->
+        <div class="tab-pane fade show active" id="encaminhamentos" role="tabpanel" aria-labelledby="encaminhamentos-tab">
+          <div class="card">
+            <div class="card-header">Encaminhamentos Relacionados</div>
+            <div class="card-body">
+              {{#if encaminhamentos.length}}
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
@@ -102,78 +284,74 @@
                   </thead>
                   <tbody>
                     {{#each encaminhamentos}}
-                      <tr>
-                        <td>{{formatDateTime createdAt}}</td>
-                        <td>{{nomePaciente}}</td>
-                        <td>{{assuntoAcolhimento}}</td>
-                        <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
-                        <td>
-                          {{#if visto}}
-                            <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
-                          {{else}}
-                            <a href="/encaminhamentos/{{id}}/visualizar" class="btn btn-info btn-sm">Marcar como Visto</a>
-                          {{/if}}
-                          <a href="/encaminhamentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
-                        </td>
-                      </tr>
+                    <tr>
+                      <td>{{formatDateTime createdAt}}</td>
+                      <td>{{nomePaciente}}</td>
+                      <td>{{assuntoAcolhimento}}</td>
+                      <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
+                      <td>
+                        {{#if visto}}
+                        <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
+                        {{else}}
+                        <a href="/encaminhamentos/{{id}}/visualizar" class="btn btn-info btn-sm">Marcar como Visto</a>
+                        {{/if}}
+                        <a href="/encaminhamentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
+                      </td>
+                    </tr>
                     {{/each}}
                   </tbody>
                 </table>
               </div>
-            {{else}}
+              {{else}}
               <p>Nenhum encaminhamento encontrado para este profissional.</p>
-            {{/if}}
+              {{/if}}
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Atendimentos -->
-      <div class="tab-pane fade" id="atendimentos" role="tabpanel" aria-labelledby="atendimentos-tab">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="h5 mb-0">Atendimentos</h2>
-          </div>
-          <div class="card-body">
-            {{#if atendimentos.length}}
+        <!-- Atendimentos -->
+        <div class="tab-pane fade" id="atendimentos" role="tabpanel" aria-labelledby="atendimentos-tab">
+          <div class="card">
+            <div class="card-header">Atendimentos</div>
+            <div class="card-body">
+              {{#if atendimentos.length}}
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
                     <tr>
                       <th>Data</th>
                       <th>Paciente</th>
-                      <th>matricula Paciente</th>
+                      <th>Matrícula Paciente</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {{#each atendimentos}}
-                      <tr>
-                        <td>{{formatDateTime dataAtendimento}}</td>
-                        <td>{{paciente.nome}}</td>
-                        <td>{{paciente.matricula}}</td>
-                        <td>
-                          <a href="/atendimentos/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
-                        </td>
-                      </tr>
+                    <tr>
+                      <td>{{formatDateTime dataAtendimento}}</td>
+                      <td>{{paciente.nome}}</td>
+                      <td>{{paciente.matricula}}</td>
+                      <td>
+                        <a href="/atendimentos/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
+                      </td>
+                    </tr>
                     {{/each}}
                   </tbody>
                 </table>
               </div>
-            {{else}}
+              {{else}}
               <p>Sem atendimentos relacionados.</p>
-            {{/if}}
+              {{/if}}
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Ocorrências -->
-      <div class="tab-pane fade" id="ocorrencias" role="tabpanel" aria-labelledby="ocorrencias-tab">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="h5 mb-0">Ocorrências</h2>
-          </div>
-          <div class="card-body">
-            {{#if ocorrencias.length}}
+        <!-- Ocorrências -->
+        <div class="tab-pane fade" id="ocorrencias" role="tabpanel" aria-labelledby="ocorrencias-tab">
+          <div class="card">
+            <div class="card-header">Ocorrências</div>
+            <div class="card-body">
+              {{#if ocorrencias.length}}
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
@@ -186,21 +364,22 @@
                   </thead>
                   <tbody>
                     {{#each ocorrencias}}
-                      <tr>
-                        <td>{{formatDate data}}</td>
-                        <td>{{ horarioChegada}}</td>
-                        <td>{{ horarioSaida}}</td>
-                        <td>
-                          <a href="/ocorrencias/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
-                        </td>
-                      </tr>
+                    <tr>
+                      <td>{{formatDate data}}</td>
+                      <td>{{horarioChegada}}</td>
+                      <td>{{horarioSaida}}</td>
+                      <td>
+                        <a href="/ocorrencias/{{this.id}}" class="btn btn-warning btn-sm">Ver Detalhes</a>
+                      </td>
+                    </tr>
                     {{/each}}
                   </tbody>
                 </table>
               </div>
-            {{else}}
+              {{else}}
               <p>Sem ocorrências relacionadas.</p>
-            {{/if}}
+              {{/if}}
+            </div>
           </div>
         </div>
       </div>
@@ -217,318 +396,5 @@
   });
 </script>
 
-
-
-
-
-
-<!-- Lista de Encaminhamentos -->
-
-<!-- Bootstrap CSS -->
-
-<!-- Bootstrap Bundle com JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<!-- Lista de Encaminhamentos -->
-
-<style>
-  .btn-secondary[disabled] {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-  .profile-container {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    background: linear-gradient(135deg, #e2ebf0, #9ac4e2);
-    font-family: 'Inter', sans-serif;
-  }
-
-.profile-card {
-  display: flex;
-  flex-direction: row;
-  max-width: 100%; /* Adapta à largura disponível */
-  width: 1200px; /* Largura máxima */
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin: 0 auto; /* Centraliza horizontalmente */
-}
-
-  .profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #5b9bd5, #4a77e5);
-    color: white;
-    flex: 0 0 200px; /* Reduz tamanho da lateral */
-  }
-
-  .image-container {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #ffffff;
-  }
-
-  .profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .profile-name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: center;
-    margin: 0.5rem 0;
-  }
-
-  .profile-badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.2rem 0.8rem;
-    border-radius: 30px;
-    font-size: 0.85rem;
-    text-align: center;
-  }
-
-  .profile-content {
-    flex: 1;
-    padding: 3rem; /* Ajuste o padding para melhor espaçamento */
-  }
-
-  .info-section {
-    margin-bottom: 1.5rem;
-  }
-
-  .info-section h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .info-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    background: #f9f9f9;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-
-  .info-item i {
-    color: #5b9bd5;
-    margin-right: 0.5rem;
-  }
-
-  .info-single {
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
-  }
-
-  .info-single i {
-    color: #5b9bd5;
-    margin-right: 0.5rem;
-  }
-
-  .action-buttons {
-    margin-top: auto; /* Empurra o botão para a parte inferior */
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .back-button {
-    text-decoration: none;
-    background: #5b9bd5;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-  }
-
-  .back-button:hover {
-    background: #4a77e5;
-  }
-
-  .main-content {
-    margin-left: 80px;
-    padding: 0px;
-    transition: margin-left 0.3s, width 0.3s;
-    width: calc(100% - 80px);
-    margin-top: 0px;
-  }
-
-  .card {
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    margin-bottom: 2rem;
-    width: 100%;
-    max-width: 1200px; /* Ajusta a largura máxima do card */
-    height: auto;
-  }
-  .mt-4 {
-    padding-left: 28px;
-  }
-
-  .card-header {
-    background: linear-gradient(135deg, #5b9bd5, #4a77e5);
-    color: white;
-    padding: 1rem 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-    border-bottom: 1px solid #ddd;
-  }
-
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 0;
-  }
-
-  .table th, .table td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-
-  .table th {
-    background: #f4f6f8;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-  }
-
-  .table tbody tr:hover {
-    background: #f9f9f9;
-  }
-
-  .status {
-    display: inline-block;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-transform: capitalize;
-    color: white;
-  }
-
-  .status.EmAndamento {
-    background: #ffcc00; /* Status em andamento */
-  }
-
-  .status.Concluido {
-    background: #28a745; /* Status concluído */
-  }
-
-  .status.Pendente {
-    background: #dc3545; /* Status pendente */
-  }
-
-  .visualizado.sim {
-    color: #28a745;
-    font-weight: bold;
-  }
-
-  .visualizado.nao {
-    color: #dc3545;
-    font-weight: bold;
-  }
-
-  .no-encaminhamentos {
-    text-align: center;
-    color: #777;
-    font-size: 1rem;
-    padding: 1rem;
-    background: #f9f9f9;
-    border-radius: 4px;
-  }
-  
-
-  @media (max-width: 768px) {
-     .profile-card {
-    width: 100%; /* Ocupa toda a largura */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Ajusta sombra */
-  }
-
-  .profile-header {
-    flex-direction: column; /* Coloca imagem e informações em pilha */
-    text-align: center;
-  }
-
-  .profile-name {
-    font-size: 1.2rem;
-  }
-
-  .info-grid {
-    grid-template-columns: 1fr; /* Apenas uma coluna em telas menores */
-  }
-
-    .table th, .table td {
-      padding: 0.5rem 0.8rem;
-    }
-
-    .card {
-      width: 400px; /* Ajusta a largura para 95% da tela em dispositivos menores */
-      height: auto;
-    }
-
-    .card-body {
-      flex-direction: column;
-    }
-  }
-
-  @media (max-width: 480px) {
-  .profile-card {
-    border-radius: 5px; /* Reduz o arredondamento */
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Ajusta sombra para telas pequenas */
-  }
-  .profile-container {
-    padding: 10px;
-  }
-
-  .image-container {
-    width: 80px;
-    height: 80px;
-  }
-
-  .profile-name {
-    font-size: 1rem;
-  }
-
-  .info-item {
-    font-size: 0.9rem;
-  }
-  
-}
-</style>
+</body>
+</html>

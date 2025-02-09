@@ -11,6 +11,7 @@ const Encaminhamento = require('../models/Encaminhamento');
 const Atendimento = require('../models/Atendimento');
 const Ocorrencia = require('../models/Ocorrencia');
 const Paciente = require('../models/Paciente');
+const Usuario = require('../models/Usuario');
 
 
 
@@ -101,31 +102,65 @@ exports.generateReport = async (req, res) => {
 };
 
 exports.create = (req, res) => {
-  res.render('profissional/create', { error_msg: req.flash('error_msg') });
+  res.render('profissional/create', {
+    error_msg: req.flash('error_msg'), // Mensagens de erro
+    success_msg: req.flash('success_msg') // Mensagens de sucesso
+  });
 };
-
 exports.store = async (req, res) => {
+  // Executa o middleware de upload
   upload.single('imagem')(req, res, async (err) => {
     if (err) {
       req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
-      return res.redirect('/profissionais/create');
+      return res.render('profissional/create', {
+        error_msg: req.flash('error_msg'),
+        success_msg: req.flash('success_msg'),
+      });
     }
 
     try {
-      const { nome, email, cpf } = req.body;
+      const { nome, email, dataNascimento, cpf, matricula, telefone } = req.body;
 
       // Validação de campos obrigatórios
-      if (!nome || !email || !cpf || nome.trim() === "" || email.trim() === "" || cpf.trim() === "") {
-        req.flash('error_msg', 'Por favor, preencha todos os campos obrigatórios.');
-        return res.redirect('/profissionais/create');
+      const errors = validationResult(req); // Usa express-validator para validação
+      if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map((err) => err.msg);
+        req.flash('error_msg', errorMessages.join('. '));
+        return res.render('profissional/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
       }
 
-      const imagePath = req.file ? req.file.path : null;
+      // Verifica se o CPF já está cadastrado
+      const existingCpf = await Profissional.findOne({ where: { cpf } });
+      if (existingCpf) {
+        req.flash('error_msg', 'Já existe um profissional cadastrado com este CPF.');
+        return res.render('profissional/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
+
+      // Verifica se a matrícula já está cadastrada
+      const existingMatricula = await Profissional.findOne({ where: { matricula } });
+      if (existingMatricula) {
+        req.flash('error_msg', 'Já existe um profissional cadastrado com esta matrícula.');
+        return res.render('profissional/create', {
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg'),
+        });
+      }
 
       // Criação do profissional
       await Profissional.create({
-        ...req.body,
-        imagePath,
+        nome,
+        email,
+        dataNascimento,
+        cpf,
+        matricula,
+        telefone,
+        imagePath: req.file.filename, // Salva o nome do arquivo da imagem
       });
 
       req.flash('success_msg', 'Profissional criado com sucesso!');
@@ -133,15 +168,20 @@ exports.store = async (req, res) => {
     } catch (error) {
       console.error('Erro ao criar profissional:', error);
 
-      // Verificação de erros de validação
+      // Verificação de erros de validação do Sequelize
       if (error.name === 'SequelizeValidationError') {
         const validationErrors = error.errors.map((err) => err.message);
         req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+      } else if (error.name === 'SequelizeUniqueConstraintError') {
+        req.flash('error_msg', 'CPF ou matrícula já cadastrados.');
       } else {
         req.flash('error_msg', 'Erro ao criar o profissional.');
       }
 
-      return res.redirect('/profissionais/create'); // Redireciona para a página de criação em caso de erro
+      return res.render('profissional/create', {
+        error_msg: req.flash('error_msg'),
+        success_msg: req.flash('success_msg'),
+      }); // Renderiza a mesma página em caso de erro
     }
   });
 };
@@ -158,8 +198,8 @@ exports.edit = async (req, res) => {
 
     res.render('profissional/edit', {
       profissional: profissional.get({ plain: true }),
-      error_msg: req.flash('error_msg'),
-      success_msg: req.flash('success_msg'),
+      error_msg: req.flash('error_msg'), // Mensagens de erro
+      success_msg: req.flash('success_msg')
     });
   } catch (error) {
     console.error('Erro ao buscar profissional:', error);
@@ -207,7 +247,55 @@ exports.update = async (req, res) => {
         const errorMessage = 'Campos obrigatórios não preenchidos.';
         console.error(errorMessage, { nome, email, cpf });
         req.flash('error_msg', errorMessage);
-        return res.redirect(`/profissionais/edit/${req.params.id}`);
+        return res.render('profissional/edit', {
+          profissional: profissional.get({ plain: true }),
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg')
+        });
+      }
+
+      // Verificar formato do email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        req.flash('error_msg', 'Email inválido.');
+        return res.render('profissional/edit', {
+          profissional: profissional.get({ plain: true }),
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg')
+        });
+      }
+
+      // Verificar formato do CPF (apenas números)
+      const cpfRegex =  /^\d{3}\.\d{3}\.\d{3}-\d{2}$/ ; // CPF deve ter 11 dígitos
+      if (!cpfRegex.test(cpf)) {
+        req.flash('error_msg', 'CPF deve conter apenas números e ter 11 dígitos.');
+        return res.render('profissional/edit', {
+          profissional: profissional.get({ plain: true }),
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg')
+        });
+      }
+
+      // Verificar se o CPF já está cadastrado (exceto para o próprio profissional)
+      const existingCpf = await Profissional.findOne({ where: { cpf, id: { [Op.ne]: req.params.id } } });
+      if (existingCpf) {
+        req.flash('error_msg', 'Já existe um profissional cadastrado com este CPF.');
+        return res.render('profissional/edit', {
+          profissional: profissional.get({ plain: true }),
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg')
+        });
+      }
+
+      // Verificar se a matrícula já está cadastrada (exceto para o próprio profissional)
+      const existingMatricula = await Profissional.findOne({ where: { matricula, id: { [Op.ne]: req.params.id } } });
+      if (existingMatricula) {
+        req.flash('error_msg', 'Já existe um profissional cadastrado com esta matrícula.');
+        return res.render('profissional/edit', {
+          profissional: profissional.get({ plain: true }),
+          error_msg: req.flash('error_msg'),
+          success_msg: req.flash('success_msg')
+        });
       }
 
       // Atualização dos dados
@@ -226,7 +314,7 @@ exports.update = async (req, res) => {
         vinculo,
         contatoEmergenciaNome,
         telefoneContatoEmergencia,
-        imagePath, // Atualiza o caminho da imagem se uma nova for enviada
+        imagePath: req.file.filename, // Atualiza o caminho da imagem se uma nova for enviada
       });
 
       req.flash('success_msg', 'Profissional atualizado com sucesso!');
@@ -244,11 +332,14 @@ exports.update = async (req, res) => {
         req.flash('error_msg', 'Erro ao atualizar o profissional.');
       }
 
-      res.redirect(`/profissionais/edit/${req.params.id}`);
+      // Renderiza a página de edição com mensagens de erro
+      return res.render('profissional/edit', {
+        error_msg: req.flash('error_msg'),
+        success_msg: req.flash('success_msg')
+      });
     }
   });
 };
-
 
 
 exports.generateProfissionalReport = async (req, res) => {
@@ -366,8 +457,17 @@ exports.generateExcelReport = async (req, res) => {
 
   exports.show = async (req, res) => {
     try {
-      const profissional = await Profissional.findByPk(req.params.id);
-  
+      // Busca o profissional pelo ID, incluindo o Usuario associado
+      const profissional = await Profissional.findByPk(req.params.id, {
+        include: [
+          {
+            model: Usuario,
+            as: 'usuarios', // Alias definido na associação
+            attributes: ['usuario'], // Seleciona apenas o campo 'usuario'
+          },
+        ],
+      });
+
       if (!profissional) {
         req.flash('error_msg', 'Profissional não encontrado.');
         return res.redirect('/profissionais');
@@ -405,13 +505,21 @@ exports.generateExcelReport = async (req, res) => {
         where: { profissionalId: profissional.id },
         order: [['data', 'DESC']],  // Ordena por data da ocorrência
       });
-  
+      
+      const imagePath = profissional.imagePath ? `/uploads/images/${profissional.imagePath}` : null;
+
+
+
       // Renderiza a página com as informações do profissional
-      res.render('profissional/perfil', {
+      res.render('profissional/perfil',{
         profissional: profissional.get({ plain: true }),  // Transforma o modelo em objeto simples
         encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
         atendimentos: atendimentos.map(a => a.get({ plain: true })),
         ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
+        usuario: profissional.usuarios[0]?.usuario || 'Nenhum usuário associado',
+        imagePath: imagePath, // Constrói a URL corretamente
+
+
       });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);
@@ -429,61 +537,53 @@ exports.generateExcelReport = async (req, res) => {
         return res.redirect('/login');  // Redirecionar para a página de login
       }
   
-      const profissionalLogado = req.user;  // Profissional logado
+      const profissionalId = req.user.profissionalId; // Certifique-se de que `req.user` contém o ID correto do profissional
+      console.log('ID do profissional:', profissionalId);
   
-      const profissional = await Profissional.findByPk(req.params.id);
+      // Busca o profissional usando o ID do profissional
+      const profissional = await Profissional.findByPk(profissionalId);
+  
   
       if (!profissional) {
         req.flash('error_msg', 'Profissional não encontrado.');
         return res.redirect('/profissionais');
       }
   
-      // Verifica se o profissional logado é o mesmo que o solicitado
-      if (profissional.id !== profissionalLogado.id) {
-        req.flash('error_msg', 'Você não tem permissão para visualizar este perfil.');
-        return res.redirect('/profissionais');
-      }
-  
-      // Buscando o encaminhamento pelo ID (provavelmente id do encaminhamento passado na URL)
-      const encaminhamento = await Encaminhamento.findByPk(req.params.encaminhamentoId);
-  
-      if (!encaminhamento) {
-        req.flash('error_msg', 'Encaminhamento não encontrado.');
-      }
-  
-      // Buscar todos os encaminhamentos do profissional, utilizando a associação correta
+      // Buscar encaminhamentos relacionados ao profissional
       const encaminhamentos = await Encaminhamento.findAll({
         include: [
           {
             model: Profissional,
-            as: 'profissionalRecebido',  // Alias correto do profissionalEnvio
-            where: { nome: profissional.nome },  // Filtra pelo nome do profissional logado
+            as: 'profissionalRecebido',  // Alias correto do profissionalRecebido
+            where: { id: profissional.id },  // Filtra pelo ID do profissional logado
           }
         ],
         order: [['createdAt', 'DESC']],  // Ordena por data de criação
       });
   
-      // Buscar os atendimentos relacionados ao profissional
+      // Buscar atendimentos relacionados ao profissional
       const atendimentos = await Atendimento.findAll({
-        where: {
-          profissionalId: profissional.id, 
-        },
+        where: { profissionalId: profissional.id },
         order: [['dataAtendimento', 'DESC']],  // Ordena por data de atendimento
       });
   
-      // Buscar as ocorrências relacionadas ao profissional
+      // Buscar ocorrências relacionadas ao profissional
       const ocorrencias = await Ocorrencia.findAll({
         where: { profissionalId: profissional.id },
         order: [['data', 'DESC']],  // Ordena por data da ocorrência
       });
+
+      const imagePath = profissional.imagePath ? `/uploads/images/${profissional.imagePath}` : null;
+
   
-      // Renderiza a página com os dados do profissional e suas informações
+      // Renderiza a página com os dados
       res.render('profissional/meu_perfil', {
-        profissional: profissional.get({ plain: true }),  // Transforma o modelo em um objeto simples
-        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })) || [],  // Garante que será um array vazio se não houver encaminhamentos
-        atendimentos: atendimentos.map(a => a.get({ plain: true })) || [],  // Garante que será um array vazio se não houver atendimentos
-        ocorrencias: ocorrencias.map(o => o.get({ plain: true })) || [],  // Garante que será um array vazio se não houver ocorrências
-        encaminhamento: encaminhamento ? encaminhamento.get({ plain: true }) : null, // Garante que será null se não houver encaminhamento
+        profissional: profissional.get({ plain: true }),
+        encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })) || [],
+        atendimentos: atendimentos.map(a => a.get({ plain: true })) || [],
+        ocorrencias: ocorrencias.map(o => o.get({ plain: true })) || [],
+        imagePath: imagePath, // Constrói a URL corretamente
+
       });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);
@@ -491,6 +591,7 @@ exports.generateExcelReport = async (req, res) => {
       res.redirect('/profissionais');
     }
   };
+  
   
 
 

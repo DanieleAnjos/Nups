@@ -36,23 +36,25 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await Usuario.findByPk(id, {
-            include: {
-                model: Profissional,
-                attributes: ['cargo'] 
-            }
-        });
-
-        if (user) {
-            
-            user.cargo = user.Profissional ? user.Profissional.cargo : null; 
-        }
-
-        done(null, user); 
+      // Busca o usuário pelo ID, incluindo o Profissional associado
+      const user = await Usuario.findByPk(id, {
+        include: [{
+          model: Profissional,
+          as: 'profissional', // Use o alias definido na associação
+          attributes: ['cargo'], // Seleciona apenas o campo 'cargo'
+        }],
+      });
+  
+      if (user) {
+        // Adiciona o cargo ao objeto do usuário
+        user.cargo = user.profissional ? user.profissional.cargo : null;
+      }
+  
+      done(null, user); // Retorna o usuário desserializado
     } catch (error) {
-        console.error('Erro ao desserializar o usuário:', error);
-        done(error, null);
+      console.error('Erro ao desserializar o usuário:', error);
+      done(error, null);
     }
-});
+  });
 
 module.exports = passport;
