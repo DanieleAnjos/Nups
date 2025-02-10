@@ -238,7 +238,7 @@
   <h4>Informações de Acesso</h4>
   <div class="row">
     <div class="col-md-6 info-item">
-      <strong>Usuário:</strong> {{profissional.username}}
+      <strong>Usuário:</strong> {{usuario}}
     </div>
     <div class="col-md-6 text-end">
       <a href="/auth/changePassword" class="btn btn-primary"><i class="fas fa-key"></i> Alterar senha</a>
@@ -259,11 +259,14 @@
           Atendimentos
         </button>
       </li>
+      {{#if (eq profissional.cargo "Administrador")}}
+
       <li class="nav-item" role="presentation" style="flex: 1;">
         <button class="nav-link w-100 text-center" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">
           Ocorrências
         </button>
       </li>
+      {{/if}}
     </ul>
 
     <!-- Tab Content -->

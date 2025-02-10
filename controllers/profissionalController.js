@@ -12,8 +12,7 @@ const Atendimento = require('../models/Atendimento');
 const Ocorrencia = require('../models/Ocorrencia');
 const Paciente = require('../models/Paciente');
 const Usuario = require('../models/Usuario');
-
-
+const { validationResult } = require('express-validator');
 
 
 exports.index = async (req, res) => {
@@ -31,7 +30,14 @@ exports.index = async (req, res) => {
   }
 
   try {
-    const profissionais = await Profissional.findAll({ where });
+    const profissionais = await Profissional.findAll({ 
+      where,
+      order: [
+        ['matricula', 'ASC'], // Ordena por matrícula em ordem crescente
+        ['nome', 'ASC'] // Ordena por nome em ordem alfabética crescente
+      ]
+    });
+
     const profissionaisData = profissionais.map(prof => prof.get({ plain: true }));
 
     res.render('profissional/index', { 
@@ -44,6 +50,7 @@ exports.index = async (req, res) => {
     res.redirect('/profissionais');
   }
 };
+
 
 exports.generateReport = async (req, res) => {
   try {
@@ -107,8 +114,8 @@ exports.create = (req, res) => {
     success_msg: req.flash('success_msg') // Mensagens de sucesso
   });
 };
+
 exports.store = async (req, res) => {
-  // Executa o middleware de upload
   upload.single('imagem')(req, res, async (err) => {
     if (err) {
       req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
@@ -119,17 +126,58 @@ exports.store = async (req, res) => {
     }
 
     try {
-      const { nome, email, dataNascimento, cpf, matricula, telefone } = req.body;
+      const {
+        nome,
+        email,
+        dataNascimento,
+        cpf,
+        matricula,
+        telefone,
+        dataAdmissao,
+        cargo,
+        vinculo,
+        sexo,
+        cep,
+        endereco,
+        bairro,
+        cidade,
+        estado,
+        numero,
+        complemento,
+        tipoTelefone,
+        contatoEmergenciaNome,
+        telefoneContatoEmergencia,
+      } = req.body;
 
-      // Validação de campos obrigatórios
-      const errors = validationResult(req); // Usa express-validator para validação
-      if (!errors.isEmpty()) {
-        const errorMessages = errors.array().map((err) => err.msg);
-        req.flash('error_msg', errorMessages.join('. '));
-        return res.render('profissional/create', {
-          error_msg: req.flash('error_msg'),
-          success_msg: req.flash('success_msg'),
-        });
+      // Verifica se todos os campos obrigatórios foram preenchidos
+      const camposObrigatorios = {
+        nome,
+        email,
+        dataNascimento,
+        cpf,
+        matricula,
+        telefone,
+        dataAdmissao,
+        cargo,
+        vinculo,
+        sexo,
+        cep,
+        endereco,
+        bairro,
+        cidade,
+        estado,
+        numero,
+        tipoTelefone,
+      };
+
+      for (const [campo, valor] of Object.entries(camposObrigatorios)) {
+        if (!valor) {
+          req.flash('error_msg', `O campo ${campo} é obrigatório.`);
+          return res.render('profissional/create', {
+            error_msg: req.flash('error_msg'),
+            success_msg: req.flash('success_msg'),
+          });
+        }
       }
 
       // Verifica se o CPF já está cadastrado
@@ -152,6 +200,19 @@ exports.store = async (req, res) => {
         });
       }
 
+      // Validação da imagem enviada
+      let imagePath = null;
+      if (req.file) {
+        if (!req.file.mimetype.startsWith('image/')) {
+          req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+          return res.render('profissional/create', {
+            error_msg: req.flash('error_msg'),
+            success_msg: req.flash('success_msg'),
+          });
+        }
+        imagePath = req.file.filename;
+      }
+
       // Criação do profissional
       await Profissional.create({
         nome,
@@ -160,7 +221,21 @@ exports.store = async (req, res) => {
         cpf,
         matricula,
         telefone,
-        imagePath: req.file.filename, // Salva o nome do arquivo da imagem
+        dataAdmissao,
+        cargo,
+        vinculo,
+        sexo,
+        cep,
+        endereco,
+        bairro,
+        cidade,
+        estado,
+        numero,
+        complemento,
+        tipoTelefone,
+        contatoEmergenciaNome,
+        telefoneContatoEmergencia,
+        imagePath,
       });
 
       req.flash('success_msg', 'Profissional criado com sucesso!');
@@ -168,7 +243,6 @@ exports.store = async (req, res) => {
     } catch (error) {
       console.error('Erro ao criar profissional:', error);
 
-      // Verificação de erros de validação do Sequelize
       if (error.name === 'SequelizeValidationError') {
         const validationErrors = error.errors.map((err) => err.message);
         req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
@@ -181,11 +255,10 @@ exports.store = async (req, res) => {
       return res.render('profissional/create', {
         error_msg: req.flash('error_msg'),
         success_msg: req.flash('success_msg'),
-      }); // Renderiza a mesma página em caso de erro
+      });
     }
   });
 };
-
 
 exports.edit = async (req, res) => {
   try {
@@ -528,7 +601,6 @@ exports.generateExcelReport = async (req, res) => {
     }
   };
 
-  
   exports.showPerfil = async (req, res) => {
     try {
       // Verifica se o usuário está autenticado
@@ -541,8 +613,15 @@ exports.generateExcelReport = async (req, res) => {
       console.log('ID do profissional:', profissionalId);
   
       // Busca o profissional usando o ID do profissional
-      const profissional = await Profissional.findByPk(profissionalId);
-  
+      const profissional = await Profissional.findByPk(profissionalId, {
+        include: [
+          {
+            model: Usuario,
+            as: 'usuarios', // Alias definido na associação
+            attributes: ['usuario'], // Seleciona apenas o campo 'usuario'
+          },
+        ],
+      });
   
       if (!profissional) {
         req.flash('error_msg', 'Profissional não encontrado.');
@@ -556,7 +635,7 @@ exports.generateExcelReport = async (req, res) => {
             model: Profissional,
             as: 'profissionalRecebido',  // Alias correto do profissionalRecebido
             where: { id: profissional.id },  // Filtra pelo ID do profissional logado
-          }
+          },
         ],
         order: [['createdAt', 'DESC']],  // Ordena por data de criação
       });
@@ -572,9 +651,11 @@ exports.generateExcelReport = async (req, res) => {
         where: { profissionalId: profissional.id },
         order: [['data', 'DESC']],  // Ordena por data da ocorrência
       });
-
+  
       const imagePath = profissional.imagePath ? `/uploads/images/${profissional.imagePath}` : null;
-
+  
+      // Obtém o usuário associado ao profissional (caso haja algum)
+      const usuario = profissional.usuarios[0]?.usuario || 'Nenhum usuário associado';
   
       // Renderiza a página com os dados
       res.render('profissional/meu_perfil', {
@@ -582,8 +663,8 @@ exports.generateExcelReport = async (req, res) => {
         encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })) || [],
         atendimentos: atendimentos.map(a => a.get({ plain: true })) || [],
         ocorrencias: ocorrencias.map(o => o.get({ plain: true })) || [],
+        usuario: usuario,  // Passa o usuário associado
         imagePath: imagePath, // Constrói a URL corretamente
-
       });
     } catch (error) {
       console.error('Erro ao buscar detalhes do profissional:', error);
@@ -592,6 +673,3 @@ exports.generateExcelReport = async (req, res) => {
     }
   };
   
-  
-
-

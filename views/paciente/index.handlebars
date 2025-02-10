@@ -16,11 +16,13 @@
         <h1 class="text-center text-primary mb-4">Lista de Servidores</h1>
 
         <!-- Botão Adicionar Paciente -->
-        <div class="d-flex justify-content-end mb-4">
-            <a href="/pacientes/create" class="btn btn-success btn-lg">
-                <i class="bi bi-person-plus-fill"></i> Cadastrar Servidor
-            </a>
-        </div>
+        {{#if ../podeCadastrar}}
+            <div class="d-flex justify-content-end mb-4">
+                <a href="/pacientes/create" class="btn btn-success btn-lg">
+                    <i class="bi bi-person-plus-fill"></i> Cadastrar Servidor
+                </a>
+            </div>
+        {{/if}}
 
         <!-- Formulário de Filtro -->
         <form action="/pacientes" method="GET" class="p-3 border rounded shadow-sm bg-light mb-4">
@@ -40,47 +42,58 @@
         </form>
 
         <!-- Tabela de Pacientes -->
-        <div class="table-responsive shadow-sm">
-            <table class="table table-hover table-striped align-middle">
-                <thead class="table-primary text-center">
+<!-- Tabela de Pacientes -->
+<!-- Tabela de Pacientes -->
+<div class="table-responsive shadow-sm">
+    <table class="table table-hover table-striped align-middle">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if pacientes.length}}
+                {{#each pacientes}}
                     <tr>
-                        <th>Matrícula</th>
-                        <th>Nome</th>
-                        <th>Status</th>
-                        <th>Ações</th>
+                        <td>{{this.matricula}}</td>
+                        <td>{{this.nome}}</td>
+                        <td>{{this.statusPaciente}}</td>
+                        <td class="text-center">
+                            <!-- Botão para visualizar o perfil do paciente -->
+                            <a href="/pacientes/perfil/{{this.id}}" class="btn btn-info btn-sm">
+                                <i class="bi bi-person-fill"></i> Visualizar
+                            </a>
+
+                            <!-- Botão de editar (só aparece se o profissional puder editar) -->
+                            {{#if ../podeEditar}}
+                                <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                            {{/if}}
+
+                            <!-- Botão de deletar (só aparece se o profissional puder deletar) -->
+                            {{#if ../podeDeletar}}
+                                <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar o cadastro deste paciente?')">
+                                        <i class="bi bi-trash"></i> Deletar
+                                    </button>
+                                </form>
+                            {{/if}}
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {{#if pacientes.length}}
-                        {{#each pacientes}}
-                            <tr>
-                                <td>{{this.matricula}}</td>
-                                <td>{{this.nome}}</td>
-                                <td>{{this.statusPaciente}}</td>
-                                <td class="text-center">
-                                    <a href="/pacientes/perfil/{{this.id}}" class="btn btn-info btn-sm">
-                                        <i class="bi bi-person-fill"></i> Visualizar
-                                    </a>
-                                    <a href="/pacientes/{{this.id}}/edit" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
-                                    <form action="/pacientes/{{this.id}}?_method=DELETE" method="POST" class="d-inline">
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar o cadastro deste paciente?')">
-                                            <i class="bi bi-trash"></i> Deletar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {{/each}}
-                    {{else}}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">Nenhum servidor encontrado.</td>
-                        </tr>
-                    {{/if}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+                {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">Nenhum paciente encontrado.</td>
+                </tr>
+            {{/if}}
+        </tbody>
+    </table>
+</div>
+
 
 
 </body>

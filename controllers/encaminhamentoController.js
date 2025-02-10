@@ -108,6 +108,7 @@ exports.create = async (req, res) => {
 };
 
 
+
 exports.store = async (req, res) => {
   try {
     const {
@@ -120,9 +121,28 @@ exports.store = async (req, res) => {
       profissionalIdEnvio,
       profissionalIdRecebido,
       atendimentoId,
-
     } = req.body;
 
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0); // Define o início do dia
+
+    // Verifica se já existe um encaminhamento para este paciente e profissional na data atual
+    const encaminhamentoExistente = await Encaminhamento.findOne({
+      where: {
+        matriculaPaciente, // Verifica pelo número de matrícula
+        profissionalIdRecebido, // Mesmo profissional
+        data: {
+          [Op.gte]: hoje, // Data maior ou igual ao início do dia
+        },
+      },
+    });
+
+    if (encaminhamentoExistente) {
+      req.flash('error_msg', 'Este paciente já foi encaminhado para este profissional hoje.');
+      return res.redirect('/encaminhamentos/create');
+    }
+
+    // Criar novo encaminhamento
     const novoEncaminhamento = await Encaminhamento.create({
       nomePaciente,
       matriculaPaciente,
@@ -133,13 +153,11 @@ exports.store = async (req, res) => {
       profissionalIdEnvio,
       profissionalIdRecebido,
       atendimentoId,
-      data: new Date(), // Data atual
-
+      data: new Date(),
     });
 
     // Notificar o profissional que recebeu o encaminhamento
     const profissionalRecebido = await Profissional.findByPk(profissionalIdRecebido);
-
     if (profissionalRecebido) {
       await Notificacao.create({
         titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
@@ -149,7 +167,7 @@ exports.store = async (req, res) => {
       console.log('Notificação gerada com sucesso');
     }
 
-    req.flash('success', 'Encaminhamento criado com sucesso!');
+    req.flash('success_msg', 'Encaminhamento criado com sucesso!');
     res.redirect('/encaminhamentos');
   } catch (error) {
     console.error(error);
@@ -157,6 +175,7 @@ exports.store = async (req, res) => {
     res.status(500).redirect('/encaminhamentos/create');
   }
 };
+
 
 
 exports.detalhesEncaminhamento = async (req, res) => {
@@ -173,7 +192,7 @@ exports.detalhesEncaminhamento = async (req, res) => {
     });
 
     if (!encaminhamento) {
-      req.flash('error', 'Encaminhamento não encontrado.');
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
       return res.redirect('/encaminhamentos');
     }
 
@@ -181,7 +200,7 @@ exports.detalhesEncaminhamento = async (req, res) => {
     res.render('encaminhamentos/detalhes', { encaminhamento });
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
-    req.flash('error', 'Erro ao carregar detalhes do encaminhamento.');
+    req.flash('error_msg', 'Erro ao carregar detalhes do encaminhamento.');
     res.status(500).redirect('/encaminhamentos');
   }
 };
@@ -254,19 +273,36 @@ exports.update = async (req, res) => {
 exports.destroy = async (req, res) => {
   const { id } = req.params;
   try {
-    const deleted = await Encaminhamento.destroy({ where: { id } });
+    // Buscar o encaminhamento antes de deletar
+    const encaminhamento = await Encaminhamento.findByPk(id);
 
-    if (!deleted) {
+    if (!encaminhamento) {
       req.flash('error_msg', 'Encaminhamento não encontrado.');
       return res.redirect('/encaminhamentos');
     }
 
-    req.flash('success_msg', 'Encaminhamento deletado com sucesso!');
+    const { profissionalIdRecebido, assuntoAcolhimento, nomePaciente } = encaminhamento;
+
+    // Deletar encaminhamento
+    await Encaminhamento.destroy({ where: { id } });
+
+    // Criar notificação para o profissional que receberia o encaminhamento
+    if (profissionalIdRecebido) {
+      await Notificacao.create({
+        titulo: `Encaminhamento Cancelado: ${assuntoAcolhimento}`,
+        mensagem: `O encaminhamento do paciente ${nomePaciente} foi cancelado.`,
+        profissionalId: profissionalIdRecebido,
+      });
+      console.log('Notificação de cancelamento gerada com sucesso');
+    }
+
+    req.flash('success_msg', 'Encaminhamento cancelado com sucesso!');
     res.redirect('/encaminhamentos');
   } catch (error) {
     console.error(error);
-    req.flash('error_msg', 'Erro ao deletar encaminhamento.');
+    req.flash('error_msg', 'Erro ao cancelar encaminhamento.');
     res.status(500).redirect('/encaminhamentos');
   }
 };
+
 

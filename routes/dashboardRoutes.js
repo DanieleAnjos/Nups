@@ -60,7 +60,7 @@ router.get('/assistente-social', checkUserAndProfissional, async (req, res) => {
   }
 });
 
-router.get('/psicologo-psiquiatra', checkUserAndProfissional, async (req, res) => {
+router.get('/psico', checkUserAndProfissional, async (req, res) => {
   try {
     if (!req.user || !req.user.profissionalId) {
       return res.status(401).send('Usuário não autenticado ou sem ID de profissional');
@@ -76,7 +76,7 @@ router.get('/psicologo-psiquiatra', checkUserAndProfissional, async (req, res) =
       where: { profissionalId, lida: false },  
     });
 
-    res.render('dashboard/psicologo-psiquiatra', {
+    res.render('dashboard/psico', {
       user: req.user,
       cargo: req.profissional.cargo,
       mensagensNaoLidas,  

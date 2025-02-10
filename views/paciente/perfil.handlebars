@@ -22,33 +22,33 @@
           <div class="info-item">
             <i class="fas fa-envelope"></i>
             <span class="label"><strong>Nome: </strong></span>
-            <span class="value">{{paciente.nome}}</span>
+            <span class="value">&nbsp;{{paciente.nome}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-calendar-alt"></i>
             <span class="label"><strong>Data de Nascimento: </strong></span>
-            <span class="value">{{formatDate paciente.dataNascimento}}</span>
+            <span class="value">&nbsp;{{formatDate paciente.dataNascimento}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone"></i>
             <span class="label"><strong>Telefone: </strong></span>
-            <span class="value">{{formatTelefone paciente.telefone}}</span>
+            <span class="value">&nbsp;{{formatTelefone paciente.telefone}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
             <span class="label"><strong>RG: </strong></span>
-            <span class="value">{{formatRg paciente.rg}}</span>
+            <span class="value">&nbsp;{{formatRg paciente.rg}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-id-card"></i>
             <span class="label"><strong>CPF: </strong></span>
-            <span class="value">{{formatCPF paciente.cpf}}</span>
+            <span class="value">&nbsp;{{formatCPF paciente.cpf}}</span>
           </div>
           <div class="info-item">
             <p class="info-single">
               <i class="fas fa-map-marker-alt"></i>
               <span class="label"><strong>Endereço: </strong></span>
-              {{paciente.endereco}}, <br> {{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}
+              &nbsp;{{paciente.endereco}}, <br> {{paciente.bairro}}, {{paciente.cidade}} - {{paciente.estado}}
             </p>
           </div>
         </div>
@@ -60,17 +60,17 @@
           <div class="info-item">
             <i class="fas fa-stethoscope"></i>
             <span class="label"><strong>Condição Médica: </strong></span>
-            <span class="value">{{paciente.condicaoMedica}}</span>
+            <span class="value">&nbsp;{{paciente.condicaoMedica}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-pills"></i>
             <span class="label"><strong>Medicamentos: </strong></span>
-            <span class="value">{{paciente.medicamentos}}</span>
+            <span class="value">&nbsp;{{paciente.medicamentos}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-heartbeat"></i>
             <span class="label"><strong>Alergias: </strong></span>
-            <span class="value">{{paciente.alergias}}</span>
+            <span class="value">&nbsp;{{paciente.alergias}}</span>
           </div>
         </div>
       </div>
@@ -81,12 +81,12 @@
           <div class="info-item">
             <i class="fas fa-ambulance"></i>
             <span class="label"><strong>Nome: </strong></span>
-            <span class="value">{{paciente.nomeContato}}</span>
+            <span class="value">&nbsp;{{paciente.nomeContato}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-phone-alt"></i>
             <span class="label"><strong>Telefone: </strong></span>
-            <span class="value">{{formatTelefone paciente.telefoneContato}}</span>
+            <span class="value">&nbsp;{{formatTelefone paciente.telefoneContato}}</span>
           </div>
         </div>
       </div>
@@ -131,7 +131,50 @@
       {{/if}}
     </div>
   </div>
+  <hr>
+  
+  {{#if (eq profissional.cargo "Assistente Social")}}
 
+<div class="card">
+  <div class="card-header bg-secondary text-white">
+    <h2 class="h5 mb-0">Relatório</h2>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Resumo do Relatório</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {{#if paciente.relatorio}}
+                {{#if (gt paciente.relatorio.length 150)}}
+                  {{paciente.relatorio.substring 0 150}}... 
+                  <a href="/pacientes/{{paciente.id}}" class="text-primary">Ver mais</a>
+                {{else}}
+                  {{paciente.relatorio}}
+                {{/if}}
+              {{else}}
+                <span class="text-muted">Nenhum relatório disponível.</span>
+              {{/if}}
+            </td>
+            <td>
+              <a href="/pacientes/{{paciente.id}}" class="btn btn-sm btn-primary">Detalhes</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<hr>
+        {{/if}}
+
+{{#if podeEditar}}
   <div class="card">
     <div class="card-header">
       <h2 class="h5 mb-0">Documentos do Paciente</h2>
@@ -164,7 +207,13 @@
     <p>Nenhum documento carregado.</p>
   {{/if}}
 </div>
+{{/if}}
 
+</div>
+
+<!-- Scripts para validar dados do paciente -->
+<script>
+  function validateForm() {
 <script>
   function deleteDocumento(documentoId) {
     if (confirm('Tem certeza que deseja excluir este documento?')) {

@@ -26,8 +26,25 @@ exports.index = async (req, res) => {
       where.matricula = matricula; 
     }
 
+    const profissional = req.user || {}; // Se req.user for undefined, usa um objeto vazio
+
+
+    const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
+
+    const podeEditar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+    const podeDeletar = profissional.cargo.toLowerCase() === "administrador";
+    const podeCadastrar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+
+
     const pacientes = await Paciente.findAll({ where });
-    res.render('paciente/index', { pacientes, query: req.query }); 
+    res.render('paciente/index', { 
+      pacientes, 
+      query: req.query,
+      profissional: req.user.profissionalId,// Certifique-se de que este objeto existe e contém 'cargo'
+      podeEditar,
+      podeDeletar,
+      podeCadastrar
+    }); 
   } catch (error) {
     console.error('Erro ao listar pacientes:', error);
     res.status(500).send('Erro ao listar pacientes. Por favor, tente novamente mais tarde.');
@@ -352,10 +369,77 @@ exports.delete = async (req, res) => {
     res.status(500).send('Erro ao deletar paciente. Tente novamente mais tarde.');
   }
 };
-
 exports.perfil = async (req, res) => {
   const { id } = req.params;
+  
   try {
+    const paciente = await Paciente.findByPk(id, {
+      include: [
+        {
+          model: Atendimento,
+          as: 'atendimentos',
+          include: [
+            {
+              model: Profissional,
+              as: 'profissional',
+            },
+          ],
+        },
+        {
+          model: Documento,
+          as: 'documentos',
+        },
+      ],
+    });
+
+    if (!paciente) {
+      return res.status(404).send('Paciente não encontrado.');
+    }
+
+    console.log("Usuário logado (req.user):", req.user);
+
+    // Garante que estamos pegando o profissional corretamente dentro de req.user
+    const profissional = req.user.profissional || {}; 
+    const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
+    
+    console.log("Cargo do profissional:", cargo);
+
+    // Define permissões baseadas no cargo
+    const podeEditar = cargo === "administrador" || cargo === "assistente social";
+    const podeDeletar = cargo === "administrador";
+    const podeCadastrar = cargo === "administrador" || cargo === "assistente social";
+
+    const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
+
+    return res.render('paciente/perfil', { 
+      paciente,
+      profissional, // Agora o profissional tem cargo acessível corretamente
+      imagePath,
+      podeEditar,
+      podeDeletar,
+      podeCadastrar,
+      query: req.query,
+    });
+
+  } catch (error) {
+    console.error('Erro ao buscar perfil do paciente:', error);
+    return res.status(500).send('Erro ao buscar perfil do paciente.');
+  }
+};
+
+
+
+
+exports.relatorioDetalhes = async (req, res) => {
+  const { id } = req.params;
+
+  // Validação do ID
+  if (!id || isNaN(id)) {
+    return res.status(400).send('ID do paciente inválido.');
+  }
+
+  try {
+    // Busca o paciente pelo ID, incluindo associações (se houver)
     const paciente = await Paciente.findByPk(id, {
       include: [
         {
@@ -375,25 +459,17 @@ exports.perfil = async (req, res) => {
       ],
     });
 
-    // Se paciente for null, retorna 404 antes de acessar qualquer propriedade
+    // Verifica se o paciente foi encontrado
     if (!paciente) {
       return res.status(404).send('Paciente não encontrado.');
     }
 
-    console.log('Caminho da imagem:', paciente.imagePath);
-    console.log('URL da imagem:', `/uploads/images/${paciente.imagePath}`);
-
-    const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
-
-    return res.render('paciente/perfil', { 
-      paciente,
-      imagePath: imagePath, // Constrói a URL corretamente
+    // Renderiza a view com os dados do paciente e suas associações
+    return res.render('paciente/relatorioDetalhes', {
+      paciente: paciente.toJSON(), // Converte para JSON para facilitar o uso na view
     });
-
   } catch (error) {
-    console.error('Erro ao buscar perfil do paciente:', error);
-    return res.status(500).send('Erro ao buscar perfil do paciente.');
+    console.error('Erro ao buscar relatório:', error);
+    return res.status(500).send('Erro interno ao buscar relatório.');
   }
 };
-
-

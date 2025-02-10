@@ -12,12 +12,14 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
+      {{#if (eq profissional.cargo "Administrador")}}
 
         <div class="d-flex justify-content-end mb-3">
             <a href="/escalas/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Escala
             </a>
         </div>
+        {{/if}}
 
         <form action="/escalas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
@@ -44,39 +46,43 @@
             <div class="alert alert-danger mt-3" role="alert">{{errorMessage}}</div>
         {{/if}}
 
-        <div class="table-responsive mt-3">
-            <table class="table table-hover table-striped table-bordered">
-                <thead class="table-primary">
-                    <tr class="text-center">
-                        <th>Data</th>
-                        <th>Horário Início</th>
-                        <th>Horário Fim</th>
-                        <th>Profissional</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each escalas}}
-                        <tr>
-                            <td>{{OneDate this.data}}</td>
-                            <td>{{this.horarioInicio}}</td>
-                            <td>{{this.horarioFim}}</td>
-                            <td>{{this.admin.nome}}</td>
-                            <td class="text-center">
-                                <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
-                                        <i class="bi bi-trash"></i> Excluir
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
+<div class="table-responsive mt-3">
+    <table class="table table-hover table-striped table-bordered">
+        <thead class="table-primary">
+            <tr class="text-center">
+                <th>Data</th>
+                <th>Horário Início</th>
+                <th>Horário Fim</th>
+                <th>Profissional</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each escalas}}
+                <tr>
+                    <td>{{OneDate this.data}}</td>
+                    <td>{{this.horarioInicio}}</td>
+                    <td>{{this.horarioFim}}</td>
+                    <td>{{this.admin.nome}}</td>
+
+                    {{#if (eq ../profissional.cargo "Administrador")}}
+                        <td class="text-center">
+                            <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                            </form>
+                        </td>
+                    {{/if}}
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
 
         <div class="d-flex justify-content-end mb-3">
             <button id="toggleCalendar" class="btn btn-secondary">

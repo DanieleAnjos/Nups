@@ -45,33 +45,41 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
+const handlebars = require('handlebars');
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
 });
 
+handlebars.registerHelper('eq', (a, b) => a === b);
+handlebars.registerHelper('or', (a, b) => a || b);
+
 const hbs = engine({
-    defaultLayout: 'main',
-    layoutsDir: path.join(__dirname, 'views', 'layouts'),
-    partialsDir: [
-        path.join(__dirname, 'views', 'partials'),
-        path.join(__dirname, 'views', 'partials', 'public')
-    ],
-    helpers: {
-        eq: (a, b) => a === b,
-        ifCond: (v1, v2, options) => (v1 === v2 ? options.fn(this) : options.inverse(this)),
-        ifEquals: (arg1, arg2, options) => (arg1 === arg2 ? options.fn(this) : options.inverse(this)),
-
-        formatDate: (date) => {
-            if (!date) return '';
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${day}/${month}/${year}`;
-        },
-
-        OneDate: (date) => {
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  partialsDir: [
+      path.join(__dirname, 'views', 'partials'),
+      path.join(__dirname, 'views', 'partials', 'public')
+  ],
+  helpers: {
+      // Helpers existentes
+      eq: (a, b) => a === b,
+      or: (a, b) => a || b,
+      ifCond: function (v1, v2, options) {
+          return v1 === v2 ? options.fn(this) : options.inverse(this);
+      },
+      ifEquals: function (arg1, arg2, options) {
+          return arg1 === arg2 ? options.fn(this) : options.inverse(this);
+      },
+      formatDate: (date) => {
+          if (!date) return '';
+          const d = new Date(date);
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          return `${day}/${month}/${year}`;
+      },
+      OneDate: (date) => {
           if (!date) return '';
           const d = new Date(date);
           d.setDate(d.getDate() + 1); // Adiciona um dia
@@ -80,45 +88,38 @@ const hbs = engine({
           const day = String(d.getDate()).padStart(2, '0');
           return `${day}/${month}/${year}`;
       },
-
-        formatDateTime: (date) => {
-            if (!date) return '';
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            return `${day}/${month}/${year} ${hours}:${minutes}`;
-        },
-
-        formatTime: (date) => {
-            if (!date) return '';
-            const d = new Date(date);
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            return ` ${hours}:${minutes}`;
-        },
-
-        formatDateWithFns: (date) => {
-            if (!date) return '';
-            return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
-        },
-
-        formatHour : (date) => {
+      formatDateTime: (date) => {
+          if (!date) return '';
+          const d = new Date(date);
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const day = String(d.getDate()).padStart(2, '0');
+          const hours = String(d.getHours()).padStart(2, '0');
+          const minutes = String(d.getMinutes()).padStart(2, '0');
+          return `${day}/${month}/${year} ${hours}:${minutes}`;
+      },
+      formatTime: (date) => {
+          if (!date) return '';
+          const d = new Date(date);
+          const hours = String(d.getHours()).padStart(2, '0');
+          const minutes = String(d.getMinutes()).padStart(2, '0');
+          return ` ${hours}:${minutes}`;
+      },
+      formatDateWithFns: (date) => {
+          if (!date) return '';
+          return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
+      },
+      formatHour: (date) => {
           if (!date) return '';
           return format(new Date(date), "HH:mm", { locale: ptBR });
-        },
-
-        isActive: function(currentPath, expectedPath) {
-            return currentPath === expectedPath ? 'active' : '';
-        },
-
-        json: function(context) {
-            return JSON.stringify(context);
-        },
-
-        formatDateToInput : function (isoDate) {
+      },
+      isActive: function (currentPath, expectedPath) {
+          return currentPath === expectedPath ? 'active' : '';
+      },
+      json: function (context) {
+          return JSON.stringify(context);
+      },
+      formatDateToInput: function (isoDate) {
           if (!isoDate) return '';
           const date = new Date(isoDate);
           const year = date.getFullYear();
@@ -126,33 +127,52 @@ const hbs = engine({
           const day = String(date.getDate()).padStart(2, '0');
           return `${year}-${month}-${day}`;
       },
-
       formatCPF: (cpf) => {
-        if (!cpf) return "";
-        return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+          if (!cpf) return "";
+          return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
       },
       formatTelefone: (telefone) => {
-        if (!telefone) return "";
-        return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+          if (!telefone) return "";
+          return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
       },
       formatTelefoneContato: (telefoneContato) => {
-        if (!telefoneContato) return "";
-        return telefoneContato.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+          if (!telefoneContato) return "";
+          return telefoneContato.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
       },
       formatCEP: (cep) => {
-        if (!cep) return "";
-        return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+          if (!cep) return "";
+          return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+      },
+      formatRg: (rg) => {
+          if (!rg) return "";
+          return rg.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
+      },
+      gt: function (a, b) {
+          return a > b;
       },
 
-      formatRg : (rg) => {
-        if (!rg) return "";
-        return rg.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
+      // Novos helpers
+      toLowerCase: (str) => str ? str.toLowerCase() : '',
+      toUpperCase: (str) => str ? str.toUpperCase() : '',
+      and: (a, b) => a && b,
+      not: (a) => !a,
+      includes: (array, value) => array && array.includes(value),
+      subtract: (a, b) => a - b,
+      add: (a, b) => a + b,
+      multiply: (a, b) => a * b,
+      divide: (a, b) => a / b,
+      truncate: (str, length) => {
+          if (!str) return '';
+          return str.length > length ? str.substring(0, length) + '...' : str;
       },
-    },
-    runtimeOptions: {
-        allowProtoPropertiesByDefault: true,
-        allowProtoMethodsByDefault: true
-    }
+      isEven: (num) => num % 2 === 0,
+      isOdd: (num) => num % 2 !== 0,
+      default: (value, defaultValue) => value || defaultValue,
+  },
+  runtimeOptions: {
+      allowProtoPropertiesByDefault: true,
+      allowProtoMethodsByDefault: true
+  }
 });
 
 
@@ -307,14 +327,14 @@ const accessControl = {
 
     ],
     'Psicólogo': [
-      '/dashboard/psicologo-psiquiatra',
+      '/dashboard/psico',
       '/pacientes',
       '/ajustes',
       '/atendimentos',
       '/relatorios'
     ],
     'Psiquiatra': [
-      '/dashboard/psicologo-psiquiatra',
+      '/dashboard/psico',
       '/pacientes',
       '/ajustes',
       '/atendimentos',

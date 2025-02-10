@@ -34,7 +34,7 @@ const dashboardController = {
 
   psicologoPsiquiatra: (req, res) => {
     console.log(req.user);
-    res.render('dashboard/psicologo-psiquiatra', { user: req.user, cargo: req.profissional.cargo });
+    res.render('dashboard/psico', { user: req.user, cargo: req.profissional.cargo });
   }
 };
 

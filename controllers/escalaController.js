@@ -27,7 +27,7 @@ const escalaController = {
         const include = [{
             model: Profissional,
             as: 'admin',
-            attributes: ['id', 'nome'],
+            attributes: ['id', 'nome', 'cargo'],
             where: profissional ? { id: profissional } : undefined,
         }];
 
@@ -77,6 +77,7 @@ const escalaController = {
             escalas: escalasFormatadas,
             profissionais,
             query: req.query,
+            profissional: req.user,  // Adicione esta linha para passar o usuário autenticado
             profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
                 acc[escala.admin.id] = escala.cor;
                 return acc;

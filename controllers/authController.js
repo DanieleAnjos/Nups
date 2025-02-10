@@ -40,8 +40,8 @@ exports.login = (req, res, next) => {
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
           'Assistente social': '/dashboard/assistente-social',
-          'Psicólogo': '/dashboard/psicologo-psiquiatra',
-          'Psiquiatra': '/dashboard/psicologo-psiquiatra'
+          'Psicólogo': '/dashboard/psico',
+          'Psiquiatra': '/dashboard/psico'
         };
 
         const redirectRoute = roleToRoute[profissional.cargo] || '/dashboard/adm';

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Detalhado do Paciente</title>
+  <!-- Adicionando Bootstrap para melhor layout -->
+</head>
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <div class="card shadow-lg p-4">
+      <h1 class="text-center mb-4 text-primary">Relatório do Paciente</h1>
+
+      <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Informações do Paciente</h4>
+        </div>
+        <div class="card-body">
+          <p><strong>Nome:</strong> {{paciente.nome}}</p>
+          <p><strong>Matrícula:</strong> {{paciente.matricula}}</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header bg-secondary text-white">
+          <h4 class="mb-0">Relatório</h4>
+        </div>
+        <div class="card-body">
+          {{#if paciente.relatorio}}
+            <p class="p-3 bg-light border rounded">{{paciente.relatorio}}</p>
+          {{else}}
+            <p class="text-muted">Nenhum relatório disponível.</p>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="/pacientes" class="btn btn-outline-primary">Voltar para a lista de pacientes</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -12,7 +12,7 @@
       <!-- Nome do Paciente (Dropdown com busca) -->
       <div class="mb-3">
         <label for="nomePaciente" class="form-label fw-semibold">Nome do Paciente:</label>
-        <select name="nomePaciente" id="nomePaciente" class="form-select select2">
+        <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
           <option value="">Digite para buscar um paciente</option>
           {{#each pacientes}}
             <option value="{{this.id}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>

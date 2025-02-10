@@ -8,8 +8,8 @@ exports.showNotifications = async (req, res) => {
       return res.redirect('/login');
     }
 
-    const profissionalLogado = req.user; 
-    const profissionalId = profissionalLogado.id; 
+    const profissionalLogado = req.user.profissionalId; 
+    const profissionalId = profissionalLogado; 
 
     const notificacoes = await Notificacao.findAll({
       where: {
@@ -34,12 +34,12 @@ exports.showNotifications = async (req, res) => {
 exports.markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
-    const profissionalLogado = req.user;  
+    const profissionalLogado = req.user.profissionalId;  
 
     const notificacao = await Notificacao.findOne({
       where: {
         id,
-        profissionalId: profissionalLogado.id,  
+        profissionalId: profissionalLogado,  
       },
     });
 
@@ -52,18 +52,18 @@ exports.markAsRead = async (req, res) => {
     await notificacao.save();
 
     req.flash('success_msg', 'Notificação marcada como lida.');
-    res.redirect('/notificacoes');
+    return res.redirect('/notificacoes');
   } catch (error) {
     console.error('Erro ao marcar notificação como lida:', error);
     req.flash('error_msg', 'Erro ao marcar a notificação como lida.');
-    res.redirect('/notificacoes');
+    return res.redirect('/notificacoes');
   }
 };
 
 exports.getUnreadNotificationCount = async (req, res) => {
   try {
-    const profissionalLogado = req.user;
-    const profissionalId = profissionalLogado.id;
+    const profissionalLogado = req.user.profissionalId;
+    const profissionalId = profissionalLogado;
 
     const notificacoesNaoLidas = await Notificacao.count({
       where: {

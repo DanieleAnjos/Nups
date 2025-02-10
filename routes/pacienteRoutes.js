@@ -12,6 +12,7 @@ router.get('/', pacienteController.index);
 router.get('/lista', pacienteController.index2);
 router.get('/perfil/:id', pacienteController.perfil);
 router.get('/create', pacienteController.create);
+router.get('/:id', pacienteController.relatorioDetalhes);
 router.post('/', pacienteController.store);
 router.get('/:id/edit', pacienteController.edit);
 router.put('/:id', pacienteController.update);

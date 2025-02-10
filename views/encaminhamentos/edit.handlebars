@@ -11,7 +11,7 @@
 <body>
 
   <div class="container my-5">
-<form action="/encaminhamentos/{{encaminhamento.id}}" method="POST" class="p-4 bg-light rounded shadow-sm">
+<form action="/encaminhamentos/{{encaminhamento.id}}?_method=PUT" method="POST" class="p-4 bg-light rounded shadow-sm">
   <!-- Usando o _method para enviar PUT ou PATCH -->
   <input type="hidden" name="_method" value="PUT">
           <h1 class="text-center my-4 text-primary">Editar Encaminhamento</h1>
