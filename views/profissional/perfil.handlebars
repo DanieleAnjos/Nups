@@ -290,11 +290,6 @@
                       <td>{{assuntoAcolhimento}}</td>
                       <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
                       <td>
-                        {{#if visto}}
-                        <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
-                        {{else}}
-                        <a href="/encaminhamentos/{{id}}/visualizar" class="btn btn-info btn-sm">Marcar como Visto</a>
-                        {{/if}}
                         <a href="/encaminhamentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
                       </td>
                     </tr>
