@@ -198,7 +198,7 @@
     <div class="documentos-list">
       {{#each paciente.documentos as |documento|}}
         <div class="documento-item">
-          <a href="/uploads/{{documento.caminho}}" target="_blank">{{documento.nome}}</a>
+          <a href="/uploads/documents/{{documento.caminho}}" target="_blank">{{documento.nome}}</a>
           <button type="button" class="btn btn-danger btn-sm" onclick="deleteDocumento('{{documento.id}}')">Excluir</button>
         </div>
       {{/each}}

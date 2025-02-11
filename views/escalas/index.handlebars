@@ -99,17 +99,18 @@
         {{/if}}
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
-            const toggleCalendarBtn = document.getElementById('toggleCalendar');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const toggleCalendarBtn = document.getElementById('toggleCalendar');
 
-            if (!calendarEl) {
-                console.error("Elemento de calendário não encontrado!");
-                return;
-            }
+        if (!calendarEl) {
+            console.error("Elemento de calendário não encontrado!");
+            return;
+        }
 
-            const profissionalColors = JSON.parse('{{{profissionalColors}}}');
+        // Cores personalizadas para cada profissional
+        const profissionalColors = JSON.parse('{{{profissionalColors}}}');
 
             const events = [
                 {{#each escalas}}
@@ -117,25 +118,56 @@
                     title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
                     start: '{{this.data}}T{{this.horarioInicio}}',
                     end: '{{this.data}}T{{this.horarioFim}}',
-                    backgroundColor: profissionalColors['{{this.admin.id}}'] || 'gray',
-                    borderColor: profissionalColors['{{this.admin.id}}'] || 'gray',
+                    backgroundColor: profissionalColors['{{this.admin.id}}'] || '#007bff', 
+                    borderColor: profissionalColors['{{this.admin.id}}'] || '#007bff',
+                    textColor: '#fff',
+                    extendedProps: {
+                        horarioInicio: '{{this.horarioInicio}}',
+                        horarioFim: '{{this.horarioFim}}'
+                    }
                 },
                 {{/each}}
             ];
 
+            // Formatar os horários antes de exibir
+            events.forEach(event => {
+                let startTime = new Date(event.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                let endTime = new Date(event.end).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                event.title = `${event.title.split(' - ')[0]} - ${startTime} até ${endTime}`;
+            });
+
+
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: 'dayGridMonth', // Exibe o calendário no formato mensal
                 locale: 'pt-br',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
                 events: events,
+                eventClick: function(info) {
+                    let startTime = info.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    let endTime = info.event.end ? info.event.end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Sem horário final';
+
+                    Swal.fire({
+                        title: info.event.title.split(" - ")[0], // Apenas o nome do profissional
+                        html: `<b>Início:</b> ${startTime}<br><b>Fim:</b> ${endTime}`,
+                        icon: 'info',
+                        confirmButtonText: 'Ok'
+                    });
+                }
             });
 
-            calendar.render();
 
-            toggleCalendarBtn.addEventListener('click', function () {
-                calendarEl.style.display = calendarEl.style.display === "none" ? "block" : "none";
-            });
+        calendar.render();
+
+        toggleCalendarBtn.addEventListener('click', function () {
+            calendarEl.style.display = calendarEl.style.display === "none" ? "block" : "none";
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
 

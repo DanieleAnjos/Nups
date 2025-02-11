@@ -2,6 +2,7 @@ const Escala = require('../models/Escala');
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize'); 
 const fs = require('fs');
+const { Parser } = require('json2csv');
 
 const puppeteer = require('puppeteer');
 
@@ -330,6 +331,61 @@ update: async (req, res) => {
           console.error('Erro ao gerar o relatório de escalas:', error);
           res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
       }
+    },
+      
+      generateEscalasCSVReport: async (req, res) => {
+        try {
+          const { data, horarioInicio, horarioFim, profissional } = req.query;
+      
+          const where = {};
+      
+          if (data) {
+            where.data = data; 
+          }
+      
+          if (horarioInicio) {
+            where.horarioInicio = { [Op.gte]: horarioInicio }; 
+          }
+      
+          if (horarioFim) {
+            where.horarioFim = { [Op.lte]: horarioFim }; 
+          }
+      
+          if (profissional) {
+            where.adminId = profissional; 
+          }
+      
+          const escalas = await Escala.findAll({ 
+            where, 
+            include: [{ model: Profissional, as: 'admin' }]
+          });
+      
+          if (escalas.length === 0) {
+            return res.status(404).send('Nenhuma escala encontrada para gerar o relatório.');
+          }
+      
+          // Criar os dados para o CSV
+          const dados = escalas.map(escala => ({
+            'Data': new Date(escala.data).toLocaleDateString(),
+            'Horário Início': escala.horarioInicio,
+            'Horário Fim': escala.horarioFim,
+            'Profissional': escala.admin ? escala.admin.nome : 'N/A',
+          }));
+      
+          // Converter os dados em CSV usando json2csv
+          const parser = new Parser();
+          const csvData = parser.parse(dados);
+      
+          // Configurar o cabeçalho para o download do arquivo CSV
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', 'attachment; filename=relatorio_escalas.csv');
+          res.send(csvData);
+      
+        } catch (error) {
+          console.error('Erro ao gerar o relatório de escalas em CSV:', error);
+          res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+        }
+      
   }};
 
   

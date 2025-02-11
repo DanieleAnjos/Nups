@@ -93,6 +93,16 @@
     <div class="chart-container">
       <canvas id="atendimentosChart"></canvas>
     </div>
+        <h2>Pacientes por Status</h2>
+      <div class="chart-container">
+        <canvas id="statusChart"></canvas>
+      </div>
+        <h2>Atendimentos por Período</h2>
+      <div class="chart-container">
+        <canvas id="profissionaisChart"></canvas>
+      </div>
+
+
   </div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -103,6 +113,16 @@
     const encaminhamentosData = '{{encaminhamentosData}}'; // Certifique-se de que isso é um array
     const atendimentosLabels = '{{atendimentosLabels}}'; // Certifique-se de que isso é um array
     const atendimentosData = '{{atendimentosData}}'; // Certifique-se de que isso é um array
+    const profissionaisLabels = '{{profissionaisLabels}}'; // Certifique
+    const profissionaisData = '{{profissionaisData}}'; // Certif
+    const statusLabels = '{{statusLabels}}'; //
+    const statusData = '{{statusData}}'; // Certifique
+
+
+    console.log('Status Labels:', statusLabels); // Verifique se os labels estão corretos
+    console.log('Status Data:', statusData); // Verifique se os dados estão corretos
+
+    // Totals
 
 
 
@@ -213,9 +233,119 @@
         }
       }
     });
+
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+  type: 'bar',
+  data: {
+    labels: statusLabels, // Rótulos do eixo X (status dos pacientes)
+    datasets: [{
+      label: 'Quantidade de Pacientes', // Legenda do dataset
+      data: statusData, // Dados do gráfico
+      backgroundColor: [
+        '#36A2EB', // Azul
+        '#FF6384', // Rosa
+        '#4BC0C0', // Ciano
+        '#FFCE56', // Amarelo
+        '#9966FF', // Roxo
+        '#FF9F40', // Laranja
+      ], // Cores das barras
+      borderColor: '#FFFFFF', // Cor da borda das barras
+      borderWidth: 1, // Espessura da borda
+    }]
+  },
+  options: {
+    responsive: true, // Torna o gráfico responsivo
+    maintainAspectRatio: false, // Permite ajustar a proporção do gráfico
+    plugins: {
+      title: {
+        display: true,
+        text: 'Distribuição de Pacientes por Status', // Título do gráfico
+        font: {
+          size: 18, // Tamanho da fonte do título
+          weight: 'bold', // Peso da fonte
+        },
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
+      },
+      legend: {
+        display: true,
+        position: 'top', // Posição da legenda
+        labels: {
+          font: {
+            size: 12, // Tamanho da fonte da legenda
+          },
+          usePointStyle: true, // Usa ícones ao invés de retângulos na legenda
+        },
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Cor de fundo do tooltip
+        titleFont: {
+          size: 14, // Tamanho da fonte do título do tooltip
+        },
+        bodyFont: {
+          size: 12, // Tamanho da fonte do corpo do tooltip
+        },
+        callbacks: {
+          label: function (context) {
+            return `Pacientes: ${context.raw}`; // Personaliza o texto do tooltip
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Status do Paciente', // Título do eixo X
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          display: false, // Remove as linhas de grid do eixo X
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Quantidade de Pacientes', // Título do eixo Y
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          color: '#E0E0E0', // Cor das linhas de grid do eixo Y
+        },
+        beginAtZero: true, // Inicia o eixo Y a partir de zero
+      },
+    },
+    animation: {
+      duration: 1000, // Duração da animação em milissegundos
+      easing: 'easeInOutQuart', // Tipo de animação
+    },
+  },
+});
+
+    const profissionaisCtx = document.getElementById('profissionaisChart').getContext('2d');
+  new Chart(profissionaisCtx, {
+    type: 'bar',
+    data: {
+      labels: profissionaisLabels,
+      datasets: [{
+        label: 'Atendimentos por Profissional',
+        data: profissionaisData,
+        backgroundColor: '#FFCE56',
+      }]
+    }
   });
 
-    const totalPacientes = pacientesData.reduce((acc, val) => acc + val, 0);
+      const totalPacientes = pacientesData.reduce((acc, val) => acc + val, 0);
     const totalEncaminhamentos = encaminhamentosData.reduce((acc, val) => acc + val, 0);
     const totalAtendimentos = atendimentosData.reduce((acc, val) => acc + val, 0);
 
@@ -223,6 +353,10 @@
     document.getElementById("totalPacientes").innerText = `Total de Pacientes: ${totalPacientes}`;
     document.getElementById("totalEncaminhamentos").innerText = `Total de Encaminhamentos: ${totalEncaminhamentos}`;
     document.getElementById("totalAtendimentos").innerText = `Total de Atendimentos: ${totalAtendimentos}`;
+
+
+  });
+
 
 
   

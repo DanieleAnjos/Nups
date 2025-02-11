@@ -17,7 +17,7 @@ router.get('/perfil/:id', profissionalController.show);
 
 router.get('/meu_perfil/:id', profissionalController.showPerfil);
 
-router.get('/relatorio-profissionais/excel', profissionalController.generateExcelReport);
+router.get('/relatorios/csv', profissionalController.generateCSVReport);
 
 
 

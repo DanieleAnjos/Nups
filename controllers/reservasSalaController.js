@@ -3,50 +3,56 @@ const Sala = require('../models/Sala');
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize');
 const puppeteer = require('puppeteer');
+const ExcelJS = require('exceljs');
+const fs = require('fs');
+const path = require('path');
+const excel = require('exceljs');
+
 
 const reservasSalaController = {
   listarReservas: async (req, res) => {
     try {
       const { data, horarioInicial, horarioFinal, salaId, profissionalId } = req.query;
-
+  
       const where = {}; 
-
+  
       if (data) {
         where.data = data; 
       }
-
+  
       if (horarioInicial) {
         where.horarioInicial = { [Op.gte]: horarioInicial }; 
       }
-
+  
       if (horarioFinal) {
         where.horarioFinal = { [Op.lte]: horarioFinal };
       }
-
+  
       if (salaId) {
         where.salaId = salaId; 
       }
-
+  
       if (profissionalId) {
         where.profissionalId = profissionalId; 
       }
-
+  
       const reservas = await ReservaSala.findAll({
         where,
         include: [
           { model: Sala, as: 'sala' },
           { model: Profissional, as: 'profissional' }
-        ]
+        ],
+        order: [['data', 'DESC']] // Ordena pela data mais recente primeiro
       });
-
+  
       const reservasComNomes = reservas.map(reserva => ({
         ...reserva.toJSON(),
         profissionalNome: reserva.profissional ? reserva.profissional.nome : 'N/A'
       }));
-
+  
       const salas = await Sala.findAll();
       const profissionais = await Profissional.findAll();
-
+  
       res.render('reservas', { 
         reservas: reservasComNomes, 
         errorMessage: req.flash('error'), 
@@ -61,6 +67,7 @@ const reservasSalaController = {
       res.redirect('/reservas');
     }
   },
+  
 
   formCriarReserva: async (req, res) => {
     try {
@@ -295,7 +302,81 @@ const reservasSalaController = {
       console.error('Erro ao gerar o relatório de reservas de sala:', error);
       res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
     }
-  }
-};
+  },
+
+
+  gerarRelatorioReservasSalaCSV: async (req, res) => {
+    try {
+      const { salaId, profissionalId } = req.query;
+      const where = {};
+  
+      if (salaId) {
+        where.salaId = salaId;
+      }
+      if (profissionalId) {
+        where.profissionalId = profissionalId;
+      }
+  
+      const reservas = await ReservaSala.findAll({
+        where,
+        include: [
+          { model: Sala, as: 'sala' },
+          { model: Profissional, as: 'profissional' }
+        ]
+      });
+  
+      if (reservas.length === 0) {
+        res.render('relatorios/viewReservasSalaReport', { layout: false });
+        return;
+      }
+  
+      const salas = await Sala.findAll();
+      const profissionais = await Profissional.findAll();
+  
+      // Criação do arquivo Excel em memória
+      const wb = new excel.Workbook();
+      const ws = wb.addWorksheet('Reservas de Sala');
+  
+      // Definir cabeçalhos
+      ws.columns = [
+        { header: 'Data', key: 'data', width: 15 },
+        { header: 'Horário Início', key: 'horarioInicial', width: 15 },
+        { header: 'Horário Fim', key: 'horarioFinal', width: 15 },
+        { header: 'Sala', key: 'sala', width: 30 },
+        { header: 'Profissional', key: 'profissional', width: 30 },
+      ];
+  
+      // Adicionar dados das reservas
+      reservas.forEach(reserva => {
+        ws.addRow({
+          data: reserva.data,
+          horarioInicial: reserva.horarioInicial,
+          horarioFinal: reserva.horarioFinal,
+          sala: reserva.sala.nome,
+          profissional: reserva.profissional.nome
+        });
+      });
+  
+      // Definir cabeçalhos para a resposta HTTP para CSV
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="Relatorio_Reservas.csv"');
+  
+      // Gerar e enviar o arquivo CSV como resposta
+      wb.csv.write(res)
+        .then(() => {
+          console.log('Arquivo CSV gerado com sucesso.');
+        })
+        .catch((error) => {
+          console.error('Erro ao gerar o arquivo CSV:', error);
+          res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+        });
+  
+    } catch (error) {
+      console.error('Erro ao gerar o relatório de reservas de sala:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+    }
+  }};
+  
+  
 
 module.exports = reservasSalaController;

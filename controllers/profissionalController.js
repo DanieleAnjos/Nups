@@ -13,6 +13,8 @@ const Ocorrencia = require('../models/Ocorrencia');
 const Paciente = require('../models/Paciente');
 const Usuario = require('../models/Usuario');
 const { validationResult } = require('express-validator');
+const { Parser } = require('json2csv');
+
 
 
 exports.index = async (req, res) => {
@@ -371,9 +373,17 @@ exports.update = async (req, res) => {
         });
       }
 
-      // Atualização dos dados
-      const imagePath = req.file ? req.file.path : profissional.imagePath; // Mantém a imagem antiga se não houver nova
-      await profissional.update({
+// Atualização dos dados
+      let imagePath = profissional.imagePath;
+      if (req.file) {
+        if (!req.file.mimetype.startsWith('image/')) {
+          req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+          return res.redirect(`/pacientes/${req.params.id}/edit`);
+        }
+        imagePath = req.file.filename;
+      }
+
+await profissional.update({
         nome,
         email,
         rg,
@@ -387,8 +397,9 @@ exports.update = async (req, res) => {
         vinculo,
         contatoEmergenciaNome,
         telefoneContatoEmergencia,
-        imagePath: req.file.filename, // Atualiza o caminho da imagem se uma nova for enviada
+        imagePath, // Atualiza o caminho da imagem corretamente
       });
+
 
       req.flash('success_msg', 'Profissional atualizado com sucesso!');
       res.redirect('/profissionais');
@@ -488,44 +499,38 @@ exports.delete = async (req, res) => {
 
   const xlsx = require('xlsx');
 
-exports.generateExcelReport = async (req, res) => {
-  try {
-    const profissionais = await Profissional.findAll();
-
-    if (profissionais.length === 0) {
-      return res.status(404).send('Nenhum profissional encontrado para gerar o relatório.');
+  exports.generateCSVReport = async (req, res) => {
+    try {
+      const profissionais = await Profissional.findAll();
+  
+      if (profissionais.length === 0) {
+        return res.status(404).send('Nenhum profissional encontrado para gerar o relatório.');
+      }
+  
+      // Criar os dados para o CSV
+      const dados = profissionais.map(profissional => ({
+        'ID': profissional.id,
+        'Nome': profissional.nome,
+        'Data de Admissão': new Date(profissional.dataAdmissao).toLocaleDateString(),
+        'Cargo': profissional.cargo,
+        'Telefone': profissional.telefone,
+        'Email': profissional.email,
+      }));
+  
+      // Converter os dados em CSV usando o json2csv
+      const parser = new Parser();
+      const csvData = parser.parse(dados);
+  
+      // Configurar o cabeçalho para o download do arquivo CSV
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=relatorio_profissionais.csv');
+      res.send(csvData);
+  
+    } catch (error) {
+      console.error('Erro ao gerar o relatório de profissionais em CSV:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
     }
-
-    // Criar os dados para a planilha
-    const dados = profissionais.map(profissional => ({
-      'ID': profissional.id,
-      'Nome': profissional.nome,
-      'Data de Admissão': new Date(profissional.dataAdmissao).toLocaleDateString(),
-      'Cargo': profissional.cargo,
-      'Telefone': profissional.telefone,
-      'Email': profissional.email,
-    }));
-
-    // Criar uma planilha a partir dos dados
-    const ws = xlsx.utils.json_to_sheet(dados);
-
-    // Criar um arquivo de trabalho
-    const wb = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, ws, 'Profissionais');
-
-    // Gerar o arquivo Excel
-    const excelBuffer = xlsx.write(wb, { bookType: 'xlsx', type: 'buffer' });
-
-    // Configurar o cabeçalho para o download
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=relatorio_profissionais.xlsx');
-    res.end(excelBuffer);
-
-  } catch (error) {
-    console.error('Erro ao gerar o relatório de profissionais em Excel:', error);
-    res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
-  }
-};
+  };
 
 
   exports.show = async (req, res) => {

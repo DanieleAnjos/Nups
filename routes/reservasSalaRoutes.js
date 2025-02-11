@@ -15,8 +15,11 @@ router.put('/:id', reservasSalaController.atualizarReserva);
 
 router.delete('/:id', reservasSalaController.deletarReserva);
 
-router.get('/relatorio', reservasSalaController.generateReservaSalaReport);
+//router.get('/relatorio', reservasSalaController.generateReservaSalaReport);
 
 router.get('/viewReport', reservasSalaController.viewReservasSalaReport);
+
+router.get('/relatorio/csv', reservasSalaController.gerarRelatorioReservasSalaCSV);
+
 
 module.exports = router;

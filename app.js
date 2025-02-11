@@ -331,14 +331,18 @@ const accessControl = {
       '/pacientes',
       '/ajustes',
       '/atendimentos',
-      '/relatorios'
+      '/relatorios',
+      '/notificacoes',
+
     ],
     'Psiquiatra': [
       '/dashboard/psico',
       '/pacientes',
       '/ajustes',
       '/atendimentos',
-      '/relatorios'
+      '/relatorios',
+      '/notificacoes',
+
     ]
   };
   

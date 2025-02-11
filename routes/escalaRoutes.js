@@ -9,6 +9,9 @@ router.get('/relatorio', escalaController.generateEscalaReport);
 
 router.get('/viewReport', escalaController.viewEscalasReport);
 
+router.get('/relatorios/csv', escalaController.generateEscalasCSVReport);
+
+
 
 router.get('/create', escalaController.create); 
 router.post('/', escalaController.store); 

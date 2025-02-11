@@ -63,28 +63,42 @@ const ocorrenciaController = {
   store: async (req, res) => {
     try {
       const { data, relatorio, horarioChegada, horarioSaida, profissionalId } = req.body;
-
+  
       if (!data || !relatorio || !horarioChegada || !profissionalId) {
         req.flash('error_msg', 'Todos os campos obrigatórios devem ser preenchidos.');
         return res.redirect('back');
       }
-
+  
       const chegada = new Date(`${data}T${horarioChegada}`);
       const saida = horarioSaida ? new Date(`${data}T${horarioSaida}`) : null;
-
+  
       if (saida && saida <= chegada) {
         req.flash('error_msg', 'O horário de saída deve ser posterior ao horário de chegada.');
         return res.redirect('back');
       }
-
+  
+      // Verifica se já existe uma ocorrência para o mesmo profissional no mesmo dia e horário exato
+      const ocorrenciaExistente = await Ocorrencia.findOne({
+        where: {
+          profissionalId,
+          data,
+          horarioChegada
+        }
+      });
+  
+      if (ocorrenciaExistente) {
+        req.flash('error_msg', 'Já existe uma ocorrência cadastrada neste horário para este profissional.');
+        return res.redirect('back');
+      }
+  
       await Ocorrencia.create({
         data,
-        relatorio,  // Usando "relatorio" no lugar de "descricao"
+        relatorio,
         horarioChegada,
         horarioSaida,
         profissionalId
       });
-
+  
       req.flash('success_msg', 'Ocorrência criada com sucesso.');
       res.redirect(`/ocorrencias`);
     } catch (error) {
@@ -93,6 +107,7 @@ const ocorrenciaController = {
       return res.redirect('back');
     }
   },
+  
 
   show: async (req, res) => {
     try {

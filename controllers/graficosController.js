@@ -2,6 +2,8 @@ const { Op, Sequelize } = require('sequelize');
 const Paciente = require('../models/Paciente');
 const Encaminhamento = require('../models/Encaminhamento');
 const Atendimento = require('../models/Atendimento'); // Importe o modelo de Atendimento
+const Profissional = require('../models/Profissional'); // Importe o modelo de Profissional
+
 const express = require('express');
 
 const router = express.Router();
@@ -72,12 +74,52 @@ router.get('/', async (req, res) => {
     // Calcular total de atendimentos a partir dos dados recuperados
     const totalAtendimentos = atendimentosData.reduce((acc, val) => acc + val, 0);
 
+    const pacientesPorStatus = await Paciente.findAll({
+      attributes: [
+        'statusPaciente', // Agrupa pelo status do paciente
+        [Sequelize.fn('COUNT', Sequelize.col('id')), 'quantidade'] // Conta o número de pacientes em cada status
+      ],
+      group: ['statusPaciente'], // Agrupa os resultados pelo status
+    });
+
+    console.log('Pacientes por Status:', pacientesPorStatus); // Verifique se os dados estão sendo retornados
+
+    const statusLabels = pacientesPorStatus.map(item => item.statusPaciente);
+    const statusData = pacientesPorStatus.map(item => item.get('quantidade'));
+
+    console.log('Status Labels:', statusLabels); // Verifique se os labels estão corretos
+    console.log('Status Data:', statusData); // Verifique se os dados estão corretos
+
+
+    // Gráfico de Atendimentos por Profissional
+    const atendimentosPorProfissional = await Atendimento.findAll({
+      attributes: [
+        [Sequelize.col('profissional.nome'), 'profissional'], // Nome do profissional
+        [Sequelize.fn('COUNT', Sequelize.col('Atendimento.id')), 'quantidade'] // Conta o número de atendimentos
+      ],
+      include: [
+        {
+          model: Profissional,
+          as: 'profissional',
+          attributes: [] // Não precisamos de outros atributos do profissional
+        }
+      ],
+      group: ['profissional.id'], // Agrupa os resultados pelo ID do profissional
+    });
+
+    const profissionaisLabels = atendimentosPorProfissional.map(item => item.get('profissional'));
+    const profissionaisData = atendimentosPorProfissional.map(item => item.get('quantidade'));
+
+
     console.log('Pacientes Labels:', pacientesLabels);
     console.log('Pacientes Data:', pacientesData);
     console.log('Encaminhamentos Labels:', encaminhamentosLabels);
     console.log('Encaminhamentos Data:', encaminhamentosData);
     console.log('Atendimentos Labels:', atendimentosLabels);
     console.log('Atendimentos Data:', atendimentosData);
+    console.log('Status Labels:', statusLabels);
+    console.log('Profissionais Labels:', profissionaisLabels);
+
 
     // Renderizar a view com os dados dos gráficos
     res.render('graficos/index', {
@@ -90,6 +132,10 @@ router.get('/', async (req, res) => {
       atendimentosLabels,
       atendimentosData,
       totalAtendimentos,
+      statusLabels: statusLabels,
+      statusData: statusData,
+      profissionaisLabels: profissionaisLabels,
+      profissionaisData: profissionaisData,
     });
     
   } catch (error) {
