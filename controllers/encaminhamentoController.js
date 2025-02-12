@@ -109,11 +109,13 @@ exports.create = async (req, res) => {
 
 
 
+
 exports.store = async (req, res) => {
   try {
     const {
       nomePaciente,
       matriculaPaciente,
+      numeroProcesso,
       telefonePaciente,
       nomeProfissional,
       assuntoAcolhimento,
@@ -142,11 +144,15 @@ exports.store = async (req, res) => {
       return res.redirect('/encaminhamentos/create');
     }
 
+    const telefonePacienteLimpo = telefonePaciente.replace(/\D/g, ''); 
+
+
     // Criar novo encaminhamento
     const novoEncaminhamento = await Encaminhamento.create({
       nomePaciente,
       matriculaPaciente,
-      telefonePaciente,
+      numeroProcesso,
+      telefonePaciente: telefonePacienteLimpo, // Salvando sem formatação
       nomeProfissional,
       assuntoAcolhimento,
       descricao,

@@ -43,20 +43,30 @@
 
         <!-- Nome do Paciente -->
         <div class="mb-4">
-          <label for="nomePaciente" class="form-label">Nome do Paciente:</label>
+          <label for="nomePaciente" class="form-label">Nome do Servidor:</label>
           <input type="text" name="nomePaciente" id="nomePaciente" class="form-control"required>
         </div>
 
         <!-- Matrícula do Paciente -->
         <div class="mb-4">
-          <label for="matriculaPaciente" class="form-label">Matrícula do Paciente:</label>
+          <label for="matriculaPaciente" class="form-label">Matrícula do Servidor:</label>
           <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control" required>
         </div>
 
+        <!-- Numero do Processo -->
+
+        <div class="mb-4">
+          <label for="numeroProcesso" class="form-label">Número do Processo:</label>
+          <input type="number" name="numeroProcesso" id="numeroProcesso" class="form-control" required minlength="9" maxlength="9">
+          <div class="invalid-feedback">O número do processo deve conter exatamente 9 dígitos.</div>
+        </div>
+
+
         <!-- Telefone do Paciente -->
         <div class="mb-4">
-          <label for="telefonePaciente" class="form-label">Telefone do Paciente:</label>
-          <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required>
+          <label for="telefonePaciente" class="form-label">Telefone do Servidor:</label>
+          <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required placeholder="(99) 99999-9999">
+          <div class="invalid-feedback">Informe um telefone válido no formato (XX) XXXXX-XXXX.</div>
         </div>
 
         <div class="mb-4">
@@ -106,6 +116,49 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+
+
+      document.getElementById('numeroProcesso').addEventListener('input', function (event) {
+    const input = event.target;
+    const value = input.value;
+
+    // Verifica se tem 9 dígitos
+    if (value.length !== 9) {
+      input.setCustomValidity("O número do processo deve conter exatamente 9 dígitos.");
+      input.classList.add("is-invalid");
+    } else {
+      input.setCustomValidity("");
+      input.classList.remove("is-invalid");
+    }
+  });
+      document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não for número
+
+    // Aplica a máscara de telefone (formato brasileiro)
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    
+    if (value.length > 10) {
+      value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); // Formato celular
+    } else if (value.length > 9) {
+      value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3"); // Formato fixo
+    }
+
+    input.value = value;
+
+    // Validação do número
+    const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+    if (!telefoneRegex.test(value)) {
+      input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
+      input.classList.add("is-invalid");
+    } else {
+      input.setCustomValidity("");
+      input.classList.remove("is-invalid");
+    }
+  });
+
     // Função para buscar paciente por nome e preencher matrícula e ID automaticamente
     function buscarPacientePorNome() {
       const nomePaciente = document.getElementById('nomePaciente').value;
@@ -171,7 +224,7 @@
 
         // Determinar quais profissionais exibir
         let profissionais = [];
-        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Acolhimento psicossocial") {
+        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
             profissionais = profissionaisPsicologia;
         } else {
             profissionais = profissionaisServicoSocial;

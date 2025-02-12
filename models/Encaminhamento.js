@@ -20,6 +20,14 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  numeroProcesso: {
+    type: DataTypes.STRING(9),
+    allowNull: false,
+    validate: {
+      len: [9, 9],
+      isNumeric: true 
+    }
+  },
   telefonePaciente: {
     type: DataTypes.STRING,
     allowNull: false,
