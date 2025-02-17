@@ -31,7 +31,7 @@ exports.store = async (req, res) => {
 
     if (!produtoId || !tipo || !quantidade) {
       req.flash('error', 'Dados inválidos para ajuste.');
-      return res.redirect('/ajustes/create'); // Corrige para a página de criação
+      return res.redirect('/ajustes/create'); 
     }
 
     const adjustedData = data ? new Date(data) : new Date(); 
@@ -78,13 +78,13 @@ exports.store = async (req, res) => {
     await t.commit();  
 
     req.flash('success', 'Ajuste realizado com sucesso!');
-    res.redirect('/produtos');  // Corrige o redirecionamento
+    res.redirect('/produtos');
   } catch (error) {
     await t.rollback(); 
 
     console.error('Erro ao realizar ajuste de estoque:', error);
     req.flash('error', 'Erro ao realizar ajuste de estoque.');
-    res.redirect('/ajustes/create'); // Corrige para a página de criação
+    res.redirect('/ajustes/create'); 
   }
 };
 

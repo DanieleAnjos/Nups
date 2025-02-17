@@ -219,7 +219,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  filhos: {
+  possuiFilhos: {
     type: DataTypes.BOOLEAN,
     allowNull: true,
   },
@@ -227,9 +227,16 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  idadeFilhos: {
-    type: DataTypes.STRING,
+  filhos: {
+    type: DataTypes.TEXT, 
     allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('filhos');
+      return rawValue ? JSON.parse(rawValue) : [];
+    },
+    set(value) {
+      this.setDataValue('filhos', JSON.stringify(value));
+    }
   },
   moradia: {
     type: DataTypes.STRING,
@@ -248,6 +255,10 @@ const Paciente = sequelize.define('Paciente', {
     allowNull: true,
   },
   tipoAtividadeFisica: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  relacaoSupervisor: {
     type: DataTypes.STRING,
     allowNull: true,
   },

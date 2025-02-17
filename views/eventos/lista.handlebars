@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos</title>
+    <link rel="stylesheet" href="/CSS/Eventos.css">
+    <style>
+        /* Estilos básicos para os cartões */
+        .cartao {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .imagem-cartao {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .etiqueta {
+            background-color: #297FB8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin: 8px 0px;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin: 8px 0;
+        }
+
+        .informacoes-autor {
+            font-size: 0.9em;
+            color: #666;
+            margin: 8px 0;
+        }
+
+        .leia-mais {
+            display: inline-block;
+            margin-top: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .leia-mais:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Eventos</h1>
+    <div id="container-pesquisa">
+        <input type="text" id="pesquisa" placeholder="Pesquisar eventos por título ou data" />
+    </div>
+</header>
+
+<main>
+    <div id="container-cartoes" class="cartoes-visiveis">
+        <!-- Cartões serão adicionados aqui dinamicamente -->
+    </div>
+</main>
+
+<script>
+    // Função para criar o HTML de um cartão de evento
+function criarCartaoEvento(evento) {
+    return `
+        <div class="cartao shadow-sm border rounded overflow-hidden mb-4">
+            <img src="${evento.imagePath || '/IMG/default-event.jpg'}" alt="${evento.titulo}" class="imagem-cartao w-100 h-100 object-cover">
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="etiqueta badge bg-primary me-2">${evento.etiqueta}</span>
+                </div>
+                <h2 class="mt-2 text-truncate" style="font-size: 1.25rem;">${evento.titulo}</h2>
+                <div class="informacoes-autor text-muted mt-2">
+                    <p class="autor d-block">Por: ${evento.autor}</p>
+                    <p class="mb-0 d-block">${new Date(evento.createdAt).toLocaleDateString('pt-BR')}</p>
+                </div>
+                <a href="/eventos/detalhes/${evento.id}" class="leia-mais btn btn-outline-primary btn-sm mt-3">Leia Mais</a>
+            </div>
+        </div>
+    `;
+}
+
+
+
+
+    // Função para adicionar um cartão ao container
+    function adicionarCartao(evento) {
+        const containerCartoes = document.getElementById('container-cartoes');
+        const cartaoHTML = criarCartaoEvento(evento);
+        containerCartoes.insertAdjacentHTML('beforeend', cartaoHTML);
+    }
+
+    // Função para buscar eventos do backend
+    async function buscarEventos() {
+        try {
+            const response = await fetch('/eventos/busca');
+            const eventos = await response.json();
+            eventos.forEach(adicionarCartao); // Adiciona cada evento como um cartão
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+        }
+    }
+
+    // Quando a página carregar, buscar e exibir os eventos
+    document.addEventListener('DOMContentLoaded', () => {
+        buscarEventos();
+    });
+</script>
+
+</body>
+</html>

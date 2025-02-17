@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Imagem = require('../models/Imagem');
+const Profissional = require('../models/Profissional');
 
 class Evento extends Model {}
 
@@ -11,6 +11,14 @@ Evento.init({
         autoIncrement: true,
     },
     titulo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    subTitulo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    etiqueta: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -30,25 +38,47 @@ Evento.init({
         type: DataTypes.DATE,
         allowNull: false,
     },
-    responsaveis: {
+    autor: {
         type: DataTypes.STRING,
         allowNull: false,
     },
     link: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.TEXT,
+        allowNull: true,
+        validate: {
+            isUrl: true,
+        },
     },
     privacidade: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('público', 'privado', 'restrito'),
         allowNull: false,
+        defaultValue: 'público',
     },
+    status: {
+        type: DataTypes.ENUM('ativo', 'cancelado', 'concluído'),
+        allowNull: false,
+        defaultValue: 'ativo',
+    },
+    destaque: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    capacidadeMaxima: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        validate: {
+            min: 1,
+        },
+    },
+    imagePath: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
 }, {
     sequelize,
     modelName: 'Evento',
     timestamps: true,
 });
 
-Evento.hasMany(Imagem, { foreignKey: 'eventoId', as: 'imagens' });
-Imagem.belongsTo(Evento, { foreignKey: 'eventoId' });
 
 module.exports = Evento;

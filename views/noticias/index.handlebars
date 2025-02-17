@@ -2,31 +2,71 @@
     <div class="row">
         <!-- Título da Página -->
         <div class="col-12 text-center">
-            <h1 class="my-4 text-primary">Eventos</h1>
+            <h1 class="my-4 text-primary">Notícias</h1>
         </div>
     </div>
 
+            <!-- SweetAlert2 CSS (Opcional, apenas se quiser customizar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+              <!-- Informações Pessoais -->
+    {{#if success_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: '{{success_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+
+    <!-- Mensagens de erro -->
+    {{#if error_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: '{{error_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+
     <!-- Botão para Criar Novo Evento -->
     <div class="d-flex justify-content-end mb-3">
-        <a href="/eventos2/create" class="btn btn-success">Criar Novo Evento</a>
+        <a href="/noticias/create" class="btn btn-success">Criar Nova Notícia</a>
     </div>
 
     <!-- Formulário de Busca -->
-        <form action="/eventos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
-            <div class="row">
-                <div class="col-md-5 mb-2">
-                    <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
-                </div>
-                <div class="col-md-5 mb-2">
-                    <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-filter"></i> Filtrar
-                    </button>
-                </div>
-            </div>
-        </form>
+<form action="/noticias" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+    <div class="row">
+        <!-- Campo de Título -->
+        <div class="col-md-5 mb-2">
+            <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
+        </div>
+        
+        <!-- Campo de Data Início -->
+        <div class="col-md-5 mb-2">
+            <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
+        </div>
+        
+        <!-- Botão de Filtrar -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </div>
+</form>
+
 
 
     <!-- Exibir mensagem de erro, se houver -->
@@ -39,30 +79,42 @@
         <table class="table table-striped mt-3">
             <thead>
                 <tr>
+                    <th>ID</th>
+                    <th>Autor</th>
                     <th>Título</th>
-                    <th>Descrição</th>
-                    <th>Data e Hora Início</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                {{#each eventos}}
+                {{#each noticias}}
                     <tr>
-                        <td>{{this.titulo}}</td>
-                        <td>{{this.descricao}}</td>
-                        <td>{{formatDate this.dataHoraInicio}}</td> <!-- Formatação de data -->
+                        <td>{{this.id}}</td>  <!-- ID do evento -->
+                        <td>{{this.autor}}</td>
+                        <td>{{truncate2 this.titulo 50}}</td>
                         <td>
-                            <div class="btn-group" role="group">
-                                <a href="/eventos/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
-                                <form action="/eventos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Você tem certeza que deseja excluir este evento?');">Deletar</button>
-                                </form>
-                            </div>
+                        <div class="btn-group" role="group" aria-label="Ações do Evento">
+                        <!-- Botão Editar -->
+                        <a href="/eventos/{{this.id}}/edit" class="btn btn-warning btn-sm me-2" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+
+                        <!-- Formulário para Deletar -->
+                        <form action="/noticias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm me-2" onclick="return confirm('Você tem certeza que deseja excluir este evento?');" title="Deletar">
+                            <i class="fas fa-trash-alt"></i> Deletar
+                            </button>
+                        </form>
+
+                        <!-- Link para Post -->
+                        <a href="/noticias/detalhes/{{this.id}}" class="btn btn-info btn-sm me-2" title="Detalhes">
+                            <i class="fas fa-info-circle"></i> Post
+                        </a>
+                        </div>
                         </td>
                     </tr>
                 {{else}}
                     <tr>
-                        <td colspan="4" class="text-center">Nenhum evento encontrado.</td>
+                        <td colspan="4" class="text-center">Nenhuma notícia encontrada.</td>
                     </tr>
                 {{/each}}
             </tbody>

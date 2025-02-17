@@ -1,154 +1,308 @@
 const Evento = require('../models/Evento');
-const Imagem = require('../models/Imagem');
-const { Op } = require('sequelize'); 
-const upload = require('../config/multer'); 
+const Profissional = require('../models/Profissional');
+const fs = require('fs');
+const path = require('path');
+const { upload} = require('../config/multer');
 
 const eventoController = {
-  index: async (req, res) => {
-    try {
-        const { titulo, dataHoraInicio } = req.query;
 
-        const where = {};
-        
-        if (titulo) {
-            where.titulo = {
-                [Op.like]: `%${titulo}%`, 
-            };
+  criarEvento: async (req, res) => {
+    upload.single('imagem')(req, res, async (err) => {
+      if (err) {
+        req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
+        return res.redirect('/eventos/create');
+      }
+
+      try {
+        const {
+          titulo,
+          subTitulo,
+          etiqueta,
+          descricao,
+          localizacao,
+          dataHoraInicio,
+          dataHoraFim,
+          autor,
+          link,
+          privacidade,
+          status,
+          destaque,
+          capacidadeMaxima,
+        } = req.body;
+
+        if (!titulo || !descricao || !localizacao || !dataHoraInicio || !dataHoraFim) {
+          req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
+          return res.redirect('/eventos/create');
         }
-        
-        if (dataHoraInicio) {
-            where.dataHoraInicio = {
-                [Op.gte]: new Date(dataHoraInicio), 
-            };
+
+        let imagePath = null;
+        if (req.file) {
+
+          if (!req.file.mimetype.startsWith('image/')) {
+            req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+            return res.redirect('/eventos/create');
+          }
+          imagePath = req.file.filename;
         }
+
+        await Evento.create({
+          titulo,
+          subTitulo,
+          etiqueta,
+          descricao,
+          localizacao,
+          dataHoraInicio: new Date(dataHoraInicio), 
+          dataHoraFim: new Date(dataHoraFim), 
+          autor,
+          link,
+          privacidade,
+          status,
+          destaque: destaque === 'on', 
+          capacidadeMaxima: capacidadeMaxima ? parseInt(capacidadeMaxima, 10) : null,
+          imagePath,
+        });
+
+        req.flash('success_msg', 'Evento criado com sucesso!');
+        return res.redirect('/eventos');
+      } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Erro ao criar evento.');
+        return res.redirect('/eventos/create');
+      }
+    });
+  },
+
+  create: async (req, res) => {
+    try {
+      const profissionais = await Profissional.findAll();
+      res.render('eventos/create', { profissionais });
+    } catch (error) {
+      console.error('Erro ao buscar os profissionais:', error);
+      res.render('eventos/create', { errorMessage: 'Erro ao buscar os profissionais.' });
+    }
+  },
+
+  listarEventos: async (req, res) => {
+    try {
+      const { autor, dataInicio, dataFim } = req.query; 
+  
+      const whereConditions = {};
+  
+      if (autor) {
+        whereConditions.autor = { [Op.like]: `%${autor}%` };
+      }
+  
+      if (dataInicio && dataFim) {
+        whereConditions.data = {
+          [Op.between]: [new Date(dataInicio), new Date(dataFim)] 
+        };
+      } else if (dataInicio) {
+        whereConditions.data = { [Op.gte]: new Date(dataInicio) }; 
+      } else if (dataFim) {
+        whereConditions.data = { [Op.lte]: new Date(dataFim) };
+      }
+  
+      const eventos = await Evento.findAll({
+        where: whereConditions
+      });
+  
+      res.render('eventos/index', { eventos, query: req.query });
+    } catch (error) {
+      console.error(error);
+      req.flash('error_msg', 'Erro ao listar eventos.');
+      res.redirect('/');
+    }
+  },
+  
+
+  visualizarEvento: async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query; 
+        const offset = (page - 1) * limit;
 
         const eventos = await Evento.findAll({
-            where,
+            limit: limit,
+            offset: offset,
+            order: [['dataHoraInicio', 'ASC']]
         });
 
-        res.render('eventos2/index', {
-            eventos,
-            search: { titulo, dataHoraInicio },
-        });
+        const totalEventos = await Evento.count();
+        const totalPages = Math.ceil(totalEventos / limit);
+
+        if (eventos.length === 0) {
+            req.flash('info_msg', 'Nenhum evento encontrado.');
+            return res.render('eventos/lista', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
+        }
+
+        res.render('eventos/lista', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
     } catch (error) {
-        console.error('Erro ao listar eventos:', error);
-        res.status(500).send('Erro ao listar eventos.');
+        console.error(error);
+        req.flash('error_msg', 'Erro ao carregar eventos.');
+        res.redirect('/eventos');
     }
 },
-
-
-  create: (req, res) => {
-    res.render('eventos2/create');
-  },
-
-  store: async (req, res) => {
-    try {
-      const { titulo, descricao, localizacao, dataHoraInicio, dataHoraFim, responsaveis, link, privacidade } = req.body;
-
-      if (!titulo || !descricao || !dataHoraInicio || !dataHoraFim) {
-        return res.render('eventos2/create', { errorMessage: 'Preencha todos os campos obrigatórios.' });
-      }
-      const evento = await Evento.create({
-        titulo,
-        descricao,
-        localizacao,
-        dataHoraInicio,
-        dataHoraFim,
-        responsaveis,
-        link,
-        privacidade,
-      });
-
-      if (req.files && req.files.length > 0) {
-        await handleImageUpload(req.files, evento.id);
-      }
-
-      res.redirect('/eventos2');
-    } catch (error) {
-      console.error('Erro ao criar evento:', error);
-      res.render('eventos2/create', { errorMessage: 'Erro ao criar evento.' });
-    }
-  },
 
   edit: async (req, res) => {
     try {
-        const evento = await Evento.findByPk(req.params.id, { include: 'imagens' });
+      const { id } = req.params;
+
+      const evento = await Evento.findByPk(id);
+
+      if (!evento) {
+        req.flash('error_msg', 'Evento não encontrado.');
+        return res.redirect('/eventos');
+      }
+
+      const imagePath = evento.imagePath ? `/uploads/images/${evento.imagePath}` : null;
+      console.log(imagePath);
+
+
+      const profissionais = await Profissional.findAll();
+
+      res.render('eventos/edit', { evento, profissionais, imagePath });
+    } catch (error) {
+      console.error('Erro ao buscar o evento para edição:', error);
+      req.flash('error_msg', 'Erro ao carregar evento para edição.');
+      res.redirect('/eventos');
+    }
+  },
+
+  atualizarEvento: async (req, res) => {
+    upload.single('imagem')(req, res, async (err) => {
+      if (err) {
+        req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
+        return res.redirect(`/eventos/${req.params.id}/edit`);
+      }
+
+      try {
+        const id = req.params.id;
+        const evento = await Evento.findByPk(id);
+
         if (!evento) {
-            return res.render('eventos2/edit', { errorMessage: 'Evento não encontrado.' });
+          req.flash('error_msg', 'Evento não encontrado.');
+          return res.redirect('/eventos');
         }
-        res.render('eventos2/edit', { evento });
-    } catch (error) {
-        console.error('Erro ao buscar evento:', error);
-        res.render('eventos2/edit', { errorMessage: 'Erro ao buscar evento.' });
-    }
-},
 
+        const {
+          titulo,
+          subTitulo,
+          etiqueta,
+          descricao,
+          localizacao,
+          dataHoraInicio,
+          dataHoraFim,
+          autor,
+          link,
+          privacidade,
+          status,
+          destaque,
+          capacidadeMaxima,
+        } = req.body;
 
-  update: async (req, res) => {
-    try {
-      const evento = await Evento.findByPk(req.params.id);
-      if (!evento) {
-        return res.render('eventos2/edit', { errorMessage: 'Evento não encontrado.' });
+        if (!titulo || !descricao || !localizacao || !dataHoraInicio || !dataHoraFim) {
+          req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
+          return res.redirect(`/eventos/${id}/edit`);
+        }
+
+        let imagePath = evento.imagePath;
+        if (req.file) {
+
+          if (!req.file.mimetype.startsWith('image/')) {
+            req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+            return res.redirect(`/eventos/${id}/edit`);
+          }
+          imagePath = req.file.filename; 
+        }
+
+        const capacidadeMaximaInt = capacidadeMaxima ? parseInt(capacidadeMaxima, 10) : null;
+
+        if (capacidadeMaxima && isNaN(capacidadeMaximaInt)) {
+          req.flash('error_msg', 'Capacidade máxima deve ser um número.');
+          return res.redirect(`/eventos/${id}/edit`);
+        }
+
+        await evento.update({
+          titulo,
+          subTitulo,
+          etiqueta,
+          descricao,
+          localizacao,
+          dataHoraInicio: new Date(dataHoraInicio), 
+          dataHoraFim: new Date(dataHoraFim), 
+          autor,
+          link,
+          privacidade,
+          status,
+          destaque: destaque === 'on', 
+          capacidadeMaxima: capacidadeMaximaInt,
+          imagePath,
+        });
+
+        req.flash('success_msg', 'Evento atualizado com sucesso!');
+        res.redirect('/eventos');
+      } catch (error) {
+        console.error('Erro ao atualizar evento:', error);
+        req.flash('error_msg', 'Erro ao atualizar evento.');
+        res.redirect(`/eventos/${req.params.id}/edit`);
       }
-
-      const { titulo, descricao, localizacao, dataHoraInicio, dataHoraFim, responsaveis, link, privacidade } = req.body;
-
-      await evento.update({
-        titulo,
-        descricao,
-        localizacao,
-        dataHoraInicio,
-        dataHoraFim,
-        responsaveis,
-        link,
-        privacidade,
-      });
-
-      if (req.files && req.files.length > 0) {
-        await handleImageUpload(req.files, evento.id, true);
-      }
-
-      res.redirect('/eventos2');
-    } catch (error) {
-      console.error('Erro ao atualizar evento:', error.message);
-      res.render('eventos2/edit', { errorMessage: 'Erro ao atualizar evento.' });
-    }
-  },
-
-  destroy: async (req, res) => {
-    try {
-      const evento = await Evento.findByPk(req.params.id);
-      if (!evento) {
-        return res.render('eventos2/index', { errorMessage: 'Evento não encontrado.' });
-      }
-
-      await Imagem.destroy({ where: { eventoId: evento.id } });
-      await evento.destroy();
-
-      res.redirect('/eventos2');
-    } catch (error) {
-      console.error('Erro ao excluir evento:', error.message);
-      res.render('eventos2/index', { errorMessage: 'Erro ao excluir evento.' });
-    }
-  },
-};
-
-async function handleImageUpload(files, eventoId, removeOldImages = false) {
-  try {
-    if (removeOldImages) {
-      await Imagem.destroy({ where: { eventoId } }); 
-    }
-
-    const imagensPromises = files.map(file => {
-      return Imagem.create({
-        eventoId,
-        path: file.path,
-      });
     });
-    await Promise.all(imagensPromises);
-  } catch (error) {
-    console.error('Erro ao processar imagens:', error);
-  }
-}
+  },
+
+  deletarEvento: async (req, res) => {
+    try {
+      const evento = await Evento.findByPk(req.params.id);
+
+      if (!evento) {
+        req.flash('error_msg', 'Evento não encontrado.');
+        return res.redirect('/eventos');
+      }
+
+      const agora = new Date();
+      if (new Date(evento.dataHoraInicio) < agora) {
+        req.flash('error_msg', 'Não é possível excluir um evento que já começou.');
+        return res.redirect('/eventos');
+      }
+
+      await evento.destroy();
+      req.flash('success_msg', 'Evento excluído com sucesso.');
+      res.redirect('/eventos');
+    } catch (error) {
+      console.error(error);
+      req.flash('error_msg', 'Erro ao excluir evento.');
+      res.redirect('/eventos');
+    }
+  },
+
+
+
+  visualizar: async (req, res) => {
+    try {
+        const evento = await Evento.findByPk(req.params.id, {
+        });
+  
+        if (!evento) {
+            req.flash('error_msg', 'Evento não encontrado.');
+            return res.redirect('/eventos');
+        }
+
+        const imagePath = evento.imagePath ? `/uploads/images/${evento.imagePath}` : null;
+
+        const descricaoFormatada = evento.descricao
+        ? evento.descricao.split("\n").map(linha => `<p>${linha}</p>`).join("")
+        : "";
+  
+  
+        res.render('eventos/detalhes', { evento, imagePath, descricaoFormatada, layout: 'public/public-layout' }); // Removido a barra inicial
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Erro ao carregar evento.');
+        res.redirect('/eventos');
+    }
+  },
+
+
+  
+
+};
 
 module.exports = eventoController;

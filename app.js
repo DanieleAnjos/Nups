@@ -10,6 +10,7 @@ const cors = require('cors');
 const passport = require('./config/passportConfig'); 
 const argon2 = require('argon2'); 
 const Profissional = require('./models/Profissional');
+const Evento = require ( './models/Evento');
 const sequelize = require('./config/database');  
 
 
@@ -25,6 +26,7 @@ const reservasSalaRoutes = require('./routes/reservasSalaRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const eventoRoutes = require('./routes/eventoRoutes');
 const encaminhamentosRoutes = require('./routes/encaminhamentosRoutes');
+const fluxoAtendimentosRoutes = require('./routes/fluxoAtendimentosRoutes');
 const relatoriosRoutes = require('./routes/relatoriosRoutes');
 const profissionalRoutes = require('./routes/profissionalRoutes');
 const mensagemRoutes = require('./routes/mensagemRoutes');
@@ -33,6 +35,7 @@ const notificacaoRoutes = require('./routes/notificacaoRoutes');
 const graficosRoutes = require('./routes/graficosRoutes');
 const contatoRoutes = require('./routes/contatoRoutes');
 const discussaoCasoRoutes = require('./routes/discussaoCasoRoutes');
+const noticiasRoutes = require('./routes/noticiasRoutes');
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
@@ -46,6 +49,8 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 const handlebars = require('handlebars');
+const moment = require('moment'); 
+
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -62,8 +67,8 @@ const hbs = engine({
       path.join(__dirname, 'views', 'partials', 'public')
   ],
   helpers: {
-      // Helpers existentes
-      eq: (a, b) => a === b,
+
+    eq: (a, b) => a === b,
       or: (a, b) => a || b,
       ifCond: function (v1, v2, options) {
           return v1 === v2 ? options.fn(this) : options.inverse(this);
@@ -82,7 +87,7 @@ const hbs = engine({
       OneDate: (date) => {
           if (!date) return '';
           const d = new Date(date);
-          d.setDate(d.getDate() + 1); // Adiciona um dia
+          d.setDate(d.getDate() + 1); 
           const year = d.getFullYear();
           const month = String(d.getMonth() + 1).padStart(2, '0');
           const day = String(d.getDate()).padStart(2, '0');
@@ -109,6 +114,10 @@ const hbs = engine({
           if (!date) return '';
           return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
       },
+      formatDateWith: (date) => {
+        if (!date) return '';
+        return moment(date).format('YYYY-MM-DDTHH:mm');
+    },
       formatHour: (date) => {
           if (!date) return '';
           return format(new Date(date), "HH:mm", { locale: ptBR });
@@ -150,6 +159,12 @@ const hbs = engine({
       gt: function (a, b) {
           return a > b;
       },
+      truncate2: function (text, length) {
+        if (text.length <= length) {
+          return text;
+        }
+        return text.substring(0, length) + '...';
+        },
 
       // Novos helpers
       toLowerCase: (str) => str ? str.toLowerCase() : '',
@@ -175,7 +190,7 @@ const hbs = engine({
   }
 });
 
-
+app.use(methodOverride('_method')); 
 
 
 app.engine('handlebars', hbs);
@@ -265,14 +280,66 @@ app.get('/auth/login',function(req, res)  {
 
 app.use('/auth', usuarioRoutes);
 
+const eventoController = require('./controllers/eventoController');
+const noticiaController = require('./controllers/noticiaController');
+
+const { truncate } = require('./models/Ocorrencia');
+const Noticias = require('./models/Noticias');
+
+app.use('/eventos/detalhes/:id', eventoController.visualizar);
+app.use('/noticias/detalhes/:id', noticiaController.visualizar);
+
+
+app.get('/eventos/busca', async (req, res) => {
+  try {
+    const eventos = await Evento.findAll();
+
+    const eventosComImagem = eventos.map(evento => {
+      return {
+        ...evento.toJSON(), 
+        imagePath: evento.imagePath ? `/uploads/images/${evento.imagePath}` : null
+      };
+    });
+
+    res.json(eventosComImagem); 
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao buscar eventos' });
+  }
+});
+
+app.get('/noticias/busca', async (req, res) => {
+  try {
+    const noticia = await Noticias.findAll();
+
+    const noticiasComImagem = noticia.map(noticia => {
+      return {
+        ...noticia.toJSON(), 
+        imagePath: noticia.imagePath ? `/uploads/images/${noticia.imagePath}` : null
+      };
+    });
+
+    res.json(noticiasComImagem);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao buscar eventos' });
+  }
+});
+
+
+app.use('/eventos/lista', eventoController.visualizarEvento);
+app.use('/noticias/lista', noticiaController.visualizarNoticia);
+
+
 
 app.get('/NupsNews',function(req, res)  {
     res.render('NupsNews', { layout: 'public/public-layout'} );
 });
 
-app.get('/Eventos',function(req, res)  {
-    res.render('Eventos', {layout: 'public/public-layout'});
-});
+
+
 app.get('/Quem_Somos',function(req, res)  {
     res.render('Quem_Somos', {layout: 'public/public-layout'});
 });
@@ -301,7 +368,7 @@ const accessControl = {
       '/salas',
       '/reservas',
       '/dashboard',
-      '/eventos2',
+      '/eventos',
       '/encaminhamentos',
       '/relatorios',
       '/estoque',
@@ -312,6 +379,8 @@ const accessControl = {
       '/graficos',
       '/discussoes',
       '/usuarios',
+      '/Eventos-detalhes',
+      '/noticias',
 
     ],
     'Assistente social': [
@@ -323,7 +392,8 @@ const accessControl = {
       '/mensagens',
       '/profissionais/meu_perfil/',
       '/encaminhamentos',
-      '/escalas'
+      '/escalas',
+      '/fluxoAtendimentos'
 
     ],
     'Psicólogo': [
@@ -333,6 +403,10 @@ const accessControl = {
       '/atendimentos',
       '/relatorios',
       '/notificacoes',
+      '/profissionais/meu_perfil/',
+      '/mensagens',
+
+
 
     ],
     'Psiquiatra': [
@@ -342,12 +416,16 @@ const accessControl = {
       '/atendimentos',
       '/relatorios',
       '/notificacoes',
+      '/profissionais/meu_perfil/',
+      '/mensagens',
+
+
 
     ]
   };
   
   app.use(async (req, res, next) => {
-    const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico'];
+    const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes'];
   
     if (publicRoutes.some(route => req.originalUrl.startsWith(route))) {
       return next();
@@ -389,7 +467,6 @@ app.use('/ocorrencias', ocorrenciaRoutes);
 app.use('/salas', salasRoutes);
 app.use('/reservas', reservasSalaRoutes);
 app.use('/dashboard', dashboardRoutes);
-app.use('/eventos2', eventoRoutes);
 app.use('/encaminhamentos', encaminhamentosRoutes);
 app.use('/relatorios', relatoriosRoutes);
 app.use('/mensagens', mensagemRoutes);
@@ -399,6 +476,9 @@ app.use('/contato', contatoRoutes);
 app.use('/profissionais', profissionalRoutes);
 app.use('/discussoes', discussaoCasoRoutes);
 app.use('/usuarios', usuarioRoutes);
+app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
+app.use('/eventos', eventoRoutes);
+app.use('/noticias', noticiasRoutes);
 
 
 

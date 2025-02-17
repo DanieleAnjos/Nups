@@ -42,7 +42,7 @@ const reservasSalaController = {
           { model: Sala, as: 'sala' },
           { model: Profissional, as: 'profissional' }
         ],
-        order: [['data', 'DESC']] // Ordena pela data mais recente primeiro
+        order: [['data', 'DESC']] 
       });
   
       const reservasComNomes = reservas.map(reserva => ({
@@ -333,11 +333,9 @@ const reservasSalaController = {
       const salas = await Sala.findAll();
       const profissionais = await Profissional.findAll();
   
-      // Criação do arquivo Excel em memória
       const wb = new excel.Workbook();
       const ws = wb.addWorksheet('Reservas de Sala');
   
-      // Definir cabeçalhos
       ws.columns = [
         { header: 'Data', key: 'data', width: 15 },
         { header: 'Horário Início', key: 'horarioInicial', width: 15 },
@@ -346,7 +344,6 @@ const reservasSalaController = {
         { header: 'Profissional', key: 'profissional', width: 30 },
       ];
   
-      // Adicionar dados das reservas
       reservas.forEach(reserva => {
         ws.addRow({
           data: reserva.data,
@@ -357,11 +354,9 @@ const reservasSalaController = {
         });
       });
   
-      // Definir cabeçalhos para a resposta HTTP para CSV
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename="Relatorio_Reservas.csv"');
   
-      // Gerar e enviar o arquivo CSV como resposta
       wb.csv.write(res)
         .then(() => {
           console.log('Arquivo CSV gerado com sucesso.');

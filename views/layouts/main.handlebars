@@ -41,6 +41,9 @@
 <!-- Inputmask -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
 
+    <script src="https://cdn.tiny.cloud/1/w8yzxz4eqd1p9z5m7pvshyq9lo2cuh2ozu2hidlvu316q6ay/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+
 
 </head>
 
@@ -63,6 +66,13 @@
           <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Ficha de Acolhimento</span></a></li>
           <li><a href="/escalas" class="{{isActive '/escalas'}}"><i class="fas fa-calendar-alt icon"></i> <span>Escalas</span></a></li>
           <li><a href="/mensagens" class="{{isActive '/mensagens'}}"><i class="fas fa-comments icon"></i> <span>Mensagens</span></a></li>
+        {{/ifEquals}}
+
+        {{#ifEquals cargo "Psicólogo"}}
+        <li><a href="/dashboard/psico" class="{{isActive '/dashboard/psico'}}"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
+        <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Ficha de Acolhimento</span></a></li>
+        <li><a href="/escalas" class="{{isActive '/escalas'}}"><i class="fas fa-calendar-alt icon"></i> <span>Escalas</span></a></li>
+        <li><a href="/mensagens" class="{{isActive '/mensagens'}}"><i class="fas fa-comments icon"></i> <span>Mensagens</span></a></li>
         {{/ifEquals}}
 
         <li class="menu-sair"><a href="/auth/logout"><i class="fas fa-sign-out-alt icon"></i> <span>Sair</span></a></li>

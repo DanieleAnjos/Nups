@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{noticias.titulo}}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F2F2F2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #072C47;
+            margin-bottom: 20px;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 20px;
+            padding-top: 70px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .etiqueta {
+            background-color: #297FB8;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .imagem-detalhes {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .informacoes-autor {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .descricao {
+            font-size: 1em; /* Tamanho mais adequado para leitura */
+            line-height: 1.8; /* Espaçamento entre linhas para melhor legibilidade */
+            color: #444; /* Cor suave para o texto */
+            margin-bottom: 25px;
+            text-align: justify; /* Texto justificado */
+            font-family: 'Arial', sans-serif; /* Fonte moderna e legível */
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: #072C47;
+            margin-top: 20px;
+        }
+
+        .localizacao, .inscricoes {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .inscreva-se {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto 0;
+            padding: 15px;
+            background-color: #297FB8;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.3s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .inscreva-se:hover {
+            background-color: #1e5f8a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .imagem-detalhes {
+                max-height: 250px;
+            }
+
+            .inscreva-se {
+                font-size: 1em;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main>
+    <br><br>
+    <span class="etiqueta">{{noticias.etiqueta}}</span>
+    <h1>{{noticias.titulo}}</h1><br><br>
+    <img src="{{imagePath}}" alt="Imagem do evento" class="imagem-detalhes">
+
+    <p class="informacoes-autor">Por {{noticias.autor}} | Criado em: {{formatDate noticias.createdAt}}</p>
+    
+    <p  class="descricao">{{{descricaoFormatada}}}</p>
+    
+</main>
+
+</body>
+</html>

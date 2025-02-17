@@ -48,6 +48,10 @@ const Mensagem = sequelize.define('Mensagem', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,  
   },
+  arquivo: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+  },
 }, {
   tableName: 'mensagem',
   timestamps: true,

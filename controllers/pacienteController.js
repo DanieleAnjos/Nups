@@ -26,7 +26,7 @@ exports.index = async (req, res) => {
       where.matricula = matricula; 
     }
 
-    const profissional = req.user || {}; // Se req.user for undefined, usa um objeto vazio
+    const profissional = req.user || {}; 
 
 
     const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
@@ -40,7 +40,7 @@ exports.index = async (req, res) => {
     res.render('paciente/index', { 
       pacientes, 
       query: req.query,
-      profissional: req.user.profissionalId,// Certifique-se de que este objeto existe e contém 'cargo'
+      profissional: req.user.profissionalId,
       podeEditar,
       podeDeletar,
       podeCadastrar
@@ -78,7 +78,7 @@ exports.create = async (req, res) => {
     const atendimentos = await Atendimento.findAll();
     res.render('paciente/create', {
        atendimentos,
-       error_msg: req.flash('error_msg'), // Mensagens de erro
+       error_msg: req.flash('error_msg'), 
        success_msg: req.flash('success_msg') 
        });
   } catch (error) {
@@ -93,7 +93,6 @@ exports.store = [
   uploadErrorHandler,
   async (req, res) => {
     try {
-      // Verifica erros de validação
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         const errorMessages = errors.array().map((err) => err.msg);
@@ -104,9 +103,8 @@ exports.store = [
         });
       }
 
-      const { nome, matricula, dataNascimento, sexo, cpf, rg, telefone, telefoneContato, ...dadosBasicos } = req.body;
+      const { nome, matricula, dataNascimento, sexo, cpf, rg, telefone, filhos, telefoneContato, ...dadosBasicos } = req.body;
 
-      // Validação de campos obrigatórios
       if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
         req.flash('error_msg', 'Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
         return res.render('paciente/create', {
@@ -115,7 +113,6 @@ exports.store = [
         });
       }
 
-      // Verifica se o CPF, RG ou matrícula já estão cadastrados
       const pacienteExistente = await Paciente.findOne({
         where: {
           [Op.or]: [{ cpf }, { rg }, { matricula }],
@@ -130,13 +127,11 @@ exports.store = [
         });
       }
 
-      // Remove formatação dos campos
       const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
       const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
       const cpfLimpo = cpf.replace(/\D/g, '');
       const rgLimpo = rg.replace(/\D/g, '');
 
-      // Valida CPF
       if (cpfLimpo.length !== 11) {
         req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
         return res.render('paciente/create', {
@@ -145,7 +140,6 @@ exports.store = [
         });
       }
 
-      // Valida RG
       if (rgLimpo.length < 5) {
         req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
         return res.render('paciente/create', {
@@ -154,7 +148,6 @@ exports.store = [
         });
       }
 
-      // Valida telefone
       if (telefoneLimpo && (telefoneLimpo.length < 10 || telefoneLimpo.length > 11)) {
         req.flash('error_msg', 'O telefone deve ter entre 10 e 11 dígitos.');
         return res.render('paciente/create', {
@@ -171,7 +164,6 @@ exports.store = [
         });
       }
 
-      // Verifica se um arquivo foi enviado e se é uma imagem
       let imagePath = null;
       if (req.file) {
         if (!req.file.mimetype.startsWith('image/')) {
@@ -184,7 +176,6 @@ exports.store = [
         imagePath = req.file.filename;
       }
 
-      // Criação do paciente
       await Paciente.create({
         nome,
         matricula,
@@ -194,6 +185,7 @@ exports.store = [
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
+        filhos: JSON.parse(filhos), 
         imagePath,
         ...dadosBasicos,
         cadastroCompleto: false,
@@ -224,12 +216,27 @@ exports.store = [
 
 exports.edit = async (req, res) => {
   try {
-    const paciente = await Paciente.findByPk(req.params.id);
+    const pacienteId = parseInt(req.params.id, 10);
+    if (isNaN(pacienteId)) {
+      req.flash('error_msg', 'ID inválido.');
+      return res.redirect('/pacientes');
+    }
+
+    const paciente = await Paciente.findByPk(pacienteId);
     if (!paciente) {
       req.flash('error_msg', 'Paciente não encontrado.');
       return res.redirect('/pacientes');
     }
-    res.render('paciente/edit', { paciente });
+
+    let filhos = paciente.filhos; 
+
+    if (!Array.isArray(filhos) || filhos.length === 0) {
+      filhos = [{ nome: '', idade: '' }]; 
+    }
+
+    console.log("Filhos:", filhos); 
+
+    res.render('paciente/edit', { paciente, filhos });
   } catch (error) {
     console.error('Erro ao editar paciente:', error);
     req.flash('error_msg', 'Erro ao carregar formulário de edição.');
@@ -237,9 +244,10 @@ exports.edit = async (req, res) => {
   }
 };
 
+
 exports.update = [
-  upload.single('imagem'), // Middleware para processar upload de imagem
-  uploadErrorHandler, // Middleware para tratar erros de upload
+  upload.single('imagem'), 
+  uploadErrorHandler,
   async (req, res) => {
     try {
       console.log('Dados recebidos para atualização:', req.body);
@@ -250,33 +258,28 @@ exports.update = [
         return res.redirect('/pacientes');
       }
 
-      const { nome, cpf, matricula, dataNascimento, sexo, rg, telefone, telefoneContato } = req.body;
+      const { nome, matricula, dataNascimento, sexo, cpf, rg, telefone, filhos, telefoneContato, ...dadosBasicos } = req.body;
 
-      // Verificar campos obrigatórios
-      if (!nome || !cpf || !matricula || !dataNascimento || !sexo || !rg) {
-        req.flash('error_msg', 'Os campos nome, CPF, matrícula, data de nascimento, sexo e RG são obrigatórios.');
+      if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
+        req.flash('error_msg', 'Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
-      // Remove formatação dos campos
       const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
       const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
       const cpfLimpo = cpf.replace(/\D/g, '');
       const rgLimpo = rg.replace(/\D/g, '');
 
-      // Valida CPF
       if (cpfLimpo.length !== 11) {
         req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
-      // Valida RG
       if (rgLimpo.length < 5) {
         req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
-      // Valida telefone
       if (telefoneLimpo && (telefoneLimpo.length < 10 || telefoneLimpo.length > 11)) {
         req.flash('error_msg', 'O telefone deve ter entre 10 e 11 dígitos.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
@@ -287,11 +290,10 @@ exports.update = [
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
-      // Verifica se o CPF, RG ou matrícula já estão cadastrados em outro paciente
       const pacienteExistente = await Paciente.findOne({
         where: {
           [Op.or]: [{ cpf: cpfLimpo }, { rg: rgLimpo }, { matricula }],
-          id: { [Op.ne]: req.params.id }, // Exclui o próprio paciente da verificação
+          id: { [Op.ne]: req.params.id }, 
         },
       });
 
@@ -300,7 +302,6 @@ exports.update = [
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
-      // Mantém a imagem antiga caso nenhuma nova seja enviada
       let imagePath = paciente.imagePath;
       if (req.file) {
         if (!req.file.mimetype.startsWith('image/')) {
@@ -309,25 +310,72 @@ exports.update = [
         }
         imagePath = req.file.filename;
       }
+      
+      let filhosArray = [];
 
-      // Atualiza os dados do paciente
+      if (Array.isArray(filhos)) {
+
+        filhosArray = filhos.filter((filho) => {
+          return (
+            typeof filho === 'object' &&
+            filho !== null &&
+            !Array.isArray(filho) &&
+            filho.nome && 
+            filho.idade 
+          );
+        });
+      } else if (typeof filhos === 'string') {
+        try {
+          filhosArray = JSON.parse(filhos);
+
+          filhosArray = filhosArray.filter((filho) => {
+            return (
+              typeof filho === 'object' &&
+              filho !== null &&
+              !Array.isArray(filho) &&
+              filho.nome && 
+              filho.idade 
+            );
+          });
+        } catch (error) {
+          console.error('Erro ao parsear filhos:', error);
+          req.flash('error_msg', 'Formato inválido para os dados dos filhos.');
+          return res.redirect(`/pacientes/${req.params.id}/edit`);
+        }
+      } else {
+        filhosArray = [];
+      }
+
+      console.log('Filhos normalizados:', filhosArray);
+
       await paciente.update({
         nome,
-        cpf: cpfLimpo,
         matricula,
         dataNascimento,
         sexo,
+        cpf: cpfLimpo,
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
+        filhos: filhosArray, 
         imagePath,
+        ...dadosBasicos,
       });
 
       req.flash('success_msg', 'Paciente atualizado com sucesso.');
       res.redirect('/pacientes');
     } catch (error) {
       console.error('Erro ao atualizar paciente:', error);
-      req.flash('error_msg', 'Erro ao atualizar paciente.');
+
+      if (error.name === 'SequelizeValidationError') {
+        const validationErrors = error.errors.map((err) => err.message);
+        req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+      } else if (error.name === 'SequelizeUniqueConstraintError') {
+        req.flash('error_msg', 'CPF, RG ou matrícula já cadastrados.');
+      } else {
+        req.flash('error_msg', 'Erro ao atualizar o paciente.');
+      }
+
       res.redirect(`/pacientes/${req.params.id}/edit`);
     }
   },
@@ -341,23 +389,19 @@ exports.delete = async (req, res) => {
       return res.status(404).send('Paciente não encontrado.');
     }
 
-    // Caminho do diretório de uploads
     const imagePath = paciente.imagePath ? path.join(__dirname, '../uploads/images/', paciente.imagePath) : null;
     const documentPath = paciente.documentPath ? path.join(__dirname, '../uploads/documents/', paciente.documentPath) : null;
 
-    // Remover imagem se existir
     if (imagePath && fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
       console.log(`Imagem deletada: ${imagePath}`);
     }
 
-    // Remover documento se existir
     if (documentPath && fs.existsSync(documentPath)) {
       fs.unlinkSync(documentPath);
       console.log(`Documento deletado: ${documentPath}`);
     }
 
-    // Excluir paciente do banco de dados
     await Paciente.destroy({ where: { id: req.params.id } });
 
     req.flash('success_msg', 'Paciente deletado com sucesso.');
@@ -398,13 +442,11 @@ exports.perfil = async (req, res) => {
 
     console.log("Usuário logado (req.user):", req.user);
 
-    // Garante que estamos pegando o profissional corretamente dentro de req.user
     const profissional = req.user.profissional || {}; 
     const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
     
     console.log("Cargo do profissional:", cargo);
 
-    // Define permissões baseadas no cargo
     const podeEditar = cargo === "administrador" || cargo === "assistente social";
     const podeDeletar = cargo === "administrador";
     const podeCadastrar = cargo === "administrador" || cargo === "assistente social";
@@ -413,7 +455,7 @@ exports.perfil = async (req, res) => {
 
     return res.render('paciente/perfil', { 
       paciente,
-      profissional, // Agora o profissional tem cargo acessível corretamente
+      profissional, 
       imagePath,
       podeEditar,
       podeDeletar,
@@ -433,40 +475,37 @@ exports.perfil = async (req, res) => {
 exports.relatorioDetalhes = async (req, res) => {
   const { id } = req.params;
 
-  // Validação do ID
   if (!id || isNaN(id)) {
     return res.status(400).send('ID do paciente inválido.');
   }
 
   try {
-    // Busca o paciente pelo ID, incluindo associações (se houver)
+
     const paciente = await Paciente.findByPk(id, {
       include: [
         {
           model: Atendimento,
-          as: 'atendimentos', // Alias definido na associação
+          as: 'atendimentos', 
           include: [
             {
               model: Profissional,
-              as: 'profissional', // Alias definido na associação
+              as: 'profissional', 
             },
           ],
         },
         {
           model: Documento,
-          as: 'documentos', // Alias definido na associação
+          as: 'documentos', 
         },
       ],
     });
 
-    // Verifica se o paciente foi encontrado
     if (!paciente) {
       return res.status(404).send('Paciente não encontrado.');
     }
 
-    // Renderiza a view com os dados do paciente e suas associações
     return res.render('paciente/relatorioDetalhes', {
-      paciente: paciente.toJSON(), // Converte para JSON para facilitar o uso na view
+      paciente: paciente.toJSON(), 
     });
   } catch (error) {
     console.error('Erro ao buscar relatório:', error);

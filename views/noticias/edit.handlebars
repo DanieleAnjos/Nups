@@ -1,0 +1,159 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h2 class="my-2">Editar Evento</h2>
+                </div>
+
+                <!-- Informações Pessoais -->
+                {{#if success_msg}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sucesso',
+                            text: '{{success_msg}}',
+                            confirmButtonText: 'Ok'
+                        });
+                    });
+                </script>
+                {{/if}}
+
+                <!-- Mensagens de erro -->
+                {{#if error_msg}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            text: '{{error_msg}}',
+                            confirmButtonText: 'Ok'
+                        });
+                    });
+                </script>
+                {{/if}}
+
+                <div class="card-body">
+                    
+<form action="/eventos/{{evento.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_method" value="PUT">
+
+    <!-- Campos do formulário -->
+    <div class="mb-3">
+        <label class="form-label" for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" class="form-control" value="{{evento.titulo}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="subTitulo">Sub-Título:</label>
+        <input type="text" id="subTitulo" name="subTitulo" class="form-control" value="{{evento.subTitulo}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="autor">Autor:</label>
+        <input type="text" id="autor" name="autor" class="form-control" value="{{evento.autor}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="etiqueta">Etiqueta:</label>
+        <input type="text" id="etiqueta" name="etiqueta" class="form-control" value="{{evento.etiqueta}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="localizacao">Localização:</label>
+        <input type="text" id="localizacao" name="localizacao" class="form-control" value="{{evento.localizacao}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="dataHoraInicio">Data e Hora Início:</label>
+        <input type="datetime-local" id="dataHoraInicio" name="dataHoraInicio" class="form-control" value="{{formatDateWith evento.dataHoraInicio}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="dataHoraFim">Data e Hora Fim:</label>
+        <input type="datetime-local" id="dataHoraFim" name="dataHoraFim" class="form-control" value="{{formatDateWith evento.dataHoraFim}}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="link">Link:</label>
+        <input type="url" id="link" name="link" class="form-control" value="{{evento.link}}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="privacidade">Privacidade:</label>
+        <select id="privacidade" name="privacidade" class="form-select" required>
+            <option value="Público Geral" {{#if (eq evento.privacidade "Público Geral")}}selected{{/if}}>Público Geral</option>
+            <option value="Privado Servidores" {{#if (eq evento.privacidade "Privado Servidores")}}selected{{/if}}>Privado Servidores</option>
+        </select>
+    </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="descricao">Descrição:</label>
+                            <textarea id="descricao" name="descricao" class="form-control" rows="10" required>{{evento.descricao}}></textarea>
+                            <div class="invalid-feedback">Por favor, insira uma descrição.</div>
+                        </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="imagem">Imagem:</label>
+        <input type="file" id="imagem" name="imagem" class="form-control" accept="image/*">
+    </div>
+
+    <div class="d-flex justify-content-end gap-3">
+        <a href="/eventos" class="btn btn-outline-secondary px-4">Voltar</a>
+        <button type="submit" class="btn btn-warning px-4">Salvar Alterações</button>
+    </div>
+</form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts para validação do formulário -->
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+            selector: '#descricao',
+            height: 400,
+            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+            toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
+            automatic_uploads: true,
+            content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }'
+        });
+    });
+
+
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+
+    Array.from(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  document.getElementById("imagem").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById("previewImagem");
+
+      if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              preview.src = e.target.result;
+              preview.classList.remove("d-none");
+          };
+          reader.readAsDataURL(file);
+      } else {
+          preview.src = "";
+          preview.classList.add("d-none");
+      }
+  });
+</script>

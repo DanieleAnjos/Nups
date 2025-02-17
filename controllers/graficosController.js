@@ -1,20 +1,18 @@
 const { Op, Sequelize } = require('sequelize');
 const Paciente = require('../models/Paciente');
 const Encaminhamento = require('../models/Encaminhamento');
-const Atendimento = require('../models/Atendimento'); // Importe o modelo de Atendimento
-const Profissional = require('../models/Profissional'); // Importe o modelo de Profissional
+const Atendimento = require('../models/Atendimento'); 
+const Profissional = require('../models/Profissional'); 
 
 const express = require('express');
 
 const router = express.Router();
 
-// Rota para gráficos de pacientes, encaminhamentos e atendimentos
 router.get('/', async (req, res) => {
   try {
-    // Gráfico de Pacientes por Período
     const pacientesPorPeriodo = await Paciente.findAll({
       attributes: [
-        [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'), 'mes_ano'], // Formato Ano-Mês
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'), 'mes_ano'], 
         [Sequelize.fn('COUNT', Sequelize.col('id')), 'quantidade']
       ],
       group: [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m')],
@@ -29,13 +27,11 @@ router.get('/', async (req, res) => {
 
     const pacientesData = pacientesPorPeriodo.map(paciente => paciente.get('quantidade'));
 
-    // Calcular total de pacientes a partir dos dados recuperados
     const totalPacientes = pacientesData.reduce((acc, val) => acc + val, 0);
 
-    // Gráfico de Encaminhamentos Realizados (sem filtro de status)
     const encaminhamentosPorPeriodo = await Encaminhamento.findAll({
       attributes: [
-        [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'), 'mes_ano'], // Formato Ano-Mês
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m'), 'mes_ano'], 
         [Sequelize.fn('COUNT', Sequelize.col('id')), 'quantidade']
       ],
       group: [Sequelize.fn('DATE_FORMAT', Sequelize.col('createdAt'), '%Y-%m')],
@@ -50,10 +46,8 @@ router.get('/', async (req, res) => {
 
     const encaminhamentosData = encaminhamentosPorPeriodo.map(encaminhamento => encaminhamento.get('quantidade'));
 
-    // Calcular total de encaminhamentos a partir dos dados recuperados
     const totalEncaminhamentos = encaminhamentosData.reduce((acc, val) => acc + val, 0);
 
-    // Gráfico de Atendimentos por Período
     const atendimentosPorPeriodo = await Atendimento.findAll({
       attributes: [
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('dataAtendimento'), '%Y-%m'), 'mes_ano'], // Formato Ano-Mês
@@ -71,40 +65,38 @@ router.get('/', async (req, res) => {
 
     const atendimentosData = atendimentosPorPeriodo.map(atendimento => atendimento.get('quantidade'));
 
-    // Calcular total de atendimentos a partir dos dados recuperados
     const totalAtendimentos = atendimentosData.reduce((acc, val) => acc + val, 0);
 
     const pacientesPorStatus = await Paciente.findAll({
       attributes: [
-        'statusPaciente', // Agrupa pelo status do paciente
-        [Sequelize.fn('COUNT', Sequelize.col('id')), 'quantidade'] // Conta o número de pacientes em cada status
+        'statusPaciente',
+        [Sequelize.fn('COUNT', Sequelize.col('id')), 'quantidade'] 
       ],
-      group: ['statusPaciente'], // Agrupa os resultados pelo status
+      group: ['statusPaciente'], 
     });
 
-    console.log('Pacientes por Status:', pacientesPorStatus); // Verifique se os dados estão sendo retornados
+    console.log('Pacientes por Status:', pacientesPorStatus);
 
     const statusLabels = pacientesPorStatus.map(item => item.statusPaciente);
     const statusData = pacientesPorStatus.map(item => item.get('quantidade'));
 
-    console.log('Status Labels:', statusLabels); // Verifique se os labels estão corretos
-    console.log('Status Data:', statusData); // Verifique se os dados estão corretos
+    console.log('Status Labels:', statusLabels); 
+    console.log('Status Data:', statusData); 
 
 
-    // Gráfico de Atendimentos por Profissional
     const atendimentosPorProfissional = await Atendimento.findAll({
       attributes: [
-        [Sequelize.col('profissional.nome'), 'profissional'], // Nome do profissional
-        [Sequelize.fn('COUNT', Sequelize.col('Atendimento.id')), 'quantidade'] // Conta o número de atendimentos
+        [Sequelize.col('profissional.nome'), 'profissional'], 
+        [Sequelize.fn('COUNT', Sequelize.col('Atendimento.id')), 'quantidade'] 
       ],
       include: [
         {
           model: Profissional,
           as: 'profissional',
-          attributes: [] // Não precisamos de outros atributos do profissional
+          attributes: [] 
         }
       ],
-      group: ['profissional.id'], // Agrupa os resultados pelo ID do profissional
+      group: ['profissional.id'], 
     });
 
     const profissionaisLabels = atendimentosPorProfissional.map(item => item.get('profissional'));
@@ -121,7 +113,6 @@ router.get('/', async (req, res) => {
     console.log('Profissionais Labels:', profissionaisLabels);
 
 
-    // Renderizar a view com os dados dos gráficos
     res.render('graficos/index', {
       pacientesLabels: pacientesLabels,
       pacientesData: pacientesData,

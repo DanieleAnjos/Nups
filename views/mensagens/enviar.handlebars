@@ -2,7 +2,7 @@
 <div class="container shadow-lg p-5 rounded bg-light">
   <h1 class="text-center my-4 text-primary">Enviar Mensagem</h1>
 
-  <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate>
+  <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
     <!-- Campo oculto para Remetente -->
     <input type="hidden" name="remetenteId" value="{{user.id}}" required>
     <div class="invalid-feedback">Erro: remetente não definido.</div>
@@ -32,6 +32,15 @@
       <textarea name="corpo" id="corpo" class="form-control shadow-sm" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
       <div class="invalid-feedback">Por favor, insira a mensagem.</div>
     </div>
+
+        <!-- Arquivo -->
+        <div class="mb-4">
+            <label for="arquivo" class="form-label h5 text-secondary"><i class="bi bi-file-earmark"></i> Anexo:</label>
+            <input type="file" name="arquivo" id="arquivo" class="form-control shadow-sm" accept=".jpg,.png,.pdf" >
+        </div>
+
+
+
 
     <!-- Botões de Ação -->
     <div class="d-flex justify-content-center gap-4">

@@ -40,7 +40,7 @@ const Profissional = sequelize.define('Profissional', {
     allowNull: false,
   },
   cargo: {
-    type: DataTypes.ENUM('Assistente social', 'Assistente social Supervisor', 'Administrador', 'Psicólogo', 'Psiquiatra'),
+    type: DataTypes.ENUM('Desenvolvimento','Administrador','Adm', 'Assistente social', 'Assistente social Supervisor', 'Psicólogo', 'Psiquiatra'),
     allowNull: false,
   },
   vinculo: {
@@ -51,7 +51,7 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      is: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/ // Usando '\d' em vez de '[0-9]'
+      is: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/ 
     }
   },
   dataNascimento: {
@@ -70,7 +70,7 @@ const Profissional = sequelize.define('Profissional', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      is: /^\d{5}-\d{3}$/ // Permite o formato 'XXXXX-XXX'
+      is: /^\d{5}-\d{3}$/
     }
   },
   endereco: {
@@ -126,7 +126,7 @@ const Profissional = sequelize.define('Profissional', {
     defaultValue: 'Ativo',
   },
 }, {
-  tableName: 'profissional', // Nome da tabela no banco de dados
+  tableName: 'profissional',
   timestamps: true,
 });
 
@@ -145,6 +145,17 @@ Profissional.associate = (models) => {
     foreignKey: 'profissionalIdRecebido',
     as: 'encaminhamentosRecebidos',
   });
+
+  Profissional.hasMany(models.FluxoAtendimentos, {
+    foreignKey: 'profissionalIdEnvio',
+    as: 'fluxoAtendimentosEnviados',
+  });
+
+  Profissional.hasMany(models.FluxoAtendimentos, {
+    foreignKey: 'profissionalIdRecebido',
+    as: 'fluxoAtendimentosRecebidos',
+  });
+
 
   Profissional.hasMany(models.DiscussaoCaso, {
      foreignKey: 'autor',

@@ -3,7 +3,7 @@ const Profissional = require('../models/Profissional');
 const Escala = require('../models/Escala');
 const puppeteer = require('puppeteer'); 
 const { Op } = require('sequelize'); 
-const ExcelJS = require('exceljs'); // Importa a biblioteca exceljs
+const ExcelJS = require('exceljs'); 
 
 
 const reportController = {

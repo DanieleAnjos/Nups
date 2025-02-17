@@ -39,7 +39,7 @@
                     <tr>
                         <th>Assunto</th>
                         <th>Remetente</th>
-                        <th>Data</th>
+                        <th>Recebida</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -52,7 +52,7 @@
                             </a>
                         </td>
                         <td>{{this.remetente.nome}}</td>
-                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{formatDateTime this.createdAt}}</td>
                         <td>
                             <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
                                 <i class="bi bi-eye"></i> Ver
@@ -95,7 +95,7 @@
                     <tr>
                         <th>Assunto</th>
                         <th>Remetente</th>
-                        <th>Data</th>
+                        <th>Recebida</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -108,7 +108,7 @@
                             </a>
                         </td>
                         <td>{{this.remetente.nome}}</td>
-                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{formatDateTime this.createdAt}}</td>
                         <td>
                             <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
                                 <i class="bi bi-eye"></i> Ver
@@ -148,7 +148,7 @@
                     <tr>
                         <th>Assunto</th>
                         <th>Destinatário</th>
-                        <th>Data</th>
+                        <th>Enviada</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
@@ -162,7 +162,7 @@
                             </a>
                         </td>
                         <td>{{this.destinatario.nome}}</td>
-                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{formatDateTime this.createdAt}}</td>
                         <td>
                             {{#if this.visualizada}}
                             <span class="badge bg-success">Visualizada</span>
@@ -170,11 +170,21 @@
                             <span class="badge bg-warning text-dark">Não Visualizada</span>
                             {{/if}}
                         </td>
-                        <td>
-                            <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
-                                <i class="bi bi-eye"></i> Ver
-                            </a>
-                        </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="/mensagens/enviadas/{{this.id}}" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                    
+                                    {{#unless this.visualizada}}
+                                    <form action="/mensagens/deletar/{{this.id}}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta mensagem?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                    {{/unless}}
+                                </div>
+                            </td>
                     </tr>
                     {{/each}}
                 </tbody>

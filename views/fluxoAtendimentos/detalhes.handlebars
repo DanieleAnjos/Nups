@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Encaminhamento</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho com título e botão de voltar -->
+            <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
+
+        <!-- Card de detalhes do encaminhamento -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Encaminhamento #{{fluxoAtendimento.id}}</h2>
+                <span class="status {{#if fluxoAtendimento.visto}}status-visto{{else}}status-nao-visto{{/if}}">
+                    {{#if fluxoAtendimento.visto}}Visto{{else}}Não Visto{{/if}}
+                </span>
+            </div>
+            <div class="card-body">
+                <!-- Informações principais -->
+                <div class="info-group">
+                    <h3>Paciente</h3>
+                    <p><strong>Nome:</strong> {{fluxoAtendimento.nomePaciente}}</p>
+                    <p><strong>Matrícula:</strong> {{fluxoAtendimento.matriculaPaciente}}</p>
+                    <p><strong>Telefone:</strong> {{fluxoAtendimento.telefonePaciente}}</p>
+                </div>
+
+                <!-- Profissionais envolvidos -->
+                <div class="info-group">
+                    <h3>Profissionais</h3>
+                    <p><strong>Enviado por:</strong> {{fluxoAtendimento.profissionalEnvio.nome}}</p>
+                    <p><strong>Recebido por:</strong> {{fluxoAtendimento.profissionalRecebido.nome}}</p>
+                </div>
+
+                <!-- Detalhes do atendimento -->
+                <div class="info-group">
+                    <h3>Atendimento</h3>
+                    <p><strong>Atendimento Associado:</strong> {{fluxoAtendimento.atendimento.id}} - {{encaminhamento.atendimento.nomePaciente}}</p>
+                    <p><strong>Assunto:</strong> {{fluxoAtendimento.assuntoAcolhimento}}</p>
+                        <div class="registro-box">
+                            <strong>Descrição:</strong>
+                            <p>{{fluxoAtendimento.descricao}}</p>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    /* Reset básico */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Estilos gerais */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .registro-box {
+        background-color: #e9ecef; /* Cor de fundo da caixa */
+        border-left: 5px solid #0056b3; /* Borda lateral para destaque */
+        padding: 15px; /* Espaçamento interno */
+        margin-top: 20px; /* Espaçamento acima da caixa */
+        border-radius: 5px; /* Bordas arredondadas */
+    }
+
+    .header h1 {
+        color: #0056b3;
+        font-size: 2em;
+    }
+
+    /* Card de detalhes */
+    .card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        color: #fff;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-header h2 {
+        font-size: 1.5em;
+        margin: 0;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+
+    .status-visto {
+        background-color: #28a745;
+    }
+
+    .status-nao-visto {
+        background-color: #dc3545;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .info-group {
+        margin-bottom: 20px;
+    }
+
+    .info-group h3 {
+        color: #0056b3;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 5px;
+    }
+
+    .info-group p {
+        margin: 5px 0;
+        font-size: 1em;
+        color: #555;
+    }
+
+    .info-group p strong {
+        color: #333;
+    }
+
+    /* Botões */
+    .btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+        .container {
+            width: 95%;
+            padding: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+        }
+
+        .card-header h2 {
+            font-size: 1.2em;
+        }
+
+        .info-group h3 {
+            font-size: 1em;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+    }
+</style>

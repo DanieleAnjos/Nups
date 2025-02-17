@@ -1,7 +1,7 @@
 const Sala = require('../models/Sala');
 const ReservaSala = require('../models/ReservaSala');
 
-const { Op } = require('sequelize'); // Certifique-se de importar o Op
+const { Op } = require('sequelize');
 
 
 module.exports = {
@@ -38,7 +38,6 @@ criarSala: async (req, res) => {
   try {
     const { nome, capacidade, descricao } = req.body;
 
-    // Verifica se já existe uma sala com o mesmo nome
     const salaExistente = await Sala.findOne({ where: { nome } });
 
     if (salaExistente) {
@@ -76,9 +75,8 @@ criarSala: async (req, res) => {
       const { nome, capacidade, descricao } = req.body;
       const { id } = req.params;
   
-      // Verifica se já existe outra sala com o mesmo nome
       const salaExistente = await Sala.findOne({
-        where: { nome, id: { [Op.ne]: id } } // Exclui a própria sala da verificação
+        where: { nome, id: { [Op.ne]: id } } 
       });
   
       if (salaExistente) {

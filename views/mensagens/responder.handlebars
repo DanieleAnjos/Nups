@@ -1,5 +1,7 @@
 <h2 class="text-center my-4 text-primary">Responder Mensagem - <strong>{{mensagem.assunto}}</strong></h2>
 
+  <form action="/mensagens/{{mensagem.id}}/responder" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+
 <div class="container shadow-lg p-5 rounded bg-light">
   <!-- Informações do remetente -->
   <div class="row mb-4">
@@ -10,12 +12,19 @@
   </div>
 
   <!-- Formulário de Resposta -->
-  <form action="/mensagens/{{mensagem.id}}/responder" method="POST" class="needs-validation" novalidate>
+
+    <!-- Corpo da Mensagem -->
     <div class="mb-4">
-      <label for="corpo" class="form-label h5 text-secondary"><i class="bi bi-chat-right-text"></i> Sua Resposta:</label>
-      <textarea id="corpo" name="corpo" class="form-control shadow-sm" rows="6" placeholder="Escreva sua resposta aqui..." required></textarea>
-      <div class="invalid-feedback">Por favor, insira sua resposta.</div>
+      <label for="corpo" class="form-label h5 text-secondary"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
+      <textarea name="corpo" id="corpo" class="form-control shadow-sm" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
+      <div class="invalid-feedback">Por favor, insira a mensagem.</div>
     </div>
+
+        <!-- Arquivo -->
+        <div class="mb-4">
+            <label for="arquivo" class="form-label h5 text-secondary"><i class="bi bi-file-earmark"></i> Anexo:</label>
+            <input type="file" name="arquivo" id="arquivo" class="form-control shadow-sm" accept=".jpg,.png,.pdf" >
+        </div>
 
     <!-- Botões de Ação -->
     <div class="d-flex justify-content-center gap-4">

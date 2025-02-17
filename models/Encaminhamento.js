@@ -21,12 +21,22 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     allowNull: false,
   },
   numeroProcesso: {
-    type: DataTypes.STRING(9),
+    type: DataTypes.STRING(11), 
     allowNull: false,
     validate: {
-      len: [9, 9],
-      isNumeric: true 
-    }
+      is: /^\d{6}\/\d{4}$/, 
+    },
+    set(value) {
+
+      const numeroLimpo = value.replace(/\D/g, '');
+  
+      if (numeroLimpo.length !== 10) {
+        throw new Error('O número do processo deve estar no formato correto: XXXXXX/XXXX');
+      }
+  
+      const numeroFormatado = `${numeroLimpo.slice(0, 6)}/${numeroLimpo.slice(6)}`;
+      this.setDataValue('numeroProcesso', numeroFormatado);
+    },
   },
   telefonePaciente: {
     type: DataTypes.STRING,
@@ -57,14 +67,13 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
   },
   atendimentoId: {
     type: DataTypes.INTEGER,
-    allowNull: true, // Encaminhamento pode ou não estar associado a um atendimento
+    allowNull: true, 
   },
 }, {
   tableName: 'encaminhamento',
   timestamps: true,
 });
 
-// Defina as associações
 Encaminhamento.associate = (models) => {
   Encaminhamento.belongsTo(models.Profissional, {
     foreignKey: 'profissionalIdEnvio',
@@ -78,9 +87,9 @@ Encaminhamento.associate = (models) => {
 
   Encaminhamento.belongsTo(models.Atendimento, {
     foreignKey: 'atendimentoId',
-    as: 'atendimento', // Alias utilizado na associação
+    as: 'atendimento', 
     allowNull: true,
   });
 };
 
-module.exports = Encaminhamento; // Exporte o modelo corretamente
+module.exports = Encaminhamento; 

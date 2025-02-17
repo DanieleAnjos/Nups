@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Profissional = require('./Profissional'); // Corrigir o caminho, se necessário
+const Profissional = require('./Profissional'); 
 
 const Usuario = sequelize.define('Usuario', {
   id: {
@@ -28,8 +28,8 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'profissional', // Name of the parent table
-      key: 'id', // Key in the parent table
+      model: 'profissional', 
+      key: 'id', 
     },
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
@@ -43,7 +43,7 @@ Usuario.belongsTo(Profissional, {
   foreignKey: 'profissionalId',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
-  as: 'profissional', // Adicione um alias para a associação
+  as: 'profissional', 
 });
 
 module.exports = Usuario;

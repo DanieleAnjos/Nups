@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Atendimento = require('../models/Atendimento');
-const Profissional = require('../models/Profissional'); // Importe o modelo Profissional corretamente
+const Profissional = require('../models/Profissional'); 
 
 const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   id: {
@@ -13,20 +13,20 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Atendimento, // Referência ao modelo Atendimento
+      model: Atendimento, 
       key: 'id',
     },
-    onDelete: 'CASCADE', // Remove a discussão se o atendimento for deletado
+    onDelete: 'CASCADE', 
   },
   conteudo: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
   autor: {
-    type: DataTypes.INTEGER,  // Assegure que o tipo seja o mesmo
+    type: DataTypes.INTEGER, 
     allowNull: false,
     references: {
-      model: Profissional,  // Referência ao modelo Profissional
+      model: Profissional,  
       key: 'id',
     },
     onDelete: 'CASCADE',
@@ -35,14 +35,13 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   dataHora: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW, // Define a data/hora atual como padrão
+    defaultValue: DataTypes.NOW, 
   },
 }, {
   tableName: 'discussao_casos',
-  timestamps: true, // Adiciona createdAt e updatedAt automaticamente
+  timestamps: true, 
 });
 
-// Definindo os relacionamentos
 DiscussaoCaso.belongsTo(Atendimento, { foreignKey: 'atendimentoId', as: 'atendimento' });
 DiscussaoCaso.belongsTo(Profissional, { foreignKey: 'autor', as: 'profissional' });
 

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Encaminhamentos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Fluxograma de Atendimentos</h2>
+
+        <!-- Botão Adicionar Novo Encaminhamento -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/fluxoAtendimentos/create" class="btn btn-success">
+                <i class="bi bi-plus-circle">Adicionar Novo Encaminhamento</i> 
+            </a>
+        </div>
+
+<!-- Formulário de Filtro -->
+<!-- Formulário de Filtro -->
+<form action="/fluxoAtendimentos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+    <div class="row">
+        <!-- Campo: Nome do Paciente -->
+        <div class="col-md-4 mb-2">
+            <input type="text" name="nomePaciente" class="form-control" placeholder="Nome do Servidor" value="{{query.nomePaciente}}">
+        </div>
+
+        <!-- Campo: Profissional -->
+        <div class="col-md-3 mb-2">
+            <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
+        </div>
+
+        <!-- Campo: Data Início -->
+        <div class="col-md-3 mb-2">
+            <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+        </div>
+
+        <!-- Botão de Filtrar -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+        </div>
+    </div>
+</form>
+
+
+        <!-- Tabela de Encaminhamentos -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Data</th>
+                        <th>Matrícula Servidor</th>
+                        <th>Nome do Servidor</th>
+                        <th>Enviado por</th>
+                        <th>Recebido por</th>
+                        <th>Assunto Acolhimento</th>
+                        <th>Visto</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each fluxoAtendimentos}}
+                        <tr>
+                            <td>{{OneDate this.data }}</td>
+                            <td>{{this.matriculaPaciente}}</td>
+                            <td>{{this.nomePaciente}}</td>
+                            <td>{{this.profissionalEnvio.nome}}</td>
+                            <td>{{this.profissionalRecebido.nome}}</td>
+                            <td>{{this.assuntoAcolhimento}}</td>
+                            <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
+                            <td class="text-center">
+                                <a href="/fluxoAtendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="/fluxoAtendimentos/{{this.id}}" class="btn btn-info btn-sm mx-1">
+                                    <i class="bi bi-eye"></i> Detalhes
+                                </a>
+                            
+                                <form action="/fluxoAtendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
+                                        <i class="bi bi-trash"></i> Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>
+</body>
+</html>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    h2 {
+        color: #0056b3;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .table {
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    th {
+        background-color: #e9ecef;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f1f4f9;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+
+    .btn-success {
+        border-radius: 30px;
+        padding: 10px 20px;
+        font-weight: bold;
+    }
+
+    .btn-success i {
+        margin-right: 8px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f4f9;
+    }
+</style>

@@ -2,21 +2,34 @@ const Encaminhamento = require('../models/Encaminhamento');
 const Notificacao = require('../models/Notificacao');
 const Profissional = require('../models/Profissional');
 const Atendimento = require('../models/Atendimento');
-const { Op } = require('sequelize');  // Não se esqueça de importar o operador
+const { Op } = require('sequelize');  
 
 const moment = require('moment');
+const { Paciente } = require('../models');
 
 
 exports.index = async (req, res) => {
   try {
     const { nomePaciente, profissional, data } = req.query;
+    const profissionalId = req.user.profissionalId;
 
-    const whereConditions = {};
-    
+    const profissionalAssociado = await Profissional.findOne({
+      where: { id: profissionalId },
+    });
+
+    if (!profissionalAssociado) {
+      return res.status(403).send('Usuário não está associado a um profissional válido.');
+    }
+
+    const userCargo = profissionalAssociado.cargo;
+
+    // Se o cargo for 'Administrador', não aplicamos filtro
+    const whereConditions = userCargo === 'Administrador' ? {} : {};
+
     if (nomePaciente) {
       whereConditions.nomePaciente = { [Op.like]: `%${nomePaciente}%` };
     }
-    
+
     if (profissional) {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.nome$': { [Op.like]: `%${profissional}%` } },
@@ -28,6 +41,12 @@ exports.index = async (req, res) => {
       whereConditions.data = data;
     }
 
+    if (userCargo !== 'Administrador') {
+      whereConditions[Op.or] = [
+        { '$profissionalEnvio.cargo$': userCargo },
+        { '$profissionalRecebido.cargo$': userCargo }
+      ];
+    }
 
     const encaminhamentos = await Encaminhamento.findAll({
       where: whereConditions,
@@ -36,7 +55,7 @@ exports.index = async (req, res) => {
         { model: Profissional, as: 'profissionalRecebido' },
         { model: Atendimento, as: 'atendimento', include: [
           { model: Profissional, as: 'profissional' }
-        ]}, 
+        ]},
       ],
     });
 
@@ -75,30 +94,33 @@ exports.marcarVisto = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    // Obtém o ID do profissional que está logado
     const profissionalIdEnvio = req.user ? req.user.profissionalId : null;
 
-    // Buscar profissionais psicólogos (para "Acolhimento de disparo")
     const profissionaisPsicologia = await Profissional.findAll({
       where: {
         id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Psicólogo", // Filtra pelo cargo
+        cargo: "Psicólogo", 
       },
     });
 
-    // Buscar profissionais assistentes sociais (para outros assuntos)
     const profissionaisServicoSocial = await Profissional.findAll({
       where: {
         id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Assistente Social", // Filtra pelo cargo
+        cargo: "Assistente Social", 
       },
     });
 
-    // Renderiza a view passando os dados
+        const pacientes = await Paciente.findAll({
+          attributes: ['id', 'nome', 'matricula'], 
+          order: [['nome', 'ASC']]
+        });
+    
+
     res.render("encaminhamentos/create", {
       profissionalIdEnvio,
       profissionaisPsicologia,
       profissionaisServicoSocial,
+      pacientes,
     });
 
   } catch (error) {
@@ -126,15 +148,14 @@ exports.store = async (req, res) => {
     } = req.body;
 
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0); // Define o início do dia
+    hoje.setHours(0, 0, 0, 0); 
 
-    // Verifica se já existe um encaminhamento para este paciente e profissional na data atual
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
-        matriculaPaciente, // Verifica pelo número de matrícula
-        profissionalIdRecebido, // Mesmo profissional
+        matriculaPaciente, 
+        profissionalIdRecebido, 
         data: {
-          [Op.gte]: hoje, // Data maior ou igual ao início do dia
+          [Op.gte]: hoje, 
         },
       },
     });
@@ -147,12 +168,11 @@ exports.store = async (req, res) => {
     const telefonePacienteLimpo = telefonePaciente.replace(/\D/g, ''); 
 
 
-    // Criar novo encaminhamento
     const novoEncaminhamento = await Encaminhamento.create({
       nomePaciente,
       matriculaPaciente,
       numeroProcesso,
-      telefonePaciente: telefonePacienteLimpo, // Salvando sem formatação
+      telefonePaciente: telefonePacienteLimpo, 
       nomeProfissional,
       assuntoAcolhimento,
       descricao,
@@ -162,7 +182,6 @@ exports.store = async (req, res) => {
       data: new Date(),
     });
 
-    // Notificar o profissional que recebeu o encaminhamento
     const profissionalRecebido = await Profissional.findByPk(profissionalIdRecebido);
     if (profissionalRecebido) {
       await Notificacao.create({
@@ -188,7 +207,6 @@ exports.detalhesEncaminhamento = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Busca o encaminhamento pelo ID, incluindo os profissionais e o atendimento
     const encaminhamento = await Encaminhamento.findByPk(id, {
       include: [
         { model: Profissional, as: 'profissionalEnvio' },
@@ -202,7 +220,6 @@ exports.detalhesEncaminhamento = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    // Renderiza a view de detalhes com os dados do encaminhamento
     res.render('encaminhamentos/detalhes', { encaminhamento });
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
@@ -214,7 +231,6 @@ exports.detalhesEncaminhamento = async (req, res) => {
 exports.edit = async (req, res) => {
   const { id } = req.params;
   try {
-    // Buscar o encaminhamento pelo ID
     const encaminhamento = await Encaminhamento.findByPk(id, {
       include: [
         { model: Profissional, as: 'profissionalEnvio' },
@@ -223,29 +239,31 @@ exports.edit = async (req, res) => {
       ],
     });
 
-    // Verifica se o encaminhamento existe
     if (!encaminhamento) {
       req.flash('error_msg', 'Encaminhamento não encontrado.');
       return res.redirect('/encaminhamentos');
     }
 
-    // Supondo que o id do profissional esteja armazenado na sessão (req.user)
-    const profissionalIdEnvio = req.user ? req.user.id : null; // Verifica se o usuário está logado
+    const profissionalIdEnvio = req.user ? req.user.id : null; 
 
-    // Buscar todos os profissionais, excluindo o que está realizando o encaminhamento (profissionalIdEnvio)
     const profissionaisRecebimento = await Profissional.findAll({
       where: {
         id: {
-          [Op.ne]: profissionalIdEnvio,  // Exclui o profissional que está realizando o encaminhamento
+          [Op.ne]: profissionalIdEnvio,  
         },
       },
     });
 
-    // Renderiza o formulário de edição, passando o encaminhamento e a lista de profissionaisRecebimento
+    const pacientes = await Paciente.findAll({
+      attributes: ['id', 'nome', 'matricula'], 
+      order: [['nome', 'ASC']]
+    });
+
     res.render('encaminhamentos/edit', { 
       encaminhamento: encaminhamento.get({ plain: true }),
       profissionalIdEnvio, 
-      profissionaisRecebimento 
+      profissionaisRecebimento,
+      pacientes
     });
 
   } catch (error) {
@@ -279,7 +297,6 @@ exports.update = async (req, res) => {
 exports.destroy = async (req, res) => {
   const { id } = req.params;
   try {
-    // Buscar o encaminhamento antes de deletar
     const encaminhamento = await Encaminhamento.findByPk(id);
 
     if (!encaminhamento) {
@@ -289,10 +306,8 @@ exports.destroy = async (req, res) => {
 
     const { profissionalIdRecebido, assuntoAcolhimento, nomePaciente } = encaminhamento;
 
-    // Deletar encaminhamento
     await Encaminhamento.destroy({ where: { id } });
 
-    // Criar notificação para o profissional que receberia o encaminhamento
     if (profissionalIdRecebido) {
       await Notificacao.create({
         titulo: `Encaminhamento Cancelado: ${assuntoAcolhimento}`,

@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const Ocorrencia = require('../models/Ocorrencia');
 const Profissional = require('../models/Profissional');
 const fs = require('fs');
-const xlsx = require('xlsx'); // Adicionando a importação para o Excel
+const xlsx = require('xlsx'); 
 
 
 const ocorrenciaController = {
@@ -22,7 +22,8 @@ const ocorrenciaController = {
           model: Profissional,
           as: 'profissional',
           where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
-        }]
+        }],
+        order: [['data', 'DESC']]  
       });
 
       const ocorrenciasData = ocorrencias.map(ocorrencia => ocorrencia.get({ plain: true }));
@@ -38,6 +39,7 @@ const ocorrenciaController = {
     }
   },
 
+
   create: async (req, res) => {
     try {
       if (!req.user) {
@@ -45,13 +47,11 @@ const ocorrenciaController = {
         return res.redirect('/login');
       }
   
-      // Obtém o ID do profissional logado
       const profissionalId = req.user.profissionalId;
       console.log('ID do profissional logado:', req.user.profissionalId);
   
-      // Renderiza a view passando o ID do profissional
       return res.render('ocorrencias/create', {
-        profissionalId, // Passa o ID do profissional para a view
+        profissionalId, 
       });
     } catch (error) {
       console.error('Erro ao carregar o formulário:', error);
@@ -77,7 +77,6 @@ const ocorrenciaController = {
         return res.redirect('back');
       }
   
-      // Verifica se já existe uma ocorrência para o mesmo profissional no mesmo dia e horário exato
       const ocorrenciaExistente = await Ocorrencia.findOne({
         where: {
           profissionalId,
@@ -273,7 +272,7 @@ const ocorrenciaController = {
         const dataFormatada = new Date(ocorrencia.data).toLocaleDateString();
         return {
           Data: dataFormatada,
-          Descricao: ocorrencia.relatorio, // Usando "relatorio"
+          Descricao: ocorrencia.relatorio, 
           Profissional: ocorrencia.profissional ? ocorrencia.profissional.nome : 'Profissional não encontrado',
         };
       });

@@ -8,7 +8,7 @@ const Profissional = require('../models/Profissional');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // ou outro serviço de e-mail
+    service: 'gmail', 
     auth: {
       user: 'ferdinandogms@gmail.com',
       pass: 'ooyp orjc vuok kzvj'
@@ -64,7 +64,7 @@ exports.requestPasswordReset = async (req, res) => {
         if (user && user.Profissional && user.Profissional.email) {
             const token = crypto.randomBytes(32).toString('hex');
             user.resetToken = token;
-            user.resetTokenExpires = Date.now() + 3600000; // 1 hora
+            user.resetTokenExpires = Date.now() + 3600000; 
             await user.save();
 
             const resetLink = `http://localhost:3002/auth/reset/${token}`;
@@ -81,7 +81,6 @@ exports.requestPasswordReset = async (req, res) => {
             });
         }
 
-        // Resposta genérica, independente de existir o usuário ou email
         return res.status(200).render('auth/forgotPassword', { 
             success: 'Enviamos um email para redefinir sua senha. Se o endereço de email estiver associado a uma conta, você poderá redefinir sua senha.',
             layout: false 

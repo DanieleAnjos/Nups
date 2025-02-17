@@ -4,9 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ6bH8lX1YdVfK2anGQbhMvDOK0gtyWFM5J0n61V9QhZ8kWnZTna4rbUjxdg" crossorigin="anonymous">
   <!-- Icones do Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery (necessário para o Select2) -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
 
@@ -44,7 +52,12 @@
         <!-- Nome do Paciente -->
         <div class="mb-4">
           <label for="nomePaciente" class="form-label">Nome do Servidor:</label>
-          <input type="text" name="nomePaciente" id="nomePaciente" class="form-control"required>
+          <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
+            <option value="">🔍 Digite para buscar um servidor</option>
+            {{#each pacientes}}
+              <option value="{{this.nome}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
+            {{/each}}
+          </select>
         </div>
 
         <!-- Matrícula do Paciente -->
@@ -54,13 +67,13 @@
         </div>
 
         <!-- Numero do Processo -->
-
         <div class="mb-4">
           <label for="numeroProcesso" class="form-label">Número do Processo:</label>
-          <input type="number" name="numeroProcesso" id="numeroProcesso" class="form-control" required minlength="9" maxlength="9">
-          <div class="invalid-feedback">O número do processo deve conter exatamente 9 dígitos.</div>
+          <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" 
+                required 
+                title="O número do processo deve estar no formato 000000/0000">
+          <div class="invalid-feedback">O número do processo deve estar no formato 000000/0000.</div>
         </div>
-
 
         <!-- Telefone do Paciente -->
         <div class="mb-4">
@@ -91,7 +104,6 @@
   <input type="hidden" name="profissionalIdEnvio" id="profissionalIdEnvio" value="{{profissionalIdEnvio}}">
 </div>
 
-
         <!-- Profissional de Recebimento (alterado para 'select') -->
 <!-- Profissional de Recebimento -->
         <div class="mb-4">
@@ -105,61 +117,82 @@
         <!-- Botão de Envio -->
         <div class="text-center mt-4">
           <button type="submit" class="btn btn-success btn-lg">
-            <i class="bi bi-check-circle"></i> Criar Encaminhamento
+            <i class="bi bi-check-circle"></i> Gerar Encaminhamento
           </button>
         </div>
     </form>
   </div>
 
-  <!-- jQuery e Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
 
 
-      document.getElementById('numeroProcesso').addEventListener('input', function (event) {
-    const input = event.target;
-    const value = input.value;
-
-    // Verifica se tem 9 dígitos
-    if (value.length !== 9) {
-      input.setCustomValidity("O número do processo deve conter exatamente 9 dígitos.");
-      input.classList.add("is-invalid");
-    } else {
-      input.setCustomValidity("");
-      input.classList.remove("is-invalid");
-    }
-  });
-      document.getElementById('telefonePaciente').addEventListener('input', function (event) {
-    const input = event.target;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não for número
-
-    // Aplica a máscara de telefone (formato brasileiro)
-    if (value.length > 11) {
-      value = value.slice(0, 11);
-    }
-    
-    if (value.length > 10) {
-      value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); // Formato celular
-    } else if (value.length > 9) {
-      value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3"); // Formato fixo
-    }
-
-    input.value = value;
-
-    // Validação do número
-    const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
-    if (!telefoneRegex.test(value)) {
-      input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
-      input.classList.add("is-invalid");
-    } else {
-      input.setCustomValidity("");
-      input.classList.remove("is-invalid");
-    }
+document.addEventListener("DOMContentLoaded", function () {
+  // Inicializa o Select2
+  $('#nomePaciente').select2({
+    placeholder: "🔍 Digite para buscar um servidor", // Texto de placeholder
+    allowClear: true, // Permite limpar a seleção
+        tags: true, // Habilita a inserção de valores não cadastrados
+    width: '100%' // Define a largura do campo
   });
 
-    // Função para buscar paciente por nome e preencher matrícula e ID automaticamente
+  // Atualiza a matrícula ao selecionar um paciente
+  $('#nomePaciente').on('change', function () {
+    const selectedOption = $(this).find(':selected');
+    const matricula = selectedOption.data('matricula');
+    $('#matriculaPaciente').val(matricula); // Preenche o campo de matrícula
+  });
+});
+
+    document.getElementById('numeroProcesso').addEventListener('input', function (event) {
+      const input = event.target;
+      let value = input.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
+
+      // Verifica se o valor possui 6 dígitos seguidos de "/" e 4 dígitos
+      if (value.length > 6) {
+        value = value.slice(0, 6) + '/' + value.slice(6, 10); // Formata como '243355/2024'
+      }
+
+      // Aplica a formatação no input
+      input.value = value;
+
+      // Verifica se o valor está no formato correto e aplica a validação
+      if (value.length !== 11 || !/^\d{6}\/\d{4}$/.test(value)) {
+        input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
+        input.classList.add("is-invalid");
+      } else {
+        input.setCustomValidity(""); // Limpa a mensagem de erro
+        input.classList.remove("is-invalid"); // Remove a classe de erro
+      }
+    });
+
+    document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+      const input = event.target;
+      let value = input.value.replace(/\D/g, ''); // Remove tudo que não for número
+
+      // Aplica a máscara de telefone (formato brasileiro)
+      if (value.length > 11) {
+        value = value.slice(0, 11);
+      }
+      
+      if (value.length > 10) {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); // Formato celular
+      } else if (value.length > 9) {
+        value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3"); // Formato fixo
+      }
+
+      input.value = value;
+
+      // Validação do número
+      const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+      if (!telefoneRegex.test(value)) {
+        input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
+        input.classList.add("is-invalid");
+      } else {
+        input.setCustomValidity("");
+        input.classList.remove("is-invalid");
+      }
+    });
+
     function buscarPacientePorNome() {
       const nomePaciente = document.getElementById('nomePaciente').value;
       
@@ -180,7 +213,6 @@
       }
     }
 
-    // Função para buscar paciente por matrícula e preencher nome e ID automaticamente
     function buscarPacientePorMatricula() {
       const matriculaPaciente = document.getElementById('matriculaPaciente').value;
       
@@ -201,54 +233,69 @@
       }
     }
 
-
     document.addEventListener("DOMContentLoaded", function () {
-    const assuntoSelect = document.getElementById("assuntoAcolhimento");
-    const profissionalSelect = document.getElementById("profissionalIdRecebido");
+      const assuntoSelect = document.getElementById("assuntoAcolhimento");
+      const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
-    // Dados dos profissionais (passados do backend para o frontend)
-    const profissionaisPsicologia = [
-        {{#each profissionaisPsicologia}}
-            { id: "{{this.id}}", nome: "{{this.nome}}" },
-        {{/each}}
-    ];
+      // Dados dos profissionais (passados do backend para o frontend)
+      const profissionaisPsicologia = [
+          {{#each profissionaisPsicologia}}
+              { id: "{{this.id}}", nome: "{{this.nome}}" },
+          {{/each}}
+      ];
 
-    const profissionaisServicoSocial = [
-        {{#each profissionaisServicoSocial}}
-            { id: "{{this.id}}", nome: "{{this.nome}}" },
-        {{/each}}
-    ];
+      const profissionaisServicoSocial = [
+          {{#each profissionaisServicoSocial}}
+              { id: "{{this.id}}", nome: "{{this.nome}}" },
+          {{/each}}
+      ];
 
-    function atualizarListaProfissionais() {
-        const assuntoSelecionado = assuntoSelect.value;
+      function atualizarListaProfissionais() {
+          const assuntoSelecionado = assuntoSelect.value;
 
-        // Determinar quais profissionais exibir
-        let profissionais = [];
-        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
-            profissionais = profissionaisPsicologia;
-        } else {
-            profissionais = profissionaisServicoSocial;
-        }
+          // Determinar quais profissionais exibir
+          let profissionais = [];
+          if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
+              profissionais = profissionaisPsicologia;
+          } else {
+              profissionais = profissionaisServicoSocial;
+          }
 
-        // Limpar as opções anteriores
-        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+          // Limpar as opções anteriores
+          profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-        // Adicionar os novos profissionais ao select
-        profissionais.forEach(profissional => {
-            const option = document.createElement("option");
-            option.value = profissional.id;
-            option.textContent = profissional.nome;
-            profissionalSelect.appendChild(option);
-        });
-    }
+          // Adicionar os novos profissionais ao select
+          profissionais.forEach(profissional => {
+              const option = document.createElement("option");
+              option.value = profissional.id;
+              option.textContent = profissional.nome;
+              profissionalSelect.appendChild(option);
+          });
+      }
 
-    // Executar a função ao mudar o assunto
-    assuntoSelect.addEventListener("change", atualizarListaProfissionais);
+      // Executar a função ao mudar o assunto
+      assuntoSelect.addEventListener("change", atualizarListaProfissionais);
 
-    // Executar ao carregar a página (caso já tenha um assunto pré-selecionado)
-    atualizarListaProfissionais();
-});
+      // Executar ao carregar a página (caso já tenha um assunto pré-selecionado)
+      atualizarListaProfissionais();
+    });
   </script>
 
 </body>
 </html>
+
+<style>
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+
+      .container {
+    max-width: 900px;
+    margin-top: 40px;
+  }
+
+</style>

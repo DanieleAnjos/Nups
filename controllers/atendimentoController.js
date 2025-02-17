@@ -14,15 +14,29 @@ exports.index = async (req, res) => {
     const searchTerm = req.query.search || '';
     const dataInicio = req.query.dataInicio || '';
     const dataFim = req.query.dataFim || '';
+    
+    const profissionalId = req.user.profissionalId;
 
-    const whereConditions = {
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['cargo'] 
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const profissionalCargo = profissional.cargo;
+
+    // Se o cargo for 'Administrador', não aplicamos filtro
+    const whereConditions = profissionalCargo === 'Administrador' ? {} : {
       [Op.or]: [
         { '$paciente.nome$': { [Op.like]: `%${searchTerm}%` } },
         { '$profissional.nome$': { [Op.like]: `%${searchTerm}%` } }
-      ]
+      ],
+      '$profissional.id$': profissionalId, // Filtro para o profissional logado
+      '$profissional.cargo$': profissionalCargo // Filtro para o cargo do profissional logado
     };
 
-    // Se datas foram fornecidas, adicionamos o filtro no campo 'dataAtendimento'
     if (dataInicio && dataFim) {
       whereConditions.dataAtendimento = {
         [Op.between]: [new Date(dataInicio), new Date(dataFim)]
@@ -79,9 +93,8 @@ exports.create = async (req, res) => {
       where: cargoFiltrado ? { cargo: cargoFiltrado } : {}
     });
 
-    // Buscar todos os pacientes para listar no dropdown
     const pacientes = await Paciente.findAll({
-      attributes: ['id', 'nome', 'matricula'], // Pegamos apenas os campos necessários
+      attributes: ['id', 'nome', 'matricula'], 
       order: [['nome', 'ASC']]
     });
 
@@ -99,13 +112,11 @@ exports.create = async (req, res) => {
 
 
 exports.store = [
-  // Validações dos campos
   body('nomePaciente').notEmpty().withMessage('O nome do paciente é obrigatório'),
   body('matriculaPaciente').isInt({ min: 1 }).withMessage('A matrícula do paciente deve ser um número positivo'),
   body('registroAtendimento').notEmpty().withMessage('O registro de atendimento é obrigatório'),
 
   async (req, res) => {
-    // Validação dos dados da requisição
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       req.flash('error', errors.array().map(error => error.msg).join(', '));
@@ -113,42 +124,36 @@ exports.store = [
     }
 
     try {
-      // Busca o paciente com base na matrícula
       const paciente = await Paciente.findOne({
-        where: { matricula: req.body.matriculaPaciente } // Corrigido para usar o campo correto
+        where: { matricula: req.body.matriculaPaciente }
       });
 
-      // Caso o paciente não seja encontrado
       if (!paciente) {
         req.flash('error', 'Paciente não encontrado com a matrícula fornecida.');
         return res.redirect('/atendimentos/create');
       }
 
-      // Verifica se o profissionalId está definido no usuário logado
       if (!req.user.profissionalId) {
         req.flash('error', 'Profissional não associado ao usuário logado.');
         return res.redirect('/atendimentos/create');
       }
 
-      // Criação do atendimento
       const atendimento = await Atendimento.create({
         nomePaciente: req.body.nomePaciente,
         matriculaPaciente: req.body.matriculaPaciente,
         assuntoAtendimento: req.body.assuntoAtendimento,
         registroAtendimento: req.body.registroAtendimento,
-        dataAtendimento: new Date(), // Data atual
-        pacienteId: paciente.id, // Relacionamento com o paciente encontrado
-        profissionalId: req.user.profissionalId // Usa o profissionalId do usuário logado
+        dataAtendimento: new Date(),
+        pacienteId: paciente.id, 
+        profissionalId: req.user.profissionalId 
       });
 
-      // Criação de notificação para o profissional
       await Notificacao.create({
         titulo: `Novo Atendimento: ${req.body.registroAtendimento}`,
         mensagem: `Você realizou um novo atendimento para o paciente ${req.body.nomePaciente}, matrícula: ${req.body.matriculaPaciente}.`,
-        profissionalId: req.user.profissionalId // Notificação para o profissional associado ao usuário logado
+        profissionalId: req.user.profissionalId 
       });
 
-      // Mensagem de sucesso e redirecionamento
       req.flash('success_msg', 'Atendimento criado com sucesso!');
       return res.redirect('/atendimentos');
     } catch (error) {
@@ -226,7 +231,7 @@ exports.dash = async (req, res) => {
     const atendimentos = await Atendimento.findAll({
       where: {
         [Op.or]: [
-          { '$paciente.nome$': { [Op.like]: `%${searchTerm}%` } },  // Alterado para procurar paciente
+          { '$paciente.nome$': { [Op.like]: `%${searchTerm}%` } },  
           { '$profissional.nome$': { [Op.like]: `%${searchTerm}%` } }
         ]
       },
@@ -238,7 +243,7 @@ exports.dash = async (req, res) => {
         },
         {
           model: Paciente,
-          as: 'paciente', // Garantir que o paciente está sendo incluído
+          as: 'paciente', 
           attributes: ['id', 'nome']
         }
       ]
@@ -291,15 +296,15 @@ exports.show = async (req, res) => {
       include: [
         { 
           model: Profissional, 
-          as: 'profissional' // Profissional associado ao atendimento
+          as: 'profissional' 
         },
         {
           model: DiscussaoCaso,
-          as: 'discussaoCasos', // Discussões associadas ao atendimento
+          as: 'discussaoCasos', 
           include: [
             { 
               model: Profissional, 
-              as: 'profissional' // Profissional associado à discussão
+              as: 'profissional' 
             }
           ]
         },
@@ -335,7 +340,7 @@ exports.buscarPaciente = async (req, res) => {
     let whereClause = {};
 
     if (nome && nome.length >= 3) {
-      whereClause.nome = { [Op.iLike]: `%${nome}%` };  // Busca parcial no nome (case insensitive)
+      whereClause.nome = { [Op.iLike]: `%${nome}%` };  
     }
 
     if (matricula) {
@@ -351,7 +356,7 @@ exports.buscarPaciente = async (req, res) => {
       return res.status(404).json({ error: "Paciente não encontrado." });
     }
 
-    return res.json(paciente); // Retorna o paciente encontrado
+    return res.json(paciente); 
   } catch (error) {
     console.error("Erro ao buscar paciente:", error);
     return res.status(500).json({ error: "Erro ao buscar paciente." });
@@ -360,10 +365,8 @@ exports.buscarPaciente = async (req, res) => {
 
 exports.stats = async (req, res) => {
   try {
-    // Total de atendimentos
     const totalAtendimentos = await Atendimento.count();
 
-    // Atendimentos por mês
     const atendimentosPorMes = await Atendimento.findAll({
       attributes: [
         [sequelize.fn('MONTH', sequelize.col('dataAtendimento')), 'mes'],
@@ -373,7 +376,6 @@ exports.stats = async (req, res) => {
       order: [[sequelize.fn('MONTH', sequelize.col('dataAtendimento')), 'ASC']]
     });
 
-    // Atendimentos por profissional
     const atendimentosPorProfissional = await Atendimento.findAll({
       attributes: [
         'profissionalId',

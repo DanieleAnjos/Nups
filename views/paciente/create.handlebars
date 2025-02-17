@@ -39,7 +39,7 @@
 
 
     <div class="form-group">
-        <label for="nomePaciente">Nome do Paciente:</label>
+        <label for="nomePaciente">Nome do Servidor:</label>
         <input type="text" name="nome" id="nomePaciente" class="form-control" oninput="mostrarSugestoes()" required placeholder="Digite o nome do paciente">
         <div id="sugestoes" class="sugestoes-lista"></div>
     </div>
@@ -129,15 +129,23 @@
 </fieldset>
 
 
-        <fieldset class="border p-4 mb-4">
-            <legend>Imagem do Paciente</legend>
-            <div class="form-group">
-                <label for="imagemPaciente">Carregar Imagem:</label>
-                <input type="file" class="form-control" name="imagem" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
-                <small class="form-text text-muted">Formato aceito: JPG, PNG, GIF.</small>
-                <img id="imagemPreview" src="#" alt="Pré-visualização da Imagem" style="display:none; margin-top:10px; max-width:200px;">
-            </div>
-        </fieldset>
+<fieldset class="border p-4 mb-4">
+    <legend>Imagem do Servidor</legend>
+    <div class="form-group">
+        <label for="imagemPaciente">Carregar Imagem:</label>
+        <input type="file" class="form-control" name="imagem" id="imagemPaciente" accept="image/*" onchange="previewImage(event)">
+        <small class="form-text text-muted">Formatos aceitos: JPG, PNG, GIF.</small>
+
+        <div class="preview-container mt-3" style="position: relative; display: none;">
+            <img id="imagemPreview" src="#" alt="Pré-visualização da Imagem" class="img-thumbnail shadow" style="max-width: 200px; display: block;">
+            <button type="button" class="btn btn-danger btn-sm position-absolute" style="top: 5px; right: 5px;" onclick="removerImagem()">X</button>
+        </div>
+
+        <p id="fileName" class="text-muted mt-2"></p>
+    </div>
+</fieldset>
+
+
 <fieldset class="border p-3 mb-3">
     <legend>Endereço</legend>
     <div class="row">
@@ -314,6 +322,10 @@
             <label for="tempoServico">Tempo de Serviço:</label>
             <input type="text" class="form-control" name="tempoServico" id="tempoServico">
         </div>
+        <div class="col-md-6">
+            <label for="relacaoSupervisor">Relacão com o supervisor imediato:</label>
+            <input type="text" class="form-control" name="relacaoSupervisor" id="relacaoSupervisor">
+        </div>
     </div>
 </fieldset>
 
@@ -344,34 +356,36 @@
             <legend class="w-auto px-2">Informações Adicionais</legend>
 
             <div class="form-group">
-                <label for="filhos">Filhos:</label>
-                <select class="form-control" name="filhos" id="filhos" onchange="toggleField('filhos', 'quantidadeFilhos', 'idadeFilhos')">
-                    <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="false">Não</option>
-                    <option value="true">Sim</option>
-                </select>
+            <label for="possuiFilhos">Filhos:</label>
+            <select class="form-control" name="possuiFilhos" id="possuiFilhos" onchange="toggleFilhos()">
+                <option value="" disabled selected>Selecione uma opção</option>
+                <option value="false">Não</option>
+                <option value="true">Sim</option>
+            </select>
             </div>
 
-            <div class="form-group" id="quantidadeFilhos" style="display:none;">
-                <label for="quantidadeFilhos">Quantidade de Filhos:</label>
-                <input type="text" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput">
+            <div id="quantidadeFilhosContainer" style="display:none;">
+            <label for="quantidadeFilhos">Quantidade de Filhos:</label>
+            <input type="number" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput" min="1" oninput="gerarCamposFilhos()">
             </div>
 
-            <div class="form-group" id="idadeFilhos" style="display:none;">
-                <label for="idadeFilhos">Idade dos Filhos:</label>
-                <input type="text" class="form-control" name="idadeFilhos" id="idadeFilhosInput">
+            <div id="filhosContainer" style="display:none;">
+            <div id="filhosLista"></div>
             </div>
+
+            <input type="hidden" name="filhos" id="jsonFilhos">
+
 
             <div class="form-group">
                 <label for="porteArma">Porte de Arma:</label>
-                <select class="form-control" name="porteArma" id="porteArma">
+                <select class="form-control" name="porteArma" id="porteArma" onchange="toggleField('porteArma', 'trabalhoArmado', 'armaPessoal')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
                     <option value="true">Sim</option>
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="trabalhoArmado" style="display:none;">
                 <label for="trabalhoArmado">Trabalho Armado:</label>
                 <select class="form-control" name="trabalhoArmado" id="trabalhoArmado">
                     <option value="" disabled selected>Selecione uma opção</option>
@@ -380,7 +394,7 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="armaPessoal" style="display:none;">
                 <label for="armaPessoal">Arma Pessoal:</label>
                 <select class="form-control" name="armaPessoal" id="armaPessoal">
                     <option value="" disabled selected>Selecione uma opção</option>
@@ -406,6 +420,62 @@
 </div>
 
 <script>
+    function toggleFilhos() {
+  const select = document.getElementById('possuiFilhos');
+  const quantidadeFilhosDiv = document.getElementById('quantidadeFilhosContainer');
+  const filhosContainer = document.getElementById('filhosContainer');
+  const filhosLista = document.getElementById('filhosLista');
+
+  if (select.value === 'true') {
+    quantidadeFilhosDiv.style.display = 'block';
+    filhosContainer.style.display = 'block';
+  } else {
+    quantidadeFilhosDiv.style.display = 'none';
+    filhosContainer.style.display = 'none';
+    filhosLista.innerHTML = ''; // Remove os campos se "Não" for selecionado
+  }
+}
+
+function gerarCamposFilhos() {
+  const quantidade = document.getElementById('quantidadeFilhosInput').value;
+  const filhosLista = document.getElementById('filhosLista');
+
+  filhosLista.innerHTML = ''; // Limpa os campos antes de recriá-los
+
+  for (let i = 0; i < quantidade; i++) {
+    const div = document.createElement('div');
+    div.classList.add('mb-2');
+    div.innerHTML = `
+    <div class="row mb-3">
+        <div class="col-md-6">
+        <label>Nome do Filho ${i + 1}</label>
+        <input type="text" class="form-control"name="nomeFilho" placeholder="Nome do Filho"">
+        </div>
+    <div class="col-md-6">
+      <label>Idade</label>
+      <input type="number" class="form-control" name="idadeFilho" placeholder="Idade do Filho">
+    </div>
+    </div>
+    `;
+    filhosLista.appendChild(div);
+  }
+}
+
+document.querySelector('form').addEventListener('submit', function (event) {
+  const filhos = [];
+  document.querySelectorAll('#filhosLista div').forEach(div => {
+    const nome = div.querySelector('input[name="nomeFilho"]').value;
+    const idade = div.querySelector('input[name="idadeFilho"]').value;
+    if (nome && idade) {
+      filhos.push({ nome, idade });
+    }
+  });
+
+  document.getElementById('jsonFilhos').value = JSON.stringify(filhos);
+});
+
+
+
     function toggleField(selectId, ...fieldIds) {
         const selectElement = document.getElementById(selectId);
         fieldIds.forEach(fieldId => {
@@ -439,21 +509,36 @@
         }
     }
 
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const preview = document.getElementById('imagemPreview');
-        
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.style.display = 'none';
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagemPreview');
+            const previewContainer = document.querySelector('.preview-container');
+            const fileName = document.getElementById('fileName');
+
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    fileName.textContent = `Imagem selecionada: ${file.name}`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                removerImagem();
+            }
         }
-    }
+
+        function removerImagem() {
+            const preview = document.getElementById('imagemPreview');
+            const previewContainer = document.querySelector('.preview-container');
+            const fileInput = document.getElementById('imagemPaciente');
+            const fileName = document.getElementById('fileName');
+
+            preview.src = "#";
+            previewContainer.style.display = 'none';
+            fileInput.value = "";
+            fileName.textContent = "";
+        }
 
     function setCurrentDate() {
         const currentDate = new Date().toISOString().split('T')[0];

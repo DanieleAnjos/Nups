@@ -1,7 +1,6 @@
-// models/Produto.js
 const { DataTypes, Model, Sequelize } = require('sequelize');  
-const sequelize = require('../config/database');  // Assuming you have the sequelize instance configured
-const AjusteEstoque = require('./AjusteEstoque'); // Importando o modelo AjusteEstoque
+const sequelize = require('../config/database');  
+const AjusteEstoque = require('./AjusteEstoque'); 
 
 
 class Produto extends Model {}
@@ -57,7 +56,7 @@ Produto.init({
 }, {
   sequelize,
   modelName: 'Produto',  
-  tableName: 'Produto', // Define o nome da tabela como exatamente 'Produto'
+  tableName: 'Produto', 
   timestamps: true,  
 });
 
@@ -70,4 +69,4 @@ Produto.associate = (models) => {
 
 
 
-module.exports = Produto;  // Export the Produto modela
+module.exports = Produto;  

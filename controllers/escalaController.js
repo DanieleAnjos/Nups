@@ -9,86 +9,107 @@ const puppeteer = require('puppeteer');
 const escalaController = {
   index: async (req, res) => {
     try {
-        const { data, horarioInicio, horarioFim, profissional } = req.query;
-
-        const where = {};
-
-        if (data) {
-            where.data = data;
+      const { data, horarioInicio, horarioFim, profissional } = req.query;
+  
+      const where = {};
+  
+      if (data) {
+        where.data = data;
+      }
+  
+      if (horarioInicio) {
+        where.horarioInicio = { [Op.gte]: horarioInicio };
+      }
+  
+      if (horarioFim) {
+        where.horarioFim = { [Op.lte]: horarioFim };
+      }
+  
+      const profissionalLogado = await Profissional.findByPk(req.user.profissionalId, {
+        attributes: ['cargo'],
+      });
+  
+      const cargoAdministrador = 'Administrador';
+  
+      // Se o profissional for administrador, ele pode ver todas as escalas
+      const whereProfissional = profissionalLogado.cargo === cargoAdministrador
+        ? {}  // Nenhum filtro específico (vê todas as escalas)
+        : { 
+            [Op.or]: [
+              { id: req.user.profissionalId }, // Escala do próprio profissional
+              { cargo: cargoAdministrador } // Escala dos administradores
+            ]
+        };
+  
+      if (profissional) {
+        whereProfissional.id = profissional;
+      }
+  
+      const include = [{
+        model: Profissional,
+        as: 'admin',
+        attributes: ['id', 'nome', 'cargo'],
+        where: whereProfissional,
+      }];
+  
+      const escalas = await Escala.findAll({
+        where,
+        include,
+      });
+  
+      function generateColorFromName(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+          hash = (hash << 5) - hash + name.charCodeAt(i);
+          hash |= 0;
         }
-
-        if (horarioInicio) {
-            where.horarioInicio = { [Op.gte]: horarioInicio };
-        }
-
-        if (horarioFim) {
-            where.horarioFim = { [Op.lte]: horarioFim };
-        }
-
-        const include = [{
-            model: Profissional,
-            as: 'admin',
-            attributes: ['id', 'nome', 'cargo'],
-            where: profissional ? { id: profissional } : undefined,
-        }];
-
-        const escalas = await Escala.findAll({
-            where,
-            include,
-        });
-
-        function generateColorFromName(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) {
-                hash = (hash << 5) - hash + name.charCodeAt(i);
-                hash |= 0;
-            }
-            return '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
-        }
-
-        const escalasFormatadas = escalas.map(escala => {
-            const dataFormatada = new Date(escala.data);
-            const dataLocal = dataFormatada.toISOString().split('T')[0];
-
-            dataFormatada.setDate(dataFormatada.getDate() - 2); 
-
-
-            const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
-                ? escala.horarioInicio
-                : new Date(escala.horarioInicio).toISOString().slice(11, 16);
-
-            const horarioFimFormatado = typeof escala.horarioFim === 'string'
-                ? escala.horarioFim
-                : new Date(escala.horarioFim).toISOString().slice(11, 16);
-
-            const cor = generateColorFromName(escala.admin.nome);
-
-            return {
-                ...escala.toJSON(),
-                data: dataLocal,
-                horarioInicio: horarioInicioFormatado,
-                horarioFim: horarioFimFormatado,
-                cor,
-            };
-        });
-
-        const profissionais = await Profissional.findAll();
-
-        res.render('escalas/index', {
-            escalas: escalasFormatadas,
-            profissionais,
-            query: req.query,
-            profissional: req.user,  // Adicione esta linha para passar o usuário autenticado
-            profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
-                acc[escala.admin.id] = escala.cor;
-                return acc;
-            }, {}))
-        });
+        return '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
+      }
+  
+      const escalasFormatadas = escalas.map(escala => {
+        const dataFormatada = new Date(escala.data);
+        const dataLocal = dataFormatada.toISOString().split('T')[0];
+  
+        dataFormatada.setDate(dataFormatada.getDate() - 2);
+  
+        const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
+            ? escala.horarioInicio
+            : new Date(escala.horarioInicio).toISOString().slice(11, 16);
+  
+        const horarioFimFormatado = typeof escala.horarioFim === 'string'
+            ? escala.horarioFim
+            : new Date(escala.horarioFim).toISOString().slice(11, 16);
+  
+        const cor = generateColorFromName(escala.admin.nome);
+  
+        return {
+          ...escala.toJSON(),
+          data: dataLocal,
+          horarioInicio: horarioInicioFormatado,
+          horarioFim: horarioFimFormatado,
+          cor,
+        };
+      });
+  
+      const profissionais = await Profissional.findAll();
+  
+      res.render('escalas/index', {
+        escalas: escalasFormatadas,
+        profissionais,
+        query: req.query,
+        profissional: req.user,  
+        profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
+          acc[escala.admin.id] = escala.cor;
+          return acc;
+        }, {}))
+      });
     } catch (error) {
-        console.error('Erro ao listar escalas:', error);
-        res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
+      console.error('Erro ao listar escalas:', error);
+      res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
     }
-},
+  },
+  
+  
 
 
 
@@ -372,11 +393,9 @@ update: async (req, res) => {
             'Profissional': escala.admin ? escala.admin.nome : 'N/A',
           }));
       
-          // Converter os dados em CSV usando json2csv
           const parser = new Parser();
           const csvData = parser.parse(dados);
       
-          // Configurar o cabeçalho para o download do arquivo CSV
           res.setHeader('Content-Type', 'text/csv');
           res.setHeader('Content-Disposition', 'attachment; filename=relatorio_escalas.csv');
           res.send(csvData);

@@ -14,7 +14,7 @@ AjusteEstoque.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Produto', // This should match the model name
+      model: 'Produto', 
       key: 'id',
     },
   },
@@ -42,7 +42,7 @@ AjusteEstoque.init({
 }, {
   sequelize,
   modelName: 'AjusteEstoque',  
-  tableName: 'AjusteEstoques', // Nome correto da tabela
+  tableName: 'AjusteEstoques',
   timestamps: false,  
 });
 
