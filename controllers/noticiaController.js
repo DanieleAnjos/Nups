@@ -104,10 +104,10 @@ const noticiaController = {
 
         if (noticias.length === 0) {
             req.flash('info_msg', 'Nenhuma notícia encontrada.');
-            return res.render('noticias/lista', { noticias, totalPages, currentPage: page, layout: 'public/public-layout' });
+            return res.render('Nups-Noticias', { noticias, totalPages, currentPage: page, layout: 'public/public-layout' });
         }
 
-        res.render('noticias/lista', { noticias, totalPages, currentPage: page, layout: 'public/public-layout' });
+        res.render('Nups-Noticias', { noticias, totalPages, currentPage: page, layout: 'public/public-layout' });
     } catch (error) {
         console.error(error);
         req.flash('error_msg', 'Erro ao carregar notícias.');
@@ -236,7 +236,7 @@ const noticiaController = {
         : "";
   
   
-        res.render('noticias/detalhes', { noticias, imagePath, descricaoFormatada, layout: 'public/public-layout' }); 
+        res.render('Noticia-detalhes', { noticias, imagePath, descricaoFormatada, layout: 'public/public-layout' }); 
     } catch (error) {
         console.error(error);
         req.flash('error_msg', 'Erro ao carregar notícia.');

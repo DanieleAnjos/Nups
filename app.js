@@ -286,8 +286,8 @@ const noticiaController = require('./controllers/noticiaController');
 const { truncate } = require('./models/Ocorrencia');
 const Noticias = require('./models/Noticias');
 
-app.use('/eventos/detalhes/:id', eventoController.visualizar);
-app.use('/noticias/detalhes/:id', noticiaController.visualizar);
+app.use('/Evento-detalhes/:id', eventoController.visualizar);
+app.use('/Noticia-detalhes/:id', noticiaController.visualizar);
 
 
 app.get('/eventos/busca', async (req, res) => {
@@ -329,14 +329,8 @@ app.get('/noticias/busca', async (req, res) => {
 });
 
 
-app.use('/eventos/lista', eventoController.visualizarEvento);
-app.use('/noticias/lista', noticiaController.visualizarNoticia);
-
-
-
-app.get('/NupsNews',function(req, res)  {
-    res.render('NupsNews', { layout: 'public/public-layout'} );
-});
+app.use('/Nups-Eventos', eventoController.visualizarEvento);
+app.use('/Nups-Noticias', noticiaController.visualizarNoticia);
 
 
 

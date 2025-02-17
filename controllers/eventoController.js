@@ -131,10 +131,10 @@ const eventoController = {
 
         if (eventos.length === 0) {
             req.flash('info_msg', 'Nenhum evento encontrado.');
-            return res.render('eventos/lista', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
+            return res.render('Nups-Eventos', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
         }
 
-        res.render('eventos/lista', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
+        res.render('Nups-Eventos', { eventos, totalPages, currentPage: page, layout: 'public/public-layout' });
     } catch (error) {
         console.error(error);
         req.flash('error_msg', 'Erro ao carregar eventos.');
@@ -292,7 +292,7 @@ const eventoController = {
         : "";
   
   
-        res.render('eventos/detalhes', { evento, imagePath, descricaoFormatada, layout: 'public/public-layout' }); // Removido a barra inicial
+        res.render('Evento-detalhes', { evento, imagePath, descricaoFormatada, layout: 'public/public-layout' }); // Removido a barra inicial
     } catch (error) {
         console.error(error);
         req.flash('error_msg', 'Erro ao carregar evento.');

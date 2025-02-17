@@ -3,6 +3,7 @@
 /* ========================= */
 html {
     scroll-behavior: smooth; 
+    font-size: 16px;
 }
 
 body {
@@ -10,7 +11,9 @@ body {
     padding: 0;
     font-family: 'Lato', sans-serif; 
     overflow-x: hidden; 
-    min-height: 100vh; 
+    min-height: 100vh;
+    line-height: 1.6;
+    color: #333;
 }
 
 /* ========================= */
@@ -18,60 +21,77 @@ body {
 /* ========================= */
 .main-content {
     display: flex;
-    justify-content: space-between; 
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    margin-top: 30px; 
-    margin-right: 0;
+    gap: 2rem;
+    padding: 2rem 5%;
+    margin-top: 2rem;
 }
 
 .main-container {
-    margin-left: 50px; 
+    flex: 1 1 45%;
+    min-width: 300px;
+    padding: 1rem;
 }
 
 .main-text {
-    max-width: 300px; 
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .main-title {
     font-family: 'Roboto', sans-serif; 
-    font-size: 2.5em; 
-    margin-bottom: 10px; 
-    color: #072C47; 
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: #072C47;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
 }
 
 .main-description {
-    font-family: 'Lato', sans-serif; 
-    font-size: 1.2em; 
-    line-height: 1.5; 
-    width: 80%; 
-    text-align: justify; 
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    width: 90%;
+    max-width: 550px;
 }
 
 /* Estilo dos Botões */
 .button-container {
-    margin-top: 20px; 
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .button {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 0.8rem 1.5rem;
     background-color: #297FB8; 
     color: white; 
     text-decoration: none;
-    border-radius: 5px; 
-    margin-right: 10px; 
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    border: 2px solid transparent;
 }
 
 .button:hover {
-    background-color: #1A5E7D; 
-    transition: 2s; 
+    background-color: #1A5E7D;
+    transform: translateY(-2px);
 }
 
 /* Estilo da Imagem Principal */
+.main-image {
+    flex: 1 1 45%;
+    min-width: 300px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
 .main-image img {
-    max-width: 100%; 
-    height: auto; 
-    margin-right: 500px; 
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 /* ========================= */
@@ -111,26 +131,31 @@ body {
 }
 
 #quem-somos {
-    display: flex; 
-    align-items: center; 
-    margin: 60px 30px; 
-    opacity: 0; /* Inicia invisível */
-    margin-top:90px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 4rem 5%;
+    margin: 4rem 0;
 }
+
 .imagem-quemsomos {
-    flex: 1; 
-    margin-right: 20px; 
+    flex: 1 1 40%;
+    min-width: 300px;
+    text-align: center;
 }
 
 .imagem-quemsomos img {
-    max-width: 76%; 
-    height: auto; 
+    width: 100%;
+    max-width: 500px;
+    height: auto;
 }
 
 .texto-quemsomos {
-    flex: 2; 
-    max-width: 600px; 
-    margin-right: 100px; 
+    flex: 1 1 55%;
+    min-width: 300px;
+    padding: 1rem;
 }
 
 .titulo-missao {
@@ -164,23 +189,18 @@ body {
     margin-top: 30px; 
 }
 
+
 /* ========================= */
 /* Estilo da Seção "Valores" */
 /* ========================= */
 #valores {
-    display: flex;
-    flex-direction: column; 
-    align-items: center;    
-    margin: 50px 0;      
-    margin-top: 170px; 
-    margin-bottom: 200px; 
+    padding: 4rem 5%;
 }
 
 .titulo-valores {
-    text-align: center;     
-    font-size: 2em;        
-    color: #072C47;        
-    margin-bottom: 20px; 
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: 3rem;
+    text-align: center;
 }
 
 .cards-container {
@@ -271,90 +291,91 @@ body {
 /* ========================= */
 /* Estilo da Seção "Contato" */
 /* ========================= */
-
 #contato {
-    padding: 40px 20px;                  
-    border-radius: 8px;                  
-}
-
-.titulo-contato {
-    font-size: 2.5em;                     
-    color: #072C47;                      
-    text-align: center;                   
-    margin-bottom: 30px;                  
+    padding: 4rem 5%;
 }
 
 .contato-container {
-    display: flex;                        
-    justify-content: space-between;     
-    max-width: 1200px;                   
-    margin: 0 auto;   
-    margin-top:90px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 2rem auto 0;
 }
 
-.informacoes {
-    flex: 1;                             
-    padding: 20px;       
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-               
-}
-
-.informacoes h3 {
-    font-size: 1.8em;                     
-    color: #072C47;                      
-    margin-bottom: 15px;                 
-}
-
-.informacoes p {
-    font-size: 1.1em;                     
-    margin-bottom: 10px;               
-    color: #333;                        
-}
-
+.informacoes,
 .formulario {
-    flex: 1;                   
-    padding: 20px;                    
-    background-color: #ffffff;         
-    border-radius: 8px;                  
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
-}
-
-.formulario h3 {
-    font-size: 1.8em;                   
-    color: #072C47;                   
-    margin-bottom: 15px;             
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
 }
 
 .formulario-contato {
-    display: flex;                      
-    flex-direction: column;              
-}
-
-.formulario-contato label {
-    margin-top: 10px;                    
-    font-size: 1em;                       
+    display: grid;
+    gap: 1rem;
 }
 
 .formulario-contato input,
 .formulario-contato textarea {
-    padding: 10px;                      
-    margin-top: 5px;                      
-    border: 1px solid #ccc;              
-    border-radius: 5px;             
-    width: 100%;                      
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
 }
 
-.formulario-contato .botao-enviar {
-    margin-top: 15px;                    
-    padding: 10px;                      
-    background-color: #297FB8;          
-    color: white;                       
-    border: none;                     
-    border-radius: 5px;                
-    cursor: pointer;                   
-    transition: background-color 0.3s;    
+.botao-enviar {
+    padding: 0.8rem 1.5rem;
+    background-color: #297FB8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.formulario-contato .botao-enviar:hover {
-    background-color: #1A5E7D;            
+.botao-enviar:hover {
+    background-color: #1A5E7D;
+}
+
+/* ========================= */
+/* Media Queries */
+/* ========================= */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .button-container {
+        justify-content: center;
+    }
+
+    .main-description {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    #quem-somos {
+        text-align: center;
+    }
+
+    .linha-missao {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    .main-content,
+    #quem-somos {
+        padding: 2rem 1rem;
+    }
+
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
 }
