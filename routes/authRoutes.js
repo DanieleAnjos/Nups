@@ -27,13 +27,13 @@ router.post('/register', async (req, res) => {
     try {
         const existingUser = await Usuario.findOne({ where: { usuario } });
         if (existingUser) {
-            req.flash('error_msg', 'Usuário já existe. Escolha outro nome.');
+            req.flash('error_msg', 'Este nome de usuário já existe. Escolha outro nome.');
             return res.redirect('/auth/register');
         }
 
         const userForProfessional = await Usuario.findOne({ where: { profissionalId } });
         if (userForProfessional) {
-            req.flash('error_msg', 'Este profissional já possui um usuário.');
+            req.flash('error_msg', 'Este profissional já possui um usuário ativo.');
             return res.redirect('/auth/register');
         }
 

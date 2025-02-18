@@ -271,14 +271,13 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.use('/auth', authRoutes);
+
 
 app.get('/auth/login',function(req, res)  {
   res.render('auth/login');
 });
 
-app.use('/auth', usuarioRoutes);
 
 const eventoController = require('./controllers/eventoController');
 const noticiaController = require('./controllers/noticiaController');
@@ -375,6 +374,7 @@ const accessControl = {
       '/usuarios',
       '/Eventos-detalhes',
       '/noticias',
+      '/auth/changePassword'
 
     ],
     'Assistente social': [
@@ -387,7 +387,9 @@ const accessControl = {
       '/profissionais/meu_perfil/',
       '/encaminhamentos',
       '/escalas',
-      '/fluxoAtendimentos'
+      '/fluxoAtendimentos',
+      '/auth/changePassword'
+
 
     ],
     'Psicólogo': [
@@ -399,6 +401,8 @@ const accessControl = {
       '/notificacoes',
       '/profissionais/meu_perfil/',
       '/mensagens',
+      '/auth/changePassword'
+
 
 
 
@@ -412,6 +416,8 @@ const accessControl = {
       '/notificacoes',
       '/profissionais/meu_perfil/',
       '/mensagens',
+      '/auth/changePassword'
+
 
 
 
@@ -419,7 +425,7 @@ const accessControl = {
   };
   
   app.use(async (req, res, next) => {
-    const publicRoutes = ['/auth/login', '/auth/register', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes'];
+    const publicRoutes = ['/auth/login','/auth/resert-password', '/auth/forgotPassword','/auth/reset', '/auth/forgot', '/auth/resetPassword', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes'];
   
     if (publicRoutes.some(route => req.originalUrl.startsWith(route))) {
       return next();
@@ -473,6 +479,7 @@ app.use('/usuarios', usuarioRoutes);
 app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
 app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
+app.use('/auth', usuarioRoutes);
 
 
 

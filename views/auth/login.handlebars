@@ -21,6 +21,14 @@
             <div class="message success" aria-live="polite">{{success_msg}}</div>
         {{/if}}
 
+                <!-- Mensagens de erro ou sucesso -->
+        {{#if error}}
+            <div class="message error" aria-live="polite">{{error}}</div>
+        {{/if}}
+        {{#if success}}
+            <div class="message success" aria-live="polite">{{success}}</div>
+        {{/if}}
+
         <!-- Formulário de login -->
         <form action="/auth/login" method="POST">
             <div>
