@@ -31,7 +31,7 @@
         <!-- Numero do Processo -->
         <div class="mb-4">
           <label for="numeroProcesso" class="form-label">Número do Processo:</label>
-          <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" value="{{fluxoAtendimentos.numeroProcesso}}" required>
+          <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" value="{{fluxoAtendimentos.numeroProcesso}}" >
         </div>
 
 
@@ -77,3 +77,62 @@
 
 </body>
 </html>
+
+<script>
+  document.getElementById('numeroProcesso').addEventListener('input', function (event) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    // Aplica a formatação se houver pelo menos 7 dígitos (6 antes da barra e 1 depois)
+    if (value.length > 6) {
+        value = value.slice(0, 6) + '/' + value.slice(6, 10);
+    }
+
+    // Atualiza o valor do input
+    input.value = value;
+
+    // Se o campo estiver vazio, remove qualquer validação
+    if (value === "") {
+        input.setCustomValidity(""); // Nenhuma mensagem de erro
+        input.classList.remove("is-invalid");
+        return;
+    }
+
+    // Valida o formato do número do processo
+    if (!/^\d{6}\/\d{4}$/.test(value)) {
+        input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
+        input.classList.add("is-invalid");
+    } else {
+        input.setCustomValidity(""); // Limpa a mensagem de erro
+        input.classList.remove("is-invalid");
+    }
+});
+
+      document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não for número
+
+    // Aplica a máscara de telefone (formato brasileiro)
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    
+    if (value.length > 10) {
+      value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); // Formato celular
+    } else if (value.length > 9) {
+      value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3"); // Formato fixo
+    }
+
+    input.value = value;
+
+    // Validação do número
+    const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+    if (!telefoneRegex.test(value)) {
+      input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
+      input.classList.add("is-invalid");
+    } else {
+      input.setCustomValidity("");
+      input.classList.remove("is-invalid");
+    }
+  });
+</script>

@@ -7,12 +7,12 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 const { Paciente } = require('../models');
 
-
 exports.index = async (req, res) => {
   try {
     const { nomePaciente, profissional, data } = req.query;
     const profissionalId = req.user.profissionalId;
 
+    // Buscar o profissional associado ao usuário logado
     const profissionalAssociado = await Profissional.findOne({
       where: { id: profissionalId },
     });
@@ -21,10 +21,10 @@ exports.index = async (req, res) => {
       return res.status(403).send('Usuário não está associado a um profissional válido.');
     }
 
-    const userCargo = profissionalAssociado.cargo;
+    const userCargo = profissionalAssociado.cargo ? profissionalAssociado.cargo.toLowerCase() : '';
 
-    // Se o cargo for 'Administrador', não aplicamos filtro
-    const whereConditions = userCargo === 'Administrador' ? {} : {};
+    // Definir filtros
+    const whereConditions = {};
 
     if (nomePaciente) {
       whereConditions.nomePaciente = { [Op.like]: `%${nomePaciente}%` };
@@ -41,31 +41,54 @@ exports.index = async (req, res) => {
       whereConditions.data = data;
     }
 
-    if (userCargo !== 'Administrador') {
+    // Se não for Administrador, filtrar pelo cargo do profissional logado
+    if (userCargo !== 'administrador') {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }
       ];
     }
 
+    // Buscar os encaminhamentos com os relacionamentos necessários
     const encaminhamentos = await Encaminhamento.findAll({
       where: whereConditions,
       include: [
         { model: Profissional, as: 'profissionalEnvio' },
         { model: Profissional, as: 'profissionalRecebido' },
-        { model: Atendimento, as: 'atendimento', include: [
-          { model: Profissional, as: 'profissional' }
-        ]},
+        { 
+          model: Atendimento, 
+          as: 'atendimento',
+          include: [{ model: Profissional, as: 'profissional' }]
+        },
       ],
     });
 
-    res.render('encaminhamentos/index', { encaminhamentos, query: req.query });
-    
+    // Mapear os encaminhamentos e adicionar permissões individuais
+    const encaminhamentosFormatados = encaminhamentos.map(enc => ({
+      ...enc.toJSON(),
+      podeEditar: userCargo === 'administrador' || (enc.profissionalEnvio?.id === profissionalId && !enc.visto),
+    }));
+
+
+    // Definir permissões gerais
+    const podeDeletar = userCargo === 'administrador';
+    const podeCadastrar = userCargo === 'administrador' || userCargo === 'assistente social';
+
+    // Renderizar a página com os encaminhamentos e permissões
+    res.render('encaminhamentos/index', { 
+      encaminhamentos: encaminhamentosFormatados, 
+      query: req.query,
+      profissional: profissionalId,
+      podeDeletar,
+      podeCadastrar
+    });
+
   } catch (error) {
     console.error('Erro ao buscar encaminhamentos:', error);
     res.status(500).send('Erro ao carregar a lista de encaminhamentos');
   }
 };
+
 
 
 exports.marcarVisto = async (req, res) => {

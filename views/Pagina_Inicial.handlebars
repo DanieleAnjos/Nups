@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/CSS/Pagina_inicial.css">
     <title>Document</title>
+            <!-- SweetAlert2 CSS (Opcional, apenas se quiser customizar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+
 
 <main class="main-content" id="Pagina_Incial">
     <div class="main-container slide-in">
@@ -91,7 +97,7 @@
         </div>
 
         <div class="formulario">
-            <h3>Agende uma Consulta</h3>
+            <h3>Fale conosco</h3>
                 <form action="/contato/enviar" method="POST"  class="formulario-contato">
                 <label for="nome">Seu Nome:</label>
                 <input type="text" id="nome" name="nome" required>
@@ -114,56 +120,50 @@
 
 
 
-{{#if success_msg}}
-  <script>
-    window.onload = function() {
-      // Verificar permissão de notificação
-      if (Notification.permission === "granted") {
-        new Notification("Sucesso", {
-          body: "{{success_msg}}",
-          icon: "/IMG/icon.png"
+<style>
+  /* Estilos para as mensagens de alerta */
+.alert {
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 600px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+</style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
         });
-      } else {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            new Notification("Sucesso", {
-              body: "{{success_msg}}",
-              icon: "/IMG/icon.png"
-            });
-          }
-        });
-      }
-
-      // Limpar o parâmetro da URL após mostrar a notificação
-      history.replaceState(null, '', window.location.pathname);
-    }
-  </script>
-{{/if}}
-
-{{#if error_msg}}
-  <script>
-    window.onload = function() {
-      // Verificar permissão de notificação
-      if (Notification.permission === "granted") {
-        new Notification("Erro", {
-          body: "{{error_msg}}",
-          icon: "/IMG/icon.png"
-        });
-      } else {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            new Notification("Erro", {
-              body: "{{error_msg}}",
-              icon: "/IMG/icon.png"
-            });
-          }
-        });
-      }
-
-      // Limpar o parâmetro da URL após mostrar a notificação
-      history.replaceState(null, '', window.location.pathname);
-    }
-  </script>
-{{/if}}
-
-
+    </script>

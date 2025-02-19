@@ -33,7 +33,7 @@
         <!-- Numero do Processo -->
         <div class="mb-4">
           <label for="numeroProcesso" class="form-label">Número do Processo:</label>
-          <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" value="{{encaminhamento.numeroProcesso}}" required>
+          <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" value="{{encaminhamento.numeroProcesso}}">
         </div>
 
         <!-- Telefone do Paciente -->
@@ -81,27 +81,35 @@
 
 <script>
 
-      document.getElementById('numeroProcesso').addEventListener('input', function (event) {
-      const input = event.target;
-      let value = input.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
+document.getElementById('numeroProcesso').addEventListener('input', function (event) {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
 
-      // Verifica se o valor possui 6 dígitos seguidos de "/" e 4 dígitos
-      if (value.length > 6) {
-        value = value.slice(0, 6) + '/' + value.slice(6, 10); // Formata como '243355/2024'
-      }
+    // Aplica a formatação se houver pelo menos 7 dígitos (6 antes da barra e 1 depois)
+    if (value.length > 6) {
+        value = value.slice(0, 6) + '/' + value.slice(6, 10);
+    }
 
-      // Aplica a formatação no input
-      input.value = value;
+    // Atualiza o valor do input
+    input.value = value;
 
-      // Verifica se o valor está no formato correto e aplica a validação
-      if (value.length !== 11 || !/^\d{6}\/\d{4}$/.test(value)) {
+    // Se o campo estiver vazio, remove qualquer validação
+    if (value === "") {
+        input.setCustomValidity(""); // Nenhuma mensagem de erro
+        input.classList.remove("is-invalid");
+        return;
+    }
+
+    // Valida o formato do número do processo
+    if (!/^\d{6}\/\d{4}$/.test(value)) {
         input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
         input.classList.add("is-invalid");
-      } else {
+    } else {
         input.setCustomValidity(""); // Limpa a mensagem de erro
-        input.classList.remove("is-invalid"); // Remove a classe de erro
-      }
-    });
+        input.classList.remove("is-invalid");
+    }
+});
+
 </script>
 
 <style>

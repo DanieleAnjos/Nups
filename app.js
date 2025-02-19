@@ -36,6 +36,7 @@ const graficosRoutes = require('./routes/graficosRoutes');
 const contatoRoutes = require('./routes/contatoRoutes');
 const discussaoCasoRoutes = require('./routes/discussaoCasoRoutes');
 const noticiasRoutes = require('./routes/noticiasRoutes');
+
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
@@ -338,13 +339,10 @@ app.get('/Quem_Somos',function(req, res)  {
 });
 
 app.get('/', function(req, res) {
-    const { error_msg, success_msg } = req.query; 
     
     res.render('Pagina_Inicial', {
-        layout: 'public/public-layout',
-        error_msg: error_msg || null,  
-        success_msg: success_msg || null 
-    });
+        layout: 'public/public-layout'
+          });
 });
 
 
@@ -425,7 +423,8 @@ const accessControl = {
   };
   
   app.use(async (req, res, next) => {
-    const publicRoutes = ['/auth/login','/auth/resert-password', '/auth/forgotPassword','/auth/reset', '/auth/forgot', '/auth/resetPassword', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes'];
+    const publicRoutes = ['/auth/login','/auth/resert-password','/contato', '/auth/forgotPassword','/auth/reset', '/auth/forgot',
+       '/auth/resetPassword', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes', '/Pagina_Inicial'];
   
     if (publicRoutes.some(route => req.originalUrl.startsWith(route))) {
       return next();

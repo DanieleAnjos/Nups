@@ -119,19 +119,44 @@ exports.requestPasswordReset = async (req, res) => {
             let info = await transporter.sendMail({
                 from: process.env.EMAIL_USER,
                 to: user.profissional.email,  
-                subject: 'Redefinição de Senha',
-                html: `
-                <h1 style="color: #297FB8; font-family: Arial, sans-serif; font-size: 24px; margin: 0 0 20px 0; text-align: center;">Redefinição de Senha</h1>
-                <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333333; margin: 0 0 20px 0;">Olá, ${user.profissional.nome}</p>
-                <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333333; margin: 0 0 20px 0;">Recebemos uma solicitação para redefinir a senha da sua conta. Para continuar com o processo, clique no botão abaixo:</p>
-                <p style=" margin: 20px 0;">
-                    <a href="${resetLink}" style="background-color: #297FB8; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px; font-family: Arial, sans-serif; display: inline-block;">Redefinir Senha</a>
-                </p>
-                <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333333; margin: 0 0 20px 0;">Se você não solicitou a redefinição de senha, por favor, ignore este e-mail. Sua senha atual permanecerá inalterada.</p>
-                <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333333; margin: 0 0 20px 0;">Caso tenha alguma dúvida ou precise de ajuda, não hesite em entrar em contato conosco.</p>
-                <p style="font-family: Arial, sans-serif; font-size: 16px; color: #333333; margin: 0 0 20px 0;">Atenciosamente, <strong> Equipe de Suporte - Nups</strong></p>
-                <p style="font-family: Arial, sans-serif; font-size: 12px; color: #888888; text-align: center; margin: 20px 0 0 0;">Este é um e-mail automático, por favor não responda diretamente a esta mensagem.</p>
-                `,
+                    subject: '🔑 Redefinição de Senha - Nups',
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+                            <h1 style="color: #297FB8; text-align: center;">🔑 Redefinição de Senha</h1>
+                
+                            <p style="font-size: 16px; color: #333;">Olá, <strong>${user.profissional.nome}</strong>,</p>
+                
+                            <p style="font-size: 16px; color: #333;">
+                                Recebemos uma solicitação para redefinir a senha da sua conta. Para continuar, clique no botão abaixo:
+                            </p>
+                
+                            <div style="text-align: center; margin: 20px 0;">
+                                <a href="${resetLink}" 
+                                   style="background-color: #297FB8; color: #fff; padding: 12px 24px; font-size: 16px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                                   🔄 Redefinir Senha
+                                </a>
+                            </div>
+                
+                            <p style="font-size: 16px; color: #333;">
+                                Se você não solicitou essa alteração, ignore este e-mail. Sua senha atual permanecerá inalterada.
+                            </p>
+                
+                            <p style="font-size: 16px; color: #333;">
+                                Caso tenha alguma dúvida, entre em contato com nossa equipe de suporte.
+                            </p>
+                
+                            <hr style="border: 1px solid #ddd; margin: 20px 0;">
+                
+                            <p style="font-size: 14px; color: #555; text-align: center;">
+                                Atenciosamente,<br>
+                                <strong>Equipe de Suporte - Nups</strong>
+                            </p>
+                
+                            <p style="font-size: 12px; color: #888; text-align: center; margin-top: 20px;">
+                                ⚠ Este é um e-mail automático, por favor, não responda diretamente.
+                            </p>
+                        </div>
+                    `
             });
 
             console.log('Email enviado com sucesso:', info.messageId);
@@ -213,7 +238,8 @@ exports.listUsers = async (req, res) => {
         const usuarios = await Usuario.findAll({
             include: {
                 model: Profissional,
-                attributes: ['nome'],
+                as: 'profissional',
+                attributes: ['id', 'nome', 'cargo'], // Incluindo ID e cargo para mais detalhes
             }
         });
 
@@ -222,7 +248,7 @@ exports.listUsers = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao carregar a lista de usuários:', error);
         return res.status(500).send('Erro ao carregar a lista de usuários.');
     }
 };

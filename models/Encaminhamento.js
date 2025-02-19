@@ -21,14 +21,22 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
     allowNull: false,
   },
   numeroProcesso: {
-    type: DataTypes.STRING(11), 
-    allowNull: false,
+    type: DataTypes.STRING(11),
+    allowNull: true,
     validate: {
-      is: /^\d{6}\/\d{4}$/, 
+      is: /^\d{6}\/\d{4}$/, // Garante que o valor armazenado esteja no formato correto
     },
     set(value) {
-
-      const numeroLimpo = value.replace(/\D/g, '');
+      if (!value) {
+        this.setDataValue('numeroProcesso', null); // Permite null
+        return;
+      }
+  
+      if (typeof value !== 'string') {
+        throw new Error('O número do processo deve ser uma string.');
+      }
+  
+      const numeroLimpo = value.replace(/\D/g, ''); // Remove caracteres não numéricos
   
       if (numeroLimpo.length !== 10) {
         throw new Error('O número do processo deve estar no formato correto: XXXXXX/XXXX');
@@ -37,7 +45,7 @@ const Encaminhamento = sequelize.define('Encaminhamento', {
       const numeroFormatado = `${numeroLimpo.slice(0, 6)}/${numeroLimpo.slice(6)}`;
       this.setDataValue('numeroProcesso', numeroFormatado);
     },
-  },
+  },  
   telefonePaciente: {
     type: DataTypes.STRING,
     allowNull: false,

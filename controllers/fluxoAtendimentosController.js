@@ -5,7 +5,20 @@ const moment = require('moment');
 const index = async (req, res) => {
   try {
     const { nomePaciente, profissional, data } = req.query;
+    const profissionalId = req.user.profissionalId;
 
+    // Buscar o profissional associado ao usuário logado
+    const profissionalAssociado = await Profissional.findOne({
+      where: { id: profissionalId },
+    });
+
+    if (!profissionalAssociado) {
+      return res.status(403).send('Usuário não está associado a um profissional válido.');
+    }
+
+    const userCargo = profissionalAssociado.cargo ? profissionalAssociado.cargo.toLowerCase() : '';
+
+    // Definir filtros
     const whereConditions = {};
 
     if (nomePaciente) {
@@ -23,24 +36,45 @@ const index = async (req, res) => {
       whereConditions.data = data;
     }
 
+    // Buscar os atendimentos com os relacionamentos necessários
     const fluxoAtendimentos = await FluxoAtendimentos.findAll({
       where: whereConditions,
       include: [
         { model: Profissional, as: 'profissionalEnvio' },
         { model: Profissional, as: 'profissionalRecebido' },
-        { model: Atendimento, as: 'atendimento', include: [
-          { model: Profissional, as: 'profissional' }
-        ]},
+        { 
+          model: Atendimento, 
+          as: 'atendimento',
+          include: [{ model: Profissional, as: 'profissional' }]
+        },
       ],
     });
 
-    res.render('fluxoAtendimentos/index', { fluxoAtendimentos, query: req.query });
+    // Mapear os fluxos de atendimento e adicionar permissões individuais
+    const fluxoAtendimentosFormatados = fluxoAtendimentos.map(fa => ({
+      ...fa.toJSON(),
+      podeEditar: userCargo === 'administrador' || (fa.profissionalEnvio?.id === profissionalId && !fa.visto),
+    }));
+
+    // Definir permissões gerais
+    const podeDeletar = userCargo === 'administrador';
+    const podeCadastrar = userCargo === 'administrador' || userCargo === 'assistente social';
+
+    // Renderizar a página com os dados e permissões
+    res.render('fluxoAtendimentos/index', { 
+      fluxoAtendimentos: fluxoAtendimentosFormatados, 
+      query: req.query,
+      profissional: profissionalId,
+      podeDeletar,
+      podeCadastrar
+    });
 
   } catch (error) {
-    console.error('Erro ao buscar encaminhamentos:', error);
-    res.status(500).send('Erro ao carregar a lista de encaminhamentos');
+    console.error('Erro ao buscar fluxo de atendimentos:', error);
+    res.status(500).send('Erro ao carregar a lista de fluxo de atendimentos');
   }
 };
+
 
 const marcarVisto = async (req, res) => {
   const { id } = req.params;
