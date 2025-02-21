@@ -36,6 +36,10 @@ const graficosRoutes = require('./routes/graficosRoutes');
 const contatoRoutes = require('./routes/contatoRoutes');
 const discussaoCasoRoutes = require('./routes/discussaoCasoRoutes');
 const noticiasRoutes = require('./routes/noticiasRoutes');
+const avisoRoutes = require('./routes/avisoRoutes');
+
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
@@ -119,6 +123,14 @@ const hbs = engine({
         if (!date) return '';
         return moment(date).format('YYYY-MM-DDTHH:mm');
     },
+    formatData: (date) => {
+      if (!date) return '';
+      return moment(date).format('YYYY-MM-DD');
+  },
+  Data: (date) => {
+    if (!date) return '';
+    return moment(date).format('DD-MM-YYYY');
+},
       formatHour: (date) => {
           if (!date) return '';
           return format(new Date(date), "HH:mm", { locale: ptBR });
@@ -372,7 +384,8 @@ const accessControl = {
       '/usuarios',
       '/Eventos-detalhes',
       '/noticias',
-      '/auth/changePassword'
+      '/auth/changePassword',
+      '/avisos'
 
     ],
     'Assistente social': [
@@ -479,12 +492,27 @@ app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
 app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
+app.use('/avisos', avisoRoutes);
 
 
 
 app.use((req, res) => {
     res.status(404).render('404'); 
 });
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", 'trusted-cdn.com'],
+      styleSrc: ["'self'", 'trusted-cdn.com'],
+      imgSrc: ["'self'", 'data:', 'trusted-cdn.com'],
+      fontSrc: ["'self'", 'trusted-cdn.com'],
+      connectSrc: ["'self'", 'api.trusted.com'],
+    },
+  })
+);
+
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

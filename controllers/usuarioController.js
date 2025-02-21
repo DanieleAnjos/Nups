@@ -4,14 +4,16 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const { sequelize } = require('../models'); 
 const Profissional = require('../models/Profissional');
+const { Op } = require('sequelize');
+
 
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
-      user: 'ferdinandogms@gmail.com',
-      pass: 'ooyp orjc vuok kzvj'
+      user: 'Acolhimentonups@gmail.com',
+      pass: 'hpcl tcak ucro nvsc'
     }
   });
   
@@ -74,10 +76,15 @@ const transporter = nodemailer.createTransport({
 
 exports.requestPasswordReset = async (req, res) => {
     try {
-        const { usuario } = req.body;
+        const { usuario } = req.body; // Agora só precisa de um campo (pode ser email ou usuário)
 
         const user = await Usuario.findOne({
-            where: { usuario },
+            where: {
+                [Op.or]: [
+                    { usuario }, 
+                    { '$profissional.email$': usuario } // Busca também pelo e-mail
+                ]
+            },
             include: {
                 model: Profissional,
                 as: 'profissional',
@@ -97,8 +104,6 @@ exports.requestPasswordReset = async (req, res) => {
         const token = crypto.randomBytes(32).toString('hex');
         user.resetToken = token;
         user.resetTokenExpires = Date.now() + 3600000; // Expira em 1 hora
-        console.log("Tempo atual:", Date.now());
-        console.log("Expiração salva:", user.resetTokenExpires);
         await user.save();
 
         const resetLink = `http://localhost:3000/auth/resetPassword/${token}`;
@@ -119,44 +124,48 @@ exports.requestPasswordReset = async (req, res) => {
             let info = await transporter.sendMail({
                 from: process.env.EMAIL_USER,
                 to: user.profissional.email,  
-                    subject: '🔑 Redefinição de Senha - Nups',
-                    html: `
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-                            <h1 style="color: #297FB8; text-align: center;">🔑 Redefinição de Senha</h1>
-                
-                            <p style="font-size: 16px; color: #333;">Olá, <strong>${user.profissional.nome}</strong>,</p>
-                
-                            <p style="font-size: 16px; color: #333;">
-                                Recebemos uma solicitação para redefinir a senha da sua conta. Para continuar, clique no botão abaixo:
-                            </p>
-                
-                            <div style="text-align: center; margin: 20px 0;">
-                                <a href="${resetLink}" 
-                                   style="background-color: #297FB8; color: #fff; padding: 12px 24px; font-size: 16px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                                   🔄 Redefinir Senha
-                                </a>
-                            </div>
-                
-                            <p style="font-size: 16px; color: #333;">
-                                Se você não solicitou essa alteração, ignore este e-mail. Sua senha atual permanecerá inalterada.
-                            </p>
-                
-                            <p style="font-size: 16px; color: #333;">
-                                Caso tenha alguma dúvida, entre em contato com nossa equipe de suporte.
-                            </p>
-                
-                            <hr style="border: 1px solid #ddd; margin: 20px 0;">
-                
-                            <p style="font-size: 14px; color: #555; text-align: center;">
-                                Atenciosamente,<br>
-                                <strong>Equipe de Suporte - Nups</strong>
-                            </p>
-                
-                            <p style="font-size: 12px; color: #888; text-align: center; margin-top: 20px;">
-                                ⚠ Este é um e-mail automático, por favor, não responda diretamente.
-                            </p>
+                subject: '🔑 Redefinição de Senha - Nups',
+                headers: {
+                    'Auto-Submitted': 'auto-generated', // Indica que é um e-mail automático
+                    'Precedence': 'bulk' // Pode reduzir a chance de respostas automáticas
+                },
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+                        <h1 style="color: #297FB8; text-align: center;"> Redefinição de Senha</h1>
+
+                        <p style="font-size: 16px; color: #333;">Olá, <strong>${user.profissional.nome}</strong>,</p>
+
+                        <p style="font-size: 16px; color: #333;">
+                            Recebemos uma solicitação para redefinir a senha da sua conta. Para continuar, clique no botão abaixo:
+                        </p>
+
+                        <div style="text-align: center; margin: 20px 0;">
+                            <a href="${resetLink}" 
+                               style="background-color: #297FB8; color: #fff; padding: 12px 24px; font-size: 16px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                               🔄 Redefinir Senha
+                            </a>
                         </div>
-                    `
+
+                        <p style="font-size: 16px; color: #333;">
+                            Se você não solicitou essa alteração, ignore este e-mail. Sua senha atual permanecerá inalterada.
+                        </p>
+
+                        <p style="font-size: 16px; color: #333;">
+                            Caso tenha alguma dúvida, entre em contato com nossa equipe de suporte.
+                        </p>
+
+                        <hr style="border: 1px solid #ddd; margin: 20px 0;">
+
+                        <p style="font-size: 14px; color: #555; text-align: center;">
+                            Atenciosamente,<br>
+                            <strong>Equipe de Suporte - Nups</strong>
+                        </p>
+
+                        <p style="font-size: 12px; color: #888; text-align: center; margin-top: 20px;">
+                            ⚠ Este é um e-mail automático, por favor, não responda diretamente.
+                        </p>
+                    </div>
+                `
             });
 
             console.log('Email enviado com sucesso:', info.messageId);
@@ -181,6 +190,7 @@ exports.requestPasswordReset = async (req, res) => {
         });
     }
 };
+
 
 
 exports.resetPassword = async (req, res) => {

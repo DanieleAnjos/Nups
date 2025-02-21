@@ -39,8 +39,9 @@ exports.sendContactEmail = async (req, res) => {
 
   try {
       const mailOptions = {
-          from: `"${nome}" <${email}>`,
-          to: 'daniele.lims02@gmail.com',
+          from: email,
+          to: 'acolhimentonups@gmail.com',
+          replyTo: email, 
             subject: `📩 Novo Contato Recebido`,
             text: `
                 Olá,
@@ -58,8 +59,7 @@ exports.sendContactEmail = async (req, res) => {
         
                 📅 Data/Hora: ${new Date().toLocaleString()}
         
-                Atenciosamente,
-                [Nome do Seu Site]
+               
             `,
             html: `
                 <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9;">
@@ -83,7 +83,13 @@ exports.sendContactEmail = async (req, res) => {
                         📅 <strong>Recebido em:</strong> ${new Date().toLocaleString()}
                     </p>
                 </div>
-            `
+            `,
+            priority: 'high',  
+            headers: {
+                'X-Priority': '1', 
+                'X-MSMail-Priority': 'High', 
+                'Importance': 'High' 
+            }
       };
 
       const info = await transporter.sendMail(mailOptions);

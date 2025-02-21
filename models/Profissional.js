@@ -156,6 +156,13 @@ Profissional.associate = (models) => {
     as: 'fluxoAtendimentosRecebidos',
   });
 
+  Profissional.associate = (models) => {
+    Profissional.hasMany(models.Aviso, { 
+      foreignKey: 'profissionalId', 
+      as: 'avisos' 
+    });
+  };
+
 
   Profissional.hasMany(models.DiscussaoCaso, {
      foreignKey: 'autor',

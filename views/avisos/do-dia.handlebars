@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+
+    .alert-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      transition: 0.3s ease-in-out;
+      position: relative;
+    }
+
+    .alert:hover {
+      transform: scale(1.02);
+    }
+
+    .alert i {
+      font-size: 24px;
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .alert-content {
+      flex-grow: 1;
+    }
+
+    .alert strong {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .alert p {
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .alert span {
+      font-size: 14px;
+      color: #555;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .created-by {
+      font-size: 12px;
+      color: #777;
+      font-style: italic;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+
+    /* Estilos específicos para cada tipo de aviso */
+    .alert-lembrete {
+      background-color: #fff3cd;
+      border-left: 6px solid #ffc107;
+    }
+
+    .alert-lembrete i {
+      color: #ffc107;
+      background: rgba(255, 193, 7, 0.2);
+    }
+
+    .alert-alerta {
+      background-color: #f8d7da;
+      border-left: 6px solid #dc3545;
+      color: #721c24;
+    }
+
+    .alert-alerta i {
+      color: #dc3545;
+      background: rgba(220, 53, 69, 0.2);
+    }
+
+    .alert-administrativo {
+      background-color: #d1ecf1;
+      border-left: 6px solid #17a2b8;
+      color: #0c5460;
+    }
+
+    .alert-administrativo i {
+      color: #17a2b8;
+      background: rgba(23, 162, 184, 0.2);
+    }
+
+    .btn {
+      display: block;
+      width: fit-content;
+      margin: 20px auto;
+      padding: 10px 20px;
+      text-align: center;
+      background-color: #0056b3;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    
+        .registro-box {
+        background-color: #e9ecef; /* Cor de fundo da caixa */
+        border-left: 5px solid #0056b3; /* Borda lateral para destaque */
+        padding: 15px; /* Espaçamento interno */
+        margin-top: 20px; /* Espaçamento acima da caixa */
+        border-radius: 5px; /* Bordas arredondadas */
+    }
+
+    .btn:hover {
+      background-color: #004494;
+    }
+
+    @media (max-width: 600px) {
+      .alert {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .alert i {
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>{{title}}</h2>
+
+    {{#if error}}
+      <p style="color: red; text-align: center;">{{error}} - {{details}}</p>
+    {{/if}}
+    
+<div class="alert-container">
+  {{#each avisos}}
+    <div class="alert alert-{{this.tipo}}">
+      <div class="alert-icon">
+        <i class="{{#if (eq this.tipo 'lembrete')}}fas fa-bell{{/if}}
+                  {{#if (eq this.tipo 'alerta')}}fas fa-exclamation-triangle{{/if}}
+                  {{#if (eq this.tipo 'administrativo')}}fas fa-clipboard-list{{/if}}"></i>
+      </div>
+      <div class="alert-content">
+        <strong class="alert-title">{{this.assunto}}</strong>
+        
+        <div class="registro-box">
+          <strong>Mensagem:</strong>
+          <p>{{this.mensagem}}</p>
+        </div><br>
+
+        <div class="alert-footer">
+          <span><strong>Data:</strong> {{formatData this.data}}</span>
+          <span class="created-by"><strong>Criado por:</strong>{{this.profissional.nome}}</span>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
+
+    <a href="/avisos" class="btn">Voltar</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Título da página -->
+        <h2 class="text-center text-primary my-4">Lista de Avisos</h2>
+
+        <!-- Botão Adicionar Novo Aviso -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/avisos/create" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Novo Aviso
+            </a>
+        </div>
+
+        <!-- Formulário de filtro -->
+        <form action="/avisos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+            <div class="row">
+                <div class="col-md-5 mb-2">
+                    <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+                </div>
+                <div class="col-md-5 mb-2">
+                    <input type="text" name="tipo" class="form-control" placeholder="Tipo de Aviso" value="{{query.tipo}}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabela de Avisos -->
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-bordered mt-3">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Assunto</th>
+                        <th>Mensagem</th>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each avisos}}
+                        <tr>
+                            <td>{{this.assunto}}</td>
+                            <td>{{this.mensagem}}</td>
+                            <td>{{OneDate this.data}}</td>
+                            <td>
+                                <span class="badge badge-{{this.tipo}}">{{this.tipo}}</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/avisos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                    <i class="fa fa-pencil-square"></i> Editar
+                                </a>
+                                <form action="/avisos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este aviso?');">
+                                        <i class="fa fa-trash"></i> Remover
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Nenhum aviso encontrado.</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .container {
+        width: 80%;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    h2 {
+        color: #0056b3;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .table {
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    th {
+        background-color: #e9ecef;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f1f4f9;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        text-transform: capitalize;
+    }
+
+    .badge-lembrete {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .badge-alerta {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .badge-administrativo {
+        background-color: #17a2b8;
+        color: #fff;
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f4f9;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

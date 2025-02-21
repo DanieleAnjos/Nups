@@ -65,6 +65,14 @@
         {{notificacoesNaoLidas}}
       </span>
     </a>
+    <a href="/avisos" class="dashboard-card" aria-label="Gerenciar Avisos">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos</span>
+      <span id="aviso-count" class="notification-badge" style="display: none;">
+        0
+      </span>
+    </a>
+
     <a href="/produtos" class="dashboard-card"aria-label="Gerenciar Produtos">
     <i class="fas fa-shopping-cart"></i>
       <span>Produtos</span>
@@ -241,6 +249,32 @@ async function atualizarContadorNotificacoes() {
     } catch (error) {
         console.error('Erro ao buscar as notificações não lidas:', error);
     }
+}
+
+
+async function atualizarContadorAvisos() {
+  try {
+    const response = await fetch('/api/avisos/do-dia', { 
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+      }
+    });
+
+    const data = await response.json(); // Já vai retornar o JSON diretamente
+    const contador = document.getElementById('aviso-count');
+
+    if (data.avisosDoDia > 0) {
+      contador.textContent = data.avisosDoDia;  // Atualiza o número de avisos do dia
+      contador.style.display = 'inline';  // Exibe o contador
+    } else {
+      contador.style.display = 'none';  // Oculta o contador se não houver avisos do dia
+    }
+
+  } catch (error) {
+    console.error('Erro ao buscar os avisos do dia:', error);
+  }
 }
 
 </script>
