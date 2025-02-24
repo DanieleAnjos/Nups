@@ -1,10 +1,7 @@
-const { DataTypes, Model, Sequelize } = require('sequelize');  
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Produto = require('./Produto');  
 
-class AjusteEstoque extends Model {}
-
-AjusteEstoque.init({
+const AjusteEstoque = sequelize.define('AjusteEstoque', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -14,9 +11,10 @@ AjusteEstoque.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Produto', 
-      key: 'id',
+      model: 'Produto', // Nome da tabela referenciada
+      key: 'id', // Nome da coluna referenciada
     },
+    onDelete: 'CASCADE', // Exclui automaticamente os registros relacionados
   },
   data: {
     type: DataTypes.DATE,
@@ -38,18 +36,17 @@ AjusteEstoque.init({
     type: DataTypes.STRING,
     allowNull: true,
   },
-
 }, {
-  sequelize,
-  modelName: 'AjusteEstoque',  
   tableName: 'AjusteEstoques',
-  timestamps: false,  
+  timestamps: true,
 });
 
+// Defina as associações
 AjusteEstoque.associate = (models) => {
-  AjusteEstoque.belongsTo(models.Produto, { foreignKey: 'produtoId', as: 'Produto' });
-
+  AjusteEstoque.belongsTo(models.Produto, {
+    foreignKey: 'produtoId',
+    as: 'produto', // Alias para a associação
+  });
 };
-
 
 module.exports = AjusteEstoque;

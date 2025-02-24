@@ -139,7 +139,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.ENUM('Pai', 'Mãe', 'Filho', 'Cônjuge', 'Outro'),
     allowNull: true,
   },
-  postoServiço: {
+  postoServico: {
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -147,7 +147,7 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  tempoServiço: {
+  tempoServico: {
     type: DataTypes.STRING,
     allowNull: true,
   },

@@ -449,11 +449,11 @@ function gerarCamposFilhos() {
     <div class="row mb-3">
         <div class="col-md-6">
         <label>Nome do Filho ${i + 1}</label>
-        <input type="text" class="form-control"name="nomeFilho" placeholder="Nome do Filho"">
+        <input type="text" class="form-control" name="filhos[${i}][nome]" placeholder="Nome do Filho">
         </div>
     <div class="col-md-6">
       <label>Idade</label>
-      <input type="number" class="form-control" name="idadeFilho" placeholder="Idade do Filho">
+      <input type="number" class="form-control" name="filhos[${i}][idade]" placeholder="Idade do Filho">
     </div>
     </div>
     `;
@@ -464,8 +464,8 @@ function gerarCamposFilhos() {
 document.querySelector('form').addEventListener('submit', function (event) {
   const filhos = [];
   document.querySelectorAll('#filhosLista div').forEach(div => {
-    const nome = div.querySelector('input[name="nomeFilho"]').value;
-    const idade = div.querySelector('input[name="idadeFilho"]').value;
+    const nome = div.querySelector('input[name^="filhos["][name$="[nome]"]').value;
+    const idade = div.querySelector('input[name^="filhos["][name$="[idade]"]').value;
     if (nome && idade) {
       filhos.push({ nome, idade });
     }
@@ -473,7 +473,6 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
   document.getElementById('jsonFilhos').value = JSON.stringify(filhos);
 });
-
 
 
     function toggleField(selectId, ...fieldIds) {

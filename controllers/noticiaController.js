@@ -3,6 +3,8 @@ const Noticias = require('../models/Noticias');
 const fs = require('fs');
 const path = require('path');
 const { upload} = require('../config/multer');
+const { Op } = require('sequelize');
+
 
 const noticiaController = {
   // Criar um novo evento
@@ -67,23 +69,41 @@ const noticiaController = {
 
   listarNoticia: async (req, res) => {
     try {
-      const { autor } = req.query; 
+      const { autor, dataInicio, dataFim } = req.query;
   
       const whereConditions = {};
   
+      // Filtro por autor
       if (autor) {
-        whereConditions.autor = { [Op.like]: `%${autor}%` }; 
+        whereConditions.autor = { [Op.like]: `%${autor}%` };
       }
   
+      // Filtro por data de criação
+      if (dataInicio && dataFim) {
+        whereConditions.createdAt = {
+          [Op.between]: [new Date(dataInicio), new Date(dataFim)],
+        };
+      } else if (dataInicio) {
+        whereConditions.createdAt = {
+          [Op.gte]: new Date(dataInicio),
+        };
+      } else if (dataFim) {
+        whereConditions.createdAt = {
+          [Op.lte]: new Date(dataFim),
+        };
+      }
   
+      // Buscando as notícias com os filtros aplicados
       const noticias = await Noticias.findAll({
-        where: whereConditions
+        where: whereConditions,
+        order: [['createdAt', 'DESC']], // Ordena por createdAt (data de criação), mais recente primeiro
       });
   
+      // Renderiza a página com as notícias filtradas e os parâmetros de busca
       res.render('noticias/index', { noticias, query: req.query });
     } catch (error) {
       console.error(error);
-      req.flash('error_msg', 'Erro ao listar noticias.');
+      req.flash('error_msg', 'Erro ao listar notícias.');
       res.redirect('/');
     }
   },

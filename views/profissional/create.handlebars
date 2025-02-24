@@ -89,19 +89,19 @@
         <div class="row g-3">
           <div class="col-md-6">
             <label for="nome" class="form-label">Nome:</label>
-            <input type="text" class="form-control" name="nome" id="nome" required placeholder="Digite o nome completo">
+            <input type="text" class="form-control" name="nome" id="nome" required placeholder="Digite o nome completo" value="{{formData.nome}}">
           </div>
           <div class="col-md-6">
             <label for="email" class="form-label">Email:</label>
-            <input type="email" class="form-control" name="email" id="email" required placeholder="exemplo@dominio.com">
+            <input type="email" class="form-control" name="email" id="email" required placeholder="exemplo@dominio.com" value="{{formData.email}}">
           </div>
           <div class="col-md-4">
             <label for="cpf" class="form-label">CPF:</label>
-            <input type="text" class="form-control" name="cpf" id="cpf" required placeholder="Ex.: 12345678901">
+            <input type="text" class="form-control" name="cpf" id="cpf" required placeholder="Ex.: 12345678901" value="{{formData.cpf}}">
           </div>
           <div class="col-md-4">
             <label for="dataNascimento" class="form-label">Data de Nascimento:</label>
-            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" required>
+            <input type="date" class="form-control" name="dataNascimento" id="dataNascimento" required value="{{formData.dataNascimento}}">
           </div>
           <div class="col-md-4">
             <label for="sexo" class="form-label">Sexo:</label>
@@ -138,11 +138,11 @@
           </div>
           <div class="col-md-6">
             <label for="dataAdmissao" class="form-label">Data de Admissão:</label>
-            <input type="date" class="form-control" name="dataAdmissao" id="dataAdmissao" required>
+            <input type="date" class="form-control" name="dataAdmissao" id="dataAdmissao" required value="{{formData.dataAdmissao}}">
           </div>
           <div class="col-md-6">
             <label for="matricula" class="form-label">Matrícula:</label>
-            <input type="text" class="form-control" name="matricula" id="matricula" required>
+            <input type="text" class="form-control" name="matricula" id="matricula" required value="{{formData.matricula}}">
           </div>
         </div>
       </fieldset>
@@ -164,31 +164,31 @@
         <div class="row g-3">
           <div class="col-md-4">
             <label for="cep" class="form-label">CEP:</label>
-            <input type="text" class="form-control" name="cep" id="cep" required onblur="buscarEndereco()" placeholder="Ex.: 12345678">
+            <input type="text" class="form-control" name="cep" id="cep" required onblur="buscarEndereco()" placeholder="Ex.: 12345678" value="{{formData.cep}}">
           </div>
           <div class="col-md-8">
             <label for="endereco" class="form-label">Endereço:</label>
-            <input type="text" class="form-control" name="endereco" id="endereco" required placeholder="Rua, Avenida, etc.">
+            <input type="text" class="form-control" name="endereco" id="endereco" required placeholder="Rua, Avenida, etc." value="{{formData.endereco}}">
           </div>
           <div class="col-md-4">
             <label for="bairro" class="form-label">Bairro:</label>
-            <input type="text" class="form-control" name="bairro" id="bairro" required placeholder="Digite o bairro">
+            <input type="text" class="form-control" name="bairro" id="bairro" required placeholder="Digite o bairro" value="{{formData.bairro}}">
           </div>
           <div class="col-md-4">
             <label for="cidade" class="form-label">Cidade:</label>
-            <input type="text" class="form-control" name="cidade" id="cidade" required placeholder="Digite a cidade">
+            <input type="text" class="form-control" name="cidade" id="cidade" required placeholder="Digite a cidade" value="{{formData.cidade}}">
           </div>
           <div class="col-md-4">
             <label for="estado" class="form-label">Estado:</label>
-            <input type="text" class="form-control" name="estado" id="estado" required placeholder="Digite o estado">
+            <input type="text" class="form-control" name="estado" id="estado" required placeholder="Digite o estado" value="{{formData.estado}}">
           </div>
           <div class="col-md-6">
             <label for="numero" class="form-label">Número:</label>
-            <input type="text" class="form-control" name="numero" required placeholder="Número do imóvel">
+            <input type="text" class="form-control" name="numero" required placeholder="Número do imóvel" value="{{formData.numero}}">
           </div>
           <div class="col-md-6">
             <label for="complemento" class="form-label">Complemento:</label>
-            <input type="text" class="form-control" name="complemento" placeholder="Ex.: Apto, Bloco">
+            <input type="text" class="form-control" name="complemento" placeholder="Ex.: Apto, Bloco" value="{{formData.complemento}}">
           </div>
         </div>
       </fieldset>
@@ -199,7 +199,7 @@
         <div class="row g-3">
           <div class="col-md-6">
             <label for="telefone" class="form-label">Telefone:</label>
-            <input type="text" class="form-control" name="telefone" required placeholder="Ex.: 11987654321">
+            <input type="text" class="form-control" name="telefone" required placeholder="Ex.: 11987654321" value="{{formData.telefone}}">
           </div>
           <div class="col-md-6">
             <label for="tipoTelefone" class="form-label">Tipo de Telefone:</label>
@@ -219,11 +219,11 @@
         <div class="row g-3">
           <div class="col-md-6">
             <label for="contatoEmergenciaNome" class="form-label">Nome do Contato:</label>
-            <input type="text" class="form-control" name="contatoEmergenciaNome">
+            <input type="text" class="form-control" name="contatoEmergenciaNome" value="{{formData.contatoEmergenciaNome}}">
           </div>
           <div class="col-md-6">
             <label for="telefoneContatoEmergencia" class="form-label">Telefone do Contato:</label>
-            <input type="text" class="form-control" name="telefoneContatoEmergencia">
+            <input type="text" class="form-control" name="telefoneContatoEmergencia" value="{{formData.telefoneContatoEmergencia}}">
           </div>
         </div>
       </fieldset>

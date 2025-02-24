@@ -23,15 +23,14 @@ exports.createAviso = async (req, res) => {
       });
     }
 
-    // Convertendo data para formato correto
-    const dataFormatada = new Date(data);
-
     // Criar aviso no banco de dados
-    await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, profissionalId });
+    await Aviso.create({ assunto, mensagem, data, tipo, profissionalId });
 
+    req.flash('success_msg', 'Aviso criado com sucesso');
     res.redirect('/avisos'); // Redireciona para a lista de avisos
   } catch (error) {
     console.error('Erro ao criar aviso:', error);
+    req.flash('error_msg', 'Erro ao criar aviso');
     res.render('avisos/create', { 
       title: 'Novo Aviso', 
       error: 'Erro ao criar aviso', 
@@ -41,17 +40,59 @@ exports.createAviso = async (req, res) => {
 };
 
 // Listar todos os avisos
+
+
 exports.getAllAvisos = async (req, res) => {
   try {
-    const avisos = await Aviso.findAll();
-    res.render('avisos/index', { title: 'Lista de Avisos', avisos });
+    const profissionalId = req.user.profissionalId;
+
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const { nomeProfissional, dataInicio } = req.query;
+
+    const whereConditions = {};
+
+    // Filtro por nome do profissional
+    if (nomeProfissional) {
+      whereConditions['$profissional.nome$'] = { [Op.like]: `%${nomeProfissional}%` };
+    }
+
+    // Filtro pela data exata do aviso
+    if (dataInicio) {
+      whereConditions.data = {
+        [Op.eq]: dataInicio
+      };
+    }
+
+    const avisos = await Aviso.findAll({
+      where: whereConditions,
+      include: [
+        {
+          model: Profissional,
+          as: 'profissional',
+          attributes: ['id', 'nome', 'cargo']
+        }
+      ]
+    });
+
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      avisos,
+      query: req.query // para preencher o formulário com valores atuais
+    });
   } catch (error) {
     console.error('Erro ao buscar avisos:', error);
     res.render('avisos/index', { 
       title: 'Lista de Avisos', 
-      avisos: [], // Evita erro na view caso não haja dados
-      error: 'Erro ao buscar avisos', 
-      details: error.message 
+      avisos: [],
+      error: 'Erro ao buscar avisos.',
+      details: error.message
     });
   }
 };
@@ -164,7 +205,7 @@ exports.deleteAviso = async (req, res) => {
     }
 
     await aviso.destroy(); // Exclusão lógica se `paranoid: true` estiver ativado
-
+    req.flash('success_msg',"Aviso deletado.")
     res.redirect('/avisos'); // Redireciona para a lista de avisos
   } catch (error) {
     console.error('Erro ao excluir aviso:', error);
@@ -176,6 +217,27 @@ exports.deleteAviso = async (req, res) => {
   }
 };
 
+exports.contarAvisosDoDia = async (req, res) => {
+  try {
+    // Obtendo a data do início e fim do dia atual
+    const startOfDay = moment().startOf('day').toDate();
+    const endOfDay = moment().endOf('day').toDate();
+
+    // Contando avisos dentro do intervalo de data do dia
+    const avisosDoDia = await Aviso.count({
+      where: {
+        data: {
+          [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
+        }
+      }
+    });
+
+    return res.json({ avisosDoDia });  // Retorna a contagem em formato JSON
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao contar avisos do dia.' });  // Retorna erro em formato JSON
+  }
+};
 
 exports.renderEditAviso = async (req, res) => {
   try {
@@ -207,22 +269,4 @@ exports.renderEditAviso = async (req, res) => {
   }
 };
 
-exports.contarAvisosDoDia = async (req, res) => {
-  try {
-    const startOfDay = moment().startOf('day').toDate();
-    const endOfDay = moment().endOf('day').toDate();
 
-    const avisosDoDia = await Aviso.count({
-      where: {
-        data: {
-          [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
-        }
-      }
-    });
-
-    return res.json({ avisosDoDia });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Erro ao contar avisos do dia.' });
-  }
-};

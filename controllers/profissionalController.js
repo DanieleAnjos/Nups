@@ -1,6 +1,6 @@
 const Profissional = require('../models/Profissional');
 const Notificacao = require('../models/Notificacao');
-
+const FluxoAtendimentos = require('../models/FluxoAtendimentos');
 
 const { ValidationError } = require('sequelize');
 const { Op } = require('sequelize');
@@ -18,33 +18,37 @@ const { Parser } = require('json2csv');
 
 
 exports.index = async (req, res) => {
-  const { nome, email, cargo } = req.query; 
-  const where = {}; 
+  const { nome, email, cargo, sort = 'nome', order = 'ASC' } = req.query; // Adiciona sort e order
+  const where = {};
 
   if (nome) {
-    where.nome = { [Op.like]: `%${nome}%` }; 
+    where.nome = { [Op.like]: `%${nome}%` };
   }
   if (email) {
-    where.email = { [Op.like]: `%${email}%` }; 
+    where.email = { [Op.like]: `%${email}%` };
   }
   if (cargo) {
-    where.cargo = { [Op.like]: `%${cargo}%` }; 
+    where.cargo = { [Op.like]: `%${cargo}%` };
   }
 
+  // Lista de colunas permitidas para ordenação
+  const allowedSortFields = ['matricula', 'nome', 'email', 'cargo', 'status'];
+  const sortField = allowedSortFields.includes(sort) ? sort : 'nome';
+  const sortOrder = order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
   try {
-    const profissionais = await Profissional.findAll({ 
+    const profissionais = await Profissional.findAll({
       where,
-      order: [
-        ['matricula', 'ASC'], 
-        ['nome', 'ASC'] 
-      ]
+      order: [[sortField, sortOrder]] // Ordenação dinâmica
     });
 
     const profissionaisData = profissionais.map(prof => prof.get({ plain: true }));
 
-    res.render('profissional/index', { 
+    res.render('profissional/index', {
       profissionais: profissionaisData,
-      query: req.query 
+      query: req.query,
+      sort: sortField,
+      order: sortOrder
     });
   } catch (error) {
     console.error('Erro ao listar profissionais:', error);
@@ -52,6 +56,7 @@ exports.index = async (req, res) => {
     res.redirect('/profissionais');
   }
 };
+
 
 
 exports.generateReport = async (req, res) => {
@@ -113,7 +118,8 @@ exports.generateReport = async (req, res) => {
 exports.create = (req, res) => {
   res.render('profissional/create', {
     error_msg: req.flash('error_msg'), 
-    success_msg: req.flash('success_msg') 
+    success_msg: req.flash('success_msg'),
+    formData: req.body, // Mantém os dados do formulário
   });
 };
 
@@ -124,6 +130,7 @@ exports.store = async (req, res) => {
       return res.render('profissional/create', {
         error_msg: req.flash('error_msg'),
         success_msg: req.flash('success_msg'),
+        formData: req.body, // Mantém os dados do formulário
       });
     }
 
@@ -177,6 +184,7 @@ exports.store = async (req, res) => {
           return res.render('profissional/create', {
             error_msg: req.flash('error_msg'),
             success_msg: req.flash('success_msg'),
+            formData: req.body, // Mantém os dados do formulário
           });
         }
       }
@@ -187,6 +195,7 @@ exports.store = async (req, res) => {
         return res.render('profissional/create', {
           error_msg: req.flash('error_msg'),
           success_msg: req.flash('success_msg'),
+          formData: req.body, // Mantém os dados do formulário
         });
       }
 
@@ -196,6 +205,7 @@ exports.store = async (req, res) => {
         return res.render('profissional/create', {
           error_msg: req.flash('error_msg'),
           success_msg: req.flash('success_msg'),
+          formData: req.body, // Mantém os dados do formulário
         });
       }
 
@@ -206,6 +216,7 @@ exports.store = async (req, res) => {
           return res.render('profissional/create', {
             error_msg: req.flash('error_msg'),
             success_msg: req.flash('success_msg'),
+            formData: req.body, // Mantém os dados do formulário
           });
         }
         imagePath = req.file.filename;
@@ -252,10 +263,12 @@ exports.store = async (req, res) => {
       return res.render('profissional/create', {
         error_msg: req.flash('error_msg'),
         success_msg: req.flash('success_msg'),
+        formData: req.body, // Mantém os dados do formulário
       });
     }
   });
 };
+
 
 exports.edit = async (req, res) => {
   try {
@@ -298,12 +311,22 @@ exports.update = async (req, res) => {
         email,
         rg,
         cpf,
+        status,
         dataNascimento,
         sexo,
         estadoCivil,
         matricula,
         dataAdmissao,
         cargo,
+        cep,
+        telefone,
+        tipoTelefone,
+        endereco,
+        bairro,
+        cidade,
+        estado,
+        numero,
+        complemento,
         vinculo,
         contatoEmergenciaNome,
         telefoneContatoEmergencia,
@@ -376,8 +399,18 @@ await profissional.update({
         email,
         rg,
         cpf,
+        status,
         dataNascimento,
         sexo,
+        cep,
+        endereco,
+        bairro,
+        cidade,
+        estado,
+        numero,
+        telefone,
+        tipoTelefone,
+        complemento,
         estadoCivil,
         matricula,
         dataAdmissao,
@@ -545,6 +578,17 @@ exports.delete = async (req, res) => {
         ],
         order: [['createdAt', 'DESC']], 
       });
+
+      const fluxoAtendimento = await FluxoAtendimentos.findAll({
+        include: [
+          {
+            model: Profissional,
+            as: 'profissionalRecebido',  
+            where: { id: profissional.id },  
+          }
+        ],
+        order: [['createdAt', 'DESC']], 
+      });
   
       const atendimentos = await Atendimento.findAll({
         where: {
@@ -572,6 +616,7 @@ exports.delete = async (req, res) => {
       res.render('profissional/perfil',{
         profissional: profissional.get({ plain: true }), 
         encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })),
+        fluxoAtendimento: fluxoAtendimento.map(f => f.get({ plain: true })),  // transformando os objetos relacionados em arrays plenos
         atendimentos: atendimentos.map(a => a.get({ plain: true })),
         ocorrencias: ocorrencias.map(o => o.get({ plain: true })),
         usuario: profissional.usuarios[0]?.usuario || 'Nenhum usuário associado',
@@ -622,6 +667,17 @@ exports.delete = async (req, res) => {
         ],
         order: [['createdAt', 'DESC']],  
       });
+
+      const fluxoAtendimento = await FluxoAtendimentos.findAll({
+        include: [
+          {
+            model: Profissional,
+            as: 'profissionalRecebido',  
+            where: { id: profissional.id },  
+          }
+        ],
+        order: [['createdAt', 'DESC']], 
+      });
   
       const atendimentos = await Atendimento.findAll({
         where: { profissionalId: profissional.id },
@@ -640,6 +696,7 @@ exports.delete = async (req, res) => {
       res.render('profissional/meu_perfil', {
         profissional: profissional.get({ plain: true }),
         encaminhamentos: encaminhamentos.map(e => e.get({ plain: true })) || [],
+        fluxoAtendimento: fluxoAtendimento.map(f => f.get({ plain: true })) || [],  // transformando os objetos relacionados em arrays plenos
         atendimentos: atendimentos.map(a => a.get({ plain: true })) || [],
         ocorrencias: ocorrencias.map(o => o.get({ plain: true })) || [],
         usuario: usuario, 

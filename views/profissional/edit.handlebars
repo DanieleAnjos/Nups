@@ -222,6 +222,19 @@
         </div>
       </fieldset>
 
+      <!-- Status Profissional -->
+      <fieldset class="mb-4">
+        <legend class="text-primary mb-2">Status Profissional</legend>
+        <div class="col-md-3">
+          <label for="status" class="form-label">Selecione o status:</label>
+          <select name="status" id="status" class="form-select">
+            <option value="Ativo" {{#if (eq profissional.status "Ativo")}}selected{{/if}}>Ativo</option>
+            <option value="Inativo" {{#if (eq profissional.status "Inativo")}}selected{{/if}}>Inativo</option>
+          </select>
+        </div>
+      </fieldset>
+
+
       <!-- Botões de Ação -->
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary">Salvar Alterações</button>

@@ -24,7 +24,7 @@ Produto.init({
     allowNull: false,
     validate: {
       notEmpty: true,
-      len: [10, 500],
+      len: [5, 500],
     },
   },
   categoria: {

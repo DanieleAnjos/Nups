@@ -1,6 +1,8 @@
 const Produto = require('../models/Produto');
 const AjusteEstoque = require('../models/AjusteEstoque');
 const { Op } = require('sequelize');
+const sequelize = require('../config/database');
+
 
 const produtoController = {
   listarProdutos: async (req, res) => {
@@ -17,6 +19,7 @@ const produtoController = {
       }
 
       const produtos = await Produto.findAll({
+        where,
         include: [{
           model: AjusteEstoque,
           as: 'ajustesEstoque',
@@ -63,21 +66,28 @@ const produtoController = {
   },
 
   store: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-      const produto = await Produto.create(req.body);
+      // Cria o produto sem a quantidade_inicial
+      const produto = await Produto.create(req.body, { transaction: t });
       
+      // Se a quantidade_inicial for informada, ajusta o estoque, mas não adicione ela diretamente ao produto
       if (req.body.quantidade_inicial) {
-        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial); // Chama diretamente o controller
+        // Ajusta o estoque com a quantidade inicial, sem adicionar ao produto diretamente
+        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial, t);
       }
-  
+      
+      await t.commit();
       req.flash('success', 'Produto criado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
+      await t.rollback();
       console.error('Erro ao criar produto:', error);
       req.flash('error', 'Erro ao criar produto.');
       res.redirect('/produtos/create');
     }
   },
+  
 
   edit: async (req, res) => {
     try {
@@ -97,23 +107,27 @@ const produtoController = {
   },
 
   update: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-      const produto = await Produto.findByPk(req.params.id);
+      const produto = await Produto.findByPk(req.params.id, { transaction: t });
   
       if (!produto) {
+        await t.rollback();
         req.flash('error', 'Produto não encontrado');
         return res.redirect('/produtos');
       }
   
-      await Produto.update(req.body, { where: { id: req.params.id } });
+      await Produto.update(req.body, { where: { id: req.params.id }, transaction: t });
   
       if (req.body.quantidade_inicial) {
-        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial); // Chama diretamente o controller
+        await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial, t);
       }
   
+      await t.commit();
       req.flash('success', 'Produto atualizado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
+      await t.rollback();
       console.error('Erro ao atualizar produto:', error);
       req.flash('error', 'Erro ao atualizar produto.');
       res.redirect(`/produtos/${req.params.id}/edit`);
@@ -121,44 +135,39 @@ const produtoController = {
   },
   
   destroy: async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-      await Produto.destroy({ where: { id: req.params.id } });
+      await Produto.destroy({ where: { id: req.params.id }, transaction: t });
+      await t.commit();
       req.flash('success', 'Produto deletado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
+      await t.rollback();
       console.error('Erro ao deletar produto:', error);
       req.flash('error', 'Erro ao deletar produto.');
       res.redirect('/produtos');
     }
   },
 
-  ajustarEstoque: async (produtoId, tipo, quantidade) => {
-    try {
-
-      await AjusteEstoque.create({
-        produtoId,
-        tipo,
-        quantidade,
-        data: new Date()
-      });
-
-      const produto = await Produto.findByPk(produtoId);
-
-      let novaQuantidade = produto.quantidade_inicial;
-
-      if (tipo === 'entrada') {
-        novaQuantidade += quantidade;
-      } else if (tipo === 'saida') {
-        novaQuantidade -= quantidade;
-      }
-
-      produto.quantidade_inicial = novaQuantidade;
-      await produto.save();
-    } catch (error) {
-      console.error('Erro ao ajustar estoque:', error);
-      throw new Error('Erro ao ajustar estoque');
+  ajustarEstoque: async (produtoId, tipo, quantidade, transaction) => {
+    const produto = await Produto.findByPk(produtoId, { transaction });
+  
+    if (!produto) {
+      throw new Error('Produto não encontrado');
     }
-  },
+  
+    // Verifica o tipo de ajuste: 'entrada' ou 'saida'
+    if (tipo === 'entrada') {
+      produto.quantidade_inicial += quantidade; // Adiciona a quantidade no estoque
+    } else if (tipo === 'saida') {
+      produto.quantidade_inicial -= quantidade; // Subtrai a quantidade no estoque
+    } else {
+      throw new Error('Tipo de ajuste inválido');
+    }
+  
+    // Atualiza o produto no banco de dados
+    await produto.save({ transaction });
+  },  
 };
 
 module.exports = produtoController;

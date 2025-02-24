@@ -78,14 +78,18 @@
                                 <td class="text-center">
                                     <a href="/atendimentos/{{this.id}}" class="btn btn-info btn-sm me-2">Ver Detalhes</a>
                                     <a href="/discussoes/create/{{this.id}}" class="btn btn-warning btn-sm">Vincular Discussão</a>
-                                    
-                              <!--      <a href="/atendimentos/{{this.id}}/edit" class="btn btn-primary btn-sm me-2">Editar</a>
+
+                                {{#if ../podeDeletar}}
+ 
+                                 <!-- <a href="/atendimentos/{{this.id}}/edit" class="btn btn-primary btn-sm me-2">Editar</a> -->
                                   <form action="/atendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                     <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este atendimentos?');">
                                         <i class="bi bi-trash"></i> Remover
                                     </button>
-                                </form>                 -->           
+                                {{/if}}
+
+                                </form>                        
                                 </td>
                             </tr>
                         {{/each}}

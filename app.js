@@ -385,7 +385,8 @@ const accessControl = {
       '/Eventos-detalhes',
       '/noticias',
       '/auth/changePassword',
-      '/avisos'
+      '/avisos',
+      '/fluxoAtendimentos'
 
     ],
     'Assistente social': [
@@ -399,7 +400,11 @@ const accessControl = {
       '/encaminhamentos',
       '/escalas',
       '/fluxoAtendimentos',
-      '/auth/changePassword'
+      '/auth/changePassword',
+      '/avisos/do-dia',
+      '/avisos/dia',
+
+
 
 
     ],
@@ -412,7 +417,9 @@ const accessControl = {
       '/notificacoes',
       '/profissionais/meu_perfil/',
       '/mensagens',
-      '/auth/changePassword'
+      '/auth/changePassword',
+      '/avisos/do-dia',
+      '/avisos/dia',
 
 
 
@@ -427,7 +434,9 @@ const accessControl = {
       '/notificacoes',
       '/profissionais/meu_perfil/',
       '/mensagens',
-      '/auth/changePassword'
+      '/auth/changePassword',
+      '/avisos/do-dia',
+      '/avisos/dia',
 
 
 

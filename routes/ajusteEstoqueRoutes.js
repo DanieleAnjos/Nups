@@ -1,17 +1,12 @@
 const express = require('express');
-
 const router = express.Router();
-const ajusteEstoqueController = require('../controllers/ajusteEstoqueController');
+const ajusteEstoqueController = require('../controllers/ajusteEstoqueController'); // Importe o controlador corretamente
 
-router.get('/', ajusteEstoqueController.index); 
+// Defina as rotas
+router.post('/', ajusteEstoqueController.store); // Exemplo de rota POST
 
-router.get('/create', ajusteEstoqueController.create); 
-router.post('/', ajusteEstoqueController.store); 
-
-
-router.get('/:id/edit', ajusteEstoqueController.edit); 
-router.put('/:id', ajusteEstoqueController.update); 
-
-router.delete('/:id', ajusteEstoqueController.destroy); 
+router.get('/', ajusteEstoqueController.index); // Exemplo de rota GET
+router.get('/create', ajusteEstoqueController.create); // Exemplo de rota
+router.delete('/:id', ajusteEstoqueController.destroy); // Exemplo de rota DELETE
 
 module.exports = router;

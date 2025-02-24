@@ -41,6 +41,14 @@
         {{notificacoesNaoLidas}}
       </span>
     </a>
+    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos do Dia</span>
+      <span id="aviso-count" class="notification-badge"
+            style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
+          {{avisosDoDia}}
+      </span>
+    </a>
     <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
       <i class="fas fa-user-circle"></i>
       <span>Perfil</span>
@@ -222,5 +230,39 @@ async function atualizarContadorNotificacoes() {
         console.error('Erro ao buscar as notificações não lidas:', error);
     }
 }
+
+
+  async function atualizarContadorAvisos() {
+    try {
+      const response = await fetch('/avisos/dia', { 
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao buscar dados');
+      }
+
+      const data = await response.json(); // Conversão direta para JSON
+
+      const contador = document.getElementById('aviso-count');
+
+      if (data.avisosDoDia > 0) {
+        contador.textContent = data.avisosDoDia;  // Atualiza o número de avisos do dia
+        contador.style.display = 'inline';  // Exibe o contador
+      } else {
+        contador.style.display = 'none';  // Oculta o contador se não houver avisos do dia
+      }
+
+    } catch (error) {
+      console.error('Erro ao buscar os avisos do dia:', error.message);
+    }
+  }
+
+  // Chama a função para atualizar o contador ao carregar a página
+  atualizarContadorAvisos();
 
 </script>

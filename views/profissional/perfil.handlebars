@@ -256,6 +256,11 @@
         <li class="nav-item">
           <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">Atendimentos</button>
         </li>
+        {{#if (eq profissional.cargo "Assistente social")}}
+        <li class="nav-item">
+          <button class="nav-link" id="fluxoAtendimentos-tab" data-bs-toggle="tab" data-bs-target="#fluxoAtendimentos" type="button" role="tab" aria-controls="fluxoAtendimentos" aria-selected="false">Fluxo de Atendimentos</button>
+        </li>
+        {{/if}}
         {{#if (eq profissional.cargo "Administrador")}}
         <li class="nav-item">
           <button class="nav-link" id="ocorrencias-tab" data-bs-toggle="tab" data-bs-target="#ocorrencias" type="button" role="tab" aria-controls="ocorrencias" aria-selected="false">Ocorrências</button>
@@ -291,6 +296,46 @@
                       <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
                       <td>
                         <a href="/encaminhamentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
+                      </td>
+                    </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+              {{else}}
+              <p>Nenhum encaminhamento encontrado para este profissional.</p>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Fluxo Atendimento -->
+        <div class="tab-pane fade" id="fluxoAtendimentos" role="tabpanel" aria-labelledby="fluxoAtendimentos-tab">
+          <div class="card">
+            <div class="card-header">Fluxo de Atendimentos</div>
+            <div class="card-body">
+              {{#if fluxoAtendimento.length}}
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Paciente</th>
+                      <th>Assunto</th>
+                      <th>Visualizado</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each fluxoAtendimento}}
+                    <tr>
+                      <td>{{formatDateTime createdAt}}</td>
+                      <td>{{nomePaciente}}</td>
+                      <td>{{assuntoAcolhimento}}</td>
+                      <td>{{#if visto}}Sim{{else}}Não{{/if}}</td>
+                      <td>
+                        <a href="/fluxoAtendimentos/{{id}}" class="btn btn-warning btn-sm">Detalhes</a>
                       </td>
                     </tr>
                     {{/each}}

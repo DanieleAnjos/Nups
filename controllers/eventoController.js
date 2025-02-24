@@ -3,6 +3,8 @@ const Profissional = require('../models/Profissional');
 const fs = require('fs');
 const path = require('path');
 const { upload} = require('../config/multer');
+const { Op } = require('sequelize');
+
 
 const eventoController = {
 
@@ -93,13 +95,13 @@ const eventoController = {
       }
   
       if (dataInicio && dataFim) {
-        whereConditions.data = {
+        whereConditions.createdAt = {
           [Op.between]: [new Date(dataInicio), new Date(dataFim)] 
         };
       } else if (dataInicio) {
-        whereConditions.data = { [Op.gte]: new Date(dataInicio) }; 
+        whereConditions.createdAt = { [Op.gte]: new Date(dataInicio) }; 
       } else if (dataFim) {
-        whereConditions.data = { [Op.lte]: new Date(dataFim) };
+        whereConditions.createdAt = { [Op.lte]: new Date(dataFim) };
       }
   
       const eventos = await Evento.findAll({
@@ -113,6 +115,7 @@ const eventoController = {
       res.redirect('/');
     }
   },
+  
   
 
   visualizarEvento: async (req, res) => {

@@ -64,6 +64,7 @@ const ocorrenciaController = {
     try {
       const { data, relatorio, horarioChegada, horarioSaida, profissionalId } = req.body;
   
+      // Validação dos campos obrigatórios
       if (!data || !relatorio || !horarioChegada || !profissionalId) {
         req.flash('error_msg', 'Todos os campos obrigatórios devem ser preenchidos.');
         return res.redirect('back');
@@ -72,24 +73,36 @@ const ocorrenciaController = {
       const chegada = new Date(`${data}T${horarioChegada}`);
       const saida = horarioSaida ? new Date(`${data}T${horarioSaida}`) : null;
   
+      // Validação do horário de saída
       if (saida && saida <= chegada) {
         req.flash('error_msg', 'O horário de saída deve ser posterior ao horário de chegada.');
         return res.redirect('back');
       }
   
+      // Verifica se há outra ocorrência que se sobreponha ao novo horário
       const ocorrenciaExistente = await Ocorrencia.findOne({
         where: {
           profissionalId,
           data,
-          horarioChegada
         }
       });
   
       if (ocorrenciaExistente) {
-        req.flash('error_msg', 'Já existe uma ocorrência cadastrada neste horário para este profissional.');
-        return res.redirect('back');
+        const ocorrenciaExistenteChegada = new Date(`${ocorrenciaExistente.data}T${ocorrenciaExistente.horarioChegada}`);
+        const ocorrenciaExistenteSaida = ocorrenciaExistente.horarioSaida ? new Date(`${ocorrenciaExistente.data}T${ocorrenciaExistente.horarioSaida}`) : null;
+  
+        // Verifica se os horários se sobrepõem
+        if (
+          (chegada < ocorrenciaExistenteSaida && chegada >= ocorrenciaExistenteChegada) || // Se o novo horário de chegada está dentro do intervalo existente
+          (saida && saida > ocorrenciaExistenteChegada && saida <= ocorrenciaExistenteSaida) || // Se o novo horário de saída está dentro do intervalo existente
+          (chegada <= ocorrenciaExistenteChegada && (!saida || (saida >= ocorrenciaExistenteSaida))) // Se o novo horário cobre o intervalo existente
+        ) {
+          req.flash('error_msg', 'Já existe uma ocorrência cadastrada neste horário para este profissional.');
+          return res.redirect('back');
+        }
       }
   
+      // Cria a nova ocorrência
       await Ocorrencia.create({
         data,
         relatorio,
@@ -106,6 +119,7 @@ const ocorrenciaController = {
       return res.redirect('back');
     }
   },
+  
   
 
   show: async (req, res) => {
@@ -145,27 +159,57 @@ const ocorrenciaController = {
   update: async (req, res) => {
     try {
       const ocorrencia = await Ocorrencia.findByPk(req.params.id);
-
+  
       if (!ocorrencia) {
         return res.status(404).send("Ocorrência não encontrada.");
       }
-
+  
       const { data, relatorio, horarioChegada, horarioSaida, profissionalId } = req.body;
-
+  
+      // Validação dos campos obrigatórios
       if (!data || !relatorio || !horarioChegada || !profissionalId) {
-        return res.status(400).send("Todos os campos são obrigatórios.");
+        req.flash('error_msg', 'Todos os campos obrigatórios devem ser preenchidos.');
+        return res.redirect('back');
       }
-
+  
       const chegada = new Date(`${data}T${horarioChegada}`);
       const saida = horarioSaida ? new Date(`${data}T${horarioSaida}`) : null;
-
+  
+      // Validação do horário de saída
       if (saida && saida <= chegada) {
-        return res.status(400).send("O horário de saída deve ser posterior ao horário de chegada.");
+        req.flash('error_msg', 'O horário de saída deve ser posterior ao horário de chegada.');
+        return res.redirect('back');
       }
-
+  
+      // Verifica se há outra ocorrência que se sobreponha ao novo horário
+      const ocorrenciaExistente = await Ocorrencia.findOne({
+        where: {
+          profissionalId,
+          data,
+          id: { [Op.ne]: req.params.id } // Exclui a ocorrência atual da verificação
+        }
+      });
+  
+      if (ocorrenciaExistente) {
+        const ocorrenciaExistenteChegada = new Date(`${ocorrenciaExistente.data}T${ocorrenciaExistente.horarioChegada}`);
+        const ocorrenciaExistenteSaida = ocorrenciaExistente.horarioSaida ? new Date(`${ocorrenciaExistente.data}T${ocorrenciaExistente.horarioSaida}`) : null;
+  
+        // Verifica se os horários se sobrepõem
+        if (
+          (chegada < ocorrenciaExistenteSaida && chegada >= ocorrenciaExistenteChegada) || // Se o novo horário de chegada está dentro do intervalo existente
+          (saida && saida > ocorrenciaExistenteChegada && saida <= ocorrenciaExistenteSaida) || // Se o novo horário de saída está dentro do intervalo existente
+          (chegada <= ocorrenciaExistenteChegada && (!saida || (saida >= ocorrenciaExistenteSaida))) // Se o novo horário cobre o intervalo existente
+        ) {
+          req.flash('error_msg', 'Já existe uma ocorrência cadastrada neste horário para este profissional.');
+          return res.redirect('back');
+        }
+      }
+  
+      // Atualiza a ocorrência
       await Ocorrencia.update({ data, relatorio, horarioChegada, horarioSaida, profissionalId }, {
         where: { id: req.params.id }
       });
+  
       req.flash('success_msg', 'Ocorrência atualizada com sucesso.');
       res.redirect('/ocorrencias');
     } catch (error) {
@@ -174,6 +218,8 @@ const ocorrenciaController = {
       res.redirect('/ocorrencias');
     }
   },
+  
+  
 
   destroy: async (req, res) => {
     try {

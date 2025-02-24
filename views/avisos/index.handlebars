@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container mt-5">
@@ -23,10 +27,10 @@
         <form action="/avisos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
                 <div class="col-md-5 mb-2">
-                    <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+                    <input type="text" name="nomeProfissional" class="form-control" placeholder="Nome do profissional" value="{{query.nomeProfissional}}">
                 </div>
                 <div class="col-md-5 mb-2">
-                    <input type="text" name="tipo" class="form-control" placeholder="Tipo de Aviso" value="{{query.tipo}}">
+                    <input type="date" id="dataInicio" name="dataInicio" class="form-control" value="{{query.dataInicio}}">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
@@ -41,6 +45,7 @@
             <table class="table table-hover table-striped table-bordered mt-3">
                 <thead class="table-primary">
                     <tr class="text-center">
+                        <th>Autor</th>
                         <th>Assunto</th>
                         <th>Mensagem</th>
                         <th>Data</th>
@@ -51,14 +56,15 @@
                 <tbody>
                     {{#each avisos}}
                         <tr>
+                            <td>{{this.profissional.nome}}</td>
                             <td>{{this.assunto}}</td>
                             <td>{{this.mensagem}}</td>
-                            <td>{{OneDate this.data}}</td>
+                            <td>{{Data this.data}}</td>
                             <td>
                                 <span class="badge badge-{{this.tipo}}">{{this.tipo}}</span>
                             </td>
                             <td class="text-center">
-                                <a href="/avisos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                <a href="/avisos/{{this.id}}" class="btn btn-warning btn-sm mx-1">
                                     <i class="fa fa-pencil-square"></i> Editar
                                 </a>
                                 <form action="/avisos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">

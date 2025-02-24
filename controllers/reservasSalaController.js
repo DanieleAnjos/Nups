@@ -153,21 +153,25 @@ const reservasSalaController = {
   atualizarReserva: async (req, res) => {
     try {
       const { salaId, data, horarioInicial, horarioFinal } = req.body;
-
+  
       const inicial = new Date(`${data}T${horarioInicial}:00Z`);
       const final = new Date(`${data}T${horarioFinal}:00Z`);
+  
+      // Validação do horário
       if (inicial >= final) {
         req.flash('error_msg', 'O horário inicial deve ser anterior ao horário final.');
         return res.redirect(`/reservas/${req.params.id}/edit`);
       }
-
+  
+      // Verificação de conflitos com outras reservas
       const conflitos = await ReservaSala.findOne({
         where: {
           salaId,
           data,
-          id: { [Op.ne]: req.params.id }, 
+          id: { [Op.ne]: req.params.id }, // Ignora a própria reserva que está sendo atualizada
           [Op.or]: [
             {
+              // Caso o horário inicial da reserva se sobreponha ao intervalo de outra
               horarioInicial: {
                 [Op.lt]: final,
               },
@@ -178,17 +182,21 @@ const reservasSalaController = {
           ],
         },
       });
-
+  
       if (conflitos) {
         req.flash('error_msg', 'Já existe uma reserva para esta sala neste dia e horário.');
         return res.redirect(`/reservas/${req.params.id}/edit`);
       }
-
+  
+      // Atualiza a reserva
       const [updated] = await ReservaSala.update(req.body, { where: { id: req.params.id } });
+  
       if (updated) {
         req.flash('success_msg', 'Reserva atualizada com sucesso!');
         return res.redirect('/reservas');
       }
+  
+      // Caso a reserva não seja encontrada
       req.flash('error_msg', 'Reserva não encontrada.');
       res.redirect('/reservas');
     } catch (error) {
@@ -197,6 +205,7 @@ const reservasSalaController = {
       res.redirect('/reservas');
     }
   },
+  
 
   deletarReserva: async (req, res) => {
     try {

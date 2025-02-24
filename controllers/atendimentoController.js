@@ -11,10 +11,14 @@ const { sequelize } = require('../models');
 
 exports.index = async (req, res) => {
   try {
-    const searchTerm = req.query.search || '';
-    const dataInicio = req.query.dataInicio || '';
-    const dataFim = req.query.dataFim || '';
-    
+    const searchTerm = req.query.search || '';  // Termo de busca
+    const dataInicio = req.query.dataInicio || '';  // Data de início
+    const dataFim = req.query.dataFim || '';  // Data de fim
+
+    console.log('Busca por:', searchTerm);
+    console.log('Data Início:', dataInicio);
+    console.log('Data Fim:', dataFim);
+
     const profissionalId = req.user.profissionalId;
 
     const profissional = await Profissional.findByPk(profissionalId, {
@@ -30,13 +34,14 @@ exports.index = async (req, res) => {
     // Se o cargo for 'Administrador', não aplicamos filtro
     const whereConditions = profissionalCargo === 'Administrador' ? {} : {
       [Op.or]: [
-        { '$paciente.nome$': { [Op.like]: `%${searchTerm}%` } },
-        { '$profissional.nome$': { [Op.like]: `%${searchTerm}%` } }
+        { '$paciente.nome$': { [Op.like]: `%${searchTerm}%` } },  // Busca no nome do paciente
+        { '$profissional.nome$': { [Op.like]: `%${searchTerm}%` } } // Busca no nome do profissional
       ],
       '$profissional.id$': profissionalId, // Filtro para o profissional logado
       '$profissional.cargo$': profissionalCargo // Filtro para o cargo do profissional logado
     };
 
+    // Filtro por data, se for fornecido
     if (dataInicio && dataFim) {
       whereConditions.dataAtendimento = {
         [Op.between]: [new Date(dataInicio), new Date(dataFim)]
@@ -50,6 +55,9 @@ exports.index = async (req, res) => {
         [Op.lte]: new Date(dataFim)
       };
     }
+
+    // Debug: Exibe a consulta com os filtros
+    console.log('Condições WHERE:', whereConditions);
 
     const atendimentos = await Atendimento.findAll({
       where: whereConditions,
@@ -68,7 +76,24 @@ exports.index = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    return res.status(200).render('atendimentos/index', { atendimentos, searchTerm, dataInicio, dataFim });
+    // Debug: Exibe o que foi retornado
+    console.log('Atendimentos encontrados:', atendimentos.length);
+
+    const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
+
+    const podeEditar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+    const podeDeletar = profissional.cargo.toLowerCase() === "administrador";
+    const podeCadastrar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+
+    return res.status(200).render('atendimentos/index', 
+      { atendimentos,
+         searchTerm, 
+         dataInicio, 
+         dataFim,
+         podeEditar,
+         podeDeletar,
+         podeCadastrar });
+
   } catch (error) {
     console.error('Erro ao buscar atendimentos:', error);
     return res.status(500).json({ message: 'Erro ao buscar atendimentos.' });

@@ -61,6 +61,7 @@ exports.index = async (req, res) => {
           include: [{ model: Profissional, as: 'profissional' }]
         },
       ],
+      order: [['createdAt', 'DESC']]
     });
 
     // Mapear os encaminhamentos e adicionar permissões individuais
@@ -173,6 +174,7 @@ exports.store = async (req, res) => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0); 
 
+    // Verifica se já existe um encaminhamento com a mesma matrícula e o mesmo profissional
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
         matriculaPaciente, 
@@ -188,9 +190,21 @@ exports.store = async (req, res) => {
       return res.redirect('/encaminhamentos/create');
     }
 
+    // Verifica se já existe um encaminhamento com o mesmo número de processo
+    const numeroProcessoExistente = await Encaminhamento.findOne({
+      where: {
+        numeroProcesso,
+      },
+    });
+
+    if (numeroProcessoExistente) {
+      req.flash('error_msg', 'Este número de processo já está associado a um encaminhamento.');
+      return res.redirect('/encaminhamentos/create');
+    }
+
     const telefonePacienteLimpo = telefonePaciente.replace(/\D/g, ''); 
 
-
+    // Cria o novo encaminhamento
     const novoEncaminhamento = await Encaminhamento.create({
       nomePaciente,
       matriculaPaciente,
@@ -205,6 +219,7 @@ exports.store = async (req, res) => {
       data: new Date(),
     });
 
+    // Notificação para o profissional recebido
     const profissionalRecebido = await Profissional.findByPk(profissionalIdRecebido);
     if (profissionalRecebido) {
       await Notificacao.create({
@@ -301,6 +316,46 @@ exports.update = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const {
+      nomePaciente,
+      matriculaPaciente,
+      numeroProcesso,
+      telefonePaciente,
+      nomeProfissional,
+      assuntoAcolhimento,
+      descricao,
+      profissionalIdEnvio,
+      profissionalIdRecebido,
+      atendimentoId,
+    } = req.body;
+
+    // Verifica se o número de processo já está associado a outro encaminhamento (exceto o próprio encaminhamento)
+    const numeroProcessoExistente = await Encaminhamento.findOne({
+      where: {
+        numeroProcesso,
+        id: { [Op.ne]: id }, // Exclui o encaminhamento atual da busca
+      },
+    });
+
+    if (numeroProcessoExistente) {
+      req.flash('error_msg', 'Este número de processo já está associado a outro encaminhamento.');
+      return res.redirect(`/encaminhamentos/${id}/edit`);
+    }
+
+    // Verifica se a matrícula do paciente já está associada a outro encaminhamento (exceto o próprio encaminhamento)
+    const matriculaPacienteExistente = await Encaminhamento.findOne({
+      where: {
+        matriculaPaciente,
+        id: { [Op.ne]: id }, // Exclui o encaminhamento atual da busca
+      },
+    });
+
+    if (matriculaPacienteExistente) {
+      req.flash('error_msg', 'Este paciente já possui um encaminhamento associado com esta matrícula.');
+      return res.redirect(`/encaminhamentos/${id}/edit`);
+    }
+
+    // Atualiza o encaminhamento
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
 
     if (!updated) {
@@ -316,6 +371,7 @@ exports.update = async (req, res) => {
     res.status(500).redirect('/encaminhamentos');
   }
 };
+
 
 exports.destroy = async (req, res) => {
   const { id } = req.params;

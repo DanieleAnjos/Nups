@@ -48,16 +48,16 @@
     <!-- Formulário de Busca -->
 <form action="/noticias" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
     <div class="row">
-        <!-- Campo de Título -->
-        <div class="col-md-5 mb-2">
-            <input type="text" name="titulo" class="form-control" placeholder="Buscar por título" value="{{search.titulo}}">
+        <!-- Campo de Autor -->
+        <div class="col-md-4 mb-2">
+            <input type="text" name="autor" class="form-control" placeholder="Buscar por autor" value="{{search.autor}}">
         </div>
         
         <!-- Campo de Data Início -->
-        <div class="col-md-5 mb-2">
-            <input type="date" name="dataHoraInicio" class="form-control" value="{{search.dataHoraInicio}}">
+        <div class="col-md-4 mb-2">
+            <input type="date" name="dataInicio" class="form-control" value="{{search.dataInicio}}">
         </div>
-        
+
         <!-- Botão de Filtrar -->
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">
@@ -66,6 +66,7 @@
         </div>
     </div>
 </form>
+
 
 
 
@@ -80,6 +81,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Data</th>
                     <th>Autor</th>
                     <th>Título</th>
                     <th>Ações</th>
@@ -89,6 +91,7 @@
                 {{#each noticias}}
                     <tr>
                         <td>{{this.id}}</td>  <!-- ID do evento -->
+                        <td>{{Data this.createdAt}}</td>
                         <td>{{this.autor}}</td>
                         <td>{{truncate2 this.titulo 50}}</td>
                         <td>
