@@ -16,5 +16,8 @@ router.delete('/:id', produtoController.destroy);
 
 router.get('/quantidade_atual', produtoController.listarProdutos);
 
+router.post('/', produtoController.ajustarEstoque);
+
+
 
 module.exports = router;

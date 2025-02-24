@@ -15,14 +15,14 @@ const ajusteEstoqueController = {
       const quantidadeConvertida = parseInt(quantidade, 10);
   
       if (!produtoId || !tipo || isNaN(quantidadeConvertida) || quantidadeConvertida <= 0) {
-        req.flash('error', 'Dados inválidos para ajuste.');
+        req.flash('error_msg', 'Dados inválidos para ajuste.');
         await t.rollback();
         return res.redirect('/ajustes/create');
       }
   
       const produto = await Produto.findByPk(produtoId, { transaction: t });
       if (!produto) {
-        req.flash('error', 'Produto não encontrado.');
+        req.flash('error_msg', 'Produto não encontrado.');
         await t.rollback();
         return res.redirect('/ajustes/create');
       }
@@ -31,12 +31,12 @@ const ajusteEstoqueController = {
       await produtoController.ajustarEstoque(produtoId, tipo, quantidadeConvertida, t);
       await t.commit();
   
-      req.flash('success', 'Ajuste realizado com sucesso!');
+      req.flash('success_msg', 'Ajuste realizado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
       await t.rollback();
       console.error('Erro ao realizar ajuste de estoque:', error);
-      req.flash('error', 'Erro ao realizar ajuste de estoque.');
+      req.flash('error_msg', 'Erro ao realizar ajuste de estoque.');
       res.redirect('/ajustes/create');
     }
   },
@@ -48,7 +48,7 @@ const ajusteEstoqueController = {
       res.render('ajustes/create', { produtos });
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
-      req.flash('error', 'Erro ao carregar produtos.');
+      req.flash('error_msg', 'Erro ao carregar produtos.');
       res.redirect('/ajustes/create');
     }
   },

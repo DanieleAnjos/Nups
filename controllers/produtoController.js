@@ -50,7 +50,7 @@ const produtoController = {
       });
     } catch (error) {
       console.error('Erro ao listar produtos:', error);
-      req.flash('error', 'Erro ao listar produtos.');
+      req.flash('error_msg', 'Erro ao listar produtos.');
       res.redirect('/produtos');
     }
   },
@@ -60,7 +60,7 @@ const produtoController = {
       res.render('produtos/create');
     } catch (error) {
       console.error('Erro ao carregar fornecedores:', error);
-      req.flash('error', 'Erro ao carregar fornecedores.');
+      req.flash('error_msg', 'Erro ao carregar fornecedores.');
       res.redirect('/produtos');
     }
   },
@@ -68,22 +68,32 @@ const produtoController = {
   store: async (req, res) => {
     const t = await sequelize.transaction();
     try {
+      const produtoExistente = await Produto.findOne({
+        where: { nome: req.body.nome },
+        transaction: t
+      });
+
+      if (produtoExistente) {
+        await t.rollback();
+        req.flash('error_msg', 'Já existe um produto com esse nome.');
+        return res.redirect('/produtos/create');
+      }
+
       // Cria o produto sem a quantidade_inicial
       const produto = await Produto.create(req.body, { transaction: t });
       
       // Se a quantidade_inicial for informada, ajusta o estoque, mas não adicione ela diretamente ao produto
       if (req.body.quantidade_inicial) {
-        // Ajusta o estoque com a quantidade inicial, sem adicionar ao produto diretamente
         await produtoController.ajustarEstoque(produto.id, 'entrada', req.body.quantidade_inicial, t);
       }
       
       await t.commit();
-      req.flash('success', 'Produto criado com sucesso!');
+      req.flash('success_msg', 'Produto criado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
       await t.rollback();
       console.error('Erro ao criar produto:', error);
-      req.flash('error', 'Erro ao criar produto.');
+      req.flash('error_msg', 'Erro ao criar produto.');
       res.redirect('/produtos/create');
     }
   },
@@ -96,12 +106,12 @@ const produtoController = {
       if (produto) {
         res.render('produtos/edit', { produto });
       } else {
-        req.flash('error', 'Produto não encontrado');
+        req.flash('error_msg', 'Produto não encontrado');
         res.redirect('/produtos');
       }
     } catch (error) {
       console.error('Erro ao carregar produto:', error);
-      req.flash('error', 'Erro ao carregar produto.');
+      req.flash('error_msg', 'Erro ao carregar produto.');
       res.redirect('/produtos');
     }
   },
@@ -109,11 +119,22 @@ const produtoController = {
   update: async (req, res) => {
     const t = await sequelize.transaction();
     try {
+      const produtoExistente = await Produto.findOne({
+        where: { nome: req.body.nome },
+        transaction: t
+      });
+
+      if (produtoExistente && produtoExistente.id !== parseInt(req.params.id)) {
+        await t.rollback();
+        req.flash('error_msg', 'Já existe um produto com esse nome.');
+        return res.redirect(`/produtos/${req.params.id}/edit`);
+      }
+
       const produto = await Produto.findByPk(req.params.id, { transaction: t });
   
       if (!produto) {
         await t.rollback();
-        req.flash('error', 'Produto não encontrado');
+        req.flash('error_msg', 'Produto não encontrado');
         return res.redirect('/produtos');
       }
   
@@ -124,27 +145,28 @@ const produtoController = {
       }
   
       await t.commit();
-      req.flash('success', 'Produto atualizado com sucesso!');
+      req.flash('success_msg', 'Produto atualizado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
       await t.rollback();
       console.error('Erro ao atualizar produto:', error);
-      req.flash('error', 'Erro ao atualizar produto.');
+      req.flash('error_msg', 'Erro ao atualizar produto.');
       res.redirect(`/produtos/${req.params.id}/edit`);
     }
   },
+
   
   destroy: async (req, res) => {
     const t = await sequelize.transaction();
     try {
       await Produto.destroy({ where: { id: req.params.id }, transaction: t });
       await t.commit();
-      req.flash('success', 'Produto deletado com sucesso!');
+      req.flash('success_msg', 'Produto deletado com sucesso!');
       res.redirect('/produtos');
     } catch (error) {
       await t.rollback();
       console.error('Erro ao deletar produto:', error);
-      req.flash('error', 'Erro ao deletar produto.');
+      req.flash('error_msg', 'Erro ao deletar produto.');
       res.redirect('/produtos');
     }
   },
@@ -160,6 +182,9 @@ const produtoController = {
     if (tipo === 'entrada') {
       produto.quantidade_inicial += quantidade; // Adiciona a quantidade no estoque
     } else if (tipo === 'saida') {
+      if (quantidade > produto.quantidade_inicial) {
+        throw new Error('Quantidade de saída não pode ser maior que a quantidade em estoque');
+      }
       produto.quantidade_inicial -= quantidade; // Subtrai a quantidade no estoque
     } else {
       throw new Error('Tipo de ajuste inválido');
@@ -167,7 +192,8 @@ const produtoController = {
   
     // Atualiza o produto no banco de dados
     await produto.save({ transaction });
-  },  
+  },
+  
 };
 
 module.exports = produtoController;

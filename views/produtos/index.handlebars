@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Produtos</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
 </head>
 <body>
     <div class="container mt-5">
@@ -91,3 +96,26 @@
     </div>
 </body>
 </html>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

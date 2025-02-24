@@ -8,6 +8,32 @@
                 <div class="card-body">
                     <form action="/produtos" method="POST" class="mt-4">
                         <!-- Campo Nome -->
+                                {{#if success_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: '{{success_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+
+    <!-- Mensagens de erro -->
+    {{#if error_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: '{{error_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
                         <div class="form-group mb-4">
                             <label for="nome" class="form-label">Nome:</label>
                             <input type="text" id="nome" name="nome" required minlength="3" maxlength="255" class="form-control shadow-sm">
@@ -125,3 +151,25 @@
         border-color: #6c757d;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

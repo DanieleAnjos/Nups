@@ -1,59 +1,96 @@
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-primary text-white text-center rounded-top">
-                    <h4 class="mb-2">Editar dados do produto</h4>
-                </div>
-                <div class="card-body">
-                    <form action="/produtos/{{produto.id}}?_method=PUT" method="POST" class="mt-4">
-                        <!-- Campo Nome -->
-                        <div class="form-group mb-4">
-                            <label for="nome" class="form-label">Nome:</label>
-                            <input type="text" id="nome" name="nome" value="{{produto.nome}}" required minlength="3" maxlength="255" class="form-control">
-                        </div>
+<div class="container py-5">
 
-                        <!-- Campo Quantidade -->
-                        <div class="form-group mb-3">
-                            <label for="quantidade_inicial" class="form-label">Quantidade:</label>
-                            <input type="number" id="quantidade_inicial" name="quantidade_inicial" value="{{produto.quantidade_inicial}}" required min="1" class="form-control shadow-sm">
-                        </div>
+            {{#if success_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: '{{success_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
 
-                        <!-- Campo Descrição -->
-                        <div class="form-group mb-3">
-                            <label for="descricao" class="form-label">Descrição:</label>
-                            <textarea id="descricao" name="descricao" required minlength="10" maxlength="500" class="form-control">{{produto.descricao}}</textarea>
-                        </div>
+    <!-- Mensagens de erro -->
+    {{#if error_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: '{{error_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+    
+  <form action="/produtos/{{produto.id}}?_method=PUT" method="POST" class="p-5 shadow rounded bg-white mx-auto" style="max-width: 550px;">
+    <!-- Título do Formulário -->
 
-                        <!-- Campo Categoria -->
-                        <div class="form-group mb-3">
-                            <label for="categoria" class="form-label">Categoria:</label>
-                            <select id="categoria" name="categoria" required class="form-select shadow-sm">
-                                <option value="" disabled>Selecione uma categoria</option>
-                                <option value="Papelaria" {{#if (eq produto.categoria 'Papelaria')}}selected{{/if}}>Papelaria</option>
-                                <option value="Higiene" {{#if (eq produto.categoria 'Higiene')}}selected{{/if}}>Higiene</option>
-                                <option value="Alimentos" {{#if (eq produto.categoria 'Alimentos')}}selected{{/if}}>Alimentos</option>
-                                <option value="Eletrônicos" {{#if (eq produto.categoria 'Eletrônicos')}}selected{{/if}}>Eletrônicos</option>
-                                <option value="Limpeza" {{#if (eq produto.categoria 'Limpeza')}}selected{{/if}}>Limpeza</option>
-                                <option value="Outros" {{#if (eq produto.categoria 'Outros')}}selected{{/if}}>Outros</option>
-                            </select>
-                        </div>
+    <h3 class="text-center mb-4 text-primary font-weight-bold">Editar Produto</h3>
 
-                        <!-- Campo Fornecimento -->
-                        <div class="form-group mb-4">
-                            <label for="fornecimento" class="form-label">Fornecimento:</label>
-                            <input type="text" id="fornecimento" name="fornecimento" value="{{produto.fornecimento}}" required class="form-control">
-                        </div>
-
-                        <!-- Botão de Submissão -->
-                        <div class="d-flex justify-content-end gap-3">
-                            <a href="/produtos" class="btn btn-outline-secondary px-4">Voltar</a>
-                            <button type="submit" class="btn btn-primary px-4">Salvar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-        </div>
+    <!-- Nome do Produto -->
+    <div class="mb-3">
+      <label for="nome" class="form-label text-dark fw-bold">Nome</label>
+      <input type="text" id="nome" name="nome" value="{{produto.nome}}" required minlength="3" maxlength="255" class="form-control">
     </div>
+
+    <!-- Descrição -->
+    <div class="mb-3">
+      <label for="descricao" class="form-label text-dark fw-bold">Descrição</label>
+      <textarea id="descricao" name="descricao" required minlength="5" maxlength="500" rows="3" class="form-control">{{produto.descricao}}</textarea>
+    </div>
+
+    <!-- Categoria -->
+    <div class="mb-3">
+      <label for="categoria" class="form-label text-dark fw-bold">Categoria</label>
+      <select id="categoria" name="categoria" required class="form-select">
+        <option value="" disabled>Selecione uma categoria</option>
+        <option value="Papelaria" {{#if (eq produto.categoria 'Papelaria')}}selected{{/if}}>Papelaria</option>
+        <option value="Higiene" {{#if (eq produto.categoria 'Higiene')}}selected{{/if}}>Higiene</option>
+        <option value="Alimentos" {{#if (eq produto.categoria 'Alimentos')}}selected{{/if}}>Alimentos</option>
+        <option value="Eletrônicos" {{#if (eq produto.categoria 'Eletrônicos')}}selected{{/if}}>Eletrônicos</option>
+        <option value="Limpeza" {{#if (eq produto.categoria 'Limpeza')}}selected{{/if}}>Limpeza</option>
+        <option value="Outros" {{#if (eq produto.categoria 'Outros')}}selected{{/if}}>Outros</option>
+      </select>
+    </div>
+
+    <!-- Fornecimento -->
+    <div class="mb-3">
+      <label for="fornecimento" class="form-label text-dark fw-bold">Fornecimento</label>
+      <input type="text" id="fornecimento" name="fornecimento" value="{{produto.fornecimento}}" required class="form-control">
+    </div>
+
+    <!-- Botões -->
+    <div class="d-flex justify-content-between mt-4">
+      <a href="/produtos" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Salvar Alterações</button>
+    </div>
+  </form>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>

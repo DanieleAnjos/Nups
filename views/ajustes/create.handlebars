@@ -1,94 +1,105 @@
-<div class="container">
+<div class="container py-5">
+  <form action="/ajustes" method="POST" class="p-5 shadow rounded bg-white mx-auto" style="max-width: 550px;">
+    <!-- Título do Formulário -->
+    <h3 class="text-center mb-4 text-primary font-weight-bold">Ajuste de Estoque</h3>
 
-<form action="/ajustes" method="POST" class="p-4 shadow-lg rounded-lg bg-light mx-auto" style="max-width: 500px;">
-  <!-- Título do Formulário -->
-  <h4 class="text-center mb-4 text-dark font-weight-bold">Ajuste de Estoque</h4>
+    <!-- Produto -->
+    <div class="mb-3">
+      <label for="produtoId" class="form-label text-dark fw-bold">Produto</label>
+      <select name="produtoId" class="form-select" required>
+        <option value="" disabled selected>Selecione um produto</option>
+        {{#each produtos}}
+          <option value="{{this.id}}">{{this.nome}}</option>
+        {{/each}}
+      </select>
+    </div>
 
-  <!-- Produto -->
-  <div class="form-group">
-    <label for="produtoId" class="font-weight-bold text-dark">Produto</label>
-    <select name="produtoId" class="form-control custom-select" required>
-      <option value="" disabled selected>Selecione um produto</option>
-      {{#each produtos}}
-        <option value="{{this.id}}">{{this.nome}}</option>
-      {{/each}}
-    </select>
-  </div>
+    <!-- Tipo de Ajuste -->
+    <div class="mb-3">
+      <label for="tipo" class="form-label text-dark fw-bold">Tipo de Ajuste</label>
+      <select name="tipo" class="form-select" required>
+        <option value="" disabled selected>Selecione o tipo de ajuste</option>
+        <option value="entrada">Entrada</option>
+        <option value="saida">Saída</option>
+      </select>
+    </div>
 
-  <!-- Tipo de Ajuste -->
-  <div class="form-group">
-    <label for="tipo" class="font-weight-bold text-dark">Tipo de Ajuste</label>
-    <select name="tipo" class="form-control custom-select" required>
-      <option value="" disabled selected>Selecione o tipo de ajuste</option>
-      <option value="entrada">Entrada</option>
-      <option value="saida">Saída</option>
-    </select>
-  </div>
-
-  <!-- Quantidade -->
-  <div class="form-group">
-    <label for="quantidade" class="font-weight-bold text-dark">Quantidade</label>
-    <div class="input-group">
-      <input type="number" name="quantidade" class="form-control" required min="1" placeholder="Digite a quantidade">
-      <div class="input-group-append">
-        <span class="input-group-text">unidades</span>
+    <!-- Quantidade -->
+    <div class="mb-3">
+      <label for="quantidade" class="form-label text-dark fw-bold">Quantidade</label>
+      <div class="input-group">
+        <input type="number" name="quantidade" class="form-control" required min="1" placeholder="Digite a quantidade">
+        <span class="input-group-text bg-primary text-white">unidades</span>
       </div>
     </div>
-  </div>
 
-  <!-- Campo de Data (oculto) -->
-  <input type="hidden" name="data" value="{{currentDate}}">
+    <!-- Campo de Data (oculto) -->
+    <input type="hidden" name="data" value="{{currentDate}}">
 
-  <!-- Botões -->
-  <div class="d-flex justify-content-between mt-3">
-    <a href="/produtos" class="btn btn-secondary py-2 rounded-pill">
-      <i class="fas fa-arrow-left"></i> Cancelar
-    </a>
-    <button type="submit" class="btn btn-primary py-2 rounded-pill">
-      <i class="fas fa-check-circle"></i> Realizar Ajuste
-    </button>
-  </div>
-</form>
+    <!-- Botões -->
+    <div class="d-flex justify-content-between mt-4">
+      <a href="/produtos" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+      <button type="submit" class="btn btn-primary rounded-pill px-4">Confirmar Ajuste</button>
+    </div>
+  </form>
 </div>
 
 <style>
   body {
-    background-color: #f8f9fa; /* Cor de fundo suave */
+    background-color: #f4f7fa;
+    font-family: 'Poppins', sans-serif;
   }
 
-
-
-  .form-control, .custom-select {
-    border-radius: 0.5rem; /* Bordas arredondadas */
+  .container {
+    max-width: 600px;
   }
 
-  .input-group-text {
-    background-color: #007bff; /* Cor de fundo do texto de unidades */
-    color: white; /* Cor do texto */
-    border-radius: 0 0.5rem 0.5rem 0; /* Bordas arredondadas */
+  .form-label {
+    font-size: 1rem;
   }
 
-  .btn {
-    width: 48%; /* Botões ocupam metade da largura */
+  .form-control, .form-select, .input-group-text {
+    border-radius: 0.75rem;
   }
 
   .btn-primary {
-    background-color: #007bff; /* Cor do botão de ajuste */
-    border-color: #007bff; /* Cor da borda */
+    background-color: #007bff;
+    border: none;
+    font-weight: bold;
   }
 
   .btn-primary:hover {
-    background-color: #0056b3; /* Cor do botão ao passar o mouse */
-    border-color: #0056b3; /* Cor da borda ao passar o mouse */
+    background-color: #0056b3;
   }
 
-  .btn-secondary {
-    background-color: #6c757d; /* Cor do botão de cancelar */
-    border-color: #6c757d; /* Cor da borda */
+  .btn-outline-secondary {
+    font-weight: bold;
   }
 
-  .btn-secondary:hover {
-    background-color: #5a6268; /* Cor do botão de cancelar ao passar o mouse */
-    border-color: #545b62; /* Cor da borda ao passar o mouse */
+  .shadow {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
 </style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {{#if error_msg}}
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: '{{error_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+        
+        {{#if success_msg}}
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: '{{success_msg}}',
+                confirmButtonText: 'Ok'
+            });
+        {{/if}}
+    });
+</script>
