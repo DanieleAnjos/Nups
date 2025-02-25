@@ -291,6 +291,11 @@ app.get('/auth/login',function(req, res)  {
   res.render('auth/login');
 });
 
+app.get('/Atividades',function(req, res)  {
+  res.render('Atividades');
+});
+
+
 
 const eventoController = require('./controllers/eventoController');
 const noticiaController = require('./controllers/noticiaController');
