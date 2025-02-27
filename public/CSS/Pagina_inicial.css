@@ -52,6 +52,17 @@ body {
     font-size: clamp(1rem, 2vw, 1.2rem);
     width: 90%;
     max-width: 550px;
+    text-align: center;
+}
+
+.description-at {
+    font-size: 1.2rem;
+    color: #34495e;
+    text-align: justify;
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-bottom: 1rem;
+
 }
 
 /* Estilo dos Botões */
@@ -137,7 +148,7 @@ body {
     align-items: center;
     gap: 3rem;
     padding: 4rem 5%;
-    margin: 4rem 0;
+    margin: 2rem 0;
 }
 
 .imagem-quemsomos {
@@ -155,7 +166,7 @@ body {
 .texto-quemsomos {
     flex: 1 1 55%;
     min-width: 300px;
-    padding: 1rem;
+    padding: 2rem;
 }
 
 .titulo-missao {

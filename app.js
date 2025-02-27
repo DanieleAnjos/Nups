@@ -292,9 +292,16 @@ app.get('/auth/login',function(req, res)  {
 });
 
 app.get('/Atividades',function(req, res)  {
-  res.render('Atividades');
+  res.render('Atividades', {
+    layout: 'public/public-layout'
+      });
 });
 
+app.get('/Quadro-Modalidades',function(req, res)  {
+  res.render('Quadro-Modalidades', {
+    layout: 'public/public-layout'
+      });
+});
 
 
 const eventoController = require('./controllers/eventoController');
