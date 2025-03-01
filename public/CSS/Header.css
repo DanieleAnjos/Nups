@@ -40,6 +40,24 @@ body {
     height: auto;
 }
 
+
+
+.social-icons {
+    display: flex;
+    gap: 1.2rem;
+}
+
+.social-icons a {
+    text-decoration: none;
+    font-size: 1.3rem;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #297FB8;
+}
+
 .nav-links {
     list-style: none;
     display: flex;
@@ -113,6 +131,15 @@ body {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+@media (min-width: 768px) {
+    .hamburger {
+        display: none;
+        color: #297FB8;
+        font-size: 24px;
+        cursor: pointer;
+    }
 }
 
 /* Estilo para telas menores */

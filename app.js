@@ -129,7 +129,7 @@ const hbs = engine({
   },
   Data: (date) => {
     if (!date) return '';
-    return moment(date).format('DD-MM-YYYY');
+    return moment(date).format('DD/MM/YYYY');
 },
       formatHour: (date) => {
           if (!date) return '';

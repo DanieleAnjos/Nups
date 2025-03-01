@@ -111,6 +111,7 @@ router.get('/', async (req, res) => {
     console.log('Atendimentos Data:', atendimentosData);
     console.log('Status Labels:', statusLabels);
     console.log('Profissionais Labels:', profissionaisLabels);
+    console.log('Profissionais Data:', profissionaisData);
 
 
     res.render('graficos/index', {

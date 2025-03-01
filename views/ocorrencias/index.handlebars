@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Ocorrências</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="/CSS/Principal.css">
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 </head>
@@ -62,9 +64,10 @@
                                             <a href="/ocorrencias/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
                                                 <i class="bi bi-pencil-square"></i> Editar
                                             </a>
-                                            <a href="/ocorrencias/{{this.id}}" class="btn btn-warning btn-sm mx-1">
-                                                <i class="bi bi-pencil-square"></i> Detalhes
+                                            <a href="/ocorrencias/{{this.id}}" class="btn btn-info btn-sm mx-1">
+                                                <i class="bi bi-eye"></i> Detalhes
                                             </a>
+
                                             <form action="/ocorrencias/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                                 <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                                 <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta ocorrência?');">
@@ -85,81 +88,7 @@
 </body>
 </html>
 
-  <style>
-
-        * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Estilos gerais */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f6f9;
-    color: #333;
-    line-height: 1.6;
-}
-
-.container {
-    width: 80%;
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-        h2 {
-            color: #0056b3;
-            margin-top: 20px;
-            margin-bottom: 40px;
-        }
-        .table {
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        th {
-            background-color: #e9ecef;
-            color: #333;
-        }
-        tr:hover {
-            background-color: #f1f4f9;
-        }
-.table th {
-    background-color: #e9ecef;
-    color: #333;
-}
-.btn-primary {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-.btn-primary:hover {
-    background-color: #004494;
-}
-
-.btn-success {
-    border-radius: 30px;
-    padding: 10px 20px;
-    font-weight: bold;
-}
-.btn-success i {
-    margin-right: 8px;
-}
-
-
-.table-responsive {
-    overflow-x: auto;
-}
-.table-hover tbody tr:hover {
-    background-color: #f1f4f9;
-}
-
-
-    </style>
-
+ 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         {{#if error_msg}}
