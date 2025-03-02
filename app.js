@@ -13,6 +13,22 @@ const Profissional = require('./models/Profissional');
 const Evento = require ( './models/Evento');
 const sequelize = require('./config/database');  
 
+// Adicionando morgan e winston para logging
+const morgan = require('morgan');
+const { createLogger, transports, format } = require('winston');
+
+// Configuração do Winston para logs personalizados
+const logger = createLogger({
+  format: format.combine(
+    format.timestamp(), // Adiciona timestamp
+    format.json() // Formata os logs como JSON
+  ),
+  transports: [
+    new transports.File({ filename: 'error.log', level: 'error' }), // Logs de erros
+    new transports.File({ filename: 'combined.log' }), // Logs gerais
+    new transports.Console(), // Exibe logs no console
+  ],
+});
 
 const authRoutes = require('./routes/authRoutes');
 const pacienteRoutes = require('./routes/pacienteRoutes');
@@ -45,7 +61,7 @@ const Usuario = require('./models/Usuario');
 const { partials } = require('handlebars');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { format } = require('date-fns');
+const { format: dateFnsFormat } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { checkProfissional } = require('./utils');
@@ -55,7 +71,6 @@ const { Server } = require('socket.io');
 const io = new Server(server);
 const handlebars = require('handlebars');
 const moment = require('moment'); 
-
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
@@ -72,130 +87,127 @@ const hbs = engine({
       path.join(__dirname, 'views', 'partials', 'public')
   ],
   helpers: {
-
     eq: (a, b) => a === b,
-      or: (a, b) => a || b,
-      ifCond: function (v1, v2, options) {
-          return v1 === v2 ? options.fn(this) : options.inverse(this);
-      },
-      ifEquals: function (arg1, arg2, options) {
-          return arg1 === arg2 ? options.fn(this) : options.inverse(this);
-      },
-      formatDate: (date) => {
-          if (!date) return '';
-          const d = new Date(date);
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          return `${day}/${month}/${year}`;
-      },
-      OneDate: (date) => {
-          if (!date) return '';
-          const d = new Date(date);
-          d.setDate(d.getDate() + 1); 
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          return `${day}/${month}/${year}`;
-      },
-      formatDateTime: (date) => {
-          if (!date) return '';
-          const d = new Date(date);
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          const hours = String(d.getHours()).padStart(2, '0');
-          const minutes = String(d.getMinutes()).padStart(2, '0');
-          return `${day}/${month}/${year} ${hours}:${minutes}`;
-      },
-      formatTime: (date) => {
-          if (!date) return '';
-          const d = new Date(date);
-          const hours = String(d.getHours()).padStart(2, '0');
-          const minutes = String(d.getMinutes()).padStart(2, '0');
-          return ` ${hours}:${minutes}`;
-      },
-      formatDateWithFns: (date) => {
-          if (!date) return '';
-          return format(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
-      },
-      formatDateWith: (date) => {
+    or: (a, b) => a || b,
+    ifCond: function (v1, v2, options) {
+        return v1 === v2 ? options.fn(this) : options.inverse(this);
+    },
+    ifEquals: function (arg1, arg2, options) {
+        return arg1 === arg2 ? options.fn(this) : options.inverse(this);
+    },
+    formatDate: (date) => {
         if (!date) return '';
-        return moment(date).format('YYYY-MM-DDTHH:mm');
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${day}/${month}/${year}`;
+    },
+    OneDate: (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        d.setDate(d.getDate() + 1); 
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${day}/${month}/${year}`;
+    },
+    formatDateTime: (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+    formatTime: (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return ` ${hours}:${minutes}`;
+    },
+    formatDateWithFns: (date) => {
+        if (!date) return '';
+        return dateFnsFormat(new Date(date), "dd/MM/yyyy HH:mm", { locale: ptBR });
+    },
+    formatDateWith: (date) => {
+      if (!date) return '';
+      return moment(date).format('YYYY-MM-DDTHH:mm');
     },
     formatData: (date) => {
       if (!date) return '';
       return moment(date).format('YYYY-MM-DD');
-  },
-  Data: (date) => {
-    if (!date) return '';
-    return moment(date).format('DD/MM/YYYY');
-},
-      formatHour: (date) => {
-          if (!date) return '';
-          return format(new Date(date), "HH:mm", { locale: ptBR });
-      },
-      isActive: function (currentPath, expectedPath) {
-          return currentPath === expectedPath ? 'active' : '';
-      },
-      json: function (context) {
-          return JSON.stringify(context);
-      },
-      formatDateToInput: function (isoDate) {
-          if (!isoDate) return '';
-          const date = new Date(isoDate);
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const day = String(date.getDate()).padStart(2, '0');
-          return `${year}-${month}-${day}`;
-      },
-      formatCPF: (cpf) => {
-          if (!cpf) return "";
-          return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
-      },
-      formatTelefone: (telefone) => {
-          if (!telefone) return "";
-          return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
-      },
-      formatTelefoneContato: (telefoneContato) => {
-          if (!telefoneContato) return "";
-          return telefoneContato.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-      },
-      formatCEP: (cep) => {
-          if (!cep) return "";
-          return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
-      },
-      formatRg: (rg) => {
-          if (!rg) return "";
-          return rg.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
-      },
-      gt: function (a, b) {
-          return a > b;
-      },
-      truncate2: function (text, length) {
-        if (text.length <= length) {
-          return text;
-        }
-        return text.substring(0, length) + '...';
-        },
-
-      // Novos helpers
-      toLowerCase: (str) => str ? str.toLowerCase() : '',
-      toUpperCase: (str) => str ? str.toUpperCase() : '',
-      and: (a, b) => a && b,
-      not: (a) => !a,
-      includes: (array, value) => array && array.includes(value),
-      subtract: (a, b) => a - b,
-      add: (a, b) => a + b,
-      multiply: (a, b) => a * b,
-      divide: (a, b) => a / b,
-      truncate: (str, length) => {
-          if (!str) return '';
-          return str.length > length ? str.substring(0, length) + '...' : str;
-      },
-      isEven: (num) => num % 2 === 0,
-      isOdd: (num) => num % 2 !== 0,
-      default: (value, defaultValue) => value || defaultValue,
+    },
+    Data: (date) => {
+      if (!date) return '';
+      return moment(date).format('DD/MM/YYYY');
+    },
+    formatHour: (date) => {
+        if (!date) return '';
+        return dateFnsFormat(new Date(date), "HH:mm", { locale: ptBR });
+    },
+    isActive: function (currentPath, expectedPath) {
+        return currentPath === expectedPath ? 'active' : '';
+    },
+    json: function (context) {
+        return JSON.stringify(context);
+    },
+    formatDateToInput: function (isoDate) {
+        if (!isoDate) return '';
+        const date = new Date(isoDate);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    },
+    formatCPF: (cpf) => {
+        if (!cpf) return "";
+        return cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+    },
+    formatTelefone: (telefone) => {
+        if (!telefone) return "";
+        return telefone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    },
+    formatTelefoneContato: (telefoneContato) => {
+        if (!telefoneContato) return "";
+        return telefoneContato.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+    },
+    formatCEP: (cep) => {
+        if (!cep) return "";
+        return cep.replace(/^(\d{5})(\d{3})$/, "$1-$2");
+    },
+    formatRg: (rg) => {
+        if (!rg) return "";
+        return rg.replace(/^(\d{2})(\d{3})(\d{3})(\d{1})$/, "$1.$2.$3-$4");
+    },
+    gt: function (a, b) {
+        return a > b;
+    },
+    truncate2: function (text, length) {
+      if (text.length <= length) {
+        return text;
+      }
+      return text.substring(0, length) + '...';
+    },
+    toLowerCase: (str) => str ? str.toLowerCase() : '',
+    toUpperCase: (str) => str ? str.toUpperCase() : '',
+    and: (a, b) => a && b,
+    not: (a) => !a,
+    includes: (array, value) => array && array.includes(value),
+    subtract: (a, b) => a - b,
+    add: (a, b) => a + b,
+    multiply: (a, b) => a * b,
+    divide: (a, b) => a / b,
+    truncate: (str, length) => {
+        if (!str) return '';
+        return str.length > length ? str.substring(0, length) + '...' : str;
+    },
+    isEven: (num) => num % 2 === 0,
+    isOdd: (num) => num % 2 !== 0,
+    default: (value, defaultValue) => value || defaultValue,
   },
   runtimeOptions: {
       allowProtoPropertiesByDefault: true,
@@ -204,7 +216,6 @@ const hbs = engine({
 });
 
 app.use(methodOverride('_method')); 
-
 
 app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
@@ -225,7 +236,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.set('trust proxy', 1);
 
-
+// Adicionando morgan para logging de requisições HTTP
+app.use(morgan('combined'));
 
 var corsOptions = {
     origin: function (origin, callback) {
@@ -242,26 +254,25 @@ var corsOptions = {
       }
     },
     optionsSuccessStatus: 200 
-  };
-  
+};
 
 app.use(cors(corsOptions));
-
 app.use(flash());
 
 app.use(session({
-    secret: 'secret_key',
-    resave: false,
-    //store: sessionStore, // Add this line
-    saveUninitialized: false, 
-    cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' }
+  secret: process.env.SESSION_SECRET, // Chave secreta da sessão
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+  },
 }));
 
-
-
-
 sessionStore.sync();
-
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -286,7 +297,6 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
-
 app.get('/auth/login',function(req, res)  {
   res.render('auth/login');
 });
@@ -294,15 +304,14 @@ app.get('/auth/login',function(req, res)  {
 app.get('/Atividades',function(req, res)  {
   res.render('Atividades', {
     layout: 'public/public-layout'
-      });
+  });
 });
 
 app.get('/Quadro-Modalidades',function(req, res)  {
   res.render('Quadro-Modalidades', {
     layout: 'public/public-layout'
-      });
+  });
 });
-
 
 const eventoController = require('./controllers/eventoController');
 const noticiaController = require('./controllers/noticiaController');
@@ -312,7 +321,6 @@ const Noticias = require('./models/Noticias');
 
 app.use('/Evento-detalhes/:id', eventoController.visualizar);
 app.use('/Noticia-detalhes/:id', noticiaController.visualizar);
-
 
 app.get('/eventos/busca', async (req, res) => {
   try {
@@ -328,7 +336,7 @@ app.get('/eventos/busca', async (req, res) => {
     res.json(eventosComImagem); 
 
   } catch (error) {
-    console.error(error);
+    logger.error('Erro ao buscar eventos:', error); // Logando o erro
     res.status(500).json({ error: 'Erro ao buscar eventos' });
   }
 });
@@ -347,29 +355,23 @@ app.get('/noticias/busca', async (req, res) => {
     res.json(noticiasComImagem);
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar eventos' });
+    logger.error('Erro ao buscar notícias:', error); // Logando o erro
+    res.status(500).json({ error: 'Erro ao buscar notícias' });
   }
 });
 
-
 app.use('/Nups-Eventos', eventoController.visualizarEvento);
 app.use('/Nups-Noticias', noticiaController.visualizarNoticia);
-
-
 
 app.get('/Quem_Somos',function(req, res)  {
     res.render('Quem_Somos', {layout: 'public/public-layout'});
 });
 
 app.get('/', function(req, res) {
-    
     res.render('Pagina_Inicial', {
         layout: 'public/public-layout'
-          });
+    });
 });
-
-
 
 const accessControl = {
     'Administrador': [
@@ -399,7 +401,6 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos',
       '/fluxoAtendimentos'
-
     ],
     'Assistente social': [
       '/dashboard/assistente-social',
@@ -415,10 +416,6 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
-
-
-
-
     ],
     'Psicólogo': [
       '/dashboard/psico',
@@ -432,10 +429,6 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
-
-
-
-
     ],
     'Psiquiatra': [
       '/dashboard/psico',
@@ -449,14 +442,10 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
-
-
-
-
     ]
-  };
-  
-  app.use(async (req, res, next) => {
+};
+
+app.use(async (req, res, next) => {
     const publicRoutes = ['/auth/login','/auth/resert-password','/contato', '/auth/forgotPassword','/auth/reset', '/auth/forgot',
        '/auth/resetPassword', '/css/', '/favicon.ico', 'eventos/Eventos-detalhes', '/Pagina_Inicial'];
   
@@ -474,12 +463,12 @@ const accessControl = {
         if (permittedRoutes && permittedRoutes.some(route => req.originalUrl.startsWith(route))) {
           return next();
         } else {
-          console.log('Acesso negado: Você não tem permissão para acessar esta página');
+          logger.warn(`Acesso negado: ${req.user.email} tentou acessar ${req.originalUrl}`); // Logando tentativa de acesso negado
           req.flash('error_msg', 'Você não tem permissão para acessar esta página.');
           return res.redirect('/auth/login');
         }
       } catch (err) {
-        console.error('Erro ao verificar o profissional:', err);
+        logger.error('Erro ao verificar o profissional:', err); // Logando o erro
         req.flash('error_msg', 'Erro ao verificar as permissões do profissional.');
         return res.redirect('/');
       }
@@ -487,9 +476,7 @@ const accessControl = {
   
     req.flash('error_msg', 'Você precisa estar logado para acessar essa página.');
     res.redirect('/auth/login');
-  });
-  
-
+});
 
 app.use('/pacientes', pacienteRoutes);
 app.use('/escalas', escalaRoutes);
@@ -515,8 +502,6 @@ app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
 app.use('/avisos', avisoRoutes);
 
-
-
 app.use((req, res) => {
     res.status(404).render('404'); 
 });
@@ -534,22 +519,18 @@ app.use(
   })
 );
 
-
+// Middleware de tratamento de erros (DEVE SER O ÚLTIMO)
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    logger.error(err.stack); // Logando o erro
     res.status(500).send(process.env.NODE_ENV === 'production' ? 'Algo deu errado!' : err.stack);
 });
 
-
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta http://localhost:${PORT}`);
+    logger.info(`Servidor rodando na porta http://localhost:${PORT}`); // Logando a inicialização do servidor
 });
 
-sequelize.sync({ alter: true });
+sequelize.sync({ alter: true })
+  .then(() => logger.info('Tabelas sincronizadas ou alteradas'))
+  .catch(err => logger.error('Erro ao sincronizar tabelas:', err));
 
-
-sequelize.sync()
-  .then(() => console.log('Tabelas sincronizadas ou alteradas'))
-  .catch(err => console.error('Erro ao sincronizar tabelas:', err));
-
-  module.exports = app;
+module.exports = app;
