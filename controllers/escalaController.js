@@ -30,14 +30,15 @@ const escalaController = {
       });
   
       const cargoAdministrador = 'Administrador';
-  
-      // Se o profissional for administrador, ele pode ver todas as escalas
-      const whereProfissional = profissionalLogado.cargo === cargoAdministrador
+      const cargoAdm = 'Adm';
+      
+      // Se o profissional for administrador ou 'Adm', ele pode ver todas as escalas
+      const whereProfissional = [cargoAdministrador, cargoAdm].includes(profissionalLogado.cargo)
         ? {}  // Nenhum filtro específico (vê todas as escalas)
         : { 
             [Op.or]: [
               { id: req.user.profissionalId }, // Escala do próprio profissional
-              { cargo: cargoAdministrador } // Escala dos administradores
+              { cargo: cargoAdm } // Escala dos administradores
             ]
         };
   

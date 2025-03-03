@@ -42,7 +42,7 @@ exports.index = async (req, res) => {
     }
 
     // Se não for Administrador, filtrar pelo cargo do profissional logado
-    if (userCargo !== 'administrador') {
+    if (userCargo !== 'administrador' && userCargo !== 'adm') {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }

@@ -1,162 +1,194 @@
 <div class="container text-center mt-5 dashboard">
-  <h1 class="mb-4">Bem-vindo ao Dashboard da Psicólogia </h1>
+  <h1 class="mb-4">Bem-vindo ao Dashboard Administrativo</h1>
   <div class="dashboard-grid">
+    <!-- Gestão de Pessoas -->
+    <a href="/profissionais" class="dashboard-card" aria-label="Gerenciar Profissionais">
+      <i class="fas fa-user-md"></i>
+      <span>Profissionais</span>
+    </a>
     <a href="/pacientes" class="dashboard-card" aria-label="Gerenciar Pacientes">
       <i class="fas fa-users"></i>
-      <span>Pacientes</span>
+      <span>Servidores</span>
     </a>
+
+    <!-- Atendimento e Serviços -->
     <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
       <i class="fas fa-calendar-check"></i>
       <span>Atendimentos</span>
     </a>
     <a href="/encaminhamentos" class="dashboard-card" aria-label="Gerenciar Encaminhamentos">
-      <i class="fas fa-calendar-check"></i>
+      <i class="fas fa-clipboard-list"></i>
       <span>Encaminhamentos</span>
+    </a>
+    <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>Ocorrências</span>
+    </a>
+
+    <!-- Infraestrutura -->
+    <a href="/salas" class="dashboard-card" aria-label="Cadastro de Salas">
+      <i class="fas fa-building"></i>
+      <span>Cadastro de Salas</span>
+    </a>
+    <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
+      <i class="fas fa-door-open"></i>
+      <span>Reservas</span>
     </a>
     <a href="/escalas" class="dashboard-card" aria-label="Gerenciar Escalas">
       <i class="fas fa-calendar-alt"></i>
       <span>Escalas</span>
     </a>
-    <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
-      <i class="fas fa-door-open"></i>
-      <span>Reserva de sala</span>
+
+    <!-- Comunicação -->
+    <a href="/eventos" class="dashboard-card" aria-label="Gerenciar Eventos">
+      <i class="fas fa-calendar-plus"></i>
+      <span>Novo Evento</span>
+    </a>
+    <a href="/noticias" class="dashboard-card" aria-label="Gerenciar Notícias">
+      <i class="fas fa-newspaper"></i>
+      <span>Notícias</span>
+    </a>
+    <a href="/avisos" class="dashboard-card" aria-label="Gerenciar Avisos">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos</span>
+    </a>
+    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos do Dia">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos do Dia</span>
+      <span id="aviso-count" class="notification-badge" style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
+        {{avisosDoDia}}
+      </span>
     </a>
     <a href="/mensagens" class="dashboard-card" aria-label="Gerenciar Mensagens">
       <i class="fas fa-envelope"></i>
       <span>Mensagens</span>
-      <span id="message-count" class="notification-badge"
-            style="{{#if mensagensNaoLidas}}display: inline;{{else}}display: none;{{/if}}">
+      <span id="message-count" class="notification-badge" style="display: {{#if mensagensNaoLidas}}inline{{else}}none{{/if}};">
         {{mensagensNaoLidas}}
       </span>
     </a>
     <a href="/notificacoes" class="dashboard-card" aria-label="Gerenciar Notificações">
       <i class="fas fa-bell"></i>
       <span>Notificações</span>
-      <span id="notificacao-count" class="notification-badge"
-            style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
+      <span id="notificacao-count" class="notification-badge" style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
         {{notificacoesNaoLidas}}
       </span>
     </a>
-    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>Avisos do Dia</span>
-      <span id="aviso-count" class="notification-badge"
-            style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
-          {{avisosDoDia}}
-      </span>
+
+    <!-- Relatórios e Estatísticas -->
+    <a href="/relatorios" class="dashboard-card" aria-label="Gerenciar Relatórios">
+      <i class="fas fa-chart-bar"></i>
+      <span>Relatórios</span>
     </a>
-    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
+    <a href="/graficos" class="dashboard-card" aria-label="Visualizar Gráficos">
+      <i class="fas fa-chart-bar"></i>
+      <span>Gráficos</span>
+    </a>
+
+    <!-- Outros -->
+    <a href="/produtos" class="dashboard-card" aria-label="Gerenciar Produtos">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Produtos</span>
+    </a>
+    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Meu Perfil">
       <i class="fas fa-user-circle"></i>
       <span>Perfil</span>
     </a>
-      <a href="/graficos" class="dashboard-card" aria-label="Visualizar gráficos">
-    <i class="fas fa-chart-bar"></i> <!-- Ícone de gráficos em vez de perfil -->
-    <span>Gráficos</span>
-  </a>
-
   </div>
 </div>
 
+
 <style>
   /* Estilo para o container do dashboard */
-  .dashboard {
-    max-width: 900px;
-    margin: auto;
-  }
+.dashboard {
+  max-width: 1000px;
+  margin: auto;
+}
 
-  h1{
-  color:#297FB8;
+/* Grid para organizar os cards */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+/* Estilo dos cards */
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #072C47;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+  position: relative;
+}
+
+h1 {
+  color: #297FB8;
   padding-bottom: 15px;
 }
 
-  /* Grid para organizar os cards */
+/* Estilo do contador de notificações */
+.notification-badge {
+  background-color: orange;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  padding: 0.1em 0.6em;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: none; /* Inicialmente escondido */
+}
+
+/* Efeito hover para os cards */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #297FB8;
+  color: #ffffff;
+}
+
+/* Ícone maior para melhor visibilidade */
+.dashboard-card i {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+/* Texto do card */
+.dashboard-card span {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Card ativo */
+.dashboard-card.active {
+  background-color: #0056b3;
+  color: #ffffff;
+}
+
+/* Estilo responsivo */
+@media (max-width: 576px) {
   .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
   }
-
-  /* Estilo dos cards */
   .dashboard-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #072C47;
-    text-decoration: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative; /* Necessário para o badge se posicionar */
-    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    padding: 15px;
   }
-
-  /* Estilo do badge de notificação */
-  .notification-badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: orange;
-    color: white;
-    font-size: 0.75rem;
-    width: 30px;
-    height: px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    padding: 2px;
-  }
-
-  /* Exibição condicional do badge */
-  #message-count {
-    display: none;
-  }
-
-  /* Exibe o badge quando a condição de estilo inline for aplicada */
-  .dashboard-card .notification-badge[style*="display: inline;"] {
-    display: inline-flex;
-  }
-
-  /* Efeito hover para os cards */
-  .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    background-color: #297FB8;
-    color: #ffffff;
-  }
-
-  /* Ícone maior para melhor visibilidade */
   .dashboard-card i {
-    font-size: 2rem;
-    margin-bottom: 10px;
+    font-size: 1.8rem;
   }
-
-  /* Texto do card */
   .dashboard-card span {
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1rem;
   }
+}
 
-  /* Estilo responsivo */
-  @media (max-width: 576px) {
-    .dashboard-grid {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 15px;
-    }
-    .dashboard-card {
-      padding: 15px;
-    }
-    .dashboard-card i {
-      font-size: 1.5rem;
-    }
-    .dashboard-card span {
-      font-size: 1rem;
-    }
-  }
 </style>
-
 
 <script>
 
@@ -227,7 +259,6 @@ async function atualizarContadorNotificacoes() {
     }
 }
 
-
   async function atualizarContadorAvisos() {
     try {
       const response = await fetch('/avisos/dia', { 
@@ -260,5 +291,4 @@ async function atualizarContadorNotificacoes() {
 
   // Chama a função para atualizar o contador ao carregar a página
   atualizarContadorAvisos();
-
 </script>

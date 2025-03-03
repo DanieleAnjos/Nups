@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -60,7 +60,6 @@ const helmet = require('helmet');
 const Usuario = require('./models/Usuario'); 
 const { partials } = require('handlebars');
 const app = express();
-const PORT = process.env.PORT || 3000;
 const { format: dateFnsFormat } = require('date-fns');
 const { ptBR } = require('date-fns/locale');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -265,10 +264,10 @@ app.use(session({
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' && process.env.FORCE_HTTPS !== 'false',
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas
   },
 }));
 
@@ -402,6 +401,31 @@ const accessControl = {
       '/avisos',
       '/fluxoAtendimentos'
     ],
+    'Adm': [
+      '/dashboard/adm2',
+      '/pacientes',
+      '/escalas',
+      '/atendimentos',
+      '/ocorrencias',
+      '/salas',
+      '/reservas',
+      '/eventos',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque',
+      '/produtos',
+      '/mensagens',
+      '/notificacoes',
+      '/profissionais',
+      '/graficos',
+      '/discussoes',
+      '/usuarios',
+      '/Eventos-detalhes',
+      '/noticias',
+      '/auth/changePassword',
+      '/avisos',
+      '/fluxoAtendimentos'
+    ],
     'Assistente social': [
       '/dashboard/assistente-social',
       '/pacientes',
@@ -416,6 +440,9 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
+      '/reservas',
+      '/graficos'
+
     ],
     'Psicólogo': [
       '/dashboard/psico',
@@ -429,6 +456,10 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
+      '/reservas',
+      '/graficos'
+
+
     ],
     'Psiquiatra': [
       '/dashboard/psico',
@@ -442,6 +473,10 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
+      '/reservas',
+      '/graficos'
+
+
     ]
 };
 
@@ -525,8 +560,16 @@ app.use((err, req, res, next) => {
     res.status(500).send(process.env.NODE_ENV === 'production' ? 'Algo deu errado!' : err.stack);
 });
 
+console.log('Arquivo .env carregado:', `.env.${process.env.NODE_ENV}`);
+console.log('Ambiente:', process.env.NODE_ENV);
+console.log('Banco de Dados:', process.env.DB_HOST);
+console.log('Chave de Sessão:', process.env.SESSION_SECRET);
+
+
+const PORT = process.env.PORT || 3000; // Usa a porta definida no .env ou 3000 como padrão
+
 app.listen(PORT, () => {
-    logger.info(`Servidor rodando na porta http://localhost:${PORT}`); // Logando a inicialização do servidor
+  console.log(`Servidor rodando na porta ${PORT} (${process.env.NODE_ENV})`);
 });
 
 sequelize.sync({ alter: true })

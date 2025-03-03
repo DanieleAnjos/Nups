@@ -1,7 +1,34 @@
+# .gitignore
+
 node_modules/
 .vercel
 
-
+/node_modules
 
 .nx/cache
 .nx/workspace-data
+
+
+
+# Arquivos de ambiente
+.env
+.env.production
+
+# Dependências
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Arquivos de IDE
+.idea/
+.vscode/
+
+# Outros
+dist/
+build/
+
+.dump.sql
+.exportar_dados.sql
+.importar_dados.sql

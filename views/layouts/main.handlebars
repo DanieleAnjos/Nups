@@ -47,25 +47,50 @@
           <li><a href="/dashboard/adm" class="{{isActive '/dashboard/adm'}}"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
           <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Servidores</span></a></li>
           <li><a href="/profissionais" class="{{isActive '/profissionais'}}"><i class="fas fa-user-md icon"></i> <span>Profissionais</span></a></li>
+          <li><a href="/atendimentos" class="{{isActive '/atendimentos'}}"><i class="fas fa-user-md icon"></i><span>Atendimentos</span></a></li>
+          <li><a href="/reservas" class="{{isActive '/reservas'}}"><i class="fas fa-door-open icon"></i> <span>Reserva de salas</span></a></li>
+          <li><a href="/relatorios" class="{{isActive '/relatorios'}}"><i class="fas fa-chart-bar icon"></i> <span>Relatórios</span></a></li>
+        {{/ifEquals}}
+
+        {{#ifEquals cargo "Adm"}}
+          <li><a href="/dashboard/adm2" class="{{isActive '/dashboard/adm'}}"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
+          <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Servidores</span></a></li>
+          <li><a href="/profissionais" class="{{isActive '/profissionais'}}"><i class="fas fa-user-md icon"></i> <span>Profissionais</span></a></li>
+          <li><a href="/atendimentos" class="{{isActive '/atendimentos'}}"><i class="fas fa-user-md icon"></i><span>Atendimentos</span></a></li>
           <li><a href="/reservas" class="{{isActive '/reservas'}}"><i class="fas fa-door-open icon"></i> <span>Reserva de salas</span></a></li>
           <li><a href="/relatorios" class="{{isActive '/relatorios'}}"><i class="fas fa-chart-bar icon"></i> <span>Relatórios</span></a></li>
         {{/ifEquals}}
 
         {{#ifEquals cargo "Assistente social"}}
           <li><a href="/dashboard/assistente-social" class="{{isActive '/dashboard/assistente-social'}}"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
-          <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Ficha de Acolhimento</span></a></li>
+          <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Servidores</span></a></li>
+          <li><a href="/atendimentos" class="{{isActive '/atendimentos'}}"><i class="fas fa-user-md icon"></i><span>Atendimentos</span></a></li>
           <li><a href="/escalas" class="{{isActive '/escalas'}}"><i class="fas fa-calendar-alt icon"></i> <span>Escalas</span></a></li>
           <li><a href="/mensagens" class="{{isActive '/mensagens'}}"><i class="fas fa-comments icon"></i> <span>Mensagens</span></a></li>
-        {{/ifEquals}}
+          {{/ifEquals}}
 
         {{#ifEquals cargo "Psicólogo"}}
         <li><a href="/dashboard/psico" class="{{isActive '/dashboard/psico'}}"><i class="fas fa-home icon"></i> <span>Dashboard</span></a></li>
-        <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Ficha de Acolhimento</span></a></li>
+        <li><a href="/pacientes" class="{{isActive '/pacientes'}}"><i class="fas fa-notes-medical icon"></i> <span>Servidores</span></a></li>
+        <li><a href="/atendimentos" class="{{isActive '/atendimentos'}}"><i class="fas fa-user-md icon"></i><span>Atendimentos</span></a></li>
         <li><a href="/escalas" class="{{isActive '/escalas'}}"><i class="fas fa-calendar-alt icon"></i> <span>Escalas</span></a></li>
-        <li><a href="/mensagens" class="{{isActive '/mensagens'}}"><i class="fas fa-comments icon"></i> <span>Mensagens</span></a></li>
+        <li>
+          <a href="/mensagens" class="{{isActive '/mensagens'}}">
+            <i class="fas fa-comments icon"></i>
+            <span>Mensagens</span>
+            <span id="mensagem-count" class="notification-badge"
+                  style="display: {{#if mensagensNaoLidas}}inline{{else}}none{{/if}};">
+              {{mensagensNaoLidas}}
+            </span>
+          </a>
+        </li>
         {{/ifEquals}}
-
-        <li class="menu-sair"><a href="/auth/logout"><i class="fas fa-sign-out-alt icon"></i> <span>Sair</span></a></li>
+        <li class="menu-perfil">
+          <a href="/profissionais/meu_perfil/{{user.id}}" class="{{isActive '/profissionais/meu_perfil'}}">
+            <i class="fas fa-user icon"></i> <span>Perfil</span>
+          </a>
+        </li>
+        <li ><a href="/auth/logout"><i class="fas fa-sign-out-alt icon"></i> <span>Sair</span></a></li>
       </ul>
     </nav>
   
@@ -110,3 +135,36 @@
  
 
 </style>
+
+<script>
+    async function atualizarContadorMensagens() {
+    try {
+        const response = await fetch('/api/mensagens/nao-lidas', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+            }
+        });
+
+        const text = await response.text(); // Lê a resposta como texto
+        console.log(text); // Verifique o que está sendo retornado
+
+        // Se a resposta for JSON, parseia ela
+        const data = JSON.parse(text); 
+
+        // Verifica se o count existe e é maior que 0
+        const contador = document.getElementById('message-count');
+        if (data.count > 0) {
+            contador.textContent = data.count;  // Atualiza o número de mensagens não lidas
+            contador.style.display = 'inline';  // Exibe o contador
+        } else {
+            contador.style.display = 'none';  // Oculta o contador se não houver mensagens não lidas
+        }
+
+    } catch (error) {
+        console.error('Erro ao buscar as mensagens não lidas:', error);
+    }
+};
+
+</script>

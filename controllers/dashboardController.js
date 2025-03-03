@@ -25,6 +25,10 @@ const dashboardController = {
 
   adm: (req, res) => {
     console.log(req.user);
+    res.render('dashboard/adm2', { user: req.user, cargo: req.profissional.cargo });
+  },
+  administrador: (req, res) => {
+    console.log(req.user);
     res.render('dashboard/adm', { user: req.user, cargo: req.profissional.cargo });
   },
   assistenteSocial: (req, res) => {

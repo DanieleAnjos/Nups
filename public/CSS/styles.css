@@ -71,8 +71,8 @@ header {
     display: none;
 }
 
-.menu-sair {
-    margin-top: auto;
+.menu-perfil {
+    margin-top: 200px;
     padding: 15px 20px;
     display: flex;
     align-items: center;

@@ -48,7 +48,7 @@ exports.index = async (req, res) => {
         model: Profissional,
         as: 'profissional',
         attributes: ['id', 'nome', 'cargo'],
-        where: profissionalCargo !== 'Administrador' ? { cargo: profissionalCargo } : {} // Filtro por cargo (exceto para Admin)
+        where: !['Administrador', 'Adm'].includes(profissionalCargo) ? { cargo: profissionalCargo } : {}
       },
       {
         model: Paciente,

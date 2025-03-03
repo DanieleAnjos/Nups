@@ -14,7 +14,7 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
-      {{#if (eq profissional.cargo "Administrador")}}
+        {{#if (or (eq profissional.cargo "Administrador") (eq profissional.cargo "Adm"))}}
 
         <div class="d-flex justify-content-end mb-3">
             <a href="/escalas/create" class="btn btn-success">
