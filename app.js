@@ -245,7 +245,11 @@ var corsOptions = {
         'https://nups.onrender.com',
         'http://localhost:3000',
         'http://dev.nupsweb.org',
-        'http://nupsweb.org/'
+        'http://nupsweb.org/',
+        'https://nupsweb.org/',
+        'http://dev.nupsweb.org/',
+        'https://dev.nupsweb.org/',
+
       ];
       
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
