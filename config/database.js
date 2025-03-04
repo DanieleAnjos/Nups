@@ -1,9 +1,4 @@
-require('dotenv').config({
-  path: `.env.${process.env.NODE_ENV || 'development'}`  // Carrega o arquivo correto dependendo do ambiente
-});
-
-console.log(process.env.DB_HOST);
-
+require('dotenv').config();
 const { execSync } = require('child_process');
 
 /**
