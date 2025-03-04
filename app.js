@@ -560,6 +560,8 @@ app.use(
   })
 );
 
+const domain = process.env.DOMAIN || (process.env.NODE_ENV === 'development' ? 'dev.nupsweb.org' : 'nupsweb.org');
+
 // Middleware de tratamento de erros (DEVE SER O ÚLTIMO)
 app.use((err, req, res, next) => {
     logger.error(err.stack); // Logando o erro
@@ -570,6 +572,7 @@ console.log('Arquivo .env carregado:', `.env.${process.env.NODE_ENV}`);
 console.log('Ambiente:', process.env.NODE_ENV);
 console.log('Banco de Dados:', process.env.DB_HOST);
 console.log('Chave de Sessão:', process.env.SESSION_SECRET);
+console.log(`Domínio: ${domain}`);
 
 
 const PORT = process.env.PORT || 3000; // Usa a porta definida no .env ou 3000 como padrão
