@@ -243,7 +243,9 @@ var corsOptions = {
       const allowedOrigins = [
         'https://nups-summer-moon-5282.fly.dev',
         'https://nups.onrender.com',
-        'http://localhost:3000'
+        'http://localhost:3000',
+        'http://dev.nupsweb.org',
+        'http://nupsweb.org/'
       ];
       
       if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
