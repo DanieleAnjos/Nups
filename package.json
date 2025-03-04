@@ -6,8 +6,8 @@
   "scripts": {
     "postinstall": "npm install passport passport-local express-session tedious",
     "install-deps": "npm install",
-    "start": "cross-env NODE_ENV=production node app.js",
-    "dev": "cross-env NODE_ENV=development nodemon app.js",
+    "start": "cross-env DOMAIN=nupsweb.org node app.js",
+    "dev": "cross-env NODE_ENV=development DOMAIN=http://dev.nupsweb.org/ nodemon app.js",
     "test": "NODE_ENV=test jest"
   },
   "keywords": [],
