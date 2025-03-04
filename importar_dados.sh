@@ -3,7 +3,7 @@
 # Configurações
 DB_HOST="localhost"
 DB_USER="root"
-DB_PASSWORD="1234"
+DB_PASSWORD="Amor66992712."
 DB_NAME="nups_db_dev"
 DUMP_FILE="./dump.sql"
 
