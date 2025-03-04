@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Configurações
-DB_HOST="nups.c3o2qsaeqjve.us-east-2.rds.amazonaws.com"
-DB_USER="admin"
-DB_PASSWORD="senha12."
-DB_NAME="nups_db"
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=nups_db_dev
+DB_USER=root
+DB_PASSWORD=Amor66992712.
 DUMP_FILE="./dump.sql"
 
 mysqldump -h $DB_HOST -u $DB_USER -p$DB_PASSWORD $DB_NAME > $DUMP_FILE
