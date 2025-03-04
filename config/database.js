@@ -43,6 +43,12 @@ const validateEnvVariables = () => {
 // Valida as variáveis de ambiente
 validateEnvVariables();
 
+// Verifica se o NODE_ENV está configurado corretamente
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'development') {
+  console.error('Erro: NODE_ENV não está configurado corretamente.');
+  process.exit(1);
+}
+
 /**
  * Configuração do Sequelize.
  */
