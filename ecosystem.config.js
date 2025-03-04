@@ -1,28 +1,18 @@
 module.exports = {
   apps: [
     {
-      name: "nups-prod",               
-      script: "app.js",                
-      env: {                          
-        NODE_ENV: "development",       
-        DOMAIN: "dev.nupsweb.org",        
-        PORT: 3000                    
-      },
-      env_production: {              
-        NODE_ENV: "development",     
-        DOMAIN: "nupsweb.org",   
-        PORT: 4000                    
-      }
-    },
-    {
-      name: "nups-dev",                
-      script: "app.js",                
+      name: "nups-prod",
+      script: "app.js",
       env: {
-        NODE_ENV: "development",      
-        DOMAIN: "dev.nupsweb.org",    
-        PORT: 3000                     
-      }
-    }
-  ]
+        NODE_ENV: "production",  // Definindo como produção
+        DOMAIN: "https://nupsweb.org",  // Defina o domínio correto
+        PORT: 4000,  // Defina a porta para produção, se necessário
+      },
+      env_development: {
+        NODE_ENV: "development",  // Definindo como desenvolvimento
+        DOMAIN: "http://dev.nupsweb.org",  // Domínio de desenvolvimento
+        PORT: 3000,  // Defina a porta para desenvolvimento, se necessário
+      },
+    },
+  ],
 };
-
