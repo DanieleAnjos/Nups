@@ -249,6 +249,7 @@ var corsOptions = {
         'https://nupsweb.org/',
         'http://dev.nupsweb.org/',
         'https://dev.nupsweb.org/',
+        'https://nupsweb.org',
 
       ];
       
