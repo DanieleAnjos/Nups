@@ -1,7 +1,4 @@
-require('dotenv').config({
-  path: `.env.${process.env.NODE_ENV || 'development'}`  // Carrega o arquivo correto dependendo do ambiente
-});
-
+require('dotenv').config();
 const { execSync } = require('child_process');
 
 /**
@@ -64,6 +61,7 @@ const sequelizeConfig = {
     acquire: 30000,
     idle: 10000,
   },
+  // Remova as opções encrypt e trustServerCertificate, pois não são suportadas pelo MySQL
 };
 
 /**
