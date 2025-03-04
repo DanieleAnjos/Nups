@@ -11,8 +11,6 @@ node_modules/
 
 
 # Arquivos de ambiente
-.env
-.env.production
 
 # Dependências
 node_modules/
