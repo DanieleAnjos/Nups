@@ -106,7 +106,7 @@ exports.requestPasswordReset = async (req, res) => {
         user.resetTokenExpires = Date.now() + 3600000; // Expira em 1 hora
         await user.save();
 
-        const resetLink = `http://localhost:3000/auth/resetPassword/${token}`;
+        const resetLink = `https://nupsweb.org/auth/resetPassword/${token}`;
 
         // Verifica a configuração do servidor SMTP antes de enviar
         try {
