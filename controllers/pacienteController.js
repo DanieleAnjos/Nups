@@ -118,6 +118,7 @@ exports.store = [
         parentesco,
         postoServiço,
         escala,
+        escolaridade,
         tempoServiço,
         periodoEscala,
         porteArma,
