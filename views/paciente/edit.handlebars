@@ -413,72 +413,79 @@ function removerImagem() {
   gerarCamposFilhos(); // Preenche os campos de filhos se já houver dados salvos
 });
 
+// Alterna a visibilidade do container de filhos com base na seleção
 function toggleFilhos() {
   const possuiFilhos = document.getElementById("possuiFilhos").value;
   const filhosContainer = document.getElementById("filhosContainer");
-  
+
   if (possuiFilhos === "true") {
     filhosContainer.style.display = "block";
   } else {
     filhosContainer.style.display = "none";
-    document.getElementById("jsonFilhos").value = "[]"; // Limpa o campo oculto
+    limparFilhos();
   }
 }
 
+// Gera campos para entrada de dados dos filhos
 function gerarCamposFilhos() {
   const quantidade = parseInt(document.getElementById("quantidadeFilhosInput").value, 10) || 0;
   const filhosLista = document.getElementById("filhosLista");
-  filhosLista.innerHTML = "";
+  filhosLista.innerHTML = ""; // Limpa campos anteriores
 
-  // Recupera os filhos já cadastados do campo hidden
   let filhos = [];
   try {
-    const jsonFilhos = document.getElementById("jsonFilhos").value;
-    filhos = jsonFilhos ? JSON.parse(jsonFilhos) : [];
-  } catch (e) {
-    console.error("Erro ao parsear JSON de filhos:", e);
-    filhos = [];
+    filhos = JSON.parse(document.getElementById("jsonFilhos").value || "[]");
+  } catch (error) {
+    console.error("Erro ao parsear JSON de filhos:", error);
   }
 
-  // Gera os campos para cada filho
   for (let i = 0; i < quantidade; i++) {
-    const filho = filhos[i] || { nome: "", idade: "" }; // Usa o filho cadastrado ou um objeto vazio
+    const filho = filhos[i] || { nome: "", idade: "" };
 
     const div = document.createElement("div");
     div.classList.add("mb-2");
     div.innerHTML = `
-        <div class="row mb-3">
-    <div class="col-md-6">
-      <label>Nome do Filho ${i + 1}</label>
-      <input type="text" class="form-control" name="filhos[${i}][nome]" value="${filho.nome}" oninput="atualizarJSONFilhos()">
-    </div>
-    <div class="col-md-6">
-      <label>Idade</label>
-      <input type="number" class="form-control" name="filhos[${i}][idade]" value="${filho.idade}" oninput="atualizarJSONFilhos()">
-    </div>
-    </div>
-  `;
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="nomeFilho${i}">Nome do Filho ${i + 1}</label>
+          <input type="text" id="nomeFilho${i}" class="form-control" name="filhos[${i}][nome]" value="${filho.nome}" oninput="atualizarJSONFilhos()">
+        </div>
+        <div class="col-md-6">
+          <label for="idadeFilho${i}">Idade</label>
+          <input type="number" id="idadeFilho${i}" class="form-control" name="filhos[${i}][idade]" value="${filho.idade}" oninput="atualizarJSONFilhos()">
+        </div>
+      </div>
+    `;
     filhosLista.appendChild(div);
   }
 
-  // Atualiza o JSON de filhos após gerar os campos
-  atualizarJSONFilhos();
+  atualizarJSONFilhos(); // Atualiza o JSON inicial após gerar campos
 }
 
+// Atualiza o JSON com base nos valores dos campos
 function atualizarJSONFilhos() {
-  const filhos = []; // Inicializa como array vazio
-  document.querySelectorAll("#filhosLista > div").forEach((div, index) => {
-    const nome = div.querySelector(`input[name="filhos[${index}][nome]"]`).value;
-    const idade = div.querySelector(`input[name="filhos[${index}][idade]"]`).value;
-    
-    if (nome.trim() || idade.trim()) { // Evita salvar filhos vazios
-      filhos.push({ nome, idade });
+  const filhos = Array.from(document.querySelectorAll("#filhosLista > div")).map((div, index) => {
+    const nomeInput = div.querySelector(`input[name="filhos[${index}][nome]"]`);
+    const idadeInput = div.querySelector(`input[name="filhos[${index}][idade]"]`);
+
+    if (nomeInput && idadeInput) {
+      const nome = nomeInput.value.trim();
+      const idade = idadeInput.value.trim();
+      if (nome || idade) {
+        return { nome, idade };
+      }
     }
-  });
-  
-  // Atualiza o campo hidden com o JSON de filhos
+  }).filter(Boolean); // Remove entradas vazias
+
   document.getElementById("jsonFilhos").value = JSON.stringify(filhos);
 }
+
+// Limpa o campo hidden ao ocultar a seção
+function limparFilhos() {
+  document.getElementById("jsonFilhos").value = "[]";
+  document.getElementById("filhosLista").innerHTML = "";
+}
+
 
 
 </script>
