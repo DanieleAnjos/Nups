@@ -179,7 +179,7 @@ const noticiaController = {
       res.redirect('/noticias');
     }
   },
-  
+
      atualizarNoticia: async (req, res) => {
       upload.single('imagem')(req, res, async (err) => {
         if (err) {
@@ -251,7 +251,7 @@ const noticiaController = {
           return res.redirect(`/noticias/edit/${req.params.id}`);
         }
       });
-    };
+    },
 
   // Excluir um evento (somente se ainda não começou)
   deletarNoticia: async (req, res) => {
