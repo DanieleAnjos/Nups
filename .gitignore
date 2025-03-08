@@ -8,7 +8,7 @@ node_modules/
 .nx/cache
 .nx/workspace-data
 
-
+.combined.log
 
 # Arquivos de ambiente
 
