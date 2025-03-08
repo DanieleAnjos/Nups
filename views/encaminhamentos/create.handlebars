@@ -9,6 +9,8 @@
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+  
+  <script type="module" src="js/main.js"></script>
 
   <style>
     * {
@@ -127,9 +129,9 @@
   </div>
 
   <script>
-    
-import $ from 'https://code.jquery.com/jquery-3.6.0.min.js';
-import 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js';
+
+import $ from 'jquery';
+import 'select2';
 
 $(document).ready(function() {
   $('#nomePaciente').select2({
