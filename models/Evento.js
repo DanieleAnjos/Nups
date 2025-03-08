@@ -52,7 +52,7 @@ Evento.init({
     privacidade: {
         type: DataTypes.ENUM('Público Geral', 'Privado'),
         allowNull: false,
-        defaultValue: 'público',
+        defaultValue: 'Público Geral',
     },
     status: {
         type: DataTypes.ENUM('ativo', 'cancelado', 'concluído'),
