@@ -3,201 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <!-- Bootstrap CSS -->
-  <!-- Icones do Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
+  
   <!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 
-<!-- jQuery (necessário para o Select2) -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
-<!-- Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- jQuery (necessário para o Select2) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 900px;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
 
   <div class="container my-5">
     <form action="/encaminhamentos" method="POST" class="p-4 bg-light rounded shadow-sm">
-    {{#if success_msg}}
-      <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Sucesso',
-            text: '{{success_msg}}',
-            confirmButtonText: 'Ok'
+      {{#if success_msg}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Sucesso',
+              text: '{{success_msg}}',
+              confirmButtonText: 'Ok'
+            });
           });
-        });
-      </script>
-    {{/if}}
+        </script>
+      {{/if}}
 
-    <!-- Mensagens de erro -->
-    {{#if error_msg}}
-      <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Erro',
-            text: '{{error_msg}}',
-            confirmButtonText: 'Ok'
+      <!-- Mensagens de erro -->
+      {{#if error_msg}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erro',
+              text: '{{error_msg}}',
+              confirmButtonText: 'Ok'
+            });
           });
-        });
-      </script>
-    {{/if}}
+        </script>
+      {{/if}}
 
-        <h2 class="text-center my-4 text-primary">Novo Encaminhamento</h2>
-        <!-- Nome do Paciente -->
-        <div class="mb-4">
-          <label for="nomePaciente" class="form-label">Nome do Servidor:</label>
-          <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
-            <option value="">🔍 Digite para buscar um servidor</option>
-            {{#each pacientes}}
-              <option value="{{this.nome}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
-            {{/each}}
-          </select>
-        </div>
+      <h2 class="text-center my-4 text-primary">Novo Encaminhamento</h2>
+      
+      <!-- Nome do Paciente -->
+      <div class="mb-4">
+        <label for="nomePaciente" class="form-label">Nome do Servidor:</label>
+        <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
+          <option value="">🔍 Digite para buscar um servidor</option>
+          {{#each pacientes}}
+            <option value="{{this.nome}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-        <!-- Matrícula do Paciente -->
-        <div class="mb-4">
-          <label for="matriculaPaciente" class="form-label">Matrícula do Servidor:</label>
-          <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control" required>
-        </div>
+      <!-- Matrícula do Paciente -->
+      <div class="mb-4">
+        <label for="matriculaPaciente" class="form-label">Matrícula do Servidor:</label>
+        <input type="text" name="matriculaPaciente" id="matriculaPaciente" class="form-control" required>
+      </div>
 
-        <!-- Numero do Processo -->
-        <div class="mb-4">
-          <label for="numeroProcesso" class="form-label">Número do Processo:</label>
-            <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" 
-            title="O número do processo deve estar no formato 000000/0000">
-        </div>
+      <!-- Número do Processo -->
+      <div class="mb-4">
+        <label for="numeroProcesso" class="form-label">Número do Processo:</label>
+        <input type="text" name="numeroProcesso" id="numeroProcesso" class="form-control" title="O número do processo deve estar no formato 000000/0000">
+      </div>
 
-        <!-- Telefone do Paciente -->
-        <div class="mb-4">
-          <label for="telefonePaciente" class="form-label">Telefone do Servidor:</label>
-          <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required placeholder="(99) 99999-9999">
-          <div class="invalid-feedback">Informe um telefone válido no formato (XX) XXXXX-XXXX.</div>
-        </div>
+      <!-- Telefone do Paciente -->
+      <div class="mb-4">
+        <label for="telefonePaciente" class="form-label">Telefone do Servidor:</label>
+        <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required placeholder="(99) 99999-9999">
+        <div class="invalid-feedback">Informe um telefone válido no formato (XX) XXXXX-XXXX.</div>
+      </div>
 
-        <div class="mb-4">
-          <label for="assuntoAcolhimento" class="form-label">Assunto do Acolhimento:</label>
-          <select class="form-control" name="assuntoAcolhimento" id="assuntoAcolhimento" required>
-            <option value="">Selecione um assunto</option>
-            <option value="Acolhimento de disparo">Acolhimento de disparo</option>
-            <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
-            <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-          </select>
-        </div>
+      <div class="mb-4">
+        <label for="assuntoAcolhimento" class="form-label">Assunto do Acolhimento:</label>
+        <select class="form-control" name="assuntoAcolhimento" id="assuntoAcolhimento" required>
+          <option value="">Selecione um assunto</option>
+          <option value="Acolhimento de disparo">Acolhimento de disparo</option>
+          <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
+          <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+        </select>
+      </div>
 
-        <!-- Descrição -->
-        <div class="mb-4">
-          <label for="descricao" class="form-label">Descrição:</label>
-          <textarea name="descricao" id="descricao" class="form-control" rows="4" required></textarea>
-        </div>
+      <!-- Descrição -->
+      <div class="mb-4">
+        <label for="descricao" class="form-label">Descrição:</label>
+        <textarea name="descricao" id="descricao" class="form-control" rows="4" required></textarea>
+      </div>
 
-<!-- Profissional de Envio (oculto) -->
-<div class="mb-4" style="display: none;">
-  <label for="profissionalIdEnvio" class="form-label">Profissional de Envio:</label>
-  <input type="hidden" name="profissionalIdEnvio" id="profissionalIdEnvio" value="{{profissionalIdEnvio}}">
-</div>
+      <!-- Profissional de Envio (oculto) -->
+      <div class="mb-4" style="display: none;">
+        <label for="profissionalIdEnvio" class="form-label">Profissional de Envio:</label>
+        <input type="hidden" name="profissionalIdEnvio" id="profissionalIdEnvio" value="{{profissionalIdEnvio}}">
+      </div>
 
-        <!-- Profissional de Recebimento (alterado para 'select') -->
-<!-- Profissional de Recebimento -->
-        <div class="mb-4">
-          <label for="profissionalIdRecebido" class="form-label">Profissional de Recebimento:</label>
-          <select name="profissionalIdRecebido" id="profissionalIdRecebido" class="form-control" required>
-            <option value="">Selecione um profissional</option>
-            <!-- Lista de profissionais será preenchida pelo JavaScript -->
-          </select>
-        </div>
+      <!-- Profissional de Recebimento -->
+      <div class="mb-4">
+        <label for="profissionalIdRecebido" class="form-label">Profissional de Recebimento:</label>
+        <select name="profissionalIdRecebido" id="profissionalIdRecebido" class="form-control" required>
+          <option value="">Selecione um profissional</option>
+          <!-- Lista de profissionais será preenchida pelo JavaScript -->
+        </select>
+      </div>
 
-        <!-- Botão de Envio -->
-        <div class="text-center mt-4">
-          <button type="submit" class="btn btn-success btn-lg">
-            <i class="bi bi-check-circle"></i> Gerar Encaminhamento
-          </button>
-        </div>
+      <!-- Botão de Envio -->
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success btn-lg">
+          <i class="bi bi-check-circle"></i> Gerar Encaminhamento
+        </button>
+      </div>
     </form>
   </div>
 
+  <script>
+    $(document).ready(function() {
+      // Inicializa o Select2
+      $('#nomePaciente').select2({
+        placeholder: "🔍 Digite para buscar um servidor",
+        allowClear: true,
+        tags: true,
+        width: '100%'
+      });
 
-  <script type="module">
-  import $ from 'jquery';
-  import 'select2/dist/css/select2.css';
-  import 'select2';
-
-$(document).ready(function() {
-  // Check if Select2 is loaded
-  if ($.fn.select2) {
-    $('#nomePaciente').select2({
-      placeholder: "🔍 Digite para buscar um servidor", // Placeholder text
-      allowClear: true, // Allows clearing the selection
-      tags: true, // Allows adding new tags
-      width: '100%', // Set the width of the field
-      multiple: true // Allows multiple selections (if necessary)
+      // Atualiza a matrícula ao selecionar um paciente
+      $('#nomePaciente').on('change', function () {
+        const selectedOption = $(this).find(':selected');
+        const matricula = selectedOption.data('matricula');
+        $('#matriculaPaciente').val(matricula);
+      });
     });
-  } else {
-    console.error('Select2 is not loaded properly');
-  }
 
-  // Update matricula when a patient is selected
-  $('#nomePaciente').on('change', function () {
-    const selectedOption = $(this).find(':selected');
-    const matricula = selectedOption.data('matricula');
-    $('#matriculaPaciente').val(matricula); // Populate the matricula field
-  });
-});
-
-
-
-document.getElementById('numeroProcesso').addEventListener('input', function (event) {
-    const input = event.target;
-    let value = input.value.replace(/\D/g, ''); // Remove caracteres não numéricos
-
-    // Aplica a formatação se houver pelo menos 7 dígitos (6 antes da barra e 1 depois)
-    if (value.length > 6) {
-        value = value.slice(0, 6) + '/' + value.slice(6, 10);
-    }
-
-    // Atualiza o valor do input
-    input.value = value;
-
-    // Se o campo estiver vazio, remove qualquer validação
-    if (value === "") {
-        input.setCustomValidity(""); // Nenhuma mensagem de erro
-        input.classList.remove("is-invalid");
-        return;
-    }
-
-    // Valida o formato do número do processo
-    if (!/^\d{6}\/\d{4}$/.test(value)) {
-        input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
-        input.classList.add("is-invalid");
-    } else {
-        input.setCustomValidity(""); // Limpa a mensagem de erro
-        input.classList.remove("is-invalid");
-    }
-});
-
-
-    document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+    document.getElementById('numeroProcesso').addEventListener('input', function (event) {
       const input = event.target;
-      let value = input.value.replace(/\D/g, ''); // Remove tudo que não for número
+      let value = input.value.replace(/\D/g, '');
 
-      // Aplica a máscara de telefone (formato brasileiro)
-      if (value.length > 11) {
-        value = value.slice(0, 11);
-      }
-      
-      if (value.length > 10) {
-        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); // Formato celular
-      } else if (value.length > 9) {
-        value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3"); // Formato fixo
+      if (value.length > 6) {
+        value = value.slice(0, 6) + '/' + value.slice(6, 10);
       }
 
       input.value = value;
 
-      // Validação do número
+      if (value === "") {
+        input.setCustomValidity("");
+        input.classList.remove("is-invalid");
+        return;
+      }
+
+      if (!/^\d{6}\/\d{4}$/.test(value)) {
+        input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
+        input.classList.add("is-invalid");
+      } else {
+        input.setCustomValidity("");
+        input.classList.remove("is-invalid");
+      }
+    });
+
+    document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+      const input = event.target;
+      let value = input.value.replace(/\D/g, '');
+
+      if (value.length > 11) {
+        value = value.slice(0, 11);
+      }
+
+      if (value.length > 10) {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+      } else if (value.length > 9) {
+        value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+      }
+
+      input.value = value;
+
       const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
       if (!telefoneRegex.test(value)) {
         input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
@@ -209,19 +211,19 @@ document.getElementById('numeroProcesso').addEventListener('input', function (ev
     });
 
     function buscarPacientePorNome() {
-      const nomePaciente = document.getElementById('nomePaciente').value;
+      const nomePaciente = document.getElementById('nomePaciente').value.trim();
       
-      if (nomePaciente.length > 3) {  // A busca só é realizada após digitar 3 caracteres
+      if (nomePaciente.length > 3) {
         $.ajax({
-          url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,  // Endpoint para buscar paciente por nome
+          url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,
           method: 'GET',
           success: function(data) {
-            $('#matriculaPaciente').val(data.matricula);  // Preenche a matrícula
-            $('#pacienteId').val(data.id);  // Preenche o ID do paciente
+            $('#matriculaPaciente').val(data.matricula);
+            $('#pacienteId').val(data.id);
           },
           error: function() {
-            $('#matriculaPaciente').val('');  // Limpa a matrícula
-            $('#pacienteId').val('');  // Limpa o ID do paciente
+            $('#matriculaPaciente').val('');
+            $('#pacienteId').val('');
             alert('Paciente não encontrado!');
           }
         });
@@ -229,19 +231,19 @@ document.getElementById('numeroProcesso').addEventListener('input', function (ev
     }
 
     function buscarPacientePorMatricula() {
-      const matriculaPaciente = document.getElementById('matriculaPaciente').value;
+      const matriculaPaciente = document.getElementById('matriculaPaciente').value.trim();
       
-      if (matriculaPaciente.length > 0) {  // A busca só é realizada se a matrícula for informada
+      if (matriculaPaciente.length > 0) {
         $.ajax({
-          url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,  // Endpoint para buscar paciente por matrícula
+          url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,
           method: 'GET',
           success: function(data) {
-            $('#nomePaciente').val(data.nome);  // Preenche o nome do paciente
-            $('#pacienteId').val(data.id);  // Preenche o ID do paciente
+            $('#nomePaciente').val(data.nome);
+            $('#pacienteId').val(data.id);
           },
           error: function() {
-            $('#nomePaciente').val('');  // Limpa o nome do paciente
-            $('#pacienteId').val('');  // Limpa o ID do paciente
+            $('#nomePaciente').val('');
+            $('#pacienteId').val('');
             alert('Paciente não encontrado!');
           }
         });
@@ -252,65 +254,41 @@ document.getElementById('numeroProcesso').addEventListener('input', function (ev
       const assuntoSelect = document.getElementById("assuntoAcolhimento");
       const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
-      // Dados dos profissionais (passados do backend para o frontend)
       const profissionaisPsicologia = [
-          {{#each profissionaisPsicologia}}
-              { id: "{{this.id}}", nome: "{{this.nome}}" },
-          {{/each}}
+        {{#each profissionaisPsicologia}}
+          { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
       ];
 
       const profissionaisServicoSocial = [
-          {{#each profissionaisServicoSocial}}
-              { id: "{{this.id}}", nome: "{{this.nome}}" },
-          {{/each}}
+        {{#each profissionaisServicoSocial}}
+          { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
       ];
 
       function atualizarListaProfissionais() {
-          const assuntoSelecionado = assuntoSelect.value;
+        const assuntoSelecionado = assuntoSelect.value;
 
-          // Determinar quais profissionais exibir
-          let profissionais = [];
-          if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
-              profissionais = profissionaisPsicologia;
-          } else {
-              profissionais = profissionaisServicoSocial;
-          }
+        let profissionais = [];
+        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
+          profissionais = profissionaisPsicologia;
+        } else {
+          profissionais = profissionaisServicoSocial;
+        }
 
-          // Limpar as opções anteriores
-          profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-          // Adicionar os novos profissionais ao select
-          profissionais.forEach(profissional => {
-              const option = document.createElement("option");
-              option.value = profissional.id;
-              option.textContent = profissional.nome;
-              profissionalSelect.appendChild(option);
-          });
+        profissionais.forEach(profissional => {
+          const option = document.createElement("option");
+          option.value = profissional.id;
+          option.textContent = profissional.nome;
+          profissionalSelect.appendChild(option);
+        });
       }
 
-      // Executar a função ao mudar o assunto
       assuntoSelect.addEventListener("change", atualizarListaProfissionais);
-
-      // Executar ao carregar a página (caso já tenha um assunto pré-selecionado)
-      atualizarListaProfissionais();
+      atualizarListaProfissionais(); // Chama a função ao carregar a página
     });
   </script>
-
 </body>
 </html>
-
-<style>
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-
-      .container {
-    max-width: 900px;
-    margin-top: 40px;
-  }
-
-</style>
