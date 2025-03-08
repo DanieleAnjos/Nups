@@ -234,16 +234,21 @@
       <input type="text" class="form-control" name="postoServico" id="postoServico" value="{{paciente.postoServico}}">
     </div>
     <div class="form-group">
-      <label for="escala">Escala:</label>
-      <input type="number" class="form-control" name="escala" id="escala" value="{{paciente.escala}}">
+        <label for="escala">Escala:</label>
+        <select class="form-control" name="escala" id="escala">
+            <option value="">Selecione uma escala</option>
+            <option value="24x72" {{#if (eq paciente.escala "24x72")}}selected{{/if}}>24x72</option>
+            <option value="12x36" {{#if (eq paciente.escala "12x36")}}selected{{/if}}>12x36</option>
+            <option value="12x60" {{#if (eq paciente.escala "12x60")}}selected{{/if}}>12x60</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="periodoEscala">Tempo de escala:</label>
+        <input type="text" class="form-control" name="periodoEscala" id="periodoEscala" value="{{paciente.periodoEscala}}">
     </div>
     <div class="form-group">
       <label for="tempoServico">Tempo de Serviço:</label>
       <input type="text" class="form-control" name="tempoServico" id="tempoServico" value="{{paciente.tempoServico}}">
-    </div>
-    <div class="form-group">
-      <label for="periodoEscala">Período de Escala:</label>
-      <input type="text" class="form-control" name="periodoEscala" id="periodoEscala" value="{{paciente.periodoEscala}}">
     </div>
     <div class="form-group">
       <label for="relacaoSupervisor">Relação com o supervisor imediato:</label>
