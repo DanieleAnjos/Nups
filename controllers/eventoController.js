@@ -4,6 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const { upload} = require('../config/multer');
 const { Op } = require('sequelize');
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 
 const eventoController = {
@@ -46,12 +51,14 @@ const eventoController = {
           }
           imagePath = req.file.filename;
         }
+        const descricaoPurificada = DOMPurify.sanitize(descricao);
+
 
         await Evento.create({
           titulo,
           subTitulo,
           etiqueta,
-          descricao,
+          descricao: descricaoPurificada,
           localizacao,
           dataHoraInicio: new Date(dataHoraInicio), 
           dataHoraFim: new Date(dataHoraFim), 
