@@ -7,14 +7,16 @@
   <!-- Icones do Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <!-- jQuery (necessário para o Select2) -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 <body>
 
@@ -126,22 +128,27 @@
   <script>
 
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Inicializa o Select2
-  $('#nomePaciente').select2({
-    placeholder: "🔍 Digite para buscar um servidor", // Texto de placeholder
-    allowClear: true, // Permite limpar a seleção
-        tags: true, // Habilita a inserção de valores não cadastrados
-    width: '100%' // Define a largura do campo
-  });
+$(document).ready(function() {
+  // Check if Select2 is loaded
+  if ($.fn.select2) {
+    $('#nomePaciente').select2({
+      placeholder: "🔍 Digite para buscar um servidor", // Placeholder text
+      allowClear: true, // Allows clearing the selection
+      tags: true, // Allows adding new tags
+      width: '100%' // Set the width of the field
+    });
+  } else {
+    console.error('Select2 is not loaded properly');
+  }
 
-  // Atualiza a matrícula ao selecionar um paciente
+  // Update matricula when a patient is selected
   $('#nomePaciente').on('change', function () {
     const selectedOption = $(this).find(':selected');
     const matricula = selectedOption.data('matricula');
-    $('#matriculaPaciente').val(matricula); // Preenche o campo de matrícula
+    $('#matriculaPaciente').val(matricula); // Populate the matricula field
   });
 });
+
 
 document.getElementById('numeroProcesso').addEventListener('input', function (event) {
     const input = event.target;
