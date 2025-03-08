@@ -1,7 +1,10 @@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 <div class="profile-container">
-
 
             <!-- Informações Pessoais -->
     {{#if success_msg}}
@@ -30,7 +33,7 @@
         });
       </script>
     {{/if}}
-    
+
   <div class="profile-card justify-content-center">
     <div class="profile-header">
       <div class="header-content">
@@ -72,11 +75,6 @@
             <span class="value">&nbsp;{{formatRg paciente.rg}}</span>
           </div>
           <div class="info-item">
-            <i class="fas fa-id-card"></i>
-            <span class="label"><strong>CPF: </strong></span>
-            <span class="value">&nbsp;{{formatCPF paciente.cpf}}</span>
-          </div>
-          <div class="info-item">
             <p class="info-single">
               <i class="fas fa-map-marker-alt"></i>
               <span class="label"><strong>Endereço: </strong></span>
@@ -90,21 +88,36 @@
         <h2>Histórico Médico</h2>
         <div class="info-grid">
           <div class="info-item">
-            <i class="fas fa-stethoscope"></i>
-            <span class="label"><strong>Condição Médica: </strong></span>
-            <span class="value">&nbsp;{{paciente.condicaoMedica}}</span>
-          </div>
-          <div class="info-item">
             <i class="fas fa-pills"></i>
-            <span class="label"><strong>Medicamentos: </strong></span>
-            <span class="value">&nbsp;{{paciente.medicamentos}}</span>
+            <span class="label"><strong>Medicação de controle: </strong></span>
+            <span class="value">&nbsp;{{paciente.tipoMedicamento}}</span>
           </div>
           <div class="info-item">
             <i class="fas fa-heartbeat"></i>
             <span class="label"><strong>Alergias: </strong></span>
-            <span class="value">&nbsp;{{paciente.alergias}}</span>
+            <span class="value">&nbsp;{{paciente.alergiaMedicamento}}</span>
           </div>
         </div>
+      </div>
+      <div class="info-section">
+        <h2>Informações adicionais</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="fas fa-calendar-check"></i>
+            <span class="label"><strong>Data de ultima consulta: </strong></span>
+            <span class="value">&nbsp;{{formatDate paciente.dataUltimaConsulta}}</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-notes-medical"></i>
+            <span class="label"><strong>Plano de saúde: </strong></span>
+            <span class="value">&nbsp;{{paciente.planoSaude}}</span>
+            </div>
+          <div class="info-item">
+            <i class="fas fa-notes-medical"></i>
+            <span class="label"><strong>Cartão SUS: </strong></span>
+            <span class="value">&nbsp;{{paciente.cartaoSus}}</span>
+          </div>
+          </div>
       </div>
 
       <div class="info-section">
