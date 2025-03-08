@@ -162,7 +162,7 @@ exports.store = [
       });
 
       if (pacienteExistente) {
-        req.flash('error_msg', 'Já existe um paciente com esse CPF, RG ou matrícula.');
+        req.flash('error_msg', 'Já existe um paciente com esse  RG ou matrícula.');
         return res.render('paciente/create', {
           error_msg: req.flash('error_msg'),
           success_msg: req.flash('success_msg'),
@@ -266,7 +266,7 @@ exports.store = [
         const validationErrors = error.errors.map((err) => err.message);
         req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
       } else if (error.name === 'SequelizeUniqueConstraintError') {
-        req.flash('error_msg', 'CPF, RG ou matrícula já cadastrados.');
+        req.flash('error_msg', 'RG ou matrícula já cadastrados.');
       } else {
         req.flash('error_msg', 'Erro ao criar o paciente.');
       }

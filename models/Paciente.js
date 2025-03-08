@@ -85,16 +85,6 @@ const Paciente = sequelize.define('Paciente', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  cpf: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      is: {
-        args: /^[0-9]{11}$/,
-        msg: "O CPF deve conter 11 números.",
-      },
-    },
-  },
   rg: {
     type: DataTypes.STRING,
     allowNull: true,

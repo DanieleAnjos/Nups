@@ -75,6 +75,8 @@
             </select>
         </div>
     </div>
+
+<div class="row mt-2">
     <div class="col-md-6">
         <label for="rg">RG:</label>
         <input
@@ -588,9 +590,6 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
     // Máscara para o telefone de contato (formato: (00) 00000-0000)
     VMasker(document.getElementById("telefoneContato")).maskPattern("(99) 99999-9999");
-
-    // Máscara para o CPF (formato: 000.000.000-00)
-    VMasker(document.getElementById("cpf")).maskPattern("999.999.999-99");
 
     // Máscara para o CEP (formato: 00000-000)
     VMasker(document.getElementById("cep")).maskPattern("99999-999");
