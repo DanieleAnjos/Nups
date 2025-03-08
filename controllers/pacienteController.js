@@ -228,7 +228,7 @@ exports.store = [
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
-        filhos: filhos ? (typeof filhos === 'string' ? JSON.parse(filhos) : filhos) : [],
+        filhos: filhos ? (typeof filhos === 'string' ? JSON.parse(filhos).filter(f => f && f.nome) : filhos.filter(f => f && f.nome)) : [],
         escolaridade,
         imagePath,
         tipoTelefone,
