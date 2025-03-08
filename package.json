@@ -60,6 +60,7 @@
     "puppeteer": "^23.7.0",
     "redis": "^4.7.0",
     "rimraf": "^6.0.1",
+    "select2": "^4.1.0-rc.0",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "serverless-http": "^3.2.0",
