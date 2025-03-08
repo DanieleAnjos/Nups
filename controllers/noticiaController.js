@@ -4,17 +4,22 @@ const fs = require('fs');
 const path = require('path');
 const { upload} = require('../config/multer');
 const { Op } = require('sequelize');
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 
 const noticiaController = {
   // Criar um novo evento
-  criarNoticia: async (req, res) => {
+   criarNoticia: async (req, res) => {
     upload.single('imagem')(req, res, async (err) => {
       if (err) {
         req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
         return res.redirect('/noticias/create');
       }
-
+  
       try {
         const {
           titulo,
@@ -23,12 +28,14 @@ const noticiaController = {
           descricao,
           autor,
         } = req.body;
-
+  
+        // Verifica se todos os campos obrigatórios foram preenchidos
         if (!titulo || !descricao || !autor) {
           req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
           return res.redirect('/noticias/create');
         }
-
+  
+        // Validação da imagem enviada
         let imagePath = null;
         if (req.file) {
           if (!req.file.mimetype.startsWith('image/')) {
@@ -37,21 +44,34 @@ const noticiaController = {
           }
           imagePath = req.file.filename;
         }
-
+  
+        // Purifica o conteúdo da descrição para evitar XSS
+        const descricaoPurificada = DOMPurify.sanitize(descricao);
+  
+        // Criação da notícia
         await Noticias.create({
           titulo,
           subTitulo,
           etiqueta,
-          descricao,
+          descricao: descricaoPurificada, // Usa o conteúdo purificado
           autor,
           imagePath,
         });
-
-        req.flash('success_msg', 'Notícia criado com sucesso!');
+  
+        req.flash('success_msg', 'Notícia criada com sucesso!');
         return res.redirect('/noticias');
       } catch (error) {
-        console.error(error);
-        req.flash('error_msg', 'Erro ao criar notícia.');
+        console.error('Erro ao criar notícia:', error);
+  
+        if (error.name === 'SequelizeValidationError') {
+          const validationErrors = error.errors.map((err) => err.message);
+          req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+        } else if (error.name === 'SequelizeUniqueConstraintError') {
+          req.flash('error_msg', 'Já existe uma notícia com este título.');
+        } else {
+          req.flash('error_msg', 'Erro ao criar a notícia. Tente novamente mais tarde.');
+        }
+  
         return res.redirect('/noticias/create');
       }
     });
@@ -159,64 +179,80 @@ const noticiaController = {
       res.redirect('/noticias');
     }
   },
-
-  atualizarNoticia: async (req, res) => {
-    upload.single('imagem')(req, res, async (err) => {
-      if (err) {
-        req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
-        return res.redirect(`/noticias/${req.params.id}/edit`);
-      }
-
-      try {
-        const id = req.params.id;
-        const noticias = await Noticias.findByPk(id);
-
-        if (!noticias) {
-          req.flash('error_msg', 'Notícia não encontrada.');
-          return res.redirect('/noticias');
+  
+     atualizarNoticia: async (req, res) => {
+      upload.single('imagem')(req, res, async (err) => {
+        if (err) {
+          req.flash('error_msg', `Erro ao fazer upload da imagem: ${err.message}`);
+          return res.redirect(`/noticias/edit/${req.params.id}`);
         }
-
-        const {
-          titulo,
-          subTitulo,
-          etiqueta,
-          descricao,
-          autor,
-        } = req.body;
-
-        if (!titulo || !descricao || !autor) {
-          req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
-          return res.redirect(`/noticias/${id}/edit`);
-        }
-
-        let imagePath = noticias.imagePath;
-        if (req.file) {
-
-            if (!req.file.mimetype.startsWith('image/')) {
-            req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
-            return res.redirect(`/noticias/${id}/edit`);
+    
+        try {
+          const { id } = req.params;
+          const {
+            titulo,
+            subTitulo,
+            etiqueta,
+            descricao,
+            autor,
+          } = req.body;
+    
+          // Verifica se todos os campos obrigatórios foram preenchidos
+          if (!titulo || !descricao || !autor) {
+            req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
+            return res.redirect(`/noticias/edit/${id}`);
           }
-          imagePath = req.file.filename; 
+    
+          // Validação da imagem enviada
+          let imagePath = null;
+          if (req.file) {
+            if (!req.file.mimetype.startsWith('image/')) {
+              req.flash('error_msg', 'Por favor, carregue apenas arquivos de imagem.');
+              return res.redirect(`/noticias/edit/${id}`);
+            }
+            imagePath = req.file.filename;
+          }
+    
+          // Purifica o conteúdo da descrição para evitar XSS
+          const descricaoPurificada = DOMPurify.sanitize(descricao);
+    
+          // Atualiza a notícia
+          const noticia = await Noticias.findByPk(id);
+          if (!noticia) {
+            req.flash('error_msg', 'Notícia não encontrada.');
+            return res.redirect('/noticias');
+          }
+    
+          noticia.titulo = titulo;
+          noticia.subTitulo = subTitulo;
+          noticia.etiqueta = etiqueta;
+          noticia.descricao = descricaoPurificada; // Usa o conteúdo purificado
+          noticia.autor = autor;
+          if (imagePath) {
+            noticia.imagePath = imagePath;
+          }
+    
+          await noticia.save();
+    
+          req.flash('success_msg', 'Notícia atualizada com sucesso!');
+          return res.redirect('/noticias');
+        } catch (error) {
+          console.error('Erro ao atualizar notícia:', error);
+    
+          if (error.name === 'SequelizeValidationError') {
+            const validationErrors = error.errors.map((err) => err.message);
+            req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
+          } else if (error.name === 'SequelizeUniqueConstraintError') {
+            req.flash('error_msg', 'Já existe uma notícia com este título.');
+          } else {
+            req.flash('error_msg', 'Erro ao atualizar a notícia. Tente novamente mais tarde.');
+          }
+    
+          return res.redirect(`/noticias/edit/${req.params.id}`);
         }
+      });
+    };
 
-        await noticias.update({
-          titulo,
-          subTitulo,
-          etiqueta,
-          descricao,
-          autor,
-          imagePath,
-        });
-
-        req.flash('success_msg', 'Notícia atualizado com sucesso!');
-        res.redirect('/noticias');
-      } catch (error) {
-        console.error('Erro ao atualizar notícia:', error);
-        req.flash('error_msg', 'Erro ao atualizar notícia.');
-        res.redirect(`/noticias/${req.params.id}/edit`);
-      }
-    });
-  },
   // Excluir um evento (somente se ainda não começou)
   deletarNoticia: async (req, res) => {
     try {
