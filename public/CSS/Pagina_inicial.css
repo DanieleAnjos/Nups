@@ -97,6 +97,7 @@ body {
     max-width: 600px;
     margin: 0 auto;
     padding: 1rem;
+    padding-top: 50px;
 }
 
 .main-image img {
