@@ -108,7 +108,6 @@ exports.store = [
         matricula, 
         dataNascimento, 
         sexo, 
-        cpf, 
         rg, 
         telefone, 
         filhos, 
@@ -148,7 +147,7 @@ exports.store = [
         statusPaciente,
         ...dadosBasicos } = req.body;
 
-      if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
+      if (!nome || !matricula || !dataNascimento || !sexo  || !rg) {
         req.flash('error_msg', 'Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
         return res.render('paciente/create', {
           error_msg: req.flash('error_msg'),
@@ -158,7 +157,7 @@ exports.store = [
 
       const pacienteExistente = await Paciente.findOne({
         where: {
-          [Op.or]: [{ cpf }, { rg }, { matricula }],
+          [Op.or]: [ { rg }, { matricula }],
         },
       });
 
@@ -172,16 +171,8 @@ exports.store = [
 
       const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
       const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
-      const cpfLimpo = cpf.replace(/\D/g, '');
       const rgLimpo = rg.replace(/\D/g, '');
 
-      if (cpfLimpo.length !== 11) {
-        req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
-        return res.render('paciente/create', {
-          error_msg: req.flash('error_msg'),
-          success_msg: req.flash('success_msg'),
-        });
-      }
 
       if (rgLimpo.length < 5) {
         req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
@@ -224,7 +215,6 @@ exports.store = [
         matricula,
         dataNascimento,
         sexo,
-        cpf: cpfLimpo,
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
@@ -339,7 +329,6 @@ exports.update = [
         matricula, 
         dataNascimento, 
         sexo, 
-        cpf, 
         rg, 
         telefone, 
         filhos, 
@@ -378,20 +367,15 @@ exports.update = [
         statusPaciente,
         ...dadosBasicos } = req.body;
 
-      if (!nome || !matricula || !dataNascimento || !sexo || !cpf || !rg) {
+      if (!nome || !matricula || !dataNascimento || !sexo || !rg) {
         req.flash('error_msg', 'Os campos nome, matrícula, data de nascimento, sexo, CPF e RG são obrigatórios.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
       const telefoneLimpo = telefone ? telefone.replace(/\D/g, '') : null;
       const telefoneContatoLimpo = telefoneContato ? telefoneContato.replace(/\D/g, '') : null;
-      const cpfLimpo = cpf.replace(/\D/g, '');
       const rgLimpo = rg.replace(/\D/g, '');
 
-      if (cpfLimpo.length !== 11) {
-        req.flash('error_msg', 'O CPF deve ter 11 dígitos.');
-        return res.redirect(`/pacientes/${req.params.id}/edit`);
-      }
 
       if (rgLimpo.length < 5) {
         req.flash('error_msg', 'O RG deve ter pelo menos 5 dígitos.');
@@ -410,13 +394,13 @@ exports.update = [
 
       const pacienteExistente = await Paciente.findOne({
         where: {
-          [Op.or]: [{ cpf: cpfLimpo }, { rg: rgLimpo }, { matricula }],
+          [Op.or]: [ { rg: rgLimpo }, { matricula }],
           id: { [Op.ne]: req.params.id }, 
         },
       });
 
       if (pacienteExistente) {
-        req.flash('error_msg', 'Já existe um paciente com esse CPF, RG ou matrícula.');
+        req.flash('error_msg', 'Já existe um paciente com esse RG ou matrícula.');
         return res.redirect(`/pacientes/${req.params.id}/edit`);
       }
 
@@ -471,7 +455,6 @@ exports.update = [
         matricula,
         dataNascimento,
         sexo,
-        cpf: cpfLimpo,
         rg: rgLimpo,
         telefone: telefoneLimpo,
         telefoneContato: telefoneContatoLimpo,
@@ -521,7 +504,7 @@ exports.update = [
         const validationErrors = error.errors.map((err) => err.message);
         req.flash('error_msg', `Erro de validação: ${validationErrors.join('. ')}`);
       } else if (error.name === 'SequelizeUniqueConstraintError') {
-        req.flash('error_msg', 'CPF, RG ou matrícula já cadastrados.');
+        req.flash('error_msg', 'RG ou matrícula já cadastrados.');
       } else {
         req.flash('error_msg', 'Erro ao atualizar o paciente.');
       }
