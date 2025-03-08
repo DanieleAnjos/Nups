@@ -41,6 +41,19 @@ body {
     padding-top: 20px;
 }
 
+.main-content3 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 5%;
+    margin-top: 2rem;
+    padding-top: 30px;
+}
+
+
+
 .main-container {
     flex: 1 1 45%;
     min-width: 300px;
