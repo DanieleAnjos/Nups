@@ -53,13 +53,16 @@ Atendimento.associate = (models) => {
   Atendimento.belongsTo(models.Paciente, {
     foreignKey: 'pacienteId',
     as: 'paciente',
+    onDelete: 'CASCADE', // Remove os atendimentos se o paciente for deletado
+    onUpdate: 'CASCADE', // Atualiza automaticamente caso o ID do paciente mude
   });
-
+  
   Atendimento.hasMany(models.DiscussaoCaso, {
      foreignKey: 'atendimentoId', 
      as: 'discussaoCasos' });
 
 };
+
 
 
 

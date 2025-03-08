@@ -313,8 +313,10 @@ Paciente.associate = (models) => {
   Paciente.hasMany(models.Atendimento, {
     foreignKey: 'pacienteId',
     as: 'atendimentos',
+    onDelete: 'CASCADE', // Deleta atendimentos ao deletar o paciente
   });
 };
+
 
 
 module.exports = Paciente;
