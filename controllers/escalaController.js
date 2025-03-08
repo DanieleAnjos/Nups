@@ -126,49 +126,58 @@ const escalaController = {
 
   store: async (req, res) => {
     try {
-      const { data, horarioInicio, horarioFim, adminId } = req.body;
-
-      const existingScale = await Escala.findOne({
-        where: {
-          data,
-          [Op.or]: [
-            {
-              horarioInicio: { [Op.lt]: horarioFim },
-              horarioFim: { [Op.gt]: horarioInicio },
-            },
-            {
-              horarioInicio: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
-            },
-            {
-              horarioFim: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
-            },
-          ],
-          adminId, 
-        },
-      });
-
-      if (existingScale) {
-        const profissionais = await Profissional.findAll(); 
-        return res.render('escalas/create', {
-          profissionais,
-          errorMessage: 'Este profissional já tem uma escala agendada neste dia e horário.'
-        });
+      const escalas = req.body.escalas; // Um array de objetos com data, horarioInicio, horarioFim, adminId
+  
+      if (!Array.isArray(escalas) || escalas.length === 0) {
+        req.flash('error_msg', 'Nenhuma escala fornecida.');
+        return res.redirect('/escalas/create');
       }
-
-      await Escala.create({ data, horarioInicio, horarioFim, adminId });
-      req.flash('success_msg','Escala cadastrada com sucesso!');
+  
+      const conflitos = [];
+  
+      for (const escala of escalas) {
+        const { data, horarioInicio, horarioFim, adminId } = escala;
+  
+        const existingScale = await Escala.findOne({
+          where: {
+            data,
+            [Op.or]: [
+              {
+                horarioInicio: { [Op.lt]: horarioFim },
+                horarioFim: { [Op.gt]: horarioInicio },
+              },
+              {
+                horarioInicio: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
+              },
+              {
+                horarioFim: { [Op.gte]: horarioInicio, [Op.lte]: horarioFim },
+              },
+            ],
+            adminId,
+          },
+        });
+  
+        if (existingScale) {
+          conflitos.push(`Conflito na data ${data}, horário ${horarioInicio} - ${horarioFim} para o profissional ID ${adminId}`);
+        } else {
+          await Escala.create({ data, horarioInicio, horarioFim, adminId });
+        }
+      }
+  
+      if (conflitos.length > 0) {
+        req.flash('error_msg', conflitos.join('. '));
+      } else {
+        req.flash('success_msg', 'Todas as escalas foram cadastradas com sucesso!');
+      }
+  
       res.redirect('/escalas');
     } catch (error) {
-      console.error('Erro ao criar a escala:', error);
-      const profissionais = await Profissional.findAll(); 
-      req.flash('error_msg','Erro ao criar a escala');
-      res.render('escalas/create', {
-        profissionais,
-        errorMessage: 'Erro ao criar a escala.'
-      });
+      console.error('Erro ao criar escalas:', error);
+      req.flash('error_msg', 'Erro ao criar as escalas.');
+      res.redirect('/escalas/create');
     }
   },
-
+  
   edit: async (req, res) => {
     try {
         const escala = await Escala.findByPk(req.params.id, {

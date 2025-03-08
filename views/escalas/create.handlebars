@@ -3,41 +3,49 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header text-center">
-                    <h4 class="my-2 text-primary">Criar Nova Escala</h4>
+                    <h4 class="my-2 text-primary">Criar Novas Escalas</h4>
                 </div>
                 <div class="card-body">
-                    <form action="/escalas" method="POST" class="needs-validation" novalidate>
-                        <!-- Campo Data -->
-                        <div class="mb-4">
-                            <label for="data" class="form-label fw-bold">Data</label>
-                            <input type="date" name="data" id="data" class="form-control shadow-sm" required>
-                            <div class="invalid-feedback">Por favor, insira uma data válida.</div>
+                    <form action="/escalas" method="POST" class="needs-validation" novalidate id="escalasForm">
+                        <div id="escalasContainer">
+                            <!-- Grupo de Escala -->
+                            <div class="escala-group mb-4">
+                                <h5 class="text-secondary">Escala 1</h5>
+
+                                <!-- Data -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Data</label>
+                                    <input type="date" name="escalas[0][data]" class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Horário Início -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Horário de Início</label>
+                                    <input type="time" name="escalas[0][horarioInicio]" class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Horário Fim -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Horário de Término</label>
+                                    <input type="time" name="escalas[0][horarioFim]" class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Profissional -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Profissional</label>
+                                    <select name="escalas[0][adminId]" class="form-select shadow-sm" required>
+                                        <option value="" disabled selected>Selecione o Profissional</option>
+                                        {{#each profissionais}}
+                                            <option value="{{this.id}}">{{this.nome}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Campo Horário Início -->
-                        <div class="mb-4">
-                            <label for="horarioInicio" class="form-label fw-bold">Horário de Início</label>
-                            <input type="time" name="horarioInicio" id="horarioInicio" class="form-control shadow-sm" required>
-                            <div class="invalid-feedback">Por favor, insira o horário de início.</div>
-                        </div>
-
-                        <!-- Campo Horário Fim -->
-                        <div class="mb-4">
-                            <label for="horarioFim" class="form-label fw-bold">Horário de Término</label>
-                            <input type="time" name="horarioFim" id="horarioFim" class="form-control shadow-sm" required>
-                            <div class="invalid-feedback">Por favor, insira o horário de término.</div>
-                        </div>
-
-                        <!-- Campo Profissional -->
-                        <div class="mb-4">
-                            <label for="adminId" class="form-label fw-bold">Profissional</label>
-                            <select name="adminId" id="adminId" class="form-select shadow-sm" required>
-                                <option value="" disabled selected>Selecione o Profissional</option>
-                                {{#each profissionais}}
-                                    <option value="{{this.id}}">{{this.nome}}</option>
-                                {{/each}}
-                            </select>
-                            <div class="invalid-feedback">Por favor, selecione um profissional.</div>
+                        <!-- Botão Adicionar Escala -->
+                        <div class="mb-4 text-center">
+                            <button type="button" class="btn btn-outline-primary" id="addEscala">Adicionar Escala</button>
                         </div>
 
                         <!-- Botões -->
@@ -53,21 +61,48 @@
 </div>
 
 <script>
-    // Bootstrap Form Validation
-    (() => {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
+    document.addEventListener('DOMContentLoaded', () => {
+        let escalaCount = 1;
+        const escalasContainer = document.getElementById('escalasContainer');
+        const addEscalaBtn = document.getElementById('addEscala');
+
+        addEscalaBtn.addEventListener('click', () => {
+            const escalaTemplate = `
+                <div class="escala-group mb-4">
+                    <h5 class="text-secondary">Escala ${escalaCount + 1}</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Data</label>
+                        <input type="date" name="escalas[${escalaCount}][data]" class="form-control shadow-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Horário de Início</label>
+                        <input type="time" name="escalas[${escalaCount}][horarioInicio]" class="form-control shadow-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Horário de Término</label>
+                        <input type="time" name="escalas[${escalaCount}][horarioFim]" class="form-control shadow-sm" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Profissional</label>
+                        <select name="escalas[${escalaCount}][adminId]" class="form-select shadow-sm" required>
+                            <option value="" disabled selected>Selecione o Profissional</option>
+                            {{#each profissionais}}
+                                <option value="{{this.id}}">{{this.nome}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+            `;
+            escalasContainer.insertAdjacentHTML('beforeend', escalaTemplate);
+            escalaCount++;
         });
-    })();
+    });
 </script>
+
 
 <style>
     .mt-5 {
