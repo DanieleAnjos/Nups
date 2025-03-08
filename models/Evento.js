@@ -50,7 +50,7 @@ Evento.init({
         },
     },
     privacidade: {
-        type: DataTypes.ENUM('público', 'privado', 'restrito'),
+        type: DataTypes.ENUM('Público Geral', 'Privado'),
         allowNull: false,
         defaultValue: 'público',
     },
