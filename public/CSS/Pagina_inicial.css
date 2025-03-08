@@ -49,6 +49,15 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.main-title2 {
+    font-family: 'Roboto', sans-serif; 
+    font-size: clamp(1rem, 3vw, 2rem);
+    color: #072C47;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    align-self: start;
+}
+
 .main-description {
     font-size: clamp(1rem, 2vw, 1.2rem);
     width: 90%;
