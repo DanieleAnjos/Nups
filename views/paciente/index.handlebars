@@ -48,6 +48,7 @@
     <table class="table table-hover table-striped align-middle">
         <thead class="table-primary text-center">
             <tr>
+                <th>ID</th>
                 <th>Matrícula</th>
                 <th>Nome</th>
                 <th>Status</th>
@@ -58,6 +59,7 @@
             {{#if pacientes.length}}
                 {{#each pacientes}}
                     <tr>
+                        <td>{{this.id}}</td>
                         <td>{{this.matricula}}</td>
                         <td>{{this.nome}}</td>
                         <td>{{this.statusPaciente}}</td>
