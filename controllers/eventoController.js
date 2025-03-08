@@ -231,11 +231,14 @@ const eventoController = {
           return res.redirect(`/eventos/${id}/edit`);
         }
 
+        const descricaoPurificada = DOMPurify.sanitize(descricao);
+
+
         await evento.update({
           titulo,
           subTitulo,
           etiqueta,
-          descricao,
+          descricao: descricaoPurificada,
           localizacao,
           dataHoraInicio: new Date(dataHoraInicio), 
           dataHoraFim: new Date(dataHoraFim), 
