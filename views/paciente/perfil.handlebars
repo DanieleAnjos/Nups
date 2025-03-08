@@ -213,8 +213,19 @@
 
 <!-- Scripts para validar dados do paciente -->
 <script>
-  function validateForm() {
-<script>
+  // Função para validar o tamanho do arquivo
+  function validateFileSize(event) {
+    const fileInput = document.getElementById('documento');
+    const file = fileInput.files[0];
+    const maxSize = 50 * 1024 * 1024; // 50MB em bytes
+
+    if (file && file.size > maxSize) {
+      alert('O arquivo é muito grande. O tamanho máximo permitido é 50MB.');
+      event.preventDefault(); // Impede o envio do formulário
+    }
+  }
+
+  // Função para excluir o documento
   function deleteDocumento(documentoId) {
     if (confirm('Tem certeza que deseja excluir este documento?')) {
       fetch(`/pacientes/{{paciente.id}}/delete-documento/${documentoId}`, {
@@ -241,18 +252,10 @@
     }
   }
 
-
-  document.querySelector('form').addEventListener('submit', function (e) {
-  const fileInput = document.getElementById('documento');
-  const file = fileInput.files[0];
-  const maxSize = 50 * 1024 * 1024; // 50MB em bytes
-
-  if (file && file.size > maxSize) {
-    alert('O arquivo é muito grande. O tamanho máximo permitido é 50MB.');
-    e.preventDefault(); // Impede o envio do formulário
-  }
-});
+  // Adiciona o evento de validação ao formulário
+  document.querySelector('form').addEventListener('submit', validateFileSize);
 </script>
+
 
 <style>
   .documentos-list {
