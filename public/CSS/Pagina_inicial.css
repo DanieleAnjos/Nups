@@ -29,6 +29,16 @@ body {
     margin-top: 2rem;
     padding-top: 100px;
 }
+.main-content2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 5%;
+    margin-top: 2rem;
+    padding-top: 50px;
+}
 
 .main-container {
     flex: 1 1 45%;
