@@ -127,22 +127,25 @@
   </div>
 
   <script>
-    $(document).ready(function() {
-      // Inicializa o Select2
-      $('#nomePaciente').select2({
-        placeholder: "🔍 Digite para buscar um servidor",
-        allowClear: true,
-        tags: true,
-        width: '100%'
-      });
+    
+import $ from 'https://code.jquery.com/jquery-3.6.0.min.js';
+import 'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js';
 
-      // Atualiza a matrícula ao selecionar um paciente
-      $('#nomePaciente').on('change', function () {
-        const selectedOption = $(this).find(':selected');
-        const matricula = selectedOption.data('matricula');
-        $('#matriculaPaciente').val(matricula);
-      });
-    });
+$(document).ready(function() {
+  $('#nomePaciente').select2({
+    placeholder: "🔍 Digite para buscar um servidor",
+    allowClear: true,
+    tags: true,
+    width: '100%'
+  });
+
+  $('#nomePaciente').on('change', function () {
+    const selectedOption = $(this).find(':selected');
+    const matricula = selectedOption.data('matricula');
+    $('#matriculaPaciente').val(matricula);
+  });
+});
+
 
     document.getElementById('numeroProcesso').addEventListener('input', function (event) {
       const input = event.target;
