@@ -2,7 +2,7 @@
   "name": "nups-system",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "postinstall": "npm install passport passport-local express-session tedious",
     "install-deps": "npm install",
