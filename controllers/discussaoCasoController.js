@@ -56,7 +56,7 @@ exports.criarDiscussaoCaso = async (req, res) => {
     const novaDiscussao = await DiscussaoCaso.create({ conteudo, autor, atendimentoId });
 
     req.flash('success_msg', 'Discussão de caso criada com sucesso.');
-    res.status(201).redirect(`/discussoes/${novaDiscussao.id}`);
+    res.status(201).redirect(`/atendimentos`);
   } catch (error) {
     console.error('Erro ao criar discussão de caso:', error);
     res.status(500).render('error', { message: 'Erro interno ao criar discussão de caso.' });
