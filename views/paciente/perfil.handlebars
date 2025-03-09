@@ -144,25 +144,26 @@
 
   <br>
 
-  <!-- Atendimentos -->
-  <div class="card">
-    <div class="card-header">
-      <h2 class="h5 mb-0">Atendimentos</h2>
-    </div>
-    <div class="card-body">
-      {{#if paciente.atendimentos}}
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Profissional</th>
-                <th>Cargo do profissional</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each paciente.atendimentos as |atendimento|}}
+<!-- Atendimentos -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h5 mb-0">Atendimentos</h2>
+  </div>
+  <div class="card-body">
+    {{#if paciente.atendimentos}}
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Profissional</th>
+              <th>Cargo do profissional</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each paciente.atendimentos as |atendimento|}}
+              {{#if (eq atendimento.profissional.cargo ../profissional.cargo)}}
                 <tr class="attendance-item">
                   <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                   <td>{{atendimento.profissional.nome}}</td>
@@ -171,16 +172,18 @@
                     <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
                   </td>
                 </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
-      {{else}}
-        <p>Este paciente não possui atendimentos registrados.</p>
-      {{/if}}
-    </div>
+              {{/if}}
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <p>Este paciente não possui atendimentos registrados.</p>
+    {{/if}}
   </div>
-  <hr>
+</div>
+<hr>
+
   
 {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
 
