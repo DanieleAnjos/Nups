@@ -65,7 +65,30 @@
         let escalaCount = 1;
         const escalasContainer = document.getElementById('escalasContainer');
         const addEscalaBtn = document.getElementById('addEscala');
+        const form = document.getElementById('escalasForm');
 
+        // Função para validar o formulário antes de enviar
+        function validarFormulario() {
+            const escalaGroups = document.querySelectorAll('.escala-group');
+            let isValid = true;
+
+            // Verifica se todos os campos de uma escala estão preenchidos
+            escalaGroups.forEach(group => {
+                const inputs = group.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            return isValid;
+        }
+
+        // Adiciona nova escala dinamicamente
         addEscalaBtn.addEventListener('click', () => {
             const escalaTemplate = `
                 <div class="escala-group mb-4">
@@ -100,9 +123,20 @@
             escalasContainer.insertAdjacentHTML('beforeend', escalaTemplate);
             escalaCount++;
         });
+
+        // Adiciona a validação de envio
+        form.addEventListener('submit', (e) => {
+            if (!validarFormulario()) {
+                e.preventDefault(); // Impede o envio do formulário
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Por favor, preencha todos os campos obrigatórios!',
+                });
+            }
+        });
     });
 </script>
-
 
 <style>
     .mt-5 {
@@ -149,5 +183,9 @@
     .btn-outline-secondary:hover {
         background-color: #e2e6ea;
         border-color: #6c757d;
+    }
+
+    .is-invalid {
+        border-color: #dc3545 !important;
     }
 </style>
