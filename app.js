@@ -121,6 +121,18 @@ const hbs = engine({
         const minutes = String(d.getMinutes()).padStart(2, '0');
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     },
+    formatDateTime2: (date) => {
+      const data = new Date(date);
+      return data.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'America/Sao_Paulo'
+      });
+    },
     formatTime: (date) => {
         if (!date) return '';
         const d = new Date(date);
