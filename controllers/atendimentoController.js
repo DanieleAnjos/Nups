@@ -29,7 +29,7 @@ exports.index = async (req, res) => {
     const dateFilter = {};
     if (dataExata) {
       const data = new Date(dataExata);
-      data.setDate(data.getDate() + 2); // Adiciona um dia
+      data.setDate(data.getDate()); // Adiciona um dia
 
       const dataInicio = new Date(data);
       dataInicio.setHours(0, 0, 0, 0);
