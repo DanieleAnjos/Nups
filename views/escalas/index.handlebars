@@ -114,7 +114,7 @@
         // Verifica se profissionalColors está definido
         let profissionalColors;
         try {
-            profissionalColors = JSON.parse({{{safeStringify profissionalColors}}});
+        profissionalColors = JSON.parse('{{{safeStringify profissionalColors}}}');
         } catch (error) {
             console.error("Erro ao analisar profissionalColors:", error);
             profissionalColors = {};
