@@ -9,13 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/dist/fullcalendar.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.0/dist/fullcalendar.min.js"></script>
     <link rel="stylesheet" href="/CSS/Principal.css">
-
 </head>
 <body>
     <div class="container mt-5">
         <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
         {{#if (or (eq profissional.cargo "Administrador") (eq profissional.cargo "Adm"))}}
-
         <div class="d-flex justify-content-end mb-3">
             <a href="/escalas/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Escala
@@ -48,43 +46,42 @@
             <div class="alert alert-danger mt-3" role="alert">{{errorMessage}}</div>
         {{/if}}
 
-<div class="table-responsive mt-3">
-    <table class="table table-hover table-striped table-bordered">
-        <thead class="table-primary">
-            <tr class="text-center">
-                <th>Data</th>
-                <th>Horário Início</th>
-                <th>Horário Fim</th>
-                <th>Profissional</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each escalas}}
-                <tr>
-                    <td>{{Data this.data}}</td>
-                    <td>{{this.horarioInicio}}</td>
-                    <td>{{this.horarioFim}}</td>
-                    <td>{{this.admin.nome}}</td>
+        <div class="table-responsive mt-3">
+            <table class="table table-hover table-striped table-bordered">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Data</th>
+                        <th>Horário Início</th>
+                        <th>Horário Fim</th>
+                        <th>Profissional</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each escalas}}
+                        <tr>
+                            <td>{{Data this.data}}</td>
+                            <td>{{this.horarioInicio}}</td>
+                            <td>{{this.horarioFim}}</td>
+                            <td>{{this.admin.nome}}</td>
 
-                    {{#if (eq ../profissional.cargo "Administrador")}}
-                        <td class="text-center">
-                            <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                            <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
-                                    <i class="bi bi-trash"></i> Excluir
-                                </button>
-                            </form>
-                        </td>
-                    {{/if}}
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</div>
-
+                            {{#if (eq ../profissional.cargo "Administrador")}}
+                                <td class="text-center">
+                                    <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
+                                            <i class="bi bi-trash"></i> Excluir
+                                        </button>
+                                    </form>
+                                </td>
+                            {{/if}}
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
 
         <div class="d-flex justify-content-end mb-3">
             <button id="toggleCalendar" class="btn btn-secondary">
@@ -92,7 +89,7 @@
             </button>
         </div>
 
-        <div id="calendar" class="mt-5"></div>
+        <div id="calendar" class="mt-5 " style="display: none;"></div>
 
         {{#if (eq escalas.length 0)}}
             <div class="alert alert-info text-center" role="alert">
@@ -114,53 +111,51 @@
         // Cores personalizadas para cada profissional
         const profissionalColors = JSON.parse('{{{profissionalColors}}}');
 
-            const events = [
-                {{#each escalas}}
-                {
-                    title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
-                    start: '{{this.data}}T{{this.horarioInicio}}',
-                    end: '{{this.data}}T{{this.horarioFim}}',
-                    backgroundColor: profissionalColors['{{this.admin.id}}'] || '#007bff', 
-                    borderColor: profissionalColors['{{this.admin.id}}'] || '#007bff',
-                    textColor: '#fff',
-                    extendedProps: {
-                        horarioInicio: '{{this.horarioInicio}}',
-                        horarioFim: '{{this.horarioFim}}'
-                    }
-                },
-                {{/each}}
-            ];
-
-            // Formatar os horários antes de exibir
-            events.forEach(event => {
-                let startTime = new Date(event.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                let endTime = new Date(event.end).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                event.title = `${event.title.split(' - ')[0]} - ${startTime} até ${endTime}`;
-            });
-
-
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth', // Exibe o calendário no formato mensal
-                locale: 'pt-br',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: events,
-                eventClick: function(info) {
-                    let startTime = info.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                    let endTime = info.event.end ? info.event.end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Sem horário final';
-
-                    Swal.fire({
-                        title: info.event.title.split(" - ")[0], // Apenas o nome do profissional
-                        html: `<b>Início:</b> ${startTime}<br><b>Fim:</b> ${endTime}`,
-                        icon: 'info',
-                        confirmButtonText: 'Ok'
-                    });
+        const events = [
+            {{#each escalas}}
+            {
+                title: '{{this.admin.nome}} - {{this.horarioInicio}} até {{this.horarioFim}}',
+                start: '{{this.data}}T{{this.horarioInicio}}',
+                end: '{{this.data}}T{{this.horarioFim}}',
+                backgroundColor: profissionalColors['{{this.admin.id}}'] || '#007bff', 
+                borderColor: profissionalColors['{{this.admin.id}}'] || '#007bff',
+                textColor: '#fff',
+                extendedProps: {
+                    horarioInicio: '{{this.horarioInicio}}',
+                    horarioFim: '{{this.horarioFim}}'
                 }
-            });
+            },
+            {{/each}}
+        ];
 
+        // Formatar os horários antes de exibir
+        events.forEach(event => {
+            let startTime = new Date(event.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            let endTime = new Date(event.end).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            event.title = `${event.title.split(' - ')[0]} - ${startTime} até ${endTime}`;
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Exibe o calendário no formato mensal
+            locale: 'pt-br',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: events,
+            eventClick: function(info) {
+                let startTime = info.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                let endTime = info.event.end ? info.event.end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Sem horário final';
+
+                Swal.fire({
+                    title: info.event.title.split(" - ")[0], // Apenas o nome do profissional
+                    html: `<b>Início:</b> ${startTime}<br><b>Fim:</b> ${endTime}`,
+                    icon: 'info',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        });
 
         calendar.render();
 
@@ -172,7 +167,6 @@
 
 </body>
 </html>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -195,5 +189,3 @@
         {{/if}}
     });
 </script>
-
- 
