@@ -114,8 +114,9 @@
           </div>
           <div class="info-item">
             <i class="fas fa-notes-medical"></i>
-            <span class="label"><strong>Ficha completa:</strong></span>
-            <span class="value">&nbsp;<a href="/paciente/ficha/{{this.id}}">Ver ficha</a></span>
+            <span class="value">
+              <a href="/pacientes/ficha/{{this.id}}" class="link-ficha">Ver ficha</a>
+            </span>
           </div>
           </div>
       </div>
@@ -178,7 +179,7 @@
   </div>
   <hr>
   
-  {{#if (eq profissional.cargo "Assistente social")}}
+{{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
 
 <div class="card">
   <div class="card-header bg-secondary text-white">
@@ -511,6 +512,18 @@
   .table tbody tr:hover {
     background: #f9f9f9;
   }
+
+  .link-ficha {
+  text-decoration: none;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.link-ficha:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
 
   @media (max-width: 768px) {
     .profile-card {
