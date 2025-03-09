@@ -1,6 +1,7 @@
 const DiscussaoCaso = require('../models/DiscussaoCaso');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional');
+const Usuario = require('../models/Usuario');
 
 
 exports.renderizarFormularioCriacao = async (req, res) => {
