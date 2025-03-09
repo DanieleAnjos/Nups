@@ -83,7 +83,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>Ficha do Paciente</h1>
+    <br>
+    <h3 style="align-items: center;">Ficha do Paciente</h3>
 
     <div class="card">
       <div class="img-container">
@@ -94,7 +95,7 @@
         {{/if}}
       </div>
 
-      <h2 class="card-title">{{paciente.nome}}</h2>
+      <h3 class="card-title">{{paciente.nome}}</h3>
 
       <div class="info-group">
         <p class="card-text"><strong>Matrícula:</strong> {{paciente.matricula}}</p>
@@ -107,7 +108,8 @@
         <p class="card-text"><strong>Endereço:</strong> {{paciente.endereco}}</p>
         <p class="card-text"><strong>Cep:</strong> {{paciente.cep}}</p>
         <p class="card-text"><strong>Posto de Serviço:</strong> {{paciente.postoServico}}</p>
-        <p class="card-text"><strong>Escala:</strong> {{paciente.periodoEscala}}</p>
+        <p class="card-text"><strong>Escala:</strong> {{paciente.escala}}</p>
+        <p class="card-text"><strong>Tempo de serviço:</strong> {{paciente.periodoEscala}}</p>
         <p class="card-text"><strong>Status:</strong> {{paciente.statusPaciente}}</p>
         <p class="card-text"><strong>Alergia:</strong> {{paciente.alergiaMedicamento}}</p>
         <p class="card-text"><strong>Medicação de controle:</strong> {{paciente.tipoMedicamento}}</p>
@@ -117,7 +119,7 @@
         <p class="card-text"><strong>Deficiência: </strong> {{Data paciente.deficiencia}}</p>
       </div>
 
-      <h5>Filhos</h5>
+      <h6><strong>Filhos</strong></h6>
       {{#if paciente.filhos.length}}
         <ul>
           {{#each paciente.filhos}}
@@ -128,7 +130,7 @@
         <p>Sem filhos cadastrados.</p>
       {{/if}}
 
-      <h3>Observações</h3>
+      <h4>Observações</h4>
       <p>{{paciente.observacoes}}</p>
 
       <a href="/pacientes" class="btn-primary">Voltar</a>
