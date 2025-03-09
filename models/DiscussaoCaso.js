@@ -35,8 +35,8 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   dataHora: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW, 
-  },
+    defaultValue: () => new Date(), // Data e hora atuais
+  }
 }, {
   tableName: 'discussao_casos',
   timestamps: true, 
