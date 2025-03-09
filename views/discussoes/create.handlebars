@@ -16,7 +16,7 @@
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <form action="/discussoes/create/{{atendimentoId}}" method="POST">
+                <form action="/discussoes/create/{{atendimentoId}}" onsubmit="setCurrentDate()"  method="POST">
                     <div class="mb-4">
                         <label for="conteudo" class="form-label">Conteúdo da Discussão:</label>
                         <textarea name="conteudo" id="conteudo" class="form-control" rows="6" required></textarea>
@@ -41,3 +41,10 @@
 
 </body>
 </html>
+
+<script>
+        function setCurrentDate() {
+        const currentDate = new Date().toISOString().split('T')[0];
+        document.getElementById('dataHora').value = currentDate;
+    }
+</script>
