@@ -208,10 +208,13 @@ const hbs = engine({
     isOdd: (num) => num % 2 !== 0,
     default: (value, defaultValue) => value || defaultValue,
   },
+    safeStringify: function (obj) {
+      return JSON.stringify(obj || {}).replace(/</g, '\\u003c');
+  },
   runtimeOptions: {
       allowProtoPropertiesByDefault: true,
       allowProtoMethodsByDefault: true
-  }
+  },
 });
 
 app.use(methodOverride('_method')); 
