@@ -51,75 +51,72 @@
 </form>
 
 
-        <!-- Tabela de Encaminhamentos -->
-        <div class="table-responsive">
-            <table class="table table-hover table-striped table-bordered mt-3">
-                <thead class="table-primary">
-                    <tr class="text-center">
-                        <th>Data</th>
-                        <th>Matrícula Servidor</th>
-                        <th>Processo</th>
-                        <th>Nome do Servidor</th>
-                        <th>Enviado por</th>
-                        <th>Recebido por</th>
-                        <th>Assunto Acolhimento</th>
-                        <th>Visto</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each encaminhamentos}}
-                        <tr>
-                            <td>{{OneDate this.data }}</td>
-                            <td>{{this.matriculaPaciente}}</td>
-                            <td>{{this.numeroProcesso}}</td>
-                            <td>{{this.nomePaciente}}</td>
-                            <td>{{this.profissionalEnvio.nome}}</td>
-                            <td>{{this.profissionalRecebido.nome}}</td>
-                            <td>{{this.assuntoAcolhimento}}</td>
-                            <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
-                            <td class="text-center">
-                                
-                                {{#if this.podeEditar}}
-                                {{#if visto}}
-                                    <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
-                                {{else}}
-                                    <a href="/encaminhamentos/{{this.id}}/visto" class="btn btn-info btn-sm" aria-label="Marcar como Visto">Marcar como Visto</a>
-                                {{/if}}
-                                <a href="/encaminhamentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                    <i class="bi bi-pencil-square"></i> Editar
+<!-- Tabela de Encaminhamentos -->
+<div class="table-responsive">
+    <table class="table table-hover table-striped table-bordered mt-3">
+        <thead class="table-primary">
+            <tr class="text-center">
+                <th>Data</th>
+                <th>Matrícula Servidor</th>
+                <th>Processo</th>
+                <th>Nome do Servidor</th>
+                <th>Enviado por</th>
+                <th>Recebido por</th>
+                <th>Assunto Acolhimento</th>
+                <th>Visto</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each encaminhamentos}}
+                <tr>
+                    <td>{{OneDate this.data }}</td>
+                    <td>{{this.matriculaPaciente}}</td>
+                    <td>{{this.numeroProcesso}}</td>
+                    <td>{{this.nomePaciente}}</td>
+                    <td>{{this.profissionalEnvio.nome}}</td>
+                    <td>{{this.profissionalRecebido.nome}}</td>
+                    <td>{{this.assuntoAcolhimento}}</td>
+                    <td>{{#if this.visto}}<span class="badge bg-success">Sim</span>{{else}}<span class="badge bg-danger">Não</span>{{/if}}</td>
+                    <td class="text-center">
+                        {{#if this.podeEditar}}
+                            {{#if visto}}
+                                <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
+                            {{else}}
+                                <a href="/encaminhamentos/{{this.id}}/visto" class="btn btn-info btn-sm" aria-label="Marcar como Visto">
+                                    <i class="bi bi-eye"></i> Marcar como Visto
                                 </a>
-                                <form action="/encaminhamentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
-                                        <i class="bi bi-trash"></i> Cancelar
-                                    </button>
-                                </form>
-                                {{/if}}
+                            {{/if}}
+                            
+                            <!-- Editar botão -->
+                            <a href="/encaminhamentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1" aria-label="Editar">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
 
-                                <a href="/encaminhamentos/{{this.id}}" class="btn btn-info btn-sm mx-1">
-                                    <i class="bi bi-eye"></i> Detalhes
-                                </a>
-                                
-                                {{#if ../podeDeletar}}
-                                <form action="/encaminhamentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
-                                        <i class="bi bi-trash"></i> Cancelar
-                                    </button>
-                                </form>
-                                 {{/if}}
-                            </td>
-                        </tr>
-                    {{else}}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
-                        </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
-    </div>
+                            <!-- Deletar botão -->
+                            <form action="/encaminhamentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');" aria-label="Deletar">
+                                    <i class="bi bi-trash"></i> Cancelar
+                                </button>
+                            </form>
+                        {{/if}}
+
+                        <!-- Detalhes botão -->
+                        <a href="/encaminhamentos/{{this.id}}" class="btn btn-info btn-sm mx-1" aria-label="Ver Detalhes">
+                            <i class="bi bi-eye"></i> Detalhes
+                        </a>
+                    </td>
+                </tr>
+            {{else}}
+                <tr>
+                    <td colspan="9" class="text-center text-muted">Nenhum encaminhamento encontrado.</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
 
     <!-- Bootstrap 5 JS -->
     <script>
