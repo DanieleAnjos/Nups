@@ -10,7 +10,7 @@
         <p>{{atendimento.registroAtendimento}}</p>
     </div>
 
-    <!-- Exibir Discussões -->
+        <!-- Exibir Discussões -->
         <h3 class="mt-4">Discussões Associadas</h3>
         {{#if atendimento.discussaoCasos.length}}
             <ul class="discussao-list">
@@ -19,7 +19,9 @@
                         <p><strong>Autor:</strong> {{#if profissional}}{{profissional.nome}}{{else}}Autor desconhecido{{/if}}</p>
                         <p><strong>Data:</strong> {{formatDateTime2 dataHora}}</p>
                         <p><strong>Conteúdo:</strong> {{conteudo}}</p>
-                        <a href="/discussoes/{{id}}/edit" class="btn btn-warning btn-sm">Editar</a>
+                        {{#if (or (eq profissional.id ../user.profissionalId) (eq ../user.role "Administrador"))}}
+                            <a href="/discussoes/{{id}}/edit" class="btn btn-warning btn-sm">Editar</a>
+                        {{/if}}
                     </li>
                 {{/each}}
             </ul>
