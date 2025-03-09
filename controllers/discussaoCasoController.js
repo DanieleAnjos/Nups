@@ -37,7 +37,20 @@ exports.criarDiscussaoCaso = async (req, res) => {
       return res.status(401).render('error', { message: 'Você precisa estar logado para criar uma discussão.' });
     }
 
-    const autor = req.user.id; 
+    // Verifique se o usuário tem um 'profissional' associado
+    const usuario = await Usuario.findOne({
+      where: { id: req.user.id },
+      include: {
+        model: Profissional,
+        as: 'profissional',  // Usando o alias 'profissional'
+      },
+    });
+
+    if (!usuario || !usuario.profissional) {
+      return res.status(401).render('error', { message: 'Você precisa ter um profissional associado para criar uma discussão.' });
+    }
+
+    const autor = usuario.profissional.id;  // Agora usa o ID do profissional
 
     const novaDiscussao = await DiscussaoCaso.create({ conteudo, autor, atendimentoId });
 
