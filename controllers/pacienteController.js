@@ -655,7 +655,10 @@ exports.ficha = async (req, res) => {
       return res.redirect('/pacientes');
     }
 
-    res.render('paciente/ficha', { paciente });
+    const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
+
+
+    res.render('paciente/ficha', { paciente, imagePath });
   } catch (error) {
     console.error('Erro ao buscar o paciente:', error);
     req.flash('error_msg', 'Erro ao carregar os detalhes do paciente.');

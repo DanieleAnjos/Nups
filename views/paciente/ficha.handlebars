@@ -98,7 +98,7 @@
 
       <div class="info-group">
         <p class="card-text"><strong>Matrícula:</strong> {{paciente.matricula}}</p>
-        <p class="card-text"><strong>Data de Nascimento:</strong> {{paciente.dataNascimento}}</p>
+        <p class="card-text"><strong>Data de Nascimento:</strong> {{Data paciente.dataNascimento}}</p>
         <p class="card-text"><strong>Sexo:</strong> {{paciente.sexo}}</p>
         <p class="card-text"><strong>RG:</strong> {{paciente.rg}}</p>
         <p class="card-text"><strong>Telefone:</strong> {{paciente.telefone}}</p>
@@ -106,17 +106,18 @@
         <p class="card-text"><strong>Escolaridade:</strong> {{paciente.escolaridade}}</p>
         <p class="card-text"><strong>Endereço:</strong> {{paciente.endereco}}</p>
         <p class="card-text"><strong>Cep:</strong> {{paciente.cep}}</p>
-        <p class="card-text"><strong>Posto de Serviço:</strong> {{paciente.postoServiço}}</p>
-        <p class="card-text"><strong>Escala:</strong> {{paciente.escala}}</p>
+        <p class="card-text"><strong>Posto de Serviço:</strong> {{paciente.postoServico}}</p>
+        <p class="card-text"><strong>Escala:</strong> {{paciente.periodoEscala}}</p>
         <p class="card-text"><strong>Status:</strong> {{paciente.statusPaciente}}</p>
         <p class="card-text"><strong>Alergia:</strong> {{paciente.alergiaMedicamento}}</p>
         <p class="card-text"><strong>Medicação de controle:</strong> {{paciente.tipoMedicamento}}</p>
         <p class="card-text"><strong>Plano de saúde:</strong> {{paciente.planoSaude}}</p>
         <p class="card-text"><strong>Cartão SUS:</strong> {{paciente.cartaoSus}}</p>
-        <p class="card-text"><strong>Seguro de vida:</strong> {{paciente.seguro}}</p>
+        <p class="card-text"><strong>Seguro de vida:</strong> {{paciente.seguroVida}}</p>
+        <p class="card-text"><strong>Deficiência: </strong> {{Data paciente.deficiencia}}</p>
       </div>
 
-      <h3>Filhos</h3>
+      <h5>Filhos</h5>
       {{#if paciente.filhos.length}}
         <ul>
           {{#each paciente.filhos}}
