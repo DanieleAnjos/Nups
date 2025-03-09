@@ -163,7 +163,7 @@
           </thead>
           <tbody>
             {{#each paciente.atendimentos as |atendimento|}}
-              {{#if (eq atendimento.profissional.cargo ../profissional.cargo)}}
+              {{#if (or (eq ../profissional.cargo "Administrador") (eq atendimento.profissional.cargo ../profissional.cargo))}}
                 <tr class="attendance-item">
                   <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                   <td>{{atendimento.profissional.nome}}</td>
@@ -183,6 +183,7 @@
   </div>
 </div>
 <hr>
+
 
   
 {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
