@@ -303,6 +303,15 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+  if (req.user) {
+    res.locals.user = req.user; // Disponibiliza o usuário logado para todas as views
+    res.locals.profissionalId = req.user.profissionalId; // Inclui o profissionalId também
+  }
+  next();
+});
+
+
 app.use('/auth', authRoutes);
 
 app.get('/auth/login',function(req, res)  {
