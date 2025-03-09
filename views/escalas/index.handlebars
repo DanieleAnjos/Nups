@@ -6,22 +6,22 @@
     <title>Lista de Escalas</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
     <link rel="stylesheet" href="/CSS/Principal.css">
-
 </head>
 <body>
     <div class="container mt-5">
         <h2 class="text-center text-primary my-4">Lista de Escalas</h2>
-        {{#if (or (eq profissional.cargo "Administrador") (eq profissional.cargo "Adm"))}}
 
+        <!-- Botão de Adicionar Escala (Apenas para Administradores) -->
+        {{#if (or (eq profissional.cargo "Administrador") (eq profissional.cargo "Adm"))}}
         <div class="d-flex justify-content-end mb-3">
-            <a href="/escalas/create" class="btn btn-success">
-                <i class="bi bi-plus-circle"></i> Adicionar Escala
+            <a href="/escalas/create" class="btn btn-success" aria-label="Adicionar Escala">
+                <i class="bi bi-plus-circle" alt="Ícone de adicionar"></i> Adicionar Escala
             </a>
         </div>
         {{/if}}
 
+        <!-- Formulário de Filtro -->
         <form action="/escalas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
                 <div class="col-md-5 mb-2">
@@ -36,63 +36,67 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-filter"></i> Filtrar
+                    <button type="submit" class="btn btn-primary w-100" aria-label="Filtrar">
+                        <i class="bi bi-filter" alt="Ícone de filtro"></i> Filtrar
                     </button>
                 </div>
             </div>
         </form>
 
+        <!-- Mensagens de Erro/Sucesso -->
         {{#if errorMessage}}
             <div class="alert alert-danger mt-3" role="alert">{{errorMessage}}</div>
         {{/if}}
 
-<div class="table-responsive mt-3">
-    <table class="table table-hover table-striped table-bordered">
-        <thead class="table-primary">
-            <tr class="text-center">
-                <th>Data</th>
-                <th>Horário Início</th>
-                <th>Horário Fim</th>
-                <th>Profissional</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each escalas}}
-                <tr>
-                    <td>{{Data this.data}}</td>
-                    <td>{{this.horarioInicio}}</td>
-                    <td>{{this.horarioFim}}</td>
-                    <td>{{this.admin.nome}}</td>
+        <!-- Tabela de Escalas -->
+        <div class="table-responsive mt-3">
+            <table class="table table-hover table-striped table-bordered">
+                <thead class="table-primary">
+                    <tr class="text-center">
+                        <th>Data</th>
+                        <th>Horário Início</th>
+                        <th>Horário Fim</th>
+                        <th>Profissional</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each escalas}}
+                        <tr>
+                            <td>{{Data this.data}}</td>
+                            <td>{{this.horarioInicio}}</td>
+                            <td>{{this.horarioFim}}</td>
+                            <td>{{this.admin.nome}}</td>
 
-                    {{#if (eq ../profissional.cargo "Administrador")}}
-                        <td class="text-center">
-                            <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                            <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
-                                    <i class="bi bi-trash"></i> Excluir
-                                </button>
-                            </form>
-                        </td>
-                    {{/if}}
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</div>
+                            {{#if (eq ../profissional.cargo "Administrador")}}
+                                <td class="text-center">
+                                    <a href="/escalas/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1" aria-label="Editar">
+                                        <i class="bi bi-pencil-square" alt="Ícone de editar"></i> Editar
+                                    </a>
+                                    <form action="/escalas/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1" aria-label="Excluir" onclick="return confirm('Tem certeza que deseja deletar esta escala?');">
+                                            <i class="bi bi-trash" alt="Ícone de excluir"></i> Excluir
+                                        </button>
+                                    </form>
+                                </td>
+                            {{/if}}
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
 
-
+        <!-- Botão de Mostrar/Ocultar Calendário -->
         <div class="d-flex justify-content-end mb-3">
-            <button id="toggleCalendar" class="btn btn-secondary">
-                <i class="bi bi-calendar-event"></i> Mostrar/Ocultar Calendário
+            <button id="toggleCalendar" class="btn btn-secondary" aria-label="Mostrar/Ocultar Calendário">
+                <i class="bi bi-calendar-event" alt="Ícone de calendário"></i> Mostrar/Ocultar Calendário
             </button>
         </div>
 
+        <!-- Calendário -->
         <div id="calendar" class="mt-5"></div>
 
+        <!-- Mensagem de Nenhuma Escala Encontrada -->
         {{#if (eq escalas.length 0)}}
             <div class="alert alert-info text-center" role="alert">
                 Nenhuma escala encontrada.
@@ -100,18 +104,18 @@
         {{/if}}
     </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const calendarEl = document.getElementById('calendar');
-        const toggleCalendarBtn = document.getElementById('toggleCalendar');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const toggleCalendarBtn = document.getElementById('toggleCalendar');
 
-        if (!calendarEl) {
-            console.error("Elemento de calendário não encontrado!");
-            return;
-        }
+            if (!calendarEl || !toggleCalendarBtn) {
+                console.error("Elementos necessários não encontrados!");
+                return;
+            }
 
-        // Cores personalizadas para cada profissional
-        const profissionalColors = JSON.parse('{{{profissionalColors}}}');
+            // Cores personalizadas para cada profissional
+            const profissionalColors = JSON.parse('{{{profissionalColors}}}');
 
             const events = [
                 {{#each escalas}}
@@ -137,7 +141,6 @@
                 event.title = `${event.title.split(' - ')[0]} - ${startTime} até ${endTime}`;
             });
 
-
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth', // Exibe o calendário no formato mensal
                 locale: 'pt-br',
@@ -160,39 +163,33 @@
                 }
             });
 
+            calendar.render();
 
-        calendar.render();
-
-        toggleCalendarBtn.addEventListener('click', function () {
-            calendarEl.style.display = calendarEl.style.display === "none" ? "block" : "none";
+            toggleCalendarBtn.addEventListener('click', function () {
+                calendarEl.style.display = calendarEl.style.display === "none" ? "block" : "none";
+            });
         });
-    });
-</script>
 
+        // Exibir mensagens de erro/sucesso
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>
 </body>
 </html>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        {{#if error_msg}}
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: '{{error_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-        
-        {{#if success_msg}}
-            Swal.fire({
-                icon: 'success',
-                title: 'Sucesso',
-                text: '{{success_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-    });
-</script>
-
- 
