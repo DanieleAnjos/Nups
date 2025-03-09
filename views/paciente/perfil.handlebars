@@ -112,12 +112,15 @@
             <span class="label"><strong>Cartão SUS: </strong></span>
             <span class="value">&nbsp;{{paciente.cartaoSus}}</span>
           </div>
+        {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
           <div class="info-item">
             <i class="fas fa-notes-medical"></i>
+            <span class="label"><strong>Ficha: </strong></span>
             <span class="value">
-              <a href="/pacientes/ficha/{{this.id}}" class="link-ficha">Ver ficha</a>
+              <a href="/pacientes/ficha/{{paciente.id}}" class="link-ficha">Ver ficha completa</a>
             </span>
           </div>
+          {{/if}}
           </div>
       </div>
 
