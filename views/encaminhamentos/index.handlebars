@@ -81,9 +81,20 @@
                             <td class="text-center">
                                 
                                 {{#if this.podeEditar}}
+                                {{#if visto}}
+                                    <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
+                                {{else}}
+                                    <a href="/encaminhamentos/{{this.id}}/visto" class="btn btn-info btn-sm" aria-label="Marcar como Visto">Marcar como Visto</a>
+                                {{/if}}
                                 <a href="/encaminhamentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
                                     <i class="bi bi-pencil-square"></i> Editar
                                 </a>
+                                <form action="/encaminhamentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
+                                        <i class="bi bi-trash"></i> Cancelar
+                                    </button>
+                                </form>
                                 {{/if}}
 
                                 <a href="/encaminhamentos/{{this.id}}" class="btn btn-info btn-sm mx-1">
