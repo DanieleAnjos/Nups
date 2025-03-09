@@ -645,3 +645,21 @@ exports.relatorioDetalhes = async (req, res) => {
     return res.status(500).send('Erro interno ao buscar relatório.');
   }
 };
+
+exports.ficha = async (req, res) => {
+  try {
+    const paciente = await Paciente.findByPk(req.params.id);
+
+    if (!paciente) {
+      req.flash('error_msg', 'Paciente não encontrado.');
+      return res.redirect('/pacientes');
+    }
+
+    res.render('paciente/ficha', { paciente });
+  } catch (error) {
+    console.error('Erro ao buscar o paciente:', error);
+    req.flash('error_msg', 'Erro ao carregar os detalhes do paciente.');
+    res.redirect('/pacientes');
+  }
+};
+

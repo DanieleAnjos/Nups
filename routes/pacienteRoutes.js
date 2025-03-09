@@ -17,6 +17,8 @@ router.post('/', pacienteController.store);
 router.get('/:id/edit', pacienteController.edit);
 router.put('/:id', pacienteController.update);
 router.delete('/:id', pacienteController.delete);
+router.get('/ficha/:id', pacienteController.ficha);
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

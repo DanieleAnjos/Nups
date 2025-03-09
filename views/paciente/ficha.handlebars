@@ -1,0 +1,48 @@
+{{#if error_msg}}
+  <div class="alert alert-danger">{{error_msg}}</div>
+{{/if}}
+
+{{#if success_msg}}
+  <div class="alert alert-success">{{success_msg}}</div>
+{{/if}}
+
+<h1>Ficha do Paciente</h1>
+
+<div class="card">
+  <div class="card-header">
+    <h2>{{paciente.nome}}</h2>
+  </div>
+  <div class="card-body">
+    <p><strong>Matrícula:</strong> {{paciente.matricula}}</p>
+    <p><strong>Data de Nascimento:</strong> {{paciente.dataNascimento}}</p>
+    <p><strong>Sexo:</strong> {{paciente.sexo}}</p>
+    <p><strong>RG:</strong> {{paciente.rg}}</p>
+    <p><strong>Telefone:</strong> {{paciente.telefone}}</p>
+    <p><strong>Telefone de Contato:</strong> {{paciente.telefoneContato}}</p>
+    <p><strong>Escolaridade:</strong> {{paciente.escolaridade}}</p>
+    <p><strong>Posto de Serviço:</strong> {{paciente.postoServiço}}</p>
+    <p><strong>Escala:</strong> {{paciente.escala}}</p>
+    <p><strong>Status:</strong> {{paciente.statusPaciente}}</p>
+
+    {{#if paciente.imagePath}}
+      <p><strong>Foto do Paciente:</strong></p>
+      <img src="/uploads/{{paciente.imagePath}}" alt="Foto de {{paciente.nome}}" class="img-fluid" style="max-width: 200px;">
+    {{/if}}
+
+    <h3>Filhos</h3>
+    {{#if paciente.filhos.length}}
+      <ul>
+        {{#each paciente.filhos}}
+          <li>{{this.nome}} — {{this.idade}} anos</li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>Sem filhos cadastrados.</p>
+    {{/if}}
+
+    <h3>Observações</h3>
+    <p>{{paciente.observacoes}}</p>
+
+    <a href="/pacientes" class="btn btn-primary mt-3">Voltar</a>
+  </div>
+</div>
