@@ -416,27 +416,24 @@ exports.update = [
       let filhosArray = [];
 
       if (Array.isArray(filhos)) {
-
         filhosArray = filhos.filter((filho) => {
           return (
             typeof filho === 'object' &&
             filho !== null &&
             !Array.isArray(filho) &&
             filho.nome && 
-            filho.idade 
+            filho.idade
           );
         });
       } else if (typeof filhos === 'string') {
         try {
-          filhosArray = JSON.parse(filhos);
-
-          filhosArray = filhosArray.filter((filho) => {
+          filhosArray = JSON.parse(filhos).filter((filho) => {
             return (
               typeof filho === 'object' &&
               filho !== null &&
               !Array.isArray(filho) &&
               filho.nome && 
-              filho.idade 
+              filho.idade
             );
           });
         } catch (error) {
@@ -444,8 +441,11 @@ exports.update = [
           req.flash('error_msg', 'Formato inválido para os dados dos filhos.');
           return res.redirect(`/pacientes/${req.params.id}/edit`);
         }
-      } else {
-        filhosArray = [];
+      }
+      
+      // Se nenhum filho for enviado, mantém os filhos existentes
+      if (filhosArray.length === 0 && paciente.filhos) {
+        filhosArray = paciente.filhos;
       }
 
       console.log('Filhos normalizados:', filhosArray);
