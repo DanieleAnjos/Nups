@@ -471,7 +471,10 @@ const accessControl = {
       '/avisos/do-dia',
       '/avisos/dia',
       '/reservas',
-      '/graficos'
+      '/graficos',
+      '/discussoes/detalhes',
+      '/discussoes/edit'
+
 
     ],
     'Psicólogo': [
@@ -487,7 +490,9 @@ const accessControl = {
       '/avisos/do-dia',
       '/avisos/dia',
       '/reservas',
-      '/graficos'
+      '/graficos',
+      '/discussoes/detalhes',
+      '/discussoes/edit'
 
 
     ],
@@ -504,7 +509,9 @@ const accessControl = {
       '/avisos/do-dia',
       '/avisos/dia',
       '/reservas',
-      '/graficos'
+      '/graficos',
+      '/discussoes/detalhes',
+      '/discussoes/edit'
 
 
     ]

@@ -19,7 +19,7 @@
                         <p><strong>Autor:</strong> {{#if profissional}}{{profissional.nome}}{{else}}Autor desconhecido{{/if}}</p>
                         <p><strong>Data:</strong> {{formatDateTime2 dataHora}}</p>
                         <p><strong>Conteúdo:</strong> {{conteudo}}</p>
-                        {{#if (or (eq profissional.id ../user.profissionalId) (eq ../user.role "Administrador"))}}
+                        {{#if (or (eq ../profissional.cargo "Administrador") (eq profissional.id ../profissional.id))}}
                             <a href="/discussoes/{{id}}/edit" class="btn btn-warning btn-sm">Editar</a>
                         {{/if}}
                     </li>
@@ -29,6 +29,7 @@
             <p>Não há discussões associadas a este atendimento.</p>
             <a href="/discussoes/create/{{atendimento.id}}" class="btn btn-primary btn-sm">Vincular Discussão</a>
         {{/if}}
+
 
 
 

@@ -16,6 +16,33 @@
     <div class="container mt-5" style="max-width: 1300px;">
         <h2 class="text-center text-primary my-4">Lista de Discussões de Caso</h2>
 
+          <!-- Informações Pessoais -->
+    {{#if success_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: '{{success_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
+
+    <!-- Mensagens de erro -->
+    {{#if error_msg}}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: '{{error_msg}}',
+            confirmButtonText: 'Ok'
+          });
+        });
+      </script>
+    {{/if}}
 
         <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered mt-3">

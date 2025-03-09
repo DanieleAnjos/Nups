@@ -41,6 +41,7 @@ exports.criarDiscussaoCaso = async (req, res) => {
 
     const novaDiscussao = await DiscussaoCaso.create({ conteudo, autor, atendimentoId });
 
+    req.flash('success_msg', 'Discussão de caso criada com sucesso.');
     res.status(201).redirect(`/discussoes/${novaDiscussao.id}`);
   } catch (error) {
     console.error('Erro ao criar discussão de caso:', error);
@@ -139,6 +140,7 @@ exports.atualizarDiscussaoCaso = async (req, res) => {
 
     await discussaoCaso.save();
 
+    req.flash('sucess_msg', 'Sucesso ao atualizar discussão de caso');
     res.status(200).redirect(`/discussoes/${discussaoCaso.id}`);
   } catch (error) {
     console.error('Erro ao atualizar discussão de caso:', error);
@@ -157,6 +159,7 @@ exports.deletarDiscussaoCaso = async (req, res) => {
 
     await discussaoCaso.destroy();
 
+    req.flash('sucess_msg', 'Sucesso ao deletar discussão de caso');
     res.status(200).render('discussoes/index', { message: 'Discussão de caso deletada com sucesso.' });
   } catch (error) {
     console.error('Erro ao deletar discussão de caso:', error);
