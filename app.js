@@ -456,6 +456,7 @@ const accessControl = {
       '/avisos',
       '/fluxoAtendimentos'
     ],
+    
     'Assistente social': [
       '/dashboard/assistente-social',
       '/pacientes',
@@ -492,7 +493,10 @@ const accessControl = {
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
-      '/discussoes/edit'
+      '/discussoes/edit',
+      '/discussoes/create'
+
+
 
 
     ],
@@ -511,7 +515,8 @@ const accessControl = {
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
-      '/discussoes/edit'
+      '/discussoes/edit',
+      '/discussoes/create'
 
 
     ]
