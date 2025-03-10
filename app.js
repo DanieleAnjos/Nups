@@ -229,6 +229,10 @@ const hbs = engine({
   },
 });
 
+const favicon = require('serve-favicon');
+
+app.use(favicon(path.join(__dirname, 'public', 'IMG', 'favicon2-16x16.png')));
+
 app.use(methodOverride('_method')); 
 
 app.engine('handlebars', hbs);
