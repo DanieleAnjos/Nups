@@ -8,47 +8,51 @@ const xlsx = require('xlsx');
 
 const ocorrenciaController = {
   index: async (req, res) => {
-    
-    const { data, profissional } = req.query;
-    const where = {};
-    
-    if (data) {
-      where.data = data;
-    }
-    
-    try {
-      const ocorrencias = await Ocorrencia.findAll({
-        where,
-        include: [{
-          model: Profissional,
-          as: 'profissional',
-          where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
-        }],
-        order: [['data', 'DESC']]  
-      });
-    
-      // Aqui, você pode filtrar para garantir que apenas o administrador ou o profissional que criou a ocorrência
-      // pode editar ou remover.
-      const ocorrenciasData = ocorrencias.map(ocorrencia => {
-        const ocorrenciaPlain = ocorrencia.get({ plain: true });
-        // Adicionando a permissão para editar/remover
-        ocorrenciaPlain.canEdit = req.profissional.id === ocorrenciaPlain.profissionalId || req.profissional.cargo === 'Administrador';
-        return ocorrenciaPlain;
-      });
-    
-      const profissionais = await Profissional.findAll();
-    
-      res.render('ocorrencias/index', {
-        ocorrencias: ocorrenciasData,
-        profissionais,
-        query: req.query
-      });
-    } catch (error) {
-      console.error('Erro ao listar ocorrências:', error);
-      req.flash('error_msg', 'Erro ao listar ocorrências.');
-      res.redirect('/ocorrencias');
-    }
-    
+
+const { data, profissional } = req.query;
+const where = {};
+
+if (data) {
+  where.data = data;
+}
+
+try {
+  const ocorrencias = await Ocorrencia.findAll({
+    where,
+    include: [{
+      model: Profissional,
+      as: 'profissional',
+      where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
+    }],
+    order: [['data', 'DESC']]  
+  });
+
+  // Verificar se req.profissional está definido antes de continuar
+  if (!req.profissional) {
+    throw new Error('Profissional não encontrado ou não autenticado.');
+  }
+
+  const ocorrenciasData = ocorrencias.map(ocorrencia => {
+    const ocorrenciaPlain = ocorrencia.get({ plain: true });
+
+    // Verificando se o profissional logado tem permissão para editar
+    ocorrenciaPlain.canEdit = req.profissional.id === ocorrenciaPlain.profissionalId || req.profissional.cargo === 'Administrador';
+    return ocorrenciaPlain;
+  });
+
+  const profissionais = await Profissional.findAll();
+
+  res.render('ocorrencias/index', {
+    ocorrencias: ocorrenciasData,
+    profissionais,
+    query: req.query
+  });
+} catch (error) {
+  console.error('Erro ao listar ocorrências:', error);
+  req.flash('error_msg', 'Erro ao listar ocorrências.');
+  res.redirect('/ocorrencias');
+}
+
   },
   
 
