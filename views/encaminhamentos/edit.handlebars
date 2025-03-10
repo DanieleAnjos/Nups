@@ -62,7 +62,7 @@
         <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
           <option value="{{encaminhamento.nomePaciente}}" selected>{{encaminhamento.nomePaciente}}</option>
           {{#each pacientes}}
-            <option value="{{this.nome}}">{{this.nome}}</option>
+            <option value="{{this.nome}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
           {{/each}}
         </select>
       </div>
@@ -149,99 +149,143 @@
         const matricula = selectedOption.data('matricula');
         $('#matriculaPaciente').val(matricula); // Preencher o campo de matrícula
       });
-    });
 
-    document.getElementById('numeroProcesso').addEventListener('input', function (event) {
-      const input = event.target;
-      let value = input.value.replace(/\D/g, '');
-      
-      if (value.length > 6) {
-        value = value.slice(0, 6) + '/' + value.slice(6, 10);
+      document.getElementById('numeroProcesso').addEventListener('input', function (event) {
+        const input = event.target;
+        let value = input.value.replace(/\D/g, '');
+        
+        if (value.length > 6) {
+          value = value.slice(0, 6) + '/' + value.slice(6, 10);
+        }
+
+        input.value = value;
+
+        if (value === "") {
+          input.setCustomValidity("");
+          input.classList.remove("is-invalid");
+          return;
+        }
+
+        if (!/^\d{6}\/\d{4}$/.test(value)) {
+          input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
+          input.classList.add("is-invalid");
+        } else {
+          input.setCustomValidity("");
+          input.classList.remove("is-invalid");
+        }
+      });
+
+      document.getElementById('telefonePaciente').addEventListener('input', function (event) {
+        const input = event.target;
+        let value = input.value.replace(/\D/g, '');
+        
+        if (value.length > 11) {
+          value = value.slice(0, 11);
+        }
+
+        if (value.length > 10) {
+          value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+        } else if (value.length > 9) {
+          value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+        }
+
+        input.value = value;
+
+        const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+        if (!telefoneRegex.test(value)) {
+          input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
+          input.classList.add("is-invalid");
+        } else {
+          input.setCustomValidity("");
+          input.classList.remove("is-invalid");
+        }
+      });
+
+      function buscarPacientePorNome() {
+        const nomePaciente = document.getElementById('nomePaciente').value.trim();
+        
+        if (nomePaciente.length > 3) {
+          $.ajax({
+            url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,
+            method: 'GET',
+            success: function(data) {
+              $('#matriculaPaciente').val(data.matricula);
+              $('#pacienteId').val(data.id);
+            },
+            error: function() {
+              $('#matriculaPaciente').val('');
+              $('#pacienteId').val('');
+              alert('Paciente não encontrado!');
+            }
+          });
+        }
       }
 
-      input.value = value;
-
-      if (value === "") {
-        input.setCustomValidity("");
-        input.classList.remove("is-invalid");
-        return;
+      function buscarPacientePorMatricula() {
+        const matriculaPaciente = document.getElementById('matriculaPaciente').value.trim();
+        
+        if (matriculaPaciente.length > 0) {
+          $.ajax({
+            url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,
+            method: 'GET',
+            success: function(data) {
+              $('#nomePaciente').val(data.nome);
+              $('#pacienteId').val(data.id);
+            },
+            error: function() {
+              $('#nomePaciente').val('');
+              $('#pacienteId').val('');
+              alert('Paciente não encontrado!');
+            }
+          });
+        }
       }
 
-      if (!/^\d{6}\/\d{4}$/.test(value)) {
-        input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
-        input.classList.add("is-invalid");
-      } else {
-        input.setCustomValidity("");
-        input.classList.remove("is-invalid");
-      }
-    });
+      // Defina as listas de profissionais
+      document.addEventListener("DOMContentLoaded", function () {
+      const assuntoSelect = document.getElementById("assuntoAcolhimento");
+      const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
-    document.getElementById('telefonePaciente').addEventListener('input', function (event) {
-      const input = event.target;
-      let value = input.value.replace(/\D/g, '');
-      
-      if (value.length > 11) {
-        value = value.slice(0, 11);
-      }
+      const profissionaisPsicologia = [
+        {{#each profissionaisPsicologia}}
+          { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+      ];
 
-      if (value.length > 10) {
-        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
-      } else if (value.length > 9) {
-        value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-      }
+      const profissionaisServicoSocial = [
+        {{#each profissionaisServicoSocial}}
+          { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+      ];
 
-      input.value = value;
+      const assuntoSelect = document.getElementById('assuntoAcolhimento');
+      const profissionalSelect = document.getElementById('profissionalIdRecebido');
 
-      const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
-      if (!telefoneRegex.test(value)) {
-        input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
-        input.classList.add("is-invalid");
-      } else {
-        input.setCustomValidity("");
-        input.classList.remove("is-invalid");
-      }
-    });
+      function atualizarListaProfissionais() {
+        const assuntoSelecionado = assuntoSelect.value;
 
+        let profissionais = [];
+        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
+          profissionais = profissionaisPsicologia;
+        } else {
+          profissionais = profissionaisServicoSocial;
+        }
 
-        function buscarPacientePorNome() {
-      const nomePaciente = document.getElementById('nomePaciente').value.trim();
-      
-      if (nomePaciente.length > 3) {
-        $.ajax({
-          url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,
-          method: 'GET',
-          success: function(data) {
-            $('#matriculaPaciente').val(data.matricula);
-            $('#pacienteId').val(data.id);
-          },
-          error: function() {
-            $('#matriculaPaciente').val('');
-            $('#pacienteId').val('');
-            alert('Paciente não encontrado!');
-          }
+        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+
+        profissionais.forEach(profissional => {
+          const option = document.createElement("option");
+          option.value = profissional.id;
+          option.textContent = profissional.nome;
+          profissionalSelect.appendChild(option);
         });
       }
-    }
 
-    function buscarPacientePorMatricula() {
-      const matriculaPaciente = document.getElementById('matriculaPaciente').value.trim();
-      
-      if (matriculaPaciente.length > 0) {
-        $.ajax({
-          url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,
-          method: 'GET',
-          success: function(data) {
-            $('#nomePaciente').val(data.nome);
-            $('#pacienteId').val(data.id);
-          },
-          error: function() {
-            $('#nomePaciente').val('');
-            $('#pacienteId').val('');
-            alert('Paciente não encontrado!');
-          }
-        });
-      }
-    }
+      assuntoSelect.addEventListener("change", atualizarListaProfissionais);
+      atualizarListaProfissionais(); // Chama a função ao carregar a página
+    
+    });
+    });
   </script>
 </body>
 </html>
