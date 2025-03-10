@@ -8,42 +8,36 @@ const xlsx = require('xlsx');
 
 const ocorrenciaController = {
   index: async (req, res) => {
+    
     const { data, profissional } = req.query;
     const where = {};
-  
-    // Filtro de data
+    
     if (data) {
-      where.data = {
-        [Op.eq]: new Date(data) // Garantir que a data esteja no formato correto
-      };
+      where.data = data;
     }
-  
-    // Filtro de profissional (nome)
-    if (profissional) {
-      where.profissional = { 
-        nome: { 
-          [Op.like]: `%${profissional}%` 
-        }
-      };
-    }
-  
+    
     try {
-      // Buscar ocorrências com os filtros aplicados
       const ocorrencias = await Ocorrencia.findAll({
         where,
         include: [{
           model: Profissional,
           as: 'profissional',
-          required: true
+          where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
         }],
         order: [['data', 'DESC']]  
       });
-  
-      const ocorrenciasData = ocorrencias.map(ocorrencia => ocorrencia.get({ plain: true }));
-  
-      // Buscar profissionais para preencher o filtro no frontend
+    
+      // Aqui, você pode filtrar para garantir que apenas o administrador ou o profissional que criou a ocorrência
+      // pode editar ou remover.
+      const ocorrenciasData = ocorrencias.map(ocorrencia => {
+        const ocorrenciaPlain = ocorrencia.get({ plain: true });
+        // Adicionando a permissão para editar/remover
+        ocorrenciaPlain.canEdit = req.profissional.id === ocorrenciaPlain.profissionalId || req.profissional.cargo === 'Administrador';
+        return ocorrenciaPlain;
+      });
+    
       const profissionais = await Profissional.findAll();
-  
+    
       res.render('ocorrencias/index', {
         ocorrencias: ocorrenciasData,
         profissionais,
@@ -54,6 +48,7 @@ const ocorrenciaController = {
       req.flash('error_msg', 'Erro ao listar ocorrências.');
       res.redirect('/ocorrencias');
     }
+    
   },
   
 
