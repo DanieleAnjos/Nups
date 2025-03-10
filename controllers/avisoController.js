@@ -10,12 +10,13 @@ exports.renderCreateAviso = (req, res) => {
 };
 
 // Criar um novo aviso
+const moment = require('moment-timezone');
+
 exports.createAviso = async (req, res) => {
   try {
     const { assunto, mensagem, data, tipo } = req.body;
-    const profissionalId = req.user.profissionalId; // Obtém do usuário autenticado
+    const profissionalId = req.user.profissionalId;
 
-    // Validação básica
     if (!assunto || !mensagem || !data || !tipo) {
       return res.render('avisos/create', { 
         title: 'Novo Aviso', 
@@ -23,11 +24,13 @@ exports.createAviso = async (req, res) => {
       });
     }
 
-    // Criar aviso no banco de dados
-    await Aviso.create({ assunto, mensagem, data, tipo, profissionalId });
+    // Converte a data para o formato esperado pelo banco
+    const dataFormatada = moment.tz(data, 'America/Sao_Paulo').toDate();
+
+    await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, profissionalId });
 
     req.flash('success_msg', 'Aviso criado com sucesso');
-    res.redirect('/avisos'); // Redireciona para a lista de avisos
+    res.redirect('/avisos');
   } catch (error) {
     console.error('Erro ao criar aviso:', error);
     req.flash('error_msg', 'Erro ao criar aviso');
@@ -38,6 +41,7 @@ exports.createAviso = async (req, res) => {
     });
   }
 };
+
 
 // Listar todos os avisos
 
@@ -55,19 +59,15 @@ exports.getAllAvisos = async (req, res) => {
     }
 
     const { nomeProfissional, dataInicio } = req.query;
-
     const whereConditions = {};
 
-    // Filtro por nome do profissional
     if (nomeProfissional) {
       whereConditions['$profissional.nome$'] = { [Op.like]: `%${nomeProfissional}%` };
     }
 
-    // Filtro pela data exata do aviso
     if (dataInicio) {
-      whereConditions.data = {
-        [Op.eq]: dataInicio
-      };
+      const dataFormatada = moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate();
+      whereConditions.data = { [Op.eq]: dataFormatada };
     }
 
     const avisos = await Aviso.findAll({
@@ -78,13 +78,14 @@ exports.getAllAvisos = async (req, res) => {
           as: 'profissional',
           attributes: ['id', 'nome', 'cargo']
         }
-      ]
+      ],
+      order: [['data', 'DESC']]
     });
 
     res.render('avisos/index', { 
       title: 'Lista de Avisos', 
       avisos,
-      query: req.query // para preencher o formulário com valores atuais
+      query: req.query 
     });
   } catch (error) {
     console.error('Erro ao buscar avisos:', error);
@@ -97,11 +98,14 @@ exports.getAllAvisos = async (req, res) => {
   }
 };
 
+
 exports.getAvisosDoDia = async (req, res) => {
   try {
-    const startOfDay = moment().utc().startOf('day').toDate();
-    const endOfDay = moment().utc().endOf('day').toDate();
-    
+    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
+
+    console.log('Buscando avisos entre:', startOfDay, 'e', endOfDay);
+
     const profissionalId = req.user.profissionalId;
 
     const profissional = await Profissional.findByPk(profissionalId, {
@@ -115,7 +119,7 @@ exports.getAvisosDoDia = async (req, res) => {
     const avisosDoDia = await Aviso.findAll({
       where: {
         data: {
-          [Op.between]: [startOfDay, endOfDay], // Busca avisos dentro do intervalo do dia
+          [Op.between]: [startOfDay, endOfDay]
         }
       },
       include: [
@@ -124,7 +128,8 @@ exports.getAvisosDoDia = async (req, res) => {
           as: 'profissional',
           attributes: ['id', 'nome', 'cargo']
         }
-      ]
+      ],
+      order: [['data', 'ASC']]
     });
 
     res.render('avisos/do-dia', { 
@@ -142,6 +147,7 @@ exports.getAvisosDoDia = async (req, res) => {
     });
   }
 };
+
 
 
 // Renderiza a página de edição de um aviso 
