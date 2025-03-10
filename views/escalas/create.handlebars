@@ -1,3 +1,4 @@
+<!-- Formulário de Escalas -->
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
@@ -9,7 +10,7 @@
                     <form action="/escalas" method="POST" class="needs-validation" novalidate id="escalasForm">
                         <div id="escalasContainer">
                             <!-- Grupo de Escala -->
-                            <div class="escala-group mb-4">
+                            <div class="escala-group mb-4 border rounded p-3 position-relative">
                                 <h5 class="text-secondary">Escala 1</h5>
 
                                 <!-- Data -->
@@ -40,6 +41,9 @@
                                         {{/each}}
                                     </select>
                                 </div>
+
+                                <!-- Botão Remover -->
+                                <button type="button" class="btn btn-danger btn-sm removeEscala position-absolute top-0 end-0 m-2">Remover</button>
                             </div>
                         </div>
 
@@ -60,6 +64,7 @@
     </div>
 </div>
 
+<!-- Script -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         let escalaCount = 1;
@@ -67,31 +72,10 @@
         const addEscalaBtn = document.getElementById('addEscala');
         const form = document.getElementById('escalasForm');
 
-        // Função para validar o formulário antes de enviar
-        function validarFormulario() {
-            const escalaGroups = document.querySelectorAll('.escala-group');
-            let isValid = true;
-
-            // Verifica se todos os campos de uma escala estão preenchidos
-            escalaGroups.forEach(group => {
-                const inputs = group.querySelectorAll('input, select');
-                inputs.forEach(input => {
-                    if (!input.value) {
-                        isValid = false;
-                        input.classList.add('is-invalid');
-                    } else {
-                        input.classList.remove('is-invalid');
-                    }
-                });
-            });
-
-            return isValid;
-        }
-
-        // Adiciona nova escala dinamicamente
+        // Adicionar Escala
         addEscalaBtn.addEventListener('click', () => {
             const escalaTemplate = `
-                <div class="escala-group mb-4">
+                <div class="escala-group mb-4 border rounded p-3 position-relative">
                     <h5 class="text-secondary">Escala ${escalaCount + 1}</h5>
 
                     <div class="mb-3">
@@ -118,16 +102,40 @@
                             {{/each}}
                         </select>
                     </div>
+
+                    <button type="button" class="btn btn-danger btn-sm removeEscala position-absolute top-0 end-0 m-2">Remover</button>
                 </div>
             `;
             escalasContainer.insertAdjacentHTML('beforeend', escalaTemplate);
             escalaCount++;
         });
 
-        // Adiciona a validação de envio
+        // Remover Escala
+        escalasContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('removeEscala')) {
+                e.target.closest('.escala-group').remove();
+            }
+        });
+
+        // Validação do Formulário
         form.addEventListener('submit', (e) => {
-            if (!validarFormulario()) {
-                e.preventDefault(); // Impede o envio do formulário
+            const escalaGroups = document.querySelectorAll('.escala-group');
+            let isValid = true;
+
+            escalaGroups.forEach(group => {
+                const inputs = group.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            if (!isValid) {
+                e.preventDefault();
                 Swal.fire({
                     icon: 'error',
                     title: 'Erro',
@@ -137,6 +145,7 @@
         });
     });
 </script>
+
 
 <style>
     .mt-5 {

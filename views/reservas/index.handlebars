@@ -21,15 +21,16 @@
         </a>
     </div>
 
+    
 <form action="/reservas" method="GET" class="mb-4 p-4 border rounded shadow-sm bg-light">
     <div class="row g-3">
         <!-- Campo de Data -->
-        <div class="col-md-4">
+        <div class="col-md-4 col-12">
             <input type="date" name="data" id="data" class="form-control" placeholder="Data" value="{{query.data}}">
         </div>
 
         <!-- Campo de Sala -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-12">
             <select name="salaId" id="salaId" class="form-select">
                 <option value="">Todas as Salas</option>
                 {{#each salas}}
@@ -39,7 +40,7 @@
         </div>
 
         <!-- Campo de Profissional -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-12">
             <select name="profissionalId" id="profissionalId" class="form-select">
                 <option value="">Todos os Profissionais</option>
                 {{#each profissionais}}
@@ -47,17 +48,15 @@
                 {{/each}}
             </select>
         </div>
-            <div class="col-md-2">
+
         <!-- Botões -->
-        <div class="col-12 d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-            <a href="/reservas" class="btn btn-secondary">Limpar</a>
+        <div class="col-md-2 col-12 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary w-100 mb-2 mb-md-0">Filtrar</button>
+            <a href="/reservas" class="btn btn-secondary w-100">Limpar</a>
         </div>
     </div>
-    </div>
-
-
 </form>
+
 
 
     <!-- Tabela de Reservas -->
