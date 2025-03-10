@@ -10,27 +10,40 @@ const ocorrenciaController = {
   index: async (req, res) => {
     const { data, profissional } = req.query;
     const where = {};
-
+  
+    // Filtro de data
     if (data) {
-      where.data = data;
+      where.data = {
+        [Op.eq]: new Date(data) // Garantir que a data esteja no formato correto
+      };
     }
-
+  
+    // Filtro de profissional (nome)
+    if (profissional) {
+      where.profissional = { 
+        nome: { 
+          [Op.like]: `%${profissional}%` 
+        }
+      };
+    }
+  
     try {
+      // Buscar ocorrências com os filtros aplicados
       const ocorrencias = await Ocorrencia.findAll({
         where,
         include: [{
           model: Profissional,
           as: 'profissional',
-          where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
+          required: true
         }],
         order: [['data', 'DESC']]  
       });
-
+  
       const ocorrenciasData = ocorrencias.map(ocorrencia => ocorrencia.get({ plain: true }));
-
+  
+      // Buscar profissionais para preencher o filtro no frontend
       const profissionais = await Profissional.findAll();
-      
-
+  
       res.render('ocorrencias/index', {
         ocorrencias: ocorrenciasData,
         profissionais,
@@ -42,6 +55,7 @@ const ocorrenciaController = {
       res.redirect('/ocorrencias');
     }
   },
+  
 
 
   create: async (req, res) => {
