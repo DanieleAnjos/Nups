@@ -99,9 +99,9 @@ exports.getAllAvisos = async (req, res) => {
 
 exports.getAvisosDoDia = async (req, res) => {
   try {
-    const startOfDay = moment().startOf('day').toDate();
-    const endOfDay = moment().endOf('day').toDate();
-
+    const startOfDay = moment().utc().startOf('day').toDate();
+    const endOfDay = moment().utc().endOf('day').toDate();
+    
     const profissionalId = req.user.profissionalId;
 
     const profissional = await Profissional.findByPk(profissionalId, {
