@@ -4,146 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuários</title>
-    <!-- Adicionando Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Estilos personalizados -->
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f4f6f9;
             font-family: 'Arial', sans-serif;
+            color: #333;
+            padding: 20px;
         }
 
-        .container-custom {
-            margin-top: 50px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 20px;
+        .container {
+            max-width: 900px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            padding: 30px;
         }
 
         h1 {
-            text-align: center;
-            color: #297FB8;
-            margin-bottom: 30px;
             font-size: 2.5rem;
-            font-weight: bold;
+            color: #297FB8;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .list-group {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+        .user-list {
+            list-style: none;
+            padding: 0;
         }
 
         .user-item {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.3s ease;
-        }
-
-        .user-item:last-child {
-            border-bottom: none;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease;
         }
 
         .user-item:hover {
-            background-color: #f8f9fa;
+            transform: translateY(-5px);
         }
 
-        .user-item strong {
-            font-weight: 600;
-            color: #495057;
+        .user-details {
+            display: flex;
+            flex-direction: column;
         }
 
-        .user-item p {
-            margin: 5px 0;
-            color: #6c757d;
+        .user-details strong {
+            font-size: 1.1rem;
         }
 
-        .no-users {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #e74c3c;
-            margin-top: 20px;
+        .actions {
+            display: flex;
+            gap: 10px;
         }
 
-        .logout-btn {
-            margin-top: 30px;
-            text-align: center;
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         .btn-primary {
             background-color: #297FB8;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
         }
 
         .btn-primary:hover {
             background-color: #1a5a87;
         }
 
-        /* Estilo do botão de resetar senha */
         .btn-secondary {
             background-color: #6c757d;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            float: right; /* Alinha o botão à direita */
         }
 
         .btn-secondary:hover {
             background-color: #5a6268;
         }
 
-        /* Responsividade */
+        .no-users {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #e74c3c;
+            padding: 20px;
+            background: #ffecec;
+            border-radius: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .container-custom {
-                padding: 15px;
-            }
-
             .user-item {
-                padding: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container-custom">
-        <h1>Lista de Usuários</h1>
+    <div class="container">
+        <div class="header-actions">
+            <h1>Lista de Usuários</h1>
+            <a href="/auth/register" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Cadastrar novo usuário
+            </a>
+        </div>
 
         {{#if usuarios.length}}
-            <div class="list-group">
+            <ul class="user-list">
                 {{#each usuarios}}
-                    <div class="user-item">
-                        <p><strong><i class="fas fa-user"></i> Nome do Usuário:</strong> {{usuario}}</p>
-                        <p>
-                            <strong><i class="fas fa-id-badge"></i> Profissional Vinculado:</strong>
-                            {{#if this.profissional}}
-                                {{this.profissional.nome}}
-                            {{else}}
-                                <span style="color: #e74c3c;">Nenhum profissional vinculado</span>
-                            {{/if}}
-                        </p>
-                        <a href="/auth/forgot" class="btn btn-secondary"><i class="fas fa-key"></i> Resetar senha</a>
-                    </div>
+                    <li class="user-item">
+                        <div class="user-details">
+                            <strong><i class="fas fa-user"></i> Nome:</strong> {{usuario}}
+                            <p>
+                                <strong><i class="fas fa-id-badge"></i> Profissional Vinculado:</strong>
+                                {{#if this.profissional}}
+                                    {{this.profissional.nome}}
+                                {{else}}
+                                    <span style="color: #e74c3c;">Nenhum profissional vinculado</span>
+                                {{/if}}
+                            </p>
+                        </div>
+                        <div class="actions">
+                            <a href="/auth/forgot" class="btn btn-secondary"><i class="fas fa-key"></i> Resetar senha</a>
+                        </div>
+                    </li>
                 {{/each}}
-            </div>
+            </ul>
         {{else}}
             <p class="no-users"><i class="fas fa-exclamation-circle"></i> Não há usuários cadastrados.</p>
         {{/if}}
 
-        <div class="logout-btn">
+        <div style="text-align: center; margin-top: 30px;">
             <a href="/dashboard/adm" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
     </div>

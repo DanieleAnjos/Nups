@@ -152,42 +152,45 @@ exports.getAvisosDoDia = async (req, res) => {
 // Renderiza a página de edição de um aviso 
 
 // Atualizar aviso
-exports.updateAviso = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { assunto, mensagem, data, tipo } = req.body;
-
-    if (isNaN(id)) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'ID inválido' 
+  exports.updateAviso = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { assunto, mensagem, data, tipo } = req.body;
+  
+      if (isNaN(id)) {
+        return res.render('avisos/index', { 
+          title: 'Lista de Avisos', 
+          error: 'ID inválido' 
+        });
+      }
+  
+      const aviso = await Aviso.findByPk(id);
+      if (!aviso) {
+        return res.render('avisos/index', { 
+          title: 'Lista de Avisos', 
+          error: 'Aviso não encontrado' 
+        });
+      }
+  
+      // Convertendo a data para o formato correto
+      const moment = require('moment');
+      const dataFormatada = moment(data).tz('America/Sao_Paulo').toDate();
+  
+      // Atualizando o aviso
+      await aviso.update({ assunto, mensagem, data: dataFormatada, tipo });
+  
+      req.flash('success_msg', 'Aviso atualizado com sucesso.');
+      console.log('Aviso atualizado com sucesso', aviso);
+      res.redirect('/avisos'); // Redireciona para a lista de avisos
+    } catch (error) {
+      console.error('Erro ao atualizar aviso:', error);
+      res.render('avisos/edit', { 
+        title: 'Editar Aviso', 
+        error: 'Erro ao atualizar aviso', 
+        details: error.message 
       });
     }
-
-    const aviso = await Aviso.findByPk(id);
-    if (!aviso) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'Aviso não encontrado' 
-      });
-    }
-
-    // Convertendo data para formato correto
-
-    await aviso.update({ assunto, mensagem, data, tipo });
-    
-    req.flash('success_msg', 'Aviso atualizado com sucesso.');
-    console.log('Aviso atualizado com sucesso');
-    res.redirect('/avisos'  ); // Redireciona para a lista de avisos
-  } catch (error) {
-    console.error('Erro ao atualizar aviso:', error);
-    res.render('avisos/edit', { 
-      title: 'Editar Aviso', 
-      error: 'Erro ao atualizar aviso', 
-      details: error.message 
-    });
-  }
-};
+  };
 
 // Excluir aviso (exclusão lógica)
 exports.deleteAviso = async (req, res) => {
