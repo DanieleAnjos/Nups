@@ -26,7 +26,7 @@
 <body>
 
 <div class="container my-5">
-    <form action="/encaminhamentos/{{encaminhamento.id}}" method="POST" class="p-4 bg-light rounded shadow-sm">
+<form action="/encaminhamentos/{{encaminhamento.id}}?_method=PUT" method="POST" class="p-4 bg-light rounded shadow-sm">        
         <input type="hidden" name="_method" value="PUT">
 
         {{#if success_msg}}
