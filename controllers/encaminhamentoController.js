@@ -297,11 +297,28 @@ exports.edit = async (req, res) => {
       order: [['nome', 'ASC']]
     });
 
+    const profissionaisPsicologia = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Psicólogo", 
+      },
+    });
+
+    const profissionaisServicoSocial = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Assistente Social", 
+      },
+    });
+    
+
     res.render('encaminhamentos/edit', { 
       encaminhamento: encaminhamento.get({ plain: true }),
       profissionalIdEnvio, 
       profissionaisRecebimento,
-      pacientes
+      pacientes,
+      profissionaisPsicologia,
+      profissionaisServicoSocial,
     });
 
   } catch (error) {

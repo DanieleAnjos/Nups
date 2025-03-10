@@ -201,6 +201,47 @@
         input.classList.remove("is-invalid");
       }
     });
+
+
+        function buscarPacientePorNome() {
+      const nomePaciente = document.getElementById('nomePaciente').value.trim();
+      
+      if (nomePaciente.length > 3) {
+        $.ajax({
+          url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,
+          method: 'GET',
+          success: function(data) {
+            $('#matriculaPaciente').val(data.matricula);
+            $('#pacienteId').val(data.id);
+          },
+          error: function() {
+            $('#matriculaPaciente').val('');
+            $('#pacienteId').val('');
+            alert('Paciente não encontrado!');
+          }
+        });
+      }
+    }
+
+    function buscarPacientePorMatricula() {
+      const matriculaPaciente = document.getElementById('matriculaPaciente').value.trim();
+      
+      if (matriculaPaciente.length > 0) {
+        $.ajax({
+          url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,
+          method: 'GET',
+          success: function(data) {
+            $('#nomePaciente').val(data.nome);
+            $('#pacienteId').val(data.id);
+          },
+          error: function() {
+            $('#nomePaciente').val('');
+            $('#pacienteId').val('');
+            alert('Paciente não encontrado!');
+          }
+        });
+      }
+    }
   </script>
 </body>
 </html>
