@@ -229,9 +229,6 @@ const hbs = engine({
   },
 });
 
-const favicon = require('serve-favicon');
-
-app.use(favicon(path.join(__dirname, 'public', 'IMG', 'favicon2-16x16.png')));
 
 app.use(methodOverride('_method')); 
 
@@ -282,6 +279,11 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(flash());
+
+const favicon = require('serve-favicon');
+
+app.use(favicon(path.join(__dirname, 'public', 'IMG', 'favicon2-16x16.png')));
+
 
 app.use(session({
   secret: process.env.SESSION_SECRET, // Chave secreta da sessão
