@@ -1,7 +1,6 @@
 const Aviso = require('../models/Aviso'); // Caminho correto?
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize');
-const moment = require('moment');
 
 
 // Renderiza a página de criação de aviso
