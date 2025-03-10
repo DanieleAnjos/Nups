@@ -28,8 +28,12 @@ const ocorrenciaController = {
 
       const ocorrenciasData = ocorrencias.map(ocorrencia => ocorrencia.get({ plain: true }));
 
+      const profissionais = await Profissional.findAll();
+      
+
       res.render('ocorrencias/index', {
         ocorrencias: ocorrenciasData,
+        profissionais,
         query: req.query
       });
     } catch (error) {
