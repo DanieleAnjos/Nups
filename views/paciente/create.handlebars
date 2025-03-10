@@ -335,7 +335,7 @@
             </div>
 
             <div class="form-group">
-                <label for="familiaDeficiencias">Família com Deficiências:</label>
+                <label for="familiaDeficiencias">Possui algum familiar com algum tipo de deficiência? </label>
                 <select class="form-control" name="familiaDeficiencias" id="familiaDeficiencias" onchange="toggleField('familiaDeficiencias', 'deficiencia')">
                     <option value="" disabled selected>Selecione uma opção</option>
                     <option value="false">Não</option>
@@ -347,31 +347,32 @@
                 <label for="deficiencia">Deficiência:</label>
                 <input type="text" class="form-control" name="deficiencia" id="deficienciaInput">
             </div>
-        </fieldset>
-
-        <fieldset class="border p-4 mb-4">
-            <legend class="w-auto px-2">Informações Adicionais</legend>
 
             <div class="form-group">
-            <label for="possuiFilhos">Filhos:</label>
-            <select class="form-control" name="possuiFilhos" id="possuiFilhos" onchange="toggleFilhos()">
-                <option value="" disabled selected>Selecione uma opção</option>
-                <option value="false">Não</option>
-                <option value="true">Sim</option>
-            </select>
-            </div>
+                <label for="possuiFilhos">Filhos:</label>
+                <select class="form-control" name="possuiFilhos" id="possuiFilhos" onchange="toggleFilhos()">
+                    <option value="" disabled selected>Selecione uma opção</option>
+                    <option value="false">Não</option>
+                    <option value="true">Sim</option>
+                </select>
+                </div>
 
-            <div id="quantidadeFilhosContainer" style="display:none;">
-            <label for="quantidadeFilhos">Quantidade de Filhos:</label>
-            <input type="number" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput" min="1" oninput="gerarCamposFilhos()">
-            </div>
+                <div id="quantidadeFilhosContainer" style="display:none;">
+                <label for="quantidadeFilhos">Quantidade de Filhos:</label>
+                <input type="number" class="form-control" name="quantidadeFilhos" id="quantidadeFilhosInput" min="1" oninput="gerarCamposFilhos()">
+                </div>
 
-            <div id="filhosContainer" style="display:none;">
-            <div id="filhosLista"></div>
+                <div id="filhosContainer" style="display:none;">
+                <div id="filhosLista"></div>
             </div>
 
             <input type="hidden" name="filhos" id="jsonFilhos">
 
+
+        </fieldset>
+
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Informações Adicionais</legend>
 
             <div class="form-group">
                 <label for="porteArma">Porte de Arma:</label>
