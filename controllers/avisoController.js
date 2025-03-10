@@ -225,9 +225,9 @@ exports.deleteAviso = async (req, res) => {
 exports.contarAvisosDoDia = async (req, res) => {
   try {
     // Obtendo a data do início e fim do dia atual
-    const startOfDay = moment().startOf('day').toDate();
-    const endOfDay = moment().endOf('day').toDate();
-
+    const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
+    
     // Contando avisos dentro do intervalo de data do dia
     const avisosDoDia = await Aviso.count({
       where: {
