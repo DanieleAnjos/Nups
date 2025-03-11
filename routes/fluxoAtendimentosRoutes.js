@@ -6,7 +6,7 @@ router.get('/', FluxoAtendimentosController.index);
 router.get('/create', FluxoAtendimentosController.create); 
 router.post('/', FluxoAtendimentosController.store); 
 router.get('/:id', FluxoAtendimentosController.detalhesEncaminhamento); 
-router.post('/:id/visto', FluxoAtendimentosController.marcarVisto); 
+router.get('/:id/visto', FluxoAtendimentosController.marcarVisto); 
 router.get('/:id/edit', FluxoAtendimentosController.edit); 
 router.put('/:id', FluxoAtendimentosController.update); 
 router.delete('/:id', FluxoAtendimentosController.destroy); 
