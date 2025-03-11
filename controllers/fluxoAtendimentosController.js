@@ -50,24 +50,22 @@ const index = async (req, res) => {
       ],
     });
 
-    // Mapear os fluxos de atendimento e adicionar permissões individuais
-    const fluxoAtendimentosFormatados = fluxoAtendimentos.map(fa => ({
-      ...fa.toJSON(),
-      podeEditar: userCargo === 'administrador' || (fa.profissionalEnvio?.id === profissionalId && !fa.visto),
+
+    const fluxoAtendimentosFormatados = fluxoAtendimentos.map(enc => ({
+      ...enc.toJSON(),
+      podeEditar: userCargo === 'administrador' || enc.profissionalEnvio?.id === profissionalId,
+      podeCancelar: userCargo === 'administrador' || enc.profissionalEnvio?.id === profissionalId,
+      podeMarcarComoVisto: userCargo === 'administrador' || enc.profissionalRecebido?.id === profissionalId,
     }));
 
-    // Definir permissões gerais
-    const podeDeletar = userCargo === 'administrador';
-    const podeCadastrar = userCargo === 'administrador' || userCargo === 'assistente social';
-
-    // Renderizar a página com os dados e permissões
     res.render('fluxoAtendimentos/index', { 
-      fluxoAtendimentos: fluxoAtendimentosFormatados, 
+      fluxoAtendimentos: fluxoAtendimentosFormatados || [], // Garante que nunca será undefined
       query: req.query,
       profissional: profissionalId,
-      podeDeletar,
-      podeCadastrar
-    });
+      podeCancelar: fluxoAtendimentosFormatados.some(enc => enc.podeCancelar),
+      podeMarcarComoVisto: fluxoAtendimentosFormatados.some(enc => enc.podeMarcarComoVisto),
+      podeEditar: fluxoAtendimentosFormatados.some(enc => enc.podeEditar)
+    });  
 
   } catch (error) {
     console.error('Erro ao buscar fluxo de atendimentos:', error);
