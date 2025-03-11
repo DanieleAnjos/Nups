@@ -71,14 +71,15 @@ exports.index = async (req, res) => {
       podeMarcarComoVisto: userCargo === 'administrador' || enc.profissionalRecebido?.id === profissionalId,
     }));
 
-    
+
     // Renderizar a página com os encaminhamentos e permissões
     res.render('encaminhamentos/index', { 
       encaminhamentos: encaminhamentosFormatados, 
       query: req.query,
       profissional: profissionalId,
-      podeDeletar,
-      podeCadastrar
+      podeCancelar,
+      podeMarcarComoVisto,
+      podeEditar
     });
 
   } catch (error) {
