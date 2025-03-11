@@ -51,8 +51,10 @@ const eventoController = {
           }
           imagePath = req.file.filename;
         }
-        const descricaoPurificada = DOMPurify.sanitize(descricao);
-
+        const descricaoPurificada = DOMPurify.sanitize(descricao, {
+          ALLOWED_ATTR: ['href', 'target', 'rel'], // Permite os atributos href, target e rel
+          FORBID_ATTR: [] // Não proíbe nenhum atributo
+        });
 
         await Evento.create({
           titulo,
@@ -231,8 +233,10 @@ const eventoController = {
           return res.redirect(`/eventos/${id}/edit`);
         }
 
-        const descricaoPurificada = DOMPurify.sanitize(descricao);
-
+        const descricaoPurificada = DOMPurify.sanitize(descricao, {
+          ALLOWED_ATTR: ['href', 'target', 'rel'], // Permite os atributos href, target e rel
+          FORBID_ATTR: [] // Não proíbe nenhum atributo
+        });
 
         await evento.update({
           titulo,

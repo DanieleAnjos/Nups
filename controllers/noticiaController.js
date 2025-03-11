@@ -46,8 +46,11 @@ const noticiaController = {
         }
   
         // Purifica o conteúdo da descrição para evitar XSS
-        const descricaoPurificada = DOMPurify.sanitize(descricao);
-  
+        const descricaoPurificada = DOMPurify.sanitize(descricao, {
+          ALLOWED_ATTR: ['href', 'target', 'rel'], // Permite os atributos href, target e rel
+          FORBID_ATTR: [] // Não proíbe nenhum atributo
+        });
+        
         // Criação da notícia
         await Noticias.create({
           titulo,
