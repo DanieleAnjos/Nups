@@ -83,14 +83,14 @@ function criarCartaoEvento(evento) {
             <img src="${evento.imagePath || '/IMG/default-event.jpg'}" alt="${evento.titulo}" class="imagem-cartao w-100 h-100 object-cover">
             <div class="p-3">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="etiqueta badge bg-primary me-2">${evento.etiqueta}</span>
+                    <span class="etiqueta badge bg-primary me-2">${evento.etiqueta || 'Sem etiqueta'}</span>
                 </div>
                 <h2 class="mt-2 text-truncate" style="font-size: 1.25rem;">${evento.titulo}</h2>
                 <div class="informacoes-autor text-muted mt-2">
-                    <p class="autor d-block">Por: ${evento.autor}</p>
-                    <p class="mb-0 d-block">${new Date(evento.createdAt).toLocaleDateString('pt-BR')}</p>
+                    <p class="autor d-block">Por: ${evento.autor || 'Desconhecido'}</p>
+                    <p class="mb-0 d-block">${evento.createdAt ? new Date(evento.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível'}</p>
                 </div>
-                <a href="/Evento-detalhes/${evento.id}" class="leia-mais btn btn-outline-primary btn-sm mt-3">Leia Mais</a>
+                <a href="/Evento-detalhes/${evento.id}" target="_self" class="leia-mais btn btn-outline-primary btn-sm mt-3">Leia Mais</a>
             </div>
         </div>
     `;

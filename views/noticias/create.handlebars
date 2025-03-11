@@ -105,16 +105,19 @@
 <!-- Place the first <script> tag in your HTML's <head> -->
 <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        tinymce.init({
-            selector: '#descricao',
-            height: 400,
-            plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
-            toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
-            automatic_uploads: true,
-            content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }'
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    tinymce.init({
+        selector: '#descricao',
+        height: 400,
+        plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+        toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
+        automatic_uploads: true,
+        content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
+        default_link_target: '_blank',
+        link_target_list: false // Remove a lista de opções de alvo, deixando só "nova guia"
     });
+});
+
 
   (function () {
     'use strict';
