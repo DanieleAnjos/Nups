@@ -86,6 +86,7 @@
 // Função para criar o HTML de um cartão de evento
 
 function criarCartaoEvento(noticias) {
+    console.log(noticias.id); // Verifique se o ID está correto
     return `
         <div class="cartao shadow-sm border rounded overflow-hidden mb-4">
             <img src="${noticias.imagePath || '/IMG/default-event.jpg'}" alt="${noticias.titulo}" class="imagem-cartao w-100 h-100 object-cover">
@@ -111,29 +112,35 @@ function criarCartaoEvento(noticias) {
 
 
 
+// Função para adicionar um cartão ao container
+function adicionarCartao(noticias) {
+    const containerCartoes = document.getElementById('container-cartoes');
+    const cartaoHTML = criarCartaoEvento(noticias);
+    containerCartoes.insertAdjacentHTML('beforeend', cartaoHTML);
 
-    // Função para adicionar um cartão ao container
-    function adicionarCartao(noticias) {
-        const containerCartoes = document.getElementById('container-cartoes');
-        const cartaoHTML = criarCartaoEvento(noticias);
-        containerCartoes.insertAdjacentHTML('beforeend', cartaoHTML);
+    // Adiciona evento de clique ao botão "Leia Mais"
+    const botaoLeiaMais = containerCartoes.querySelector(`a[data-id="${noticias.id}"]`);
+    botaoLeiaMais.addEventListener('click', function(event) {
+        event.preventDefault(); // Impede o comportamento padrão
+        const noticiaId = this.getAttribute('data-id');
+        window.location.href = `/Noticia-detalhes/${noticiaId}` });
+}
+
+// Função para buscar eventos do backend
+async function buscarNoticias() {
+    try {
+        const response = await fetch('/noticias/busca');
+        const eventos = await response.json();
+        eventos.forEach(adicionarCartao); // Adiciona cada evento como um cartão
+    } catch (error) {
+        console.error('Erro ao buscar eventos:', error);
     }
+}
 
-    // Função para buscar eventos do backend
-    async function buscarNoticias() {
-        try {
-            const response = await fetch('/noticias/busca');
-            const eventos = await response.json();
-            eventos.forEach(adicionarCartao); // Adiciona cada evento como um cartão
-        } catch (error) {
-            console.error('Erro ao buscar eventos:', error);
-        }
-    }
-
-    // Quando a página carregar, buscar e exibir os eventos
-    document.addEventListener('DOMContentLoaded', () => {
-        buscarNoticias();
-    });
+// Quando a página carregar, buscar e exibir os eventos
+document.addEventListener('DOMContentLoaded', () => {
+    buscarNoticias();
+});
 </script>
 
 </body>

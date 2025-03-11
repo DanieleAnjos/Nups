@@ -104,24 +104,30 @@ document.addEventListener('DOMContentLoaded', function() {
     tinymce.init({
         selector: '#descricao',
         height: 400,
-        plugins: 'link',
-        toolbar: 'link',
+        plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+        toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
         automatic_uploads: true,
         content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
+        default_link_target: '_blank',
+        link_title: false,
+        target_list: false,
         setup: function(editor) {
-            editor.on('change', function() {
-                let content = editor.getContent();
-                const updatedContent = content.replace(/<a (?![^>]*target=)[^>]*>/g, (match) => {
-                    return match.replace('>', ' target="_blank" rel="noopener">');
-                });
-                if (content !== updatedContent) {
-                    editor.setContent(updatedContent);
+            editor.on('init', function() {
+                // Adiciona target="_blank" a todos os links existentes
+                const links = editor.getBody().getElementsByTagName('a');
+                for (let i = 0; i < links.length; i++) {
+                    links[i].setAttribute('target', '_blank');
                 }
+                editor.getBody().addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') {
+                        e.preventDefault(); // Impede o comportamento padrão
+                        window.open(e.target.href, '_blank'); // Abre em nova guia
+                    }
+                });
             });
         }
     });
 });
-
 
 
 
