@@ -108,10 +108,21 @@ document.addEventListener('DOMContentLoaded', function() {
         toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
         automatic_uploads: true,
         content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
-        default_link_target: '_blank',
-        link_target_list: false // Remove a lista de opções de alvo, deixando só "nova guia"
+        default_link_target: '_blank', // Links abrirão em nova aba por padrão
+        link_title: false, // Remove o título do link ao inserir
+        setup: function(editor) {
+            editor.on('ExecCommand', function(e) {
+                if (e.command === 'mceInsertLink') {
+                    setTimeout(function() {
+                        const links = editor.getBody().querySelectorAll('a');
+                        links.forEach(link => link.setAttribute('target', '_blank'));
+                    }, 0);
+                }
+            });
+        }
     });
 });
+
 
 
 
