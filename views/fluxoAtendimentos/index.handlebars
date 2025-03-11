@@ -75,6 +75,17 @@
                             <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
                             <td class="text-center">
 
+
+                                {{#if this.podeMarcarComoVisto}}
+                                    {{#if this.visto}}
+                                        <button class="btn btn-secondary btn-sm" disabled>Já Visualizado</button>
+                                    {{else}}
+                                        <a href="/fluxoAtendimentos/{{this.id}}/visto" class="btn btn-info btn-sm" aria-label="Marcar como Visto">
+                                            <i class="bi bi-eye"></i> Marcar como Visto
+                                        </a>
+                                    {{/if}}
+                                {{/if}}
+
                                 {{#if this.podeEditar}}
 
                                 <a href="/fluxoAtendimentos/{{this.id}}/edit" class="btn btn-warning btn-sm mx-1">
@@ -87,7 +98,7 @@
                                 </a>
 
                             
-                                {{#if ../podeDeletar}}
+                                {{#if ../podeCancelar}}
                                 <form action="/fluxoAtendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                     <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
