@@ -43,7 +43,7 @@ exports.index = async (req, res) => {
 
     // Se não for Administrador, filtrar pelo cargo do profissional logado
     if (userCargo !== 'administrador' && userCargo !== 'adm') {
-      whereConditions[Op.or] = [
+      whereConditions[Op.and] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }
       ];
@@ -71,15 +71,14 @@ exports.index = async (req, res) => {
       podeMarcarComoVisto: userCargo === 'administrador' || enc.profissionalRecebido?.id === profissionalId,
     }));
 
-
     // Renderizar a página com os encaminhamentos e permissões
     res.render('encaminhamentos/index', { 
       encaminhamentos: encaminhamentosFormatados, 
       query: req.query,
       profissional: profissionalId,
-      podeCancelar,
-      podeMarcarComoVisto,
-      podeEditar
+      podeCancelar: encaminhamentosFormatados.some(enc => enc.podeCancelar),
+      podeMarcarComoVisto: encaminhamentosFormatados.some(enc => enc.podeMarcarComoVisto),
+      podeEditar: encaminhamentosFormatados.some(enc => enc.podeEditar)
     });
 
   } catch (error) {
