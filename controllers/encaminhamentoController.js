@@ -73,18 +73,24 @@ exports.index = async (req, res) => {
 
     // Renderizar a página com os encaminhamentos e permissões
     res.render('encaminhamentos/index', { 
-      encaminhamentos: encaminhamentosFormatados, 
+      encaminhamentos: encaminhamentosFormatados || [], // Garante que nunca será undefined
       query: req.query,
       profissional: profissionalId,
       podeCancelar: encaminhamentosFormatados.some(enc => enc.podeCancelar),
       podeMarcarComoVisto: encaminhamentosFormatados.some(enc => enc.podeMarcarComoVisto),
       podeEditar: encaminhamentosFormatados.some(enc => enc.podeEditar)
-    });
+    });    
 
   } catch (error) {
-    console.error('Erro ao buscar encaminhamentos:', error);
-    res.status(500).send('Erro ao carregar a lista de encaminhamentos');
-  }
+    console.error('Erro ao buscar encaminhamentos:', error.message);
+    console.error(error.stack); // Log completo do erro
+    res.render('encaminhamentos/index', {
+      encaminhamentos: [],
+      query: req.query,
+      profissional: profissionalId,
+      error_msg: 'Erro ao carregar os encaminhamentos.'
+    });
+  }  
 };
 
 
