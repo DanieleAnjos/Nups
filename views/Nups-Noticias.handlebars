@@ -96,7 +96,7 @@ function criarCartaoEvento(noticias) {
                 <h2 class="mt-2 text-truncate" style="font-size: 1.25rem;">${noticias.titulo}</h2>
                 <div class="informacoes-autor text-muted mt-2">
                     <p class="autor d-block">Por: ${noticias.autor}</p>
-                    <p class="mb-0 d-block">${new Date(noticias.createdAt).toLocaleDateString('pt-BR')}</p>
+                    <p class="mb-0 d-block"> ${new Date(noticias.createdAt).toLocaleDateString('pt-BR')}</p>
                 </div>
                 <div>
                     <p class="mt-3">${truncate(noticias.descricao, 200)}</p>
