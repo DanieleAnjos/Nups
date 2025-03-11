@@ -43,11 +43,12 @@ exports.index = async (req, res) => {
 
     // Se não for Administrador, filtrar pelo cargo do profissional logado
     if (userCargo !== 'administrador' && userCargo !== 'adm') {
-      whereConditions[Op.and] = [
+      whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }
       ];
     }
+    
 
     // Buscar os encaminhamentos com os relacionamentos necessários
     const encaminhamentos = await Encaminhamento.findAll({
