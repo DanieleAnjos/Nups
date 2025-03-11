@@ -207,4 +207,17 @@
     text-align: center;
 }
 
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: black; /* Define a cor de fundo como preto */
+        border-radius: 50%; /* Torna os botões circulares */
+        width: 40px; /* Ajuste a largura do botão */
+        height: 40px; /* Ajuste a altura do botão */
+    }
+
+    .carousel-control-prev-icon::after,
+    .carousel-control-next-icon::after {
+        filter: invert(1); /* Inverte a cor do ícone para branco */
+    }
+
 </style>
