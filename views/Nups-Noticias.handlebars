@@ -121,11 +121,14 @@ function criarCartaoEvento(noticias) {
         try {
             const response = await fetch('/noticias/busca');
             const eventos = await response.json();
-            eventos.forEach(adicionarCartao); // Adiciona cada evento como um cartão
+            console.log('Eventos recebidos:', eventos); // Verifica os dados recebidos
+            eventos.forEach(adicionarCartao);
         } catch (error) {
             console.error('Erro ao buscar eventos:', error);
         }
     }
+
+
 
     // Quando a página carregar, buscar e exibir os eventos
     document.addEventListener('DOMContentLoaded', () => {
