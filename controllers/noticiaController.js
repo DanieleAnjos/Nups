@@ -214,8 +214,11 @@ const noticiaController = {
           }
     
           // Purifica o conteúdo da descrição para evitar XSS
-          const descricaoPurificada = DOMPurify.sanitize(descricao);
-    
+          const descricaoPurificada = DOMPurify.sanitize(descricao, {
+            ALLOWED_ATTR: ['href', 'target', 'rel'], // Permite os atributos href, target e rel
+            FORBID_ATTR: [] // Não proíbe nenhum atributo
+          });
+
           // Atualiza a notícia
           const noticia = await Noticias.findByPk(id);
           if (!noticia) {
