@@ -18,7 +18,7 @@ const FluxoAtendimentos = sequelize.define('FluxoAtendimentos', {
   },
   matriculaPaciente: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   numeroProcesso: {
     type: DataTypes.STRING(11),
@@ -59,7 +59,7 @@ const FluxoAtendimentos = sequelize.define('FluxoAtendimentos', {
   },
   descricao: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: true,
   },
   visto: {
     type: DataTypes.BOOLEAN,
