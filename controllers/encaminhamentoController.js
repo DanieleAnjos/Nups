@@ -64,17 +64,14 @@ exports.index = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    // Mapear os encaminhamentos e adicionar permissões individuais
     const encaminhamentosFormatados = encaminhamentos.map(enc => ({
       ...enc.toJSON(),
-      podeEditar: userCargo === 'administrador' || (enc.profissionalEnvio?.id === profissionalId && !enc.visto),
+      podeEditar: userCargo === 'administrador' || enc.profissionalEnvio?.id === profissionalId,
+      podeCancelar: userCargo === 'administrador' || enc.profissionalEnvio?.id === profissionalId,
+      podeMarcarComoVisto: userCargo === 'administrador' || enc.profissionalRecebido?.id === profissionalId,
     }));
 
-
-    // Definir permissões gerais
-    const podeDeletar = userCargo === 'administrador';
-    const podeCadastrar = userCargo === 'administrador' || userCargo === 'assistente social';
-
+    
     // Renderizar a página com os encaminhamentos e permissões
     res.render('encaminhamentos/index', { 
       encaminhamentos: encaminhamentosFormatados, 
