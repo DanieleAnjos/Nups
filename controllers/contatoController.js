@@ -20,10 +20,10 @@ exports.renderContactPage = (req, res) => {
 exports.sendContactEmail = async (req, res) => {
   console.log('Dados recebidos:', req.body);
 
-  const { nome, email, mensagem } = req.body;
+  const { nome, email, mensagem, telefone } = req.body;
 
   // Validação dos campos obrigatórios
-  if (!nome || !email || !mensagem) {
+  if (!nome || !email || !mensagem || !telefone) {
       console.log('Erro: Campos obrigatórios não preenchidos.');
       req.flash('error_msg', 'Preencha todos os campos.');
       return res.redirect('/');
@@ -51,6 +51,7 @@ exports.sendContactEmail = async (req, res) => {
                 📌 Detalhes do remetente:
                 -----------------------------------
                 🔹 Nome: ${nome}
+                🔹 Telefone: ${telefone}
                 🔹 E-mail: ${email}
         
                 💬 Mensagem:
@@ -70,6 +71,7 @@ exports.sendContactEmail = async (req, res) => {
                     
                     <h3 style="color: #444;">📌 Detalhes do Remetente</h3>
                     <p><strong>🔹 Nome:</strong> ${nome}</p>
+                    <p><strong>🔹 Telefone:</strong> ${telefone}</p>
                     <p><strong>📧 E-mail:</strong> <a href="mailto:${email}" style="color: #007bff;">${email}</a></p>
         
                     <hr style="border: 1px solid #ddd;">
