@@ -108,20 +108,22 @@ document.addEventListener('DOMContentLoaded', function() {
         toolbar: 'undo redo | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | fullscreen',
         automatic_uploads: true,
         content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
-        default_link_target: '_blank', // Links abrirão em nova aba por padrão
-        link_title: false, // Remove o título do link ao inserir
+        default_link_target: '_blank',
+        link_title: false,
+        target_list: false,
         setup: function(editor) {
-            editor.on('ExecCommand', function(e) {
-                if (e.command === 'mceInsertLink') {
-                    setTimeout(function() {
-                        const links = editor.getBody().querySelectorAll('a');
-                        links.forEach(link => link.setAttribute('target', '_blank'));
-                    }, 0);
-                }
+            editor.on('init', function() {
+                editor.getBody().addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') {
+                        e.preventDefault(); // Impede o comportamento padrão
+                        window.open(e.target.href, '_blank'); // Abre em nova guia
+                    }
+                });
             });
         }
     });
 });
+
 
 
 

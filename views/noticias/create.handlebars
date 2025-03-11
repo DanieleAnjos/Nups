@@ -114,9 +114,21 @@ document.addEventListener('DOMContentLoaded', function() {
         automatic_uploads: true,
         content_style: 'body { font-family: Arial, sans-serif; font-size: 14px; }',
         default_link_target: '_blank',
-        link_target_list: false // Remove a lista de opções de alvo, deixando só "nova guia"
+        link_title: false,
+        target_list: false,
+        setup: function(editor) {
+            editor.on('init', function() {
+                editor.getBody().addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A') {
+                        e.preventDefault(); // Impede o comportamento padrão
+                        window.open(e.target.href, '_blank'); // Abre em nova guia
+                    }
+                });
+            });
+        }
     });
 });
+
 
 
   (function () {
