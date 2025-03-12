@@ -463,6 +463,25 @@ const accessControl = {
       '/fluxoAtendimentos'
     ],
 
+    'Gestor': [
+      '/dashboard/gestor',
+      '/pacientes',
+      '/escalas',
+      '/atendimentos',
+      '/reservas',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque',
+      '/mensagens',
+      '/notificacoes',
+      '/graficos',
+      '/discussoes',
+      '/Eventos-detalhes',
+      '/auth/changePassword',
+      '/avisos',
+      '/fluxoAtendimentos'
+    ],
+
     'Assistente social': [
       '/dashboard/assistente-social',
       '/pacientes',
