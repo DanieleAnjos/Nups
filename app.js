@@ -479,7 +479,14 @@ const accessControl = {
       '/Eventos-detalhes',
       '/auth/changePassword',
       '/avisos',
+      '/fluxoAtendimentos',
+      '/profissionais/meu_perfil/',
+      '/discussoes/detalhes',
+      '/discussoes/edit',
+      '/discussoes/create',
       '/fluxoAtendimentos'
+
+
     ],
 
     'Assistente social': [
