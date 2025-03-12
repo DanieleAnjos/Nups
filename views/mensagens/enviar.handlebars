@@ -19,13 +19,14 @@
         <i class="bi bi-person-fill"></i> Destinatário(s):
       </label>
       <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
-        <option value="">🔍 Selecione um destinatário</option>
+        <option disabled>🔍 Selecione um ou mais destinatários</option>
         {{#each profissionais}}
           <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
         {{/each}}
       </select>
       <div class="invalid-feedback">Por favor, selecione ao menos um destinatário.</div>
     </div>
+
 
     <!-- Assunto -->
     <div class="mb-4">
@@ -103,4 +104,19 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
+
+.select2-container .select2-selection--multiple {
+  min-height: 50px;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+
+.select2-container .select2-selection__choice {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
 </style>
