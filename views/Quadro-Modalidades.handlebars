@@ -40,7 +40,6 @@
     <!-- Indicadores -->
     <div class="carousel-indicators">
         <!-- Gera automaticamente os botões para cada slide -->
-        <!-- IDs e targets corrigidos -->
         <button type="button" data-bs-target="#carouselExample1" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExample1" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carouselExample1" data-bs-slide-to="2" aria-label="Slide 3"></button>
@@ -117,7 +116,7 @@
     </button>
     <button class="carousel-control-next" type="button" data-bs-target="#carouselExample1" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
+        <span class="visually-hidden ">Next</span>
     </button>
 </div>
 
@@ -221,3 +220,32 @@
     }
 
 </style>
+
+<script>
+    const carouselElement = document.querySelector('#carouselExample1');
+    const carousel = new bootstrap.Carousel(carouselElement);
+
+    carouselElement.addEventListener('slid.bs.carousel', function () {
+        const totalItems = carouselElement.querySelectorAll('.carousel-item').length;
+        const currentIndex = carousel.getActiveIndex();
+
+        const nextButton = carouselElement.querySelector('.carousel-control-next');
+        const prevButton = carouselElement.querySelector('.carousel-control-prev');
+
+        // Desabilitar o botão "próximo" na última imagem
+        if (currentIndex === totalItems - 1) {
+            nextButton.classList.add('disabled');
+            nextButton.style.display = 'none'; // Ocultar o botão "próximo"
+        } else {
+            nextButton.classList.remove('disabled');
+            nextButton.style.display = 'block'; // Mostrar o botão "próximo"
+        }
+
+        // Desabilitar o botão "anterior" na primeira imagem
+        if (currentIndex === 0) {
+            prevButton.classList.add('disabled');
+        } else {
+            prevButton.classList.remove('disabled');
+        }
+    });
+</script>
