@@ -1,6 +1,9 @@
+
+
+
 const Mensagem = require('../models/Mensagem');
 const Profissional = require('../models/Profissional');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 module.exports = {
   
@@ -19,7 +22,7 @@ module.exports = {
       res.render('mensagens/enviar', { 
         profissionais,
         user: req.user,
-        formatDate: (date) => moment(date).format('DD/MM/YYYY HH:mm') 
+        formatDate: (date) => moment(date).tz('America/Sao_Paulo').format('DD/MM/YYYY HH:mm')
       });
     } catch (error) {
       console.error(error);
@@ -233,6 +236,7 @@ module.exports = {
 
       res.render('mensagens/responder', { 
         mensagem, 
+        formatDate: (date) => moment(date).tz('America/Sao_Paulo').format('DD/MM/YYYY HH:mm'),
         user: req.user 
       });
     } catch (error) {
