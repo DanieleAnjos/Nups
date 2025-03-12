@@ -40,6 +40,7 @@ exports.login = (req, res, next) => {
         const roleToRoute = {
           'Administrador': '/dashboard/adm',
           'Adm' : '/dashboard/adm2',
+          'Gestor' : '/dashboard/gestor',
           'Assistente social': '/dashboard/assistente-social',
           'Psicólogo': '/dashboard/psico',
           'Psiquiatra': '/dashboard/psico'
