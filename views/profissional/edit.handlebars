@@ -128,6 +128,7 @@
             <label for="cargo" class="form-label">Cargo:</label>
             <select class="form-select" name="cargo" required>
               <option value="Administrador" {{#if (eq profissional.cargo "Administrador")}}selected{{/if}}>Administrador</option>
+              <option value="Gestor" {{#if (eq profissional.cargo "Gestor")}}selected{{/if}}>Gestor</option>
               <option value="Adm" {{#if (eq profissional.cargo "Adm")}}selected{{/if}}>Adm</option>
               <option value="Assistente social" {{#if (eq profissional.cargo "Assistente social")}}selected{{/if}}>Assistente Social</option>
               <option value="Psicologo" {{#if (eq profissional.cargo "Psicologo")}}selected{{/if}}>Psicólogo</option>

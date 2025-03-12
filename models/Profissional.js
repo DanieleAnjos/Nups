@@ -40,7 +40,7 @@ const Profissional = sequelize.define('Profissional', {
     allowNull: false,
   },
   cargo: {
-    type: DataTypes.ENUM('Desenvolvimento','Administrador','Adm', 'Assistente social', 'Assistente social Supervisor', 'Psicólogo', 'Psiquiatra'),
+    type: DataTypes.ENUM('Gestor','Administrador','Adm', 'Assistente social', 'Assistente social Supervisor', 'Psicólogo', 'Psiquiatra'),
     allowNull: false,
   },
   vinculo: {
