@@ -36,63 +36,36 @@ module.exports = {
       const { destinatarioCargo, destinatarioId, assunto, corpo } = req.body;
       const remetenteId = req.user?.profissionalId;
       const arquivo = req.file ? `/arquivos/${req.file.filename}` : null;
-      
-      
+  
       if (!remetenteId || !assunto || !corpo) {
         req.flash('error_msg', 'Preencha todos os campos obrigatórios.');
         return res.redirect('/mensagens/enviar');
       }
   
-      const cargo = destinatarioCargo || null;
+      const destinatarios = Array.isArray(destinatarioId) ? destinatarioId : [destinatarioId];
   
-      if (cargo) {
-        const profissionais = await Profissional.findAll({
-          where: { cargo },
-          attributes: ['id'],
-        });
+      const mensagens = destinatarios.map((id) => ({
+        remetenteId,
+        destinatarioId: id,
+        destinatarioCargo: destinatarioCargo || null,
+        assunto,
+        corpo,
+        arquivo,
+        createdAt: moment().tz('America/Sao_Paulo').toDate(),
+        updatedAt: moment().tz('America/Sao_Paulo').toDate(),
+      }));
   
-        if (profissionais.length === 0) {
-          req.flash('error_msg', 'Nenhum profissional encontrado para o cargo especificado.');
-          return res.redirect('/mensagens/enviar');
-        }
-  
-        const mensagens = profissionais.map((profissional) => ({
-          remetenteId,
-          destinatarioId: profissional.id,
-          destinatarioCargo: cargo, 
-          assunto,
-          corpo,
-          arquivo,  
-        }));
-  
-        await Mensagem.bulkCreate(mensagens);
-      } else if (destinatarioId) {
-
-        const dataEnvio = moment().tz('America/Sao_Paulo').toDate();
-
-        await Mensagem.create({
-          remetenteId,
-          destinatarioId,
-          destinatarioCargo: cargo, 
-          assunto,
-          corpo,
-          arquivo,  
-          createdAt: dataEnvio,
-          updatedAt: dataEnvio,
-        });
-      } else {
-        req.flash('error_msg', 'Especifique um destinatário ou um cargo.');
-        return res.redirect('/mensagens/enviar');
-      }
+      await Mensagem.bulkCreate(mensagens);
   
       req.flash('success_msg', 'Mensagem enviada com sucesso!');
-      return res.redirect('/mensagens', );
+      return res.redirect('/mensagens');
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Erro ao enviar mensagem.');
       return res.redirect('/mensagens/enviar');
     }
   },
+  
   
 
   listarMensagensRecebidas: async (req, res) => {
@@ -250,7 +223,7 @@ module.exports = {
     }
   },
 
-  
+
   enviarResposta: async (req, res) => {
     try {
       const { corpo } = req.body;

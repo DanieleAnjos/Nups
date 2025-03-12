@@ -9,14 +9,16 @@
 
     <!-- Destinatário -->
     <div class="mb-4">
-      <label for="destinatarioId" class="form-label h5 text-secondary"><i class="bi bi-person-fill"></i> Destinatário:</label>
-      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" required>
-        <option value="" selected disabled>Selecione um destinatário</option>
+      <label for="destinatarioId" class="form-label h5 text-secondary">
+        <i class="bi bi-person-fill"></i> Destinatário(s):
+      </label>
+      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple required>
         {{#each profissionais}}
           <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
         {{/each}}
       </select>
-      <div class="invalid-feedback">Por favor, selecione um destinatário.</div>
+      <div class="form-text">Segure CTRL (ou CMD no Mac) para selecionar múltiplos destinatários.</div>
+      <div class="invalid-feedback">Por favor, selecione ao menos um destinatário.</div>
     </div>
 
     <!-- Assunto -->
