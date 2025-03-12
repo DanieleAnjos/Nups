@@ -52,7 +52,7 @@
                             </a>
                         </td>
                         <td>{{this.remetente.nome}}</td>
-                        <td>{{formatDateTime this.createdAt}}</td>
+                        <td>{{formatDateTime2 this.createdAt}}</td>
                         <td>
                             <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
                                 <i class="bi bi-eye"></i> Ver
@@ -108,7 +108,7 @@
                             </a>
                         </td>
                         <td>{{this.remetente.nome}}</td>
-                        <td>{{formatDateTime this.createdAt}}</td>
+                        <td>{{formatDateTime2 this.createdAt}}</td>
                         <td>
                             <a href="/mensagens/{{this.id}}" class="btn btn-outline-info btn-sm">
                                 <i class="bi bi-eye"></i> Ver
@@ -162,7 +162,7 @@
                             </a>
                         </td>
                         <td>{{this.destinatario.nome}}</td>
-                        <td>{{ this.createdAt}}</td>
+                        <td>{{formatDateTime2 this.createdAt}}</td>
                         <td>
                             {{#if this.visualizada}}
                             <span class="badge bg-success">Visualizada</span>
