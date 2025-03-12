@@ -1,126 +1,145 @@
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enviar Mensagem</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    h1 {
+      padding-bottom: 10px;
+    }
 
-<!-- Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    .container {
+      width: 80%;
+      max-width: 1200px;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
 
+    .select2-container .select2-selection--multiple {
+      min-height: 50px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
 
-<div class="container shadow-lg p-5 rounded bg-light">
-  <h1 class="text-center my-4 text-primary">Enviar Mensagem</h1>
+    .select2-container .select2-selection__choice {
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
 
-  <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
-    <!-- Campo oculto para Remetente -->
-    <input type="hidden" name="remetenteId" value="{{user.id}}" required>
-    <div class="invalid-feedback">Erro: remetente não definido.</div>
+    .select2-container .select2-selection__choice__remove {
+      color: white;
+      margin-right: 5px;
+    }
 
-    <!-- Destinatário -->
-    <div class="mb-4">
-      <label for="destinatarioId" class="form-label h5 text-secondary">
-        <i class="bi bi-person-fill"></i> Destinatário(s):
-      </label>
-      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
-        {{#each profissionais}}
-          <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
-        {{/each}}
-      </select>
-      <div class="invalid-feedback">Por favor, selecione ao menos um destinatário.</div>
-    </div>
+    .select2-container .select2-selection__choice__remove:hover {
+      color: #ffcccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container shadow-lg p-5 rounded bg-light">
+    <h1 class="text-center my-4 text-primary">Enviar Mensagem</h1>
 
+    <form action="/mensagens/enviar" method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+      <!-- Campo oculto para Remetente -->
+      <input type="hidden" name="remetenteId" value="{{user.id}}" required>
+      <div class="invalid-feedback">Erro: remetente não definido.</div>
 
-    <!-- Assunto -->
-    <div class="mb-4">
-      <label for="assunto" class="form-label h5 text-secondary"><i class="bi bi-envelope-fill"></i> Assunto:</label>
-      <input type="text" name="assunto" id="assunto" class="form-control shadow-sm" placeholder="Digite o assunto" required>
-      <div class="invalid-feedback">Por favor, insira o assunto.</div>
-    </div>
+      <!-- Destinatário -->
+      <div class="mb-4">
+        <label for="destinatarioId" class="form-label h5 text-secondary">
+          <i class="bi bi-person-fill"></i> Destinatário(s):
+        </label>
+        <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
+          {{#each profissionais}}
+            <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
+          {{/each}}
+        </select>
+        <div class="invalid-feedback">Por favor, selecione ao menos um destinatário.</div>
+      </div>
 
-    <!-- Corpo da Mensagem -->
-    <div class="mb-4">
-      <label for="corpo" class="form-label h5 text-secondary"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
-      <textarea name="corpo" id="corpo" class="form-control shadow-sm" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
-      <div class="invalid-feedback">Por favor, insira a mensagem.</div>
-    </div>
+      <!-- Assunto -->
+      <div class="mb-4">
+        <label for="assunto" class="form-label h5 text-secondary"><i class="bi bi-envelope-fill"></i> Assunto:</label>
+        <input type="text" name="assunto" id="assunto" class="form-control shadow-sm" placeholder="Digite o assunto" required>
+        <div class="invalid-feedback">Por favor, insira o assunto.</div>
+      </div>
 
-        <!-- Arquivo -->
-        <div class="mb-4">
-            <label for="arquivo" class="form-label h5 text-secondary"><i class="bi bi-file-earmark"></i> Anexo:</label>
-            <input type="file" name="arquivo" id="arquivo" class="form-control shadow-sm" accept=".jpg,.png,.pdf" >
-        </div>
+      <!-- Corpo da Mensagem -->
+      <div class="mb-4">
+        <label for="corpo" class="form-label h5 text-secondary"><i class="bi bi-chat-text-fill"></i> Mensagem:</label>
+        <textarea name="corpo" id="corpo" class="form-control shadow-sm" rows="5" placeholder="Escreva sua mensagem aqui..." required></textarea>
+        <div class="invalid-feedback">Por favor, insira a mensagem.</div>
+      </div>
 
+      <!-- Arquivo -->
+      <div class="mb-4">
+        <label for="arquivo" class="form-label h5 text-secondary"><i class="bi bi-file-earmark"></i> Anexo:</label>
+        <input type="file" name="arquivo" id="arquivo" class="form-control shadow-sm" accept=".jpg,.png,.pdf">
+      </div>
 
+      <!-- Botões de Ação -->
+      <div class="d-flex justify-content-center gap-4">
+        <button type="submit" class="btn btn-primary btn-lg shadow-lg px-4 py-2">
+          <i class="bi bi-send-fill"></i> Enviar
+        </button>
+        <a href="/mensagens" class="btn btn-outline-dark btn-lg shadow-sm px-4 py-2">
+          <i class="bi bi-arrow-left-circle"></i> Voltar
+        </a>
+      </div>
+    </form>
+  </div>
 
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Botões de Ação -->
-    <div class="d-flex justify-content-center gap-4">
-      <button type="submit" class="btn btn-primary btn-lg shadow-lg px-4 py-2">
-        <i class="bi bi-send-fill"></i> Enviar
-      </button>
-      <a href="/mensagens" class="btn btn-outline-dark btn-lg shadow-sm px-4 py-2">
-        <i class="bi bi-arrow-left-circle"></i> Voltar
-      </a>
-    </div>
-  </form>
-</div>
+  <script>
+    $(document).ready(function () {
+      // Inicialização do Select2
+      if ($.fn.select2) {
+        $('#destinatarioId').select2({
+          placeholder: "🔍 Selecione um ou mais destinatários",
+          allowClear: true,
+          width: '100%',
+          multiple: true
+        });
+      } else {
+        console.error('Select2 não foi carregado corretamente.');
+      }
 
-<!-- Bootstrap e Validação -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-<script>
-  (function () {
-    'use strict';
-    const forms = document.querySelectorAll('.needs-validation');
+      // Validação do formulário
+      (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
 
-    Array.from(forms).forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      }, false);
+        Array.from(forms).forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      })();
     });
-  })();
-
-
-    if ($.fn.select2) {
-    $('#destinatarioId').select2({
-      placeholder: "🔍 Selecione um ou mais destinatários", // Placeholder text
-      allowClear: true, // Allows clearing the selection
-      width: '100%', // Set the width of the field
-      multiple: true // Allows multiple selections (if necessary)
-    });
-  } else {
-    console.error('Select2 is not loaded properly');
-  }
-
-
-</script>
-
-<style>
-  h1 {
-    padding-bottom: 10px;
-  }
-
-
-.container {
-    width: 80%;
-    max-width: 1200px;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.select2-container .select2-selection--multiple {
-  min-height: 50px;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-}
-
-.select2-container .select2-selection__choice {
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 20px;
-}
-
-</style>
+  </script>
+</body>
+</html>
