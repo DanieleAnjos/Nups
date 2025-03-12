@@ -1,3 +1,9 @@
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 <div class="container shadow-lg p-5 rounded bg-light">
   <h1 class="text-center my-4 text-primary">Enviar Mensagem</h1>
@@ -12,12 +18,11 @@
       <label for="destinatarioId" class="form-label h5 text-secondary">
         <i class="bi bi-person-fill"></i> Destinatário(s):
       </label>
-      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple required>
+      <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
         {{#each profissionais}}
           <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
         {{/each}}
       </select>
-      <div class="form-text">Segure CTRL (ou CMD no Mac) para selecionar múltiplos destinatários.</div>
       <div class="invalid-feedback">Por favor, selecione ao menos um destinatário.</div>
     </div>
 
@@ -73,6 +78,15 @@
       }, false);
     });
   })();
+
+
+    $(document).ready(function() {
+    $('#destinatarioId').select2({
+      placeholder: "Selecione um ou mais destinatários",
+      allowClear: true,
+      width: '100%'
+    });
+  });
 </script>
 
 <style>
