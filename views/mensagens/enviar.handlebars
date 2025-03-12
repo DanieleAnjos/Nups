@@ -81,19 +81,18 @@
   })();
 
 
-    $(document).ready(function() {
+    if ($.fn.select2) {
     $('#destinatarioId').select2({
-      placeholder: "🔍 Selecione um ou mais destinatários",
-      allowClear: true,
-      multiple: true,
-      tags: true,
-      width: '100%'
+      placeholder: "🔍 Selecione um ou mais destinatários", // Placeholder text
+      allowClear: true, // Allows clearing the selection
+      width: '100%', // Set the width of the field
+      multiple: true // Allows multiple selections (if necessary)
     });
-      } else {
+  } else {
     console.error('Select2 is not loaded properly');
   }
-  });
-  
+
+
 </script>
 
 <style>
