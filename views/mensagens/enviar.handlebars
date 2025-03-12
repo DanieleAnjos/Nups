@@ -19,7 +19,6 @@
         <i class="bi bi-person-fill"></i> Destinatário(s):
       </label>
       <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
-        <option disabled>🔍 Selecione um ou mais destinatários</option>
         {{#each profissionais}}
           <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
         {{/each}}
@@ -84,11 +83,17 @@
 
     $(document).ready(function() {
     $('#destinatarioId').select2({
-      placeholder: "Selecione um ou mais destinatários",
+      placeholder: "🔍 Selecione um ou mais destinatários",
       allowClear: true,
+      multiple: true,
+      tags: true,
       width: '100%'
     });
+      } else {
+    console.error('Select2 is not loaded properly');
+  }
   });
+  
 </script>
 
 <style>
