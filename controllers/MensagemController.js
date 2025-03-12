@@ -68,6 +68,8 @@ module.exports = {
         await Mensagem.bulkCreate(mensagens);
       } else if (destinatarioId) {
 
+        const dataEnvio = moment().tz('America/Sao_Paulo').toDate();
+
         await Mensagem.create({
           remetenteId,
           destinatarioId,
@@ -75,6 +77,8 @@ module.exports = {
           assunto,
           corpo,
           arquivo,  
+          createdAt: dataEnvio,
+          updatedAt: dataEnvio,
         });
       } else {
         req.flash('error_msg', 'Especifique um destinatário ou um cargo.');
@@ -82,7 +86,7 @@ module.exports = {
       }
   
       req.flash('success_msg', 'Mensagem enviada com sucesso!');
-      return res.redirect('/mensagens');
+      return res.redirect('/mensagens', );
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Erro ao enviar mensagem.');
@@ -246,12 +250,14 @@ module.exports = {
     }
   },
 
+  
   enviarResposta: async (req, res) => {
     try {
       const { corpo } = req.body;
       const mensagemId = req.params.id;
       const profissionalId = req.user?.profissionalId;
       const arquivo = req.file ? `/arquivos/${req.file.filename}` : null; 
+      const dataEnvio = moment().tz('America/Sao_Paulo').toDate(); // Data corrigida
 
       if (!corpo || corpo.trim() === '') {
         req.flash('error_msg', 'O corpo da mensagem não pode estar vazio.');
@@ -277,6 +283,8 @@ module.exports = {
         arquivo,
         visualizada: false,
         respondida: true,
+        createdAt: dataEnvio,
+        updatedAt: dataEnvio,
       });
 
       req.flash('success_msg', 'Resposta enviada com sucesso.');
