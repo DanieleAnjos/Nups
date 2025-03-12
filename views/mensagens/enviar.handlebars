@@ -53,6 +53,7 @@
           <i class="bi bi-person-fill"></i> Destinatário(s):
         </label>
         <select name="destinatarioId" id="destinatarioId" class="form-select shadow-sm" multiple="multiple" required>
+          <option value="">🔍 Selecione um ou mais destinatários.</option>
           {{#each profissionais}}
             <option value="{{this.id}}">{{this.nome}} ({{this.cargo}})</option>
           {{/each}}
@@ -104,7 +105,7 @@
       // Inicialização do Select2
       if ($.fn.select2) {
         $('#destinatarioId').select2({
-          placeholder: "🔍 Selecione um destinatário",
+          placeholder: "🔍 Selecione ",
           allowClear: true,
           width: '100%',
           multiple: true
