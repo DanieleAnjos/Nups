@@ -330,6 +330,7 @@ app.use((req, res, next) => {
 });
 
 
+app.use('/auth', authRoutes);
 
 app.get('/auth/login',function(req, res)  {
   res.render('auth/login');
@@ -609,9 +610,9 @@ app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
 app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
+app.use('/auth/register', authRoutes);
+app.use('/auth/register', usuarioRoutes);
 app.use('/avisos', avisoRoutes);
-app.use('/auth', authRoutes);
-
 
 app.use((req, res) => {
     res.status(404).render('404'); 
