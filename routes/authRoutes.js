@@ -3,7 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const Usuario = require('../models/Usuario');
 const Profissional = require('../models/Profissional');
-const { ensureAuthenticated } = require('../middlewares');
+const ensureAuthenticated = require('../middlewares/ensureAuthenticated');
 const argon2 = require('argon2');
 
 // Protege a rota /register para não ser pública
