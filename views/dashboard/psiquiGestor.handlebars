@@ -1,10 +1,8 @@
 <div class="container text-center mt-5 dashboard">
-  <h1 class="mb-4">Bem-vindo ao Dashboard Administrativo</h1>
+  <h1 class="mb-4">Bem-vindo ao Dashboard do Gestor</h1>
   <div class="dashboard-grid">
-    <a href="/profissionais" class="dashboard-card" aria-label="Gerenciar Profissionais">
-      <i class="fas fa-user-md"></i>
-      <span>Profissionais</span>
-    </a>
+    <!-- Gestão de Pessoas -->
+
     <a href="/pacientes" class="dashboard-card" aria-label="Gerenciar Pacientes">
       <i class="fas fa-users"></i>
       <span>Servidores</span>
@@ -13,7 +11,7 @@
       <i class="fas fa-calendar-alt"></i>
       <span>Fluxograma de Atendimentos</span>
     </a>
-
+    <!-- Atendimento e Serviços -->
     <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
       <i class="fas fa-calendar-check"></i>
       <span>Atendimentos</span>
@@ -22,14 +20,7 @@
       <i class="fas fa-clipboard-list"></i>
       <span>Encaminhamentos</span>
     </a>
-    <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
-      <i class="fas fa-exclamation-circle"></i>
-      <span>Ocorrências</span>
-    </a>
-    <a href="/salas" class="dashboard-card" aria-label="Cadastro de Salas">
-      <i class="fas fa-building"></i>
-      <span>Cadastro de Salas</span>
-    </a>
+    <!-- Infraestrutura -->
     <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
       <i class="fas fa-door-open"></i>
       <span>Reservas</span>
@@ -38,60 +29,44 @@
       <i class="fas fa-calendar-alt"></i>
       <span>Escalas</span>
     </a>
-    <a href="/eventos" class="dashboard-card" aria-label="Gerenciar Eventos">
-      <i class="fas fa-calendar-plus"></i>
-      <span>Novo Evento</span>
+    <a href="/avisos" class="dashboard-card" aria-label="Gerenciar Avisos">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos</span>
     </a>
-    <a href="/noticias" class="dashboard-card" aria-label="Gerenciar Noticias">
-    <i class="fas fa-newspaper"></i>
-      <span>Notícias</span>
-    </a>
-    <a href="/usuarios/lista" class="dashboard-card" aria-label="Gerenciar Usuários">
-      <i class="fas fa-user-cog"></i>
-      <span>Usuários</span>
-    </a>
-    <a href="/relatorios" class="dashboard-card" aria-label="Gerenciar Relatórios">
-      <i class="fas fa-chart-bar"></i>
-      <span>Relatórios</span>
+    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos do Dia">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos do Dia</span>
+      <span id="aviso-count" class="notification-badge" style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
+        {{avisosDoDia}}
+      </span>
     </a>
     <a href="/mensagens" class="dashboard-card" aria-label="Gerenciar Mensagens">
       <i class="fas fa-envelope"></i>
       <span>Mensagens</span>
-      <span id="message-count" class="notification-badge"
-            style="{{#if mensagensNaoLidas}}display: inline;{{else}}display: none;{{/if}}">
+      <span id="message-count" class="notification-badge" style="display: {{#if mensagensNaoLidas}}inline{{else}}none{{/if}};">
         {{mensagensNaoLidas}}
       </span>
     </a>
     <a href="/notificacoes" class="dashboard-card" aria-label="Gerenciar Notificações">
       <i class="fas fa-bell"></i>
       <span>Notificações</span>
-      <span id="notificacao-count" class="notification-badge"
-            style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
+      <span id="notificacao-count" class="notification-badge" style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
         {{notificacoesNaoLidas}}
       </span>
     </a>
-    <a href="/avisos" class="dashboard-card" aria-label="Gerenciar Avisos">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>Avisos</span>
-    </a>
-    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos">
-      <i class="fas fa-exclamation-triangle"></i>
-      <span>Avisos do Dia</span>
-      <span id="aviso-count" class="notification-badge"
-            style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
-          {{avisosDoDia}}
-      </span>
-    </a>
 
-    <a href="/produtos" class="dashboard-card"aria-label="Gerenciar Produtos">
-    <i class="fas fa-shopping-cart"></i>
-      <span>Produtos</span>
+    <!-- Relatórios e Estatísticas -->
+    <a href="/relatorios" class="dashboard-card" aria-label="Gerenciar Relatórios">
+      <i class="fas fa-chart-bar"></i>
+      <span>Relatórios</span>
     </a>
-    <a href="/graficos" class="dashboard-card" aria-label="Visualizar gráficos">
-      <i class="fas fa-chart-bar"></i> <!-- Ícone de gráficos em vez de perfil -->
+    <a href="/graficos" class="dashboard-card" aria-label="Visualizar Gráficos">
+      <i class="fas fa-chart-bar"></i>
       <span>Gráficos</span>
     </a>
-    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Perfil">
+
+    <!-- Outros -->
+    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Meu Perfil">
       <i class="fas fa-user-circle"></i>
       <span>Perfil</span>
     </a>

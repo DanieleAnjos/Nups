@@ -31,9 +31,17 @@ const dashboardController = {
     console.log(req.user);
     res.render('dashboard/adm', { user: req.user, cargo: req.profissional.cargo });
   },
-  gestor: (req, res) => {
+  socialGestor: (req, res) => {
     console.log(req.user);
-    res.render('dashboard/gestor', { user: req.user, cargo: req.profissional.cargo });
+    res.render('dashboard/socialGestor', { user: req.user, cargo: req.profissional.cargo });
+  },
+  psicoGestor: (req, res) => {
+    console.log(req.user);
+    res.render('dashboard/psicoGestor', { user: req.user, cargo: req.profissional.cargo });
+  },
+  psiquiGestor: (req, res) => {
+    console.log(req.user);
+    res.render('dashboard/psiquiGestor', { user: req.user, cargo: req.profissional.cargo });
   },
   assistenteSocial: (req, res) => {
     console.log(req.user);

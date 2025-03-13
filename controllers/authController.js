@@ -41,6 +41,9 @@ exports.login = (req, res, next) => {
           'Administrador': '/dashboard/adm',
           'Adm' : '/dashboard/adm2',
           'Gestor' : '/dashboard/gestor',
+          'Gestor Psicologia' : '/dashboard/psicoGestor',
+          'Gestor Psiquiatra' : '/dashboard/psiquiGestor',
+          'Gestor Assistente Social' : '/dashboard/socialGestor',
           'Assistente social': '/dashboard/assistente-social',
           'Psicólogo': '/dashboard/psico',
           'Psiquiatra': '/dashboard/psico'

@@ -60,7 +60,7 @@ router.get('/adm2', checkUserAndProfissional, async (req, res) => {
   }
 });
 
-router.get('/gestor', checkUserAndProfissional, async (req, res) => {
+router.get('/socialGestor', checkUserAndProfissional, async (req, res) => {
   try {
     if (!req.user || !req.user.profissionalId) {
       return res.status(401).send('Usuário não autenticado ou sem ID de profissional');
@@ -76,7 +76,63 @@ router.get('/gestor', checkUserAndProfissional, async (req, res) => {
       where: { profissionalId, lida: false },  
     });
 
-    res.render('dashboard/gestor', {
+    res.render('dashboard/socialGestor', {
+      user: req.user,
+      cargo: req.profissional.cargo,
+      mensagensNaoLidas,  
+      notificacoesNaoLidas,  
+    });
+  } catch (error) {
+    console.error('Erro ao carregar o painel administrativo:', error);
+    res.status(500).send('Erro ao carregar o painel administrativo');
+  }
+});
+
+router.get('/psicoGestor', checkUserAndProfissional, async (req, res) => {
+  try {
+    if (!req.user || !req.user.profissionalId) {
+      return res.status(401).send('Usuário não autenticado ou sem ID de profissional');
+    }
+
+    const profissionalId = req.user.profissionalId;
+
+    const mensagensNaoLidas = await Mensagem.count({
+      where: { destinatarioId: profissionalId, visualizada: false },
+    });
+
+    const notificacoesNaoLidas = await Notificacao.count({
+      where: { profissionalId, lida: false },  
+    });
+
+    res.render('dashboard/psicoGestor', {
+      user: req.user,
+      cargo: req.profissional.cargo,
+      mensagensNaoLidas,  
+      notificacoesNaoLidas,  
+    });
+  } catch (error) {
+    console.error('Erro ao carregar o painel administrativo:', error);
+    res.status(500).send('Erro ao carregar o painel administrativo');
+  }
+});
+
+router.get('/psiquiGestor', checkUserAndProfissional, async (req, res) => {
+  try {
+    if (!req.user || !req.user.profissionalId) {
+      return res.status(401).send('Usuário não autenticado ou sem ID de profissional');
+    }
+
+    const profissionalId = req.user.profissionalId;
+
+    const mensagensNaoLidas = await Mensagem.count({
+      where: { destinatarioId: profissionalId, visualizada: false },
+    });
+
+    const notificacoesNaoLidas = await Notificacao.count({
+      where: { profissionalId, lida: false },  
+    });
+
+    res.render('dashboard/psiquiGestor', {
       user: req.user,
       cargo: req.profissional.cargo,
       mensagensNaoLidas,  

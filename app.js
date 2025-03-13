@@ -463,8 +463,8 @@ const accessControl = {
       '/fluxoAtendimentos'
     ],
 
-    'Gestor': [
-      '/dashboard/gestor',
+    'Gestor Servico Social': [
+      '/dashboard/socialGestor',
       '/pacientes',
       '/escalas',
       '/atendimentos',
@@ -486,7 +486,52 @@ const accessControl = {
       '/discussoes/create',
       '/fluxoAtendimentos'
 
+    ],
 
+    'Gestor Psicologia': [
+      '/dashboard/psicoGestor',
+      '/pacientes',
+      '/escalas',
+      '/atendimentos',
+      '/reservas',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque',
+      '/mensagens',
+      '/notificacoes',
+      '/graficos',
+      '/discussoes',
+      '/Eventos-detalhes',
+      '/auth/changePassword',
+      '/avisos',
+      '/profissionais/meu_perfil/',
+      '/discussoes/detalhes',
+      '/discussoes/edit',
+      '/discussoes/create',
+      '/fluxoAtendimentos'
+    ],
+
+    'Gestor Psiquiatria': [
+      '/dashboard/psiquiGestor',
+      '/pacientes',
+      '/escalas',
+      '/atendimentos',
+      '/reservas',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque',
+      '/mensagens',
+      '/notificacoes',
+      '/graficos',
+      '/discussoes',
+      '/Eventos-detalhes',
+      '/auth/changePassword',
+      '/avisos',
+      '/profissionais/meu_perfil/',
+      '/discussoes/detalhes',
+      '/discussoes/edit',
+      '/discussoes/create',
+      '/fluxoAtendimentos'
     ],
 
     'Assistente social': [
