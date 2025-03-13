@@ -330,8 +330,11 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth/login', authRoutes);
+app.use('/auth', authRoutes);
 
+app.get('/auth/login',function(req, res)  {
+  res.render('auth/login');
+});
 
 app.get('/Atividades',function(req, res)  {
   res.render('Atividades', {
@@ -431,7 +434,6 @@ const accessControl = {
       '/Eventos-detalhes',
       '/noticias',
       '/auth/changePassword',
-      '/auth/register',
       '/avisos',
       '/fluxoAtendimentos'
     ],
