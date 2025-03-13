@@ -6,16 +6,18 @@ const Profissional = require('../models/Profissional');
 const { ensureAuthenticated } = require('../middlewares');
 const argon2 = require('argon2');
 
-router.get('/register', async (req, res) => {
+// Protege a rota /register para não ser pública
+router.get('/register', ensureAuthenticated, async (req, res) => {
     try {
         const profissionais = await Profissional.findAll();
-        res.render('auth/register', ensureAuthenticated, { profissionais, layout: false });
+        res.render('auth/register', { profissionais, layout: false });
     } catch (err) {
         console.error(err);
         req.flash('error_msg', 'Erro ao carregar profissionais. Tente novamente.');
         return res.redirect('/');
     }
 });
+
 
 router.post('/register', async (req, res) => {
     const { usuario, senha, profissionalId } = req.body;
