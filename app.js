@@ -434,7 +434,6 @@ const accessControl = {
       '/Eventos-detalhes',
       '/noticias',
       '/auth/changePassword',
-      '/auth/register',
       '/avisos',
       '/fluxoAtendimentos'
     ],
@@ -611,8 +610,6 @@ app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
 app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
-app.use('/auth/register', authRoutes);
-app.use('/auth/register', usuarioRoutes);
 app.use('/avisos', avisoRoutes);
 
 app.use((req, res) => {
