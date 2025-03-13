@@ -330,7 +330,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth', authRoutes);
+app.use('/auth/login', authRoutes);
 
 
 app.get('/Atividades',function(req, res)  {
@@ -608,6 +608,7 @@ app.use('/fluxoAtendimentos', fluxoAtendimentosRoutes);
 app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
+app.use('/auth/register', authRoutes);
 app.use('/avisos', avisoRoutes);
 
 app.use((req, res) => {
