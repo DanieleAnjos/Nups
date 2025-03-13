@@ -330,8 +330,6 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/auth', authRoutes);
-
 app.get('/auth/login',function(req, res)  {
   res.render('auth/login');
 });
