@@ -434,6 +434,7 @@ const accessControl = {
       '/Eventos-detalhes',
       '/noticias',
       '/auth/changePassword',
+      '/auth/register',
       '/avisos',
       '/fluxoAtendimentos'
     ],
