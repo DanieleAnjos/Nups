@@ -3,12 +3,13 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const Usuario = require('../models/Usuario');
 const Profissional = require('../models/Profissional');
+const { checkProfissional } = require('../utils');
 const argon2 = require('argon2');
 
 router.get('/register', async (req, res) => {
     try {
         const profissionais = await Profissional.findAll();
-        res.render('auth/register', { profissionais, layout: false });
+        res.render('auth/register', checkProfissional, { profissionais, layout: false });
     } catch (err) {
         console.error(err);
         req.flash('error_msg', 'Erro ao carregar profissionais. Tente novamente.');
