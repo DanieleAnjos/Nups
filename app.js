@@ -330,11 +330,8 @@ app.use((req, res, next) => {
 });
 
 
-app.get('/auth/login',function(req, res)  {
-  res.render('auth/login', {
-    layout: false,
-  });
-});
+app.use('/auth', authRoutes);
+
 
 app.get('/Atividades',function(req, res)  {
   res.render('Atividades', {
