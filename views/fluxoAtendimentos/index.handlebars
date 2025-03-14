@@ -34,8 +34,15 @@
         </div>
 
         <!-- Campo: Data Início -->
-        <div class="col-md-3 mb-2">
-            <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
+        <div class="col-md-2 mb-2">
+            <label for="dataInicio" class="form-label">Data Início</label>
+            <input type="date" name="dataInicio" id="dataInicio" class="form-control" value="{{query.dataInicio}}">
+        </div>
+
+        <!-- Campo: Data Fim -->
+        <div class="col-md-2 mb-2">
+            <label for="dataFim" class="form-label">Data Fim</label>
+            <input type="date" name="dataFim" id="dataFim" class="form-control" value="{{query.dataFim}}">
         </div>
 
         <!-- Botão de Filtrar -->

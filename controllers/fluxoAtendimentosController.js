@@ -4,7 +4,7 @@ const moment = require('moment');
 
 const index = async (req, res) => {
   try {
-    const { nomePaciente, profissional, data } = req.query;
+    const { nomePaciente, profissional, dataInicio, dataFim } = req.query;
     const profissionalId = req.user.profissionalId;
 
     // Buscar o profissional associado ao usuário logado
@@ -32,8 +32,32 @@ const index = async (req, res) => {
       ];
     }
 
-    if (data) {
-      whereConditions.data = data;
+    if (dataInicio && dataFim) {
+      whereConditions.data = { [Op.between]: [dataInicio, dataFim] };
+    } else if (dataInicio) {
+      whereConditions.data = { [Op.gte]: dataInicio };
+    } else if (dataFim) {
+      whereConditions.data = { [Op.lte]: dataFim };
+    }
+
+    // Restrições adicionais para Gestores
+    if (userCargo.includes('gestor')) {
+      if (userCargo.includes('servico social')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'assistente social' },
+          { '$profissionalRecebido.cargo$': 'assistente social' }
+        ];
+      } else if (userCargo.includes('psicologia')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'psicólogo' },
+          { '$profissionalRecebido.cargo$': 'psicólogo' }
+        ];
+      } else if (userCargo.includes('psiquiatria')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'psiquiatra' },
+          { '$profissionalRecebido.cargo$': 'psiquiatra' }
+        ];
+      }
     }
 
     // Buscar os atendimentos com os relacionamentos necessários
@@ -49,7 +73,6 @@ const index = async (req, res) => {
         },
       ],
     });
-
 
     const fluxoAtendimentosFormatados = fluxoAtendimentos.map(enc => ({
       ...enc.toJSON(),

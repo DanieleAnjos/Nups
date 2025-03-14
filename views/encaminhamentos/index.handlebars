@@ -45,32 +45,6 @@
             <input type="date" name="dataFim" id="dataFim" class="form-control" value="{{query.dataFim}}">
         </div>
 
-        <!-- Campo: Mês -->
-        <div class="col-md-2 mb-2">
-            <label for="mes" class="form-label">Mês</label>
-            <select name="mes" id="mes" class="form-select">
-                <option value="">Selecione o mês</option>
-                <option value="01" {{#if (eq query.mes '01')}}selected{{/if}}>Janeiro</option>
-                <option value="02" {{#if (eq query.mes '02')}}selected{{/if}}>Fevereiro</option>
-                <option value="03" {{#if (eq query.mes '03')}}selected{{/if}}>Março</option>
-                <option value="04" {{#if (eq query.mes '04')}}selected{{/if}}>Abril</option>
-                <option value="05" {{#if (eq query.mes '05')}}selected{{/if}}>Maio</option>
-                <option value="06" {{#if (eq query.mes '06')}}selected{{/if}}>Junho</option>
-                <option value="07" {{#if (eq query.mes '07')}}selected{{/if}}>Julho</option>
-                <option value="08" {{#if (eq query.mes '08')}}selected{{/if}}>Agosto</option>
-                <option value="09" {{#if (eq query.mes '09')}}selected{{/if}}>Setembro</option>
-                <option value="10" {{#if (eq query.mes '10')}}selected{{/if}}>Outubro</option>
-                <option value="11" {{#if (eq query.mes '11')}}selected{{/if}}>Novembro</option>
-                <option value="12" {{#if (eq query.mes '12')}}selected{{/if}}>Dezembro</option>
-            </select>
-        </div>
-
-        <!-- Campo: Ano -->
-        <div class="col-md-2 mb-2">
-            <label for="ano" class="form-label">Ano</label>
-            <input type="number" name="ano" id="ano" class="form-control" placeholder="ex: 2025" value="{{query.ano}}">
-        </div>
-
         <!-- Botão de Filtrar -->
         <div class="col-md-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100">
