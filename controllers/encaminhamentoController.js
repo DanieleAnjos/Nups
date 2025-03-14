@@ -3,7 +3,6 @@ const Notificacao = require('../models/Notificacao');
 const Profissional = require('../models/Profissional');
 const Atendimento = require('../models/Atendimento');
 const { Op } = require('sequelize');  
-
 const moment = require('moment');
 const { Paciente } = require('../models');
 
@@ -24,10 +23,12 @@ exports.index = async (req, res) => {
 
     const whereConditions = {};
 
+    // Filtro por nome do paciente
     if (nomePaciente) {
       whereConditions.nomePaciente = { [Op.like]: `%${nomePaciente}%` };
     }
 
+    // Filtro por profissional
     if (profissional) {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.nome$': { [Op.like]: `%${profissional}%` } },
@@ -35,16 +36,18 @@ exports.index = async (req, res) => {
       ];
     }
 
-    // Filtro por data flexível
-    if (dataInicio && dataFim) {
-      whereConditions.data = { [Op.between]: [dataInicio, dataFim] };
-    } else if (dataInicio) {
-      whereConditions.data = { [Op.gte]: dataInicio };
-    } else if (dataFim) {
-      whereConditions.data = { [Op.lte]: dataFim };
+    // Filtro por data
+    if (dataInicio || dataFim) {
+      whereConditions.data = {};
+      if (dataInicio) {
+        whereConditions.data[Op.gte] = dataInicio; // Data maior ou igual a dataInicio
+      }
+      if (dataFim) {
+        whereConditions.data[Op.lte] = dataFim; // Data menor ou igual a dataFim
+      }
     }
 
-    // Filtro por mês
+    // Filtro por mês e ano
     if (mes && ano) {
       const inicioMes = moment(`${ano}-${mes}-01`).startOf('month').format('YYYY-MM-DD');
       const fimMes = moment(`${ano}-${mes}-01`).endOf('month').format('YYYY-MM-DD');
@@ -60,24 +63,23 @@ exports.index = async (req, res) => {
 
     // Restrições adicionais para Gestores
     if (userCargo.includes('gestor')) {
+      const cargosPermitidos = [];
       if (userCargo.includes('servico social')) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'Assistente social' },
-          { '$profissionalRecebido.cargo$': 'Assistente social' }
-        ];
+        cargosPermitidos.push('Assistente social');
       } else if (userCargo.includes('psicologia')) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'Psicólogo' },
-          { '$profissionalRecebido.cargo$': 'Psicólogo' }
-        ];
+        cargosPermitidos.push('Psicólogo');
       } else if (userCargo.includes('psiquiatria')) {
+        cargosPermitidos.push('Psiquiatra');
+      }
+      if (cargosPermitidos.length > 0) {
         whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'Psiquiatra' },
-          { '$profissionalRecebido.cargo$': 'Psiquiatra' }
+          { '$profissionalEnvio.cargo$': { [Op.in]: cargosPermitidos } },
+          { '$profissionalRecebido.cargo$': { [Op.in]: cargosPermitidos } }
         ];
       }
     }
 
+    // Restrições para outros cargos
     if (userCargo !== 'administrador' && userCargo !== 'adm') {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
@@ -125,7 +127,6 @@ exports.index = async (req, res) => {
     });
   }  
 };
-
 
 
 exports.marcarVisto = async (req, res) => {
