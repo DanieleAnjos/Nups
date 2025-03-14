@@ -61,22 +61,20 @@ exports.index = async (req, res) => {
       whereConditions.data = { [Op.between]: [inicioAno, fimAno] };
     }
 
-    // Restrições adicionais para Gestores
-    if (userCargo.includes('gestor')) {
-      const cargosPermitidos = [];
-      if (userCargo.includes('servico social')) {
-        cargosPermitidos.push('Assistente social');
-      } else if (userCargo.includes('psicologia')) {
-        cargosPermitidos.push('Psicólogo');
-      } else if (userCargo.includes('psiquiatria')) {
-        cargosPermitidos.push('Psiquiatra');
-      }
-      if (cargosPermitidos.length > 0) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': { [Op.in]: cargosPermitidos } },
-          { '$profissionalRecebido.cargo$': { [Op.in]: cargosPermitidos } }
-        ];
-      }
+    // Mapeamento de cargos para gestores
+    const gestorCargosMap = {
+      'gestor servico social': ['Assistente social'],
+      'gestor psicologia': ['Psicólogo'],
+      'gestor psiquiatria': ['Psiquiatra']
+    };
+
+    // Aplicar restrições para gestores
+    if (gestorCargosMap[userCargo]) {
+      const cargosPermitidos = gestorCargosMap[userCargo];
+      whereConditions[Op.or] = [
+        { '$profissionalEnvio.cargo$': { [Op.in]: cargosPermitidos } },
+        { '$profissionalRecebido.cargo$': { [Op.in]: cargosPermitidos } }
+      ];
     }
 
     // Restrições para outros cargos
