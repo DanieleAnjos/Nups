@@ -20,41 +20,41 @@
             </a>
         </div>
 
-        <!-- Formulário de Filtro -->
-        <form action="/encaminhamentos" method="GET" class="mb-2 p-2 border rounded shadow-sm bg-light">
-            <div class="row">
-                <!-- Campo: Nome do Paciente -->
-                <div class="col-12 col-md-2 mb-1">
-                    <label for="nomePaciente" class="form-label"><i class="bi bi-person"></i> Nome do Servidor</label>
-                    <input type="text" name="nomePaciente" id="nomePaciente" class="form-control" placeholder="Digite o nome" value="{{query.nomePaciente}}">
-                </div>
+<!-- Formulário de Filtro -->
+<form action="/encaminhamentos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+    <div class="row g-2">
+        <!-- Campo: Nome do Paciente -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <label for="nomePaciente" class="form-label"><i class="bi bi-person"></i> Nome do Servidor</label>
+            <input type="text" name="nomePaciente" id="nomePaciente" class="form-control" placeholder="Digite o nome" value="{{query.nomePaciente}}">
+        </div>
 
-                <!-- Campo: Profissional -->
-                <div class="col-12 col-md-2 mb-1">
-                    <label for="profissional" class="form-label"><i class="bi bi-briefcase"></i> Profissional</label>
-                    <input type="text" name="profissional" id="profissional" class="form-control" placeholder="Digite o nome" value="{{query.profissional}}">
-                </div>
+        <!-- Campo: Profissional -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <label for="profissional" class="form-label"><i class="bi bi-briefcase"></i> Profissional</label>
+            <input type="text" name="profissional" id="profissional" class="form-control" placeholder="Digite o nome" value="{{query.profissional}}">
+        </div>
 
-                <!-- Campo: Data Início -->
-                <div class="col-6 col-md-2 mb-1">
-                    <label for="dataInicio" class="form-label"><i class="bi bi-calendar"></i> Data Início</label>
-                    <input type="date" name="dataInicio" id="dataInicio" class="form-control" value="{{query.dataInicio}}">
-                </div>
+        <!-- Campo: Data Início -->
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="dataInicio" class="form-label"><i class="bi bi-calendar"></i> Data Início</label>
+            <input type="date" name="dataInicio" id="dataInicio" class="form-control" value="{{query.dataInicio}}">
+        </div>
 
-                <!-- Campo: Data Fim -->
-                <div class="col-6 col-md-2 mb-1">
-                    <label for="dataFim" class="form-label"><i class="bi bi-calendar-check"></i> Data Fim</label>
-                    <input type="date" name="dataFim" id="dataFim" class="form-control" value="{{query.dataFim}}">
-                </div>
+        <!-- Campo: Data Fim -->
+        <div class="col-12 col-md-6 col-lg-2">
+            <label for="dataFim" class="form-label"><i class="bi bi-calendar-check"></i> Data Fim</label>
+            <input type="date" name="dataFim" id="dataFim" class="form-control" value="{{query.dataFim}}">
+        </div>
 
-                <!-- Botão de Filtrar -->
-                <div class="col-12 col-md-2 mb-1">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-funnel"></i> Filtrar
-                    </button>
-                </div>
-            </div>
-        </form>
+        <!-- Botão de Filtrar -->
+        <div class="col-12 col-md-6 col-lg-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i></i> Filtrar
+            </button>
+        </div>
+    </div>
+</form>
 
         <!-- Tabela de Encaminhamentos -->
         <div class="table-responsive">
