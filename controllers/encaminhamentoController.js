@@ -62,18 +62,18 @@ exports.index = async (req, res) => {
     if (userCargo.includes('gestor')) {
       if (userCargo.includes('servico social')) {
         whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'assistente social' },
-          { '$profissionalRecebido.cargo$': 'assistente social' }
+          { '$profissionalEnvio.cargo$': 'Assistente social' },
+          { '$profissionalRecebido.cargo$': 'Assistente social' }
         ];
       } else if (userCargo.includes('psicologia')) {
         whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'psicólogo' },
-          { '$profissionalRecebido.cargo$': 'psicólogo' }
+          { '$profissionalEnvio.cargo$': 'Psicólogo' },
+          { '$profissionalRecebido.cargo$': 'Psicólogo' }
         ];
       } else if (userCargo.includes('psiquiatria')) {
         whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'psiquiatra' },
-          { '$profissionalRecebido.cargo$': 'psiquiatra' }
+          { '$profissionalEnvio.cargo$': 'Psiquiatra' },
+          { '$profissionalRecebido.cargo$': 'Psiquiatra' }
         ];
       }
     }
@@ -125,7 +125,6 @@ exports.index = async (req, res) => {
     });
   }  
 };
-
 
 
 
