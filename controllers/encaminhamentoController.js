@@ -9,10 +9,9 @@ const { Paciente } = require('../models');
 
 exports.index = async (req, res) => {
   try {
-    const { nomePaciente, profissional, data } = req.query;
+    const { nomePaciente, profissional, dataInicio, dataFim, mes, ano } = req.query;
     const profissionalId = req.user.profissionalId;
 
-    // Buscar o profissional associado ao usuário logado
     const profissionalAssociado = await Profissional.findOne({
       where: { id: profissionalId },
     });
@@ -23,7 +22,6 @@ exports.index = async (req, res) => {
 
     const userCargo = profissionalAssociado.cargo ? profissionalAssociado.cargo.toLowerCase() : '';
 
-    // Definir filtros
     const whereConditions = {};
 
     if (nomePaciente) {
@@ -37,20 +35,36 @@ exports.index = async (req, res) => {
       ];
     }
 
-    if (data) {
-      whereConditions.data = data;
+    // Filtro por data flexível
+    if (dataInicio && dataFim) {
+      whereConditions.data = { [Op.between]: [dataInicio, dataFim] };
+    } else if (dataInicio) {
+      whereConditions.data = { [Op.gte]: dataInicio };
+    } else if (dataFim) {
+      whereConditions.data = { [Op.lte]: dataFim };
     }
 
-    // Se não for Administrador, filtrar pelo cargo do profissional logado
+    // Filtro por mês
+    if (mes && ano) {
+      const inicioMes = moment(`${ano}-${mes}-01`).startOf('month').format('YYYY-MM-DD');
+      const fimMes = moment(`${ano}-${mes}-01`).endOf('month').format('YYYY-MM-DD');
+      whereConditions.data = { [Op.between]: [inicioMes, fimMes] };
+    }
+
+    // Filtro por ano
+    if (ano && !mes) {
+      const inicioAno = moment(`${ano}-01-01`).startOf('year').format('YYYY-MM-DD');
+      const fimAno = moment(`${ano}-12-31`).endOf('year').format('YYYY-MM-DD');
+      whereConditions.data = { [Op.between]: [inicioAno, fimAno] };
+    }
+
     if (userCargo !== 'administrador' && userCargo !== 'adm') {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }
       ];
     }
-    
 
-    // Buscar os encaminhamentos com os relacionamentos necessários
     const encaminhamentos = await Encaminhamento.findAll({
       where: whereConditions,
       include: [
@@ -72,9 +86,8 @@ exports.index = async (req, res) => {
       podeMarcarComoVisto: userCargo === 'administrador' || enc.profissionalRecebido?.id === profissionalId,
     }));
 
-    // Renderizar a página com os encaminhamentos e permissões
     res.render('encaminhamentos/index', { 
-      encaminhamentos: encaminhamentosFormatados || [], // Garante que nunca será undefined
+      encaminhamentos: encaminhamentosFormatados || [],
       query: req.query,
       profissional: profissionalId,
       podeCancelar: encaminhamentosFormatados.some(enc => enc.podeCancelar),
@@ -84,7 +97,6 @@ exports.index = async (req, res) => {
 
   } catch (error) {
     console.error('Erro ao buscar encaminhamentos:', error.message);
-    console.error(error.stack); // Log completo do erro
     res.render('encaminhamentos/index', {
       encaminhamentos: [],
       query: req.query,
@@ -93,6 +105,8 @@ exports.index = async (req, res) => {
     });
   }  
 };
+
+
 
 
 
