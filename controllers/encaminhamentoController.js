@@ -77,8 +77,8 @@ exports.index = async (req, res) => {
       ];
     }
 
-    // Restrições para outros cargos
-    if (userCargo !== 'administrador' && userCargo !== 'adm') {
+    // Restrições para outros cargos (não gestores)
+    if (userCargo !== 'administrador' && userCargo !== 'adm' && !gestorCargosMap[userCargo]) {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': userCargo },
         { '$profissionalRecebido.cargo$': userCargo }
