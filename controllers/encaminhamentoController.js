@@ -58,26 +58,25 @@ exports.index = async (req, res) => {
       whereConditions.data = { [Op.between]: [inicioAno, fimAno] };
     }
 
-
-        // Restrições adicionais para Gestores
-        if (userCargo.includes('gestor')) {
-          if (userCargo.includes('servico social')) {
-            whereConditions[Op.or] = [
-              { '$profissionalEnvio.cargo$': 'assistente social' },
-              { '$profissionalRecebido.cargo$': 'assistente social' }
-            ];
-          } else if (userCargo.includes('psicologia')) {
-            whereConditions[Op.or] = [
-              { '$profissionalEnvio.cargo$': 'psicólogo' },
-              { '$profissionalRecebido.cargo$': 'psicólogo' }
-            ];
-          } else if (userCargo.includes('psiquiatria')) {
-            whereConditions[Op.or] = [
-              { '$profissionalEnvio.cargo$': 'psiquiatra' },
-              { '$profissionalRecebido.cargo$': 'psiquiatra' }
-            ];
-          }
-        }
+    // Restrições adicionais para Gestores
+    if (userCargo.includes('gestor')) {
+      if (userCargo.includes('servico social')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'assistente social' },
+          { '$profissionalRecebido.cargo$': 'assistente social' }
+        ];
+      } else if (userCargo.includes('psicologia')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'psicólogo' },
+          { '$profissionalRecebido.cargo$': 'psicólogo' }
+        ];
+      } else if (userCargo.includes('psiquiatria')) {
+        whereConditions[Op.or] = [
+          { '$profissionalEnvio.cargo$': 'psiquiatra' },
+          { '$profissionalRecebido.cargo$': 'psiquiatra' }
+        ];
+      }
+    }
 
     if (userCargo !== 'administrador' && userCargo !== 'adm') {
       whereConditions[Op.or] = [
@@ -126,7 +125,6 @@ exports.index = async (req, res) => {
     });
   }  
 };
-
 
 
 
