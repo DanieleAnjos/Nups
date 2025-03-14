@@ -11,7 +11,8 @@ const { sequelize } = require('../models');
 exports.index = async (req, res) => {
   try {
     const searchTerm = req.query.search || '';
-    const dataExata = req.query.dataExata || '';
+    const dataInicio = req.query.dataInicio || '';
+    const dataFim = req.query.dataFim || '';
 
     const profissionalId = req.user.profissionalId;
 
@@ -23,23 +24,54 @@ exports.index = async (req, res) => {
       return res.status(404).json({ message: 'Profissional não encontrado.' });
     }
 
-    const profissionalCargo = profissional.cargo;
+    const profissionalCargo = profissional.cargo.toLowerCase();
 
-    // Filtro por data exata
+    // Filtro por intervalo de datas
     const dateFilter = {};
-    if (dataExata) {
-      const data = new Date(dataExata);
-      data.setDate(data.getDate()); // Adiciona um dia
-
-      const dataInicio = new Date(data);
-      dataInicio.setHours(0, 0, 0, 0);
-      const dataFim = new Date(data);
-      dataFim.setHours(23, 59, 59, 999);
+    if (dataInicio && dataFim) {
+      // Filtro entre duas datas
+      const inicio = new Date(dataInicio);
+      inicio.setHours(0, 0, 0, 0); // Início do dia
+      const fim = new Date(dataFim);
+      fim.setHours(23, 59, 59, 999); // Fim do dia
 
       dateFilter.createdAt = {
-        [Op.gte]: dataInicio,
-        [Op.lte]: dataFim
+        [Op.between]: [inicio, fim]
       };
+    } else if (dataInicio) {
+      // Filtro a partir de uma data
+      const inicio = new Date(dataInicio);
+      inicio.setHours(0, 0, 0, 0); // Início do dia
+
+      dateFilter.createdAt = {
+        [Op.gte]: inicio
+      };
+    } else if (dataFim) {
+      // Filtro até uma data
+      const fim = new Date(dataFim);
+      fim.setHours(23, 59, 59, 999); // Fim do dia
+
+      dateFilter.createdAt = {
+        [Op.lte]: fim
+      };
+    }
+
+    // Mapeamento de cargos para gestores
+    const gestorCargosMap = {
+      'gestor servico social': ['Assistente social'],
+      'gestor psicologia': ['Psicólogo'],
+      'gestor psiquiatria': ['Psiquiatra']
+    };
+
+    // Configura o filtro de cargo
+    let cargoFilter = {};
+    if (gestorCargosMap[profissionalCargo]) {
+      // Se for um gestor, filtra pelos cargos que ele gerencia
+      const cargosPermitidos = gestorCargosMap[profissionalCargo];
+      cargoFilter = { cargo: { [Op.in]: cargosPermitidos } };
+    } else if (!['administrador', 'adm'].includes(profissionalCargo)) {
+      // Se não for gestor nem administrador, filtra pelo próprio cargo
+      cargoFilter = { cargo: profissionalCargo };
     }
 
     // Configura os includes com os filtros
@@ -48,7 +80,7 @@ exports.index = async (req, res) => {
         model: Profissional,
         as: 'profissional',
         attributes: ['id', 'nome', 'cargo'],
-        where: !['Administrador', 'Adm'].includes(profissionalCargo) ? { cargo: profissionalCargo } : {}
+        where: cargoFilter
       },
       {
         model: Paciente,
@@ -64,14 +96,16 @@ exports.index = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    const podeEditar = ['administrador', 'assistente social'].includes(profissionalCargo.toLowerCase());
-    const podeDeletar = profissionalCargo.toLowerCase() === 'administrador';
+    // Permissões
+    const podeEditar = ['administrador', 'assistente social'].includes(profissionalCargo);
+    const podeDeletar = profissionalCargo === 'administrador';
     const podeCadastrar = podeEditar;
 
     return res.status(200).render('atendimentos/index', {
       atendimentos,
       searchTerm,
-      dataExata,
+      dataInicio,
+      dataFim,
       podeEditar,
       podeDeletar,
       podeCadastrar
@@ -82,8 +116,6 @@ exports.index = async (req, res) => {
     return res.status(500).json({ message: 'Erro ao buscar atendimentos.' });
   }
 };
-
-
 
 exports.create = async (req, res) => {
   try {

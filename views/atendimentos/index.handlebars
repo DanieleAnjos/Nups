@@ -27,14 +27,26 @@
 
         <!-- Formulário de Filtro -->
         <form action="/atendimentos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
-            <div class="row">
-                <div class="col-md-4 mb-2">
+            <div class="row g-2">
+                <!-- Campo: Buscar Servidor ou Profissional -->
+                <div class="col-12 col-md-6 col-lg-4">
                     <input type="text" name="search" class="form-control" placeholder="Buscar servidor ou profissional..." value="{{searchTerm}}">
                 </div>
-                <div class="col-md-3 mb-2">
-                    <input type="date" name="dataExata" class="form-control" placeholder="Data Exata" value="{{dataExata}}">
+
+                <!-- Campo: Data Início -->
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label for="dataInicio" class="form-label"><i class="bi bi-calendar"></i> Data Início</label>
+                    <input type="date" name="dataInicio" id="dataInicio" class="form-control" value="{{query.dataInicio}}">
                 </div>
-                <div class="col-md-2">
+
+                <!-- Campo: Data Fim -->
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label for="dataFim" class="form-label"><i class="bi bi-calendar-check"></i> Data Fim</label>
+                    <input type="date" name="dataFim" id="dataFim" class="form-control" value="{{query.dataFim}}">
+                </div>
+
+                <!-- Botão de Filtrar -->
+                <div class="col-12 col-md-6 col-lg-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-filter"></i> Filtrar
                     </button>
