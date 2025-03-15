@@ -148,6 +148,44 @@
       background-color: #004494;
     }
 
+    .visualizacoes-box {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.visualizacoes-box h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.visualizacoes-box ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.visualizacoes-box ul li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.btn-marcar-visto {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.btn-marcar-visto:hover {
+  background-color: #45a049; /* Verde mais escuro */
+}
+
     @media (max-width: 600px) {
       .alert {
         flex-direction: column;
@@ -162,40 +200,84 @@
 </head>
 <body>
 
-  <div class="container">
-    <h2>{{title}}</h2>
+<div class="container">
+  <h2>{{title}}</h2>
 
-    {{#if error}}
-      <p style="color: red; text-align: center;">{{error}} - {{details}}</p>
-    {{/if}}
-    
-<div class="alert-container">
-  {{#each avisos}}
-    <div class="alert alert-{{this.tipo}}">
-      <div class="alert-icon">
-        <i class="{{#if (eq this.tipo 'lembrete')}}fas fa-bell{{/if}}
-                  {{#if (eq this.tipo 'alerta')}}fas fa-exclamation-triangle{{/if}}
-                  {{#if (eq this.tipo 'administrativo')}}fas fa-clipboard-list{{/if}}"></i>
-      </div>
-      <div class="alert-content">
-        <strong class="alert-title">{{this.assunto}}</strong>
-        
-        <div class="registro-box">
-          <strong>Mensagem:</strong>
-          <p>{{this.mensagem}}</p>
-        </div><br>
+  {{#if error}}
+    <p style="color: red; text-align: center;">{{error}} - {{details}}</p>
+  {{/if}}
 
-        <div class="alert-footer">
-          <span><strong>Data:</strong> {{Data this.data}}</span>
-          <span class="created-by"><strong>Criado por:</strong>{{this.profissional.nome}}</span>
+  <div class="alert-container">
+    {{#each avisos}}
+      <div class="alert alert-{{this.tipo}}">
+        <div class="alert-icon">
+          <i class="{{#if (eq this.tipo 'lembrete')}}fas fa-bell{{/if}}
+                    {{#if (eq this.tipo 'alerta')}}fas fa-exclamation-triangle{{/if}}
+                    {{#if (eq this.tipo 'administrativo')}}fas fa-clipboard-list{{/if}}"></i>
+        </div>
+        <div class="alert-content">
+          <strong class="alert-title">{{this.assunto}}</strong>
+
+          <div class="registro-box">
+            <strong>Mensagem:</strong>
+            <p>{{this.mensagem}}</p>
+          </div><br>
+
+          <div class="alert-footer">
+            <span><strong>Data:</strong> {{Data this.data}}</span>
+            <span class="created-by"><strong>Criado por:</strong> {{this.profissional.nome}}</span>
+            <button class="btn-marcar-visto" onclick="marcarComoVisto('{{this.id}}')">Marcar como Visto</button>
+          </div>
+
+          <div class="visualizacoes-box">
+            <h4>Visualizado por:</h4>
+            <ul>
+              {{#each this.visualizadoPor}}
+                <li>{{this.nome}} ({{this.cargo}}) - {{Data this.vistoEm}}</li>
+              {{else}}
+                <li>Nenhum profissional visualizou este aviso ainda.</li>
+              {{/each}}
+            </ul>
+
+            <h4>Não visualizado por:</h4>
+            <ul>
+              {{#each this.naoVisualizadoPor}}
+                <li>{{this.nome}} ({{this.cargo}})</li>
+              {{else}}
+                <li>Todos os profissionais visualizaram este aviso.</li>
+              {{/each}}
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  {{/each}}
-</div>
+    {{/each}}
+  </div>
 
   <a href="javascript:void(0);" class="btn" onclick="window.history.back();">Voltar</a>
-  </div>
+</div>
+
 
 </body>
 </html>
+
+<script>
+  async function marcarComoVisto(avisoId) {
+    try {
+      const response = await fetch(`/avisos/${avisoId}/marcar-visto`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        alert('Aviso marcado como visto.');
+        location.reload(); // Recarrega a página para atualizar a lista
+      } else {
+        alert('Erro ao marcar aviso como visto.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+    }
+  }
+</script>

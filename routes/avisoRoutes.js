@@ -11,5 +11,6 @@ router.put('/:id', avisoController.updateAviso);
 router.get('/:id', avisoController.renderEditAviso);
 router.delete('/:id', avisoController.deleteAviso);
 
+router.post('/:id/marcar-visto', avisoController.marcarAvisoComoVisto);
 
 module.exports = router;

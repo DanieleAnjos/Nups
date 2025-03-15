@@ -214,6 +214,14 @@ Profissional.beforeUpdate(async (profissional) => {
   }
 });
 
+Profissional.associate = (models) => {
+  Profissional.belongsToMany(models.Aviso, {
+    through: 'AvisoVisualizado',
+    foreignKey: 'profissionalId',
+    as: 'avisosVisualizados'
+  });
+}
+
 (async () => {
   await sequelize.sync(); 
 })();

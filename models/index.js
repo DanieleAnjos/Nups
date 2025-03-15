@@ -13,6 +13,7 @@ const Usuario = require('./Usuario');
 const FluxoAtendimentos = require('./FluxoAtendimentos');
 const Notificacao = require('./Notificacao');
 const Aviso = require('./Aviso');
+const AvisoVisualizado = require('./AvisoVisualizado');
 
 const models = {
   Profissional,
@@ -27,6 +28,7 @@ const models = {
   FluxoAtendimentos, 
   Notificacao, 
   Aviso,  
+  AvisoVisualizado,
 
 };
 

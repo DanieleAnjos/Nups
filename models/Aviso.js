@@ -45,4 +45,12 @@ Aviso.associate = (models) => {
   });
 };
 
+Aviso.associate = (models) => {
+  Aviso.belongsToMany(models.Profissional, {
+    through: 'AvisoVisualizado',
+    foreignKey: 'avisoId',
+    as: 'visualizadoPor'
+  });
+}
+
 module.exports = Aviso;

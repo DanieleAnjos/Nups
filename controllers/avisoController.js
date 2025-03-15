@@ -1,5 +1,6 @@
 const Aviso = require('../models/Aviso');
 const Profissional = require('../models/Profissional');
+const AvisoVisualizado = require('../models/AvisoVisualizado');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 
@@ -424,5 +425,29 @@ exports.renderEditAviso = async (req, res) => {
       error: 'Erro ao carregar aviso para edição',
       details: error.message
     });
+  }
+};
+
+exports.marcarAvisoComoVisto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const profissionalId = req.user.profissionalId;
+
+    // Verifica se o aviso existe
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.status(404).json({ error: 'Aviso não encontrado.' });
+    }
+
+    // Marca o aviso como visto pelo profissional
+    await AvisoVisualizado.findOrCreate({
+      where: { avisoId: id, profissionalId },
+      defaults: { vistoEm: new Date() }
+    });
+
+    res.status(200).json({ message: 'Aviso marcado como visto.' });
+  } catch (error) {
+    console.error('Erro ao marcar aviso como visto:', error);
+    res.status(500).json({ error: 'Erro ao marcar aviso como visto.' });
   }
 };
