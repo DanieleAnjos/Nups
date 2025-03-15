@@ -263,11 +263,14 @@ exports.getAvisosDoDia = async (req, res) => {
         return !profissionaisVisualizaram.some(visto => visto.id === profissional.id);
       });
 
+      const jaVisualizado = aviso.visualizadoPor.some(visto => visto.id === req.user.profissionalId);
+
       return {
         ...aviso.get({ plain: true }),
         data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
         visualizadoPor: profissionaisVisualizaram,
-        naoVisualizadoPor: profissionaisNaoVisualizaram
+        naoVisualizadoPor: profissionaisNaoVisualizaram,
+        jaVisualizado
       };
     });
 
