@@ -8,7 +8,8 @@ function getCargosPermitidos(cargoUsuario) {
   const cargos = [
     'Assistente social',
     'Psicólogo',
-    'Psiquiatra'
+    'Psiquiatra',
+    'Adm'
   ];
 
   if (['Administrador', 'Adm'].includes(cargoUsuario)) {
@@ -16,9 +17,9 @@ function getCargosPermitidos(cargoUsuario) {
   } else if (cargoUsuario.startsWith('Gestor')) {
     // Mapeia o cargo do gestor para o cargo correspondente
     const cargoCorrespondente = cargoUsuario.replace('Gestor ', '');
-    return ['Geral', cargoCorrespondente]; // Gestores podem enviar para o cargo correspondente e avisos gerais
+    return [cargoCorrespondente]; // Gestores só podem enviar para o cargo correspondente
   } else if (cargos.includes(cargoUsuario)) {
-    return ['Geral', cargoUsuario]; // Outros profissionais podem enviar para o seu cargo e avisos gerais
+    return [cargoUsuario]; // Outros profissionais podem enviar para o seu cargo e avisos gerais
   } else {
     return ['Geral']; // Caso o cargo não esteja na lista, permite apenas avisos gerais
   }
@@ -381,30 +382,56 @@ exports.renderEditAviso = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Verifica se o ID é válido
     if (isNaN(id)) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'ID inválido' 
+      return res.render('avisos/index', {
+        title: 'Lista de Avisos',
+        error: 'ID inválido'
       });
     }
 
+    // Busca o aviso pelo ID
     const aviso = await Aviso.findByPk(id);
     if (!aviso) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'Aviso não encontrado' 
+      return res.render('avisos/index', {
+        title: 'Lista de Avisos',
+        error: 'Aviso não encontrado'
       });
     }
 
-    res.render('avisos/edit', { title: 'Editar Aviso', aviso });
+    // Obtém o profissional logado
+    const profissional = await Profissional.findByPk(req.user.profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    // Obtém os cargos permitidos para o profissional logado
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+    const isGeralPermitido = cargosPermitidos.includes('Geral');
+
+    // Formata a data para o campo input type="date"
+    const dataFormatada = moment(aviso.data).format('YYYY-MM-DD');
+
+    // Renderiza a página de edição com os dados do aviso e cargos permitidos
+    res.render('avisos/edit', {
+      title: 'Editar Aviso',
+      aviso: {
+        ...aviso.get({ plain: true }), // Converte o modelo Sequelize para um objeto simples
+        data: dataFormatada // Formata a data para o campo input type="date"
+      },
+      cargosPermitidos,
+      isGeralPermitido
+    });
   } catch (error) {
     console.error('Erro ao carregar aviso para edição:', error);
-    res.render('avisos/index', { 
-      title: 'Lista de Avisos', 
-      error: 'Erro ao carregar aviso para edição', 
-      details: error.message 
+    res.render('avisos/index', {
+      title: 'Lista de Avisos',
+      error: 'Erro ao carregar aviso para edição',
+      details: error.message
     });
   }
 };
-
 

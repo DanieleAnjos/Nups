@@ -14,13 +14,13 @@
 
     <form action="{{#if aviso}}/avisos/editar/{{aviso.id}}{{else}}/avisos{{/if}}" method="POST" class="form">
         <label for="assunto">Assunto:</label>
-        <input type="text" id="assunto" name="assunto" value="{{aviso.assunto}}" required>
+        <input type="text" id="assunto" name="assunto" value="{{#if aviso}}{{aviso.assunto}}{{/if}}" required>
 
         <label for="mensagem">Mensagem:</label>
-        <textarea id="mensagem" name="mensagem" required>{{aviso.mensagem}}</textarea>
+        <textarea id="mensagem" name="mensagem" required>{{#if aviso}}{{aviso.mensagem}}{{/if}}</textarea>
 
         <label for="data">Data:</label>
-        <input type="date" id="data" name="data" value="{{aviso.data}}" required>
+        <input type="date" id="data" name="data" value="{{#if aviso}}{{aviso.data}}{{/if}}" required>
 
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo">
@@ -59,6 +59,13 @@
         font-family: 'Arial', sans-serif;
     }
 
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f4f4f4;
+    }
 
     .container {
         max-width: 500px;
@@ -68,6 +75,7 @@
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         text-align: center;
+        margin: 0 auto;
     }
 
     h2 {
@@ -136,6 +144,7 @@
         color: #333;
         display: block;
         margin-top: 10px;
+        text-align: center;
     }
 
     .btn-secondary:hover {
