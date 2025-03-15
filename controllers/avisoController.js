@@ -16,9 +16,11 @@ function getCargosPermitidos(cargoUsuario) {
   } else if (cargoUsuario.startsWith('Gestor')) {
     // Mapeia o cargo do gestor para o cargo correspondente
     const cargoCorrespondente = cargoUsuario.replace('Gestor ', '');
-    return [cargoCorrespondente]; // Gestores só podem enviar para o cargo correspondente
+    return ['Geral', cargoCorrespondente]; // Gestores podem enviar para o cargo correspondente e avisos gerais
+  } else if (cargos.includes(cargoUsuario)) {
+    return ['Geral', cargoUsuario]; // Outros profissionais podem enviar para o seu cargo e avisos gerais
   } else {
-    return []; // Outros profissionais não podem enviar avisos por cargo
+    return ['Geral']; // Caso o cargo não esteja na lista, permite apenas avisos gerais
   }
 }
 
