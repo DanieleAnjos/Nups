@@ -1,11 +1,6 @@
-const Aviso = require('../models/Aviso'); // Caminho correto?
+const Aviso = require('../models/Aviso'); // Verifique se o caminho está correto
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize');
-
-
-// Renderiza a página de criação de aviso
-
-// Criar um novo aviso
 const moment = require('moment-timezone');
 
 // Função para obter os cargos permitidos com base no cargo do usuário
@@ -26,7 +21,6 @@ function getCargosPermitidos(cargoUsuario) {
     return []; // Outros profissionais não podem enviar avisos por cargo
   }
 };
-
 
 // Renderiza a página de criação de aviso
 exports.renderCreateAviso = async (req, res) => {
@@ -106,10 +100,7 @@ exports.createAviso = async (req, res) => {
   }
 };
 
-
 // Listar todos os avisos
-
-
 exports.getAllAvisos = async (req, res) => {
   try {
     const profissionalId = req.user.profissionalId;
@@ -162,59 +153,37 @@ exports.getAllAvisos = async (req, res) => {
   }
 };
 
-
-exports.getAvisosDoDia = async (req, res) => {
+// Renderiza a página de edição de um aviso
+exports.renderEditAviso = async (req, res) => {
   try {
-    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
-    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
+    const { id } = req.params;
 
-    console.log('Buscando avisos entre:', startOfDay, 'e', endOfDay);
 
-    const profissionalId = req.user.profissionalId;
-
-    const profissional = await Profissional.findByPk(profissionalId, {
-      attributes: ['id', 'nome', 'cargo']
-    });
-
-    if (!profissional) {
-      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    if (isNaN(id)) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'ID inválido' 
+      });
     }
 
-    const avisosDoDia = await Aviso.findAll({
-      where: {
-        data: {
-          [Op.between]: [startOfDay, endOfDay]
-        }
-      },
-      include: [
-        {
-          model: Profissional,
-          as: 'profissional',
-          attributes: ['id', 'nome', 'cargo']
-        }
-      ],
-      order: [['data', 'ASC']]
-    });
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'Aviso não encontrado' 
+      });
+    }
 
-    res.render('avisos/do-dia', { 
-      title: 'Avisos do Dia', 
-      avisos: avisosDoDia, 
-      profissional 
-    });
+    res.render('avisos/edit', { title: 'Editar Aviso', aviso });
   } catch (error) {
-    console.error('Erro ao buscar avisos do dia:', error);
-    res.render('avisos/do-dia', { 
-      title: 'Avisos do Dia', 
-      avisos: [], 
-      error: 'Erro ao buscar avisos do dia', 
+    console.error('Erro ao carregar aviso para edição:', error);
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      error: 'Erro ao carregar aviso para edição', 
       details: error.message 
     });
   }
 };
-
-
-
-// Renderiza a página de edição de um aviso 
 
 // Atualizar aviso
 exports.updateAviso = async (req, res) => {
@@ -257,7 +226,6 @@ exports.updateAviso = async (req, res) => {
     }
 
     // Convertendo a data para o formato correto
-    const moment = require('moment');
     const dataFormatada = moment(data).tz('America/Sao_Paulo').toDate();
 
     // Atualizando o aviso
@@ -309,56 +277,42 @@ exports.deleteAviso = async (req, res) => {
   }
 };
 
+// Contar avisos do dia
 exports.contarAvisosDoDia = async (req, res) => {
   try {
+    const profissionalId = req.user.profissionalId;
+
+    // Obtém o cargo do profissional logado
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ error: 'Profissional não encontrado.' });
+    }
+
+    const cargoProfissional = profissional.cargo;
+
     // Obtendo a data do início e fim do dia atual
     const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
     const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
-    
-    // Contando avisos dentro do intervalo de data do dia
+
+    // Filtra avisos do dia que são gerais ou correspondem ao cargo do profissional
     const avisosDoDia = await Aviso.count({
       where: {
         data: {
           [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
-        }
+        },
+        [Op.or]: [
+          { cargoAlvo: 'Geral' }, // Avisos gerais
+          { cargoAlvo: cargoProfissional } // Avisos específicos para o cargo do profissional
+        ]
       }
     });
 
-    return res.json({ avisosDoDia });  // Retorna a contagem em formato JSON
+    return res.json({ avisosDoDia }); // Retorna a contagem em formato JSON
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Erro ao contar avisos do dia.' });  // Retorna erro em formato JSON
+    return res.status(500).json({ error: 'Erro ao contar avisos do dia.' }); // Retorna erro em formato JSON
   }
 };
-
-exports.renderEditAviso = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (isNaN(id)) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'ID inválido' 
-      });
-    }
-
-    const aviso = await Aviso.findByPk(id);
-    if (!aviso) {
-      return res.render('avisos/index', { 
-        title: 'Lista de Avisos', 
-        error: 'Aviso não encontrado' 
-      });
-    }
-
-    res.render('avisos/edit', { title: 'Editar Aviso', aviso });
-  } catch (error) {
-    console.error('Erro ao carregar aviso para edição:', error);
-    res.render('avisos/index', { 
-      title: 'Lista de Avisos', 
-      error: 'Erro ao carregar aviso para edição', 
-      details: error.message 
-    });
-  }
-};
-
-
