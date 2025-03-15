@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{title}}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
       background-color: #f5f7fa;
       padding: 20px;
@@ -128,8 +121,29 @@
       transition: background-color 0.3s ease;
     }
 
-    .btn-marcar-visto:hover {
+    .btn-marcar-visto:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
+    .btn-marcar-visto:hover:not(:disabled) {
       background-color: #218838;
+    }
+
+    .btn-ver-visualizacoes {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn-ver-visualizacoes:hover {
+      background-color: #0056b3;
     }
 
     .visualizacoes-box {
@@ -138,6 +152,11 @@
       background-color: #f8f9fa;
       border-radius: 8px;
       border: 1px solid #e9ecef;
+      display: none; /* Oculta a lista inicialmente */
+    }
+
+    .visualizacoes-box.visible {
+      display: block; /* Exibe a lista quando a classe "visible" é adicionada */
     }
 
     .visualizacoes-box h4 {
@@ -263,10 +282,20 @@
           <div class="alert-footer">
             <span><strong>Data:</strong> {{Data this.data}}</span>
             <span><strong>Criado por:</strong> {{this.profissional.nome}}</span>
-            <button class="btn-marcar-visto" onclick="marcarComoVisto('{{this.id}}')">Marcar como Visto</button>
+            <button
+              class="btn-marcar-visto"
+              onclick="marcarComoVisto('{{this.id}}')"
+              {{#if this.jaVisualizado}}disabled{{/if}}
+            >
+              {{#if this.jaVisualizado}}Visto{{else}}Marcar como Visto{{/if}}
+            </button>
           </div>
 
-          <div class="visualizacoes-box">
+          <button class="btn-ver-visualizacoes" onclick="toggleVisualizacoes('{{this.id}}')">
+            Ver Visualizações
+          </button>
+
+          <div id="visualizacoes-{{this.id}}" class="visualizacoes-box">
             <h4>Visualizado por:</h4>
             <ul>
               {{#each this.visualizadoPor}}
@@ -294,6 +323,7 @@
 </div>
 
 <script>
+  // Função para marcar o aviso como visto
   async function marcarComoVisto(avisoId) {
     try {
       const response = await fetch(`/avisos/${avisoId}/marcar-visto`, {
@@ -312,6 +342,12 @@
     } catch (error) {
       console.error('Erro:', error);
     }
+  }
+
+  // Função para exibir/ocultar a lista de visualizações
+  function toggleVisualizacoes(avisoId) {
+    const visualizacoesBox = document.getElementById(`visualizacoes-${avisoId}`);
+    visualizacoesBox.classList.toggle('visible');
   }
 </script>
 

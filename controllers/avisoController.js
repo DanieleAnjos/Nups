@@ -238,19 +238,35 @@ exports.getAvisosDoDia = async (req, res) => {
       order: [['data', 'ASC']]
     });
 
-    // Adiciona a lista de profissionais que não visualizaram o aviso
+    // Busca todos os profissionais
     const todosProfissionais = await Profissional.findAll({
       attributes: ['id', 'nome', 'cargo']
     });
 
     const avisosFormatados = avisosDoDia.map(aviso => {
-      const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => {
-        return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
+      // Filtra os profissionais para os quais o aviso foi enviado
+      const profissionaisAlvo = todosProfissionais.filter(profissional => {
+        // Se o cargoAlvo for "Geral", inclui todos os profissionais
+        if (aviso.cargoAlvo === 'Geral') return true;
+
+        // Caso contrário, filtra pelo cargoAlvo
+        return profissional.cargo === aviso.cargoAlvo;
+      });
+
+      // Filtra os profissionais que visualizaram o aviso
+      const profissionaisVisualizaram = aviso.visualizadoPor.filter(visto => {
+        return profissionaisAlvo.some(profissional => profissional.id === visto.id);
+      });
+
+      // Filtra os profissionais que não visualizaram o aviso
+      const profissionaisNaoVisualizaram = profissionaisAlvo.filter(profissional => {
+        return !profissionaisVisualizaram.some(visto => visto.id === profissional.id);
       });
 
       return {
         ...aviso.get({ plain: true }),
         data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
+        visualizadoPor: profissionaisVisualizaram,
         naoVisualizadoPor: profissionaisNaoVisualizaram
       };
     });
