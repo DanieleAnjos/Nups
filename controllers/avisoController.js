@@ -155,13 +155,6 @@ exports.getAllAvisos = async (req, res) => {
       whereConditions.data = { [Op.eq]: dataFormatada };
     }
 
-    // Filtra avisos com base no cargo do usuário
-    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
-    whereConditions[Op.or] = [
-      { cargoAlvo: 'Geral' },
-      { cargoAlvo: { [Op.in]: cargosPermitidos } }
-    ];
-
     const avisos = await Aviso.findAll({
       where: whereConditions,
       include: [
