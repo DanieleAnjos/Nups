@@ -93,6 +93,36 @@ exports.getAllAvisos = async (req, res) => {
   }
 };
 
+exports.renderEditAviso = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'ID inválido' 
+      });
+    }
+
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'Aviso não encontrado' 
+      });
+    }
+
+    res.render('avisos/edit', { title: 'Editar Aviso', aviso });
+  } catch (error) {
+    console.error('Erro ao carregar aviso para edição:', error);
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      error: 'Erro ao carregar aviso para edição', 
+      details: error.message 
+    });
+  }
+};
+
 exports.updateAviso = async (req, res) => {
   try {
     const { id } = req.params;
