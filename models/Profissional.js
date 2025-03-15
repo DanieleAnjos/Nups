@@ -173,7 +173,15 @@ Profissional.associate = (models) => {
         as: 'usuarios',
       });
       
-      
+      Profissional.hasMany(models.Aviso, {
+        foreignKey: 'profissionalId',
+        as: 'avisosCriados'
+      });
+      Profissional.belongsToMany(models.Aviso, {
+        through: 'AvisoVisualizado',
+        foreignKey: 'profissionalId',
+        as: 'avisosVisualizados'
+      });
 };
 
 
@@ -214,13 +222,6 @@ Profissional.beforeUpdate(async (profissional) => {
   }
 });
 
-Profissional.associate = (models) => {
-  Profissional.belongsToMany(models.Aviso, {
-    through: 'AvisoVisualizado',
-    foreignKey: 'profissionalId',
-    as: 'avisosVisualizados'
-  });
-}
 
 (async () => {
   await sequelize.sync(); 

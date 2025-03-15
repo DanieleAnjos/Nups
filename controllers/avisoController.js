@@ -225,17 +225,35 @@ exports.getAvisosDoDia = async (req, res) => {
       include: [
         {
           model: Profissional,
-          as: 'profissional',
+          as: 'profissional', // Alias para o criador do aviso
           attributes: ['id', 'nome', 'cargo']
+        },
+        {
+          model: Profissional,
+          as: 'visualizadoPor', // Alias para os profissionais que visualizaram o aviso
+          attributes: ['id', 'nome', 'cargo'],
+          through: { attributes: ['vistoEm'] }
         }
       ],
       order: [['data', 'ASC']]
     });
 
-    const avisosFormatados = avisosDoDia.map(aviso => ({
-      ...aviso.get({ plain: true }),
-      data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
-    }));
+    // Adiciona a lista de profissionais que não visualizaram o aviso
+    const todosProfissionais = await Profissional.findAll({
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+    const avisosFormatados = avisosDoDia.map(aviso => {
+      const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => {
+        return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
+      });
+
+      return {
+        ...aviso.get({ plain: true }),
+        data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
+        naoVisualizadoPor: profissionaisNaoVisualizaram
+      };
+    });
 
     res.render('avisos/do-dia', {
       title: 'Avisos do Dia',
