@@ -24,6 +24,9 @@ const Aviso = sequelize.define('Aviso', {
     allowNull: false,
     defaultValue: 'lembrete',
   },
+  cargoAlvo: {
+    type: DataTypes.STRING
+  }, 
   profissionalId: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -31,7 +34,7 @@ const Aviso = sequelize.define('Aviso', {
       model: 'profissional', 
       key: 'id',
     },
-    timestamps: true, // Adiciona os campos createdAt e updatedAt automaticamente
+    timestamps: true, 
   }
 });
 

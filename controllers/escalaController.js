@@ -8,131 +8,114 @@ const puppeteer = require('puppeteer');
 
 const escalaController = {
 
-    index: async (req, res) => {
-      try {
-        const { data, horarioInicio, horarioFim, profissional } = req.query;
+  index: async (req, res) => {
+    try {
+      const { data, horarioInicio, horarioFim, profissional } = req.query;
   
-        const where = {};
+      const where = {};
   
-        if (data) {
-          where.data = data;
-        }
-  
-        if (horarioInicio) {
-          where.horarioInicio = { [Op.gte]: horarioInicio };
-        }
-  
-        if (horarioFim) {
-          where.horarioFim = { [Op.lte]: horarioFim };
-        }
-  
-        const profissionalLogado = await Profissional.findByPk(req.user.profissionalId, {
-          attributes: ['cargo'],
-        });
-  
-        const cargoAdministrador = 'Administrador';
-        const cargoAdm = 'Adm';
-  
-        // Mapeamento de cargos para gestores
-        const gestorCargosMap = {
-          'Gestor Servico Social': ['Assistente social'],
-          'Gestor Psicologia': ['Psicólogo'],
-          'Gestor Psiquiatria': ['Psiquiatra']
-        };
-  
-        // Determinar o filtro de profissional com base no cargo do usuário
-        let whereProfissional = {};
-  
-        if ([cargoAdministrador, cargoAdm].includes(profissionalLogado.cargo)) {
-          // Administradores e 'Adm' podem ver todas as escalas
-          whereProfissional = {};
-        } else if (gestorCargosMap[profissionalLogado.cargo]) {
-          // Gestores podem ver as escalas dos profissionais que gerenciam E dos administradores
-          const cargosPermitidos = gestorCargosMap[profissionalLogado.cargo];
-          whereProfissional = {
-            [Op.or]: [
-              { cargo: { [Op.in]: cargosPermitidos } }, // Escalas dos profissionais gerenciados
-              { cargo: cargoAdm } // Escalas dos administradores
-            ]
-          };
-        } else {
-          // Outros profissionais só podem ver suas próprias escalas E as escalas dos administradores
-          whereProfissional = {
-            [Op.or]: [
-              { id: req.user.profissionalId }, // Escala do próprio profissional
-              { cargo: cargoAdm } // Escalas dos administradores
-            ]
-          };
-        }
-  
-        if (profissional) {
-          whereProfissional.id = profissional;
-        }
-  
-        const include = [{
-          model: Profissional,
-          as: 'admin',
-          attributes: ['id', 'nome', 'cargo'],
-          where: whereProfissional,
-        }];
-  
-        const escalas = await Escala.findAll({
-          where,
-          include,
-        });
-  
-        function generateColorFromName(name) {
-          let hash = 0;
-          for (let i = 0; i < name.length; i++) {
-            hash = (hash << 5) - hash + name.charCodeAt(i);
-            hash |= 0;
-          }
-          return '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
-        }
-  
-        const escalasFormatadas = escalas.map(escala => {
-          const dataFormatada = new Date(escala.data);
-          const dataLocal = dataFormatada.toISOString().split('T')[0];
-  
-          dataFormatada.setDate(dataFormatada.getDate() - 2);
-  
-          const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
-            ? escala.horarioInicio
-            : new Date(escala.horarioInicio).toISOString().slice(11, 16);
-  
-          const horarioFimFormatado = typeof escala.horarioFim === 'string'
-            ? escala.horarioFim
-            : new Date(escala.horarioFim).toISOString().slice(11, 16);
-  
-          const cor = generateColorFromName(escala.admin.nome);
-  
-          return {
-            ...escala.toJSON(),
-            data: dataLocal,
-            horarioInicio: horarioInicioFormatado,
-            horarioFim: horarioFimFormatado,
-            cor,
-          };
-        });
-  
-        const profissionais = await Profissional.findAll();
-  
-        res.render('escalas/index', {
-          escalas: escalasFormatadas,
-          profissionais,
-          query: req.query,
-          profissional: req.user,
-          profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
-            acc[escala.admin.id] = escala.cor;
-            return acc;
-          }, {}))
-        });
-      } catch (error) {
-        console.error('Erro ao listar escalas:', error);
-        res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
+      if (data) {
+        where.data = data;
       }
-    },
   
+      if (horarioInicio) {
+        where.horarioInicio = { [Op.gte]: horarioInicio };
+      }
+  
+      if (horarioFim) {
+        where.horarioFim = { [Op.lte]: horarioFim };
+      }
+  
+      const profissionalLogado = await Profissional.findByPk(req.user.profissionalId, {
+        attributes: ['cargo'],
+      });
+  
+      const cargoAdministrador = 'Administrador';
+      const cargoAdm = 'Adm';
+  
+      // Determinar o filtro de profissional com base no cargo do usuário
+      let whereProfissional = {};
+  
+      if ([cargoAdministrador].includes(profissionalLogado.cargo)) {
+        // Administradores e 'Adm' podem ver todas as escalas
+        whereProfissional = {};
+      } else {
+        // Outros profissionais só podem ver suas próprias escalas E as escalas dos administradores
+        whereProfissional = {
+          [Op.or]: [
+            { id: req.user.profissionalId }, // Escala do próprio profissional
+            { cargo: cargoAdm } // Escalas dos administradores
+          ]
+        };
+      }
+  
+      if (profissional) {
+        whereProfissional.id = profissional;
+      }
+  
+      const include = [{
+        model: Profissional,
+        as: 'admin',
+        attributes: ['id', 'nome', 'cargo'],
+        where: whereProfissional,
+      }];
+  
+      const escalas = await Escala.findAll({
+        where,
+        include,
+      });
+  
+      function generateColorFromName(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+          hash = (hash << 5) - hash + name.charCodeAt(i);
+          hash |= 0;
+        }
+        return '#' + ((hash & 0x00FFFFFF) | 0x000000).toString(16).padStart(6, '0').toUpperCase();
+      }
+  
+      const escalasFormatadas = escalas.map(escala => {
+        const dataFormatada = new Date(escala.data);
+        const dataLocal = dataFormatada.toISOString().split('T')[0];
+  
+        dataFormatada.setDate(dataFormatada.getDate() - 2);
+  
+        const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
+          ? escala.horarioInicio
+          : new Date(escala.horarioInicio).toISOString().slice(11, 16);
+  
+        const horarioFimFormatado = typeof escala.horarioFim === 'string'
+          ? escala.horarioFim
+          : new Date(escala.horarioFim).toISOString().slice(11, 16);
+  
+        const cor = generateColorFromName(escala.admin.nome);
+  
+        return {
+          ...escala.toJSON(),
+          data: dataLocal,
+          horarioInicio: horarioInicioFormatado,
+          horarioFim: horarioFimFormatado,
+          cor,
+        };
+      });
+  
+      const profissionais = await Profissional.findAll();
+  
+      res.render('escalas/index', {
+        escalas: escalasFormatadas,
+        profissionais,
+        query: req.query,
+        profissional: req.user,
+        profissionalColors: JSON.stringify(escalasFormatadas.reduce((acc, escala) => {
+          acc[escala.admin.id] = escala.cor;
+          return acc;
+        }, {}))
+      });
+    } catch (error) {
+      console.error('Erro ao listar escalas:', error);
+      res.status(500).send('Erro ao listar escalas. Por favor, tente novamente mais tarde.');
+    }
+  },
   
   create: async (req, res) => {
     try {

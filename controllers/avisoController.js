@@ -11,9 +11,37 @@ exports.renderCreateAviso = (req, res) => {
 // Criar um novo aviso
 const moment = require('moment-timezone');
 
+// Renderiza a página de criação de aviso
+exports.renderCreateAviso = async (req, res) => {
+  try {
+    const profissional = await Profissional.findByPk(req.user.profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+
+    res.render('avisos/create', { 
+      title: 'Novo Aviso',
+      cargosPermitidos // Passa a lista de cargos permitidos para o formulário
+    });
+  } catch (error) {
+    console.error('Erro ao carregar formulário de aviso:', error);
+    res.render('avisos/create', { 
+      title: 'Novo Aviso', 
+      error: 'Erro ao carregar formulário de aviso',
+      details: error.message
+    });
+  }
+};
+
+// Criar um novo aviso
 exports.createAviso = async (req, res) => {
   try {
-    const { assunto, mensagem, data, tipo } = req.body;
+    const { assunto, mensagem, data, tipo, cargoAlvo } = req.body;
     const profissionalId = req.user.profissionalId;
 
     if (!assunto || !mensagem || !data || !tipo) {
@@ -23,10 +51,28 @@ exports.createAviso = async (req, res) => {
       });
     }
 
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+
+    // Verifica se o cargoAlvo é permitido
+    if (cargoAlvo && !cargosPermitidos.includes(cargoAlvo)) {
+      return res.render('avisos/create', { 
+        title: 'Novo Aviso', 
+        error: 'Cargo alvo não permitido para o seu cargo.' 
+      });
+    }
+
     // Converte a data para o formato esperado pelo banco
     const dataFormatada = moment.tz(data, 'America/Sao_Paulo').toDate();
 
-    await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, profissionalId });
+    await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, cargoAlvo, profissionalId });
 
     req.flash('success_msg', 'Aviso criado com sucesso');
     res.redirect('/avisos');

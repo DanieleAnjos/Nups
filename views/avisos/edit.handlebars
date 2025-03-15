@@ -12,8 +12,7 @@
     <h2>{{#if aviso}}Editar Aviso{{else}}Novo Aviso{{/if}}</h2>
 
     <form action="/avisos/{{aviso.id}}?_method=PUT" method="POST" class="form">
-            <input type="hidden" name="_method" value="PUT">
-
+        <input type="hidden" name="_method" value="PUT">
 
         <label for="assunto">Assunto:</label>
         <input type="text" id="assunto" name="assunto" value="{{aviso.assunto}}" required>
@@ -30,6 +29,19 @@
             <option value="alerta" {{#if (eq aviso.tipo 'alerta')}}selected{{/if}}>Alerta</option>
             <option value="administrativo" {{#if (eq aviso.tipo 'administrativo')}}selected{{/if}}>Administrativo</option>
         </select>
+
+        <!-- Campo de seleção para o cargo alvo -->
+        {{#if cargosPermitidos}}
+            <label for="cargoAlvo">Cargo Alvo:</label>
+            <select id="cargoAlvo" name="cargoAlvo">
+                {{#if cargosPermitidos.includes 'Geral'}}
+                    <option value="Geral" {{#if (eq aviso.cargoAlvo 'Geral')}}selected{{/if}}>Geral (Todos)</option>
+                {{/if}}
+                {{#each cargosPermitidos}}
+                    <option value="{{this}}" {{#if (eq ../aviso.cargoAlvo this)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </select>
+        {{/if}}
 
         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Salvar</button>
     </form>

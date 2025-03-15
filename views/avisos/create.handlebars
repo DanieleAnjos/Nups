@@ -14,13 +14,13 @@
 
     <form action="{{#if aviso}}/avisos/editar/{{aviso.id}}{{else}}/avisos{{/if}}" method="POST" class="form">
         <label for="assunto">Assunto:</label>
-        <input type="text" id="assunto" name="assunto" required>
+        <input type="text" id="assunto" name="assunto" value="{{aviso.assunto}}" required>
 
         <label for="mensagem">Mensagem:</label>
-        <textarea id="mensagem" name="mensagem" required></textarea>
+        <textarea id="mensagem" name="mensagem" required>{{aviso.mensagem}}</textarea>
 
         <label for="data">Data:</label>
-        <input type="date" id="data" name="data"  required>
+        <input type="date" id="data" name="data" value="{{aviso.data}}" required>
 
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo">
@@ -28,6 +28,19 @@
             <option value="alerta" {{#if (eq aviso.tipo 'alerta')}}selected{{/if}}>Alerta</option>
             <option value="administrativo" {{#if (eq aviso.tipo 'administrativo')}}selected{{/if}}>Administrativo</option>
         </select>
+
+        <!-- Campo de seleção para o cargo alvo -->
+        {{#if cargosPermitidos}}
+            <label for="cargoAlvo">Cargo Alvo:</label>
+            <select id="cargoAlvo" name="cargoAlvo">
+                {{#if cargosPermitidos.includes 'Geral'}}
+                    <option value="Geral" {{#if (eq aviso.cargoAlvo 'Geral')}}selected{{/if}}>Geral (Todos)</option>
+                {{/if}}
+                {{#each cargosPermitidos}}
+                    <option value="{{this}}" {{#if (eq ../aviso.cargoAlvo this)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </select>
+        {{/if}}
 
         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Salvar</button>
     </form>
