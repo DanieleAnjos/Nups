@@ -1,19 +1,28 @@
-const Aviso = require('../models/Aviso');
+const Aviso = require('../models/Aviso'); // Caminho correto?
 const Profissional = require('../models/Profissional');
 const { Op } = require('sequelize');
-const moment = require('moment-timezone');
 
+
+// utils/cargos.js
 function getCargosPermitidos(cargoUsuario) {
-  const cargos = ['Assistente social', 'Psicólogo', 'Psiquiatra'];
+  const cargos = [
+    'Assistente social',
+    'Psicólogo',
+    'Psiquiatra'
+  ];
 
   if (['Administrador', 'Adm'].includes(cargoUsuario)) {
-    return ['Geral', ...cargos];
+    return ['Geral', ...cargos]; // Administradores podem enviar para todos ou por cargo
   } else if (cargoUsuario.startsWith('Gestor')) {
-    return [cargoUsuario.replace('Gestor ', '')];
+    // Mapeia o cargo do gestor para o cargo correspondente
+    const cargoCorrespondente = cargoUsuario.replace('Gestor ', '');
+    return [cargoCorrespondente]; // Gestores só podem enviar para o cargo correspondente
+  } else {
+    return []; // Outros profissionais não podem enviar avisos por cargo
   }
-  return [];
 }
 
+// Renderiza a página de criação de aviso
 exports.renderCreateAviso = async (req, res) => {
   try {
     const profissional = await Profissional.findByPk(req.user.profissionalId, {
@@ -25,50 +34,90 @@ exports.renderCreateAviso = async (req, res) => {
     }
 
     const cargosPermitidos = getCargosPermitidos(profissional.cargo);
-    res.render('avisos/create', {
+    const isGeralPermitido = cargosPermitidos.includes('Geral');
+
+    res.render('avisos/create', { 
       title: 'Novo Aviso',
       cargosPermitidos,
-      isGeralPermitido: cargosPermitidos.includes('Geral')
+      isGeralPermitido // Passa essa informação para o template
     });
   } catch (error) {
     console.error('Erro ao carregar formulário de aviso:', error);
-    res.render('avisos/create', { title: 'Novo Aviso', error: 'Erro ao carregar formulário' });
+    res.render('avisos/create', { 
+      title: 'Novo Aviso', 
+      error: 'Erro ao carregar formulário de aviso',
+      details: error.message
+    });
   }
 };
+
+// Criar um novo aviso
+const moment = require('moment-timezone');
 
 exports.createAviso = async (req, res) => {
   try {
     const { assunto, mensagem, data, tipo, cargoAlvo } = req.body;
+    const profissionalId = req.user.profissionalId;
+
     if (!assunto || !mensagem || !data || !tipo) {
-      return res.render('avisos/create', { title: 'Novo Aviso', error: 'Todos os campos são obrigatórios' });
+      return res.render('avisos/create', { 
+        title: 'Novo Aviso', 
+        error: 'Todos os campos são obrigatórios' 
+      });
     }
 
-    const profissional = await Profissional.findByPk(req.user.profissionalId, { attributes: ['cargo'] });
-    if (!profissional) return res.status(404).json({ message: 'Profissional não encontrado.' });
-
-    if (cargoAlvo && !getCargosPermitidos(profissional.cargo).includes(cargoAlvo)) {
-      return res.render('avisos/create', { title: 'Novo Aviso', error: 'Cargo alvo não permitido.' });
-    }
-
-    await Aviso.create({
-      assunto,
-      mensagem,
-      data: moment.tz(data, 'America/Sao_Paulo').toDate(),
-      tipo,
-      cargoAlvo,
-      profissionalId: req.user.profissionalId
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['cargo']
     });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+
+    // Verifica se o cargoAlvo é permitido
+    if (cargoAlvo && !cargosPermitidos.includes(cargoAlvo)) {
+      return res.render('avisos/create', { 
+        title: 'Novo Aviso', 
+        error: 'Cargo alvo não permitido para o seu cargo.' 
+      });
+    }
+
+    // Converte a data para o formato esperado pelo banco
+    const dataFormatada = moment.tz(data, 'America/Sao_Paulo').toDate();
+
+    await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, cargoAlvo, profissionalId });
 
     req.flash('success_msg', 'Aviso criado com sucesso');
     res.redirect('/avisos');
   } catch (error) {
     console.error('Erro ao criar aviso:', error);
-    res.render('avisos/create', { title: 'Novo Aviso', error: 'Erro ao criar aviso' });
+    req.flash('error_msg', 'Erro ao criar aviso');
+    res.render('avisos/create', { 
+      title: 'Novo Aviso', 
+      error: 'Erro ao criar aviso', 
+      details: error.message 
+    });
   }
 };
 
+
+// Listar todos os avisos
+
+
 exports.getAllAvisos = async (req, res) => {
   try {
+    const profissionalId = req.user.profissionalId;
+
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
     const { nomeProfissional, dataInicio } = req.query;
     const whereConditions = {};
 
@@ -77,19 +126,204 @@ exports.getAllAvisos = async (req, res) => {
     }
 
     if (dataInicio) {
-      whereConditions.data = { [Op.eq]: moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate() };
+      const dataFormatada = moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate();
+      whereConditions.data = { [Op.eq]: dataFormatada };
     }
 
     const avisos = await Aviso.findAll({
       where: whereConditions,
-      include: [{ model: Profissional, as: 'profissional', attributes: ['id', 'nome', 'cargo'] }],
+      include: [
+        {
+          model: Profissional,
+          as: 'profissional',
+          attributes: ['id', 'nome', 'cargo']
+        }
+      ],
       order: [['data', 'DESC']]
     });
 
-    res.render('avisos/index', { title: 'Lista de Avisos', avisos, query: req.query });
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      avisos,
+      query: req.query 
+    });
   } catch (error) {
     console.error('Erro ao buscar avisos:', error);
-    res.render('avisos/index', { title: 'Lista de Avisos', avisos: [], error: 'Erro ao buscar avisos' });
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      avisos: [],
+      error: 'Erro ao buscar avisos.',
+      details: error.message
+    });
+  }
+};
+
+
+exports.getAvisosDoDia = async (req, res) => {
+  try {
+    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
+
+    console.log('Buscando avisos entre:', startOfDay, 'e', endOfDay);
+
+    const profissionalId = req.user.profissionalId;
+
+    const profissional = await Profissional.findByPk(profissionalId, {
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const avisosDoDia = await Aviso.findAll({
+      where: {
+        data: {
+          [Op.between]: [startOfDay, endOfDay]
+        }
+      },
+      include: [
+        {
+          model: Profissional,
+          as: 'profissional',
+          attributes: ['id', 'nome', 'cargo']
+        }
+      ],
+      order: [['data', 'ASC']]
+    });
+
+    res.render('avisos/do-dia', { 
+      title: 'Avisos do Dia', 
+      avisos: avisosDoDia, 
+      profissional 
+    });
+  } catch (error) {
+    console.error('Erro ao buscar avisos do dia:', error);
+    res.render('avisos/do-dia', { 
+      title: 'Avisos do Dia', 
+      avisos: [], 
+      error: 'Erro ao buscar avisos do dia', 
+      details: error.message 
+    });
+  }
+};
+
+
+
+// Renderiza a página de edição de um aviso 
+
+// Atualizar aviso
+exports.updateAviso = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { assunto, mensagem, data, tipo, cargoAlvo } = req.body;
+
+    if (isNaN(id)) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'ID inválido' 
+      });
+    }
+
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'Aviso não encontrado' 
+      });
+    }
+
+    // Verifica se o cargoAlvo é permitido para o usuário logado
+    const profissional = await Profissional.findByPk(req.user.profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+
+    // Se o cargoAlvo foi fornecido e não está na lista de cargos permitidos, retorna erro
+    if (cargoAlvo && !cargosPermitidos.includes(cargoAlvo)) {
+      return res.render('avisos/edit', { 
+        title: 'Editar Aviso', 
+        error: 'Cargo alvo não permitido para o seu cargo.' 
+      });
+    }
+
+    // Convertendo a data para o formato correto
+    const moment = require('moment');
+    const dataFormatada = moment(data).tz('America/Sao_Paulo').toDate();
+
+    // Atualizando o aviso
+    await aviso.update({ assunto, mensagem, data: dataFormatada, tipo, cargoAlvo });
+
+    req.flash('success_msg', 'Aviso atualizado com sucesso.');
+    console.log('Aviso atualizado com sucesso', aviso);
+    res.redirect('/avisos'); // Redireciona para a lista de avisos
+  } catch (error) {
+    console.error('Erro ao atualizar aviso:', error);
+    res.render('avisos/edit', { 
+      title: 'Editar Aviso', 
+      error: 'Erro ao atualizar aviso', 
+      details: error.message 
+    });
+  }
+};
+
+// Excluir aviso (exclusão lógica)
+exports.deleteAviso = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'ID inválido' 
+      });
+    }
+
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'Aviso não encontrado' 
+      });
+    }
+
+    await aviso.destroy(); // Exclusão lógica se `paranoid: true` estiver ativado
+    req.flash('success_msg',"Aviso deletado.")
+    res.redirect('/avisos'); // Redireciona para a lista de avisos
+  } catch (error) {
+    console.error('Erro ao excluir aviso:', error);
+    res.render('avisos/index', { 
+      title: 'Lista de Avisos', 
+      error: 'Erro ao excluir aviso', 
+      details: error.message 
+    });
+  }
+};
+
+exports.contarAvisosDoDia = async (req, res) => {
+  try {
+    // Obtendo a data do início e fim do dia atual
+    const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
+    
+    // Contando avisos dentro do intervalo de data do dia
+    const avisosDoDia = await Aviso.count({
+      where: {
+        data: {
+          [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
+        }
+      }
+    });
+
+    return res.json({ avisosDoDia });  // Retorna a contagem em formato JSON
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao contar avisos do dia.' });  // Retorna erro em formato JSON
   }
 };
 
@@ -123,70 +357,4 @@ exports.renderEditAviso = async (req, res) => {
   }
 };
 
-exports.updateAviso = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { assunto, mensagem, data, tipo, cargoAlvo } = req.body;
 
-    const aviso = await Aviso.findByPk(id);
-    if (!aviso) return res.render('avisos/index', { title: 'Lista de Avisos', error: 'Aviso não encontrado' });
-
-    const profissional = await Profissional.findByPk(req.user.profissionalId, { attributes: ['cargo'] });
-    if (!profissional) return res.status(404).json({ message: 'Profissional não encontrado.' });
-
-    if (cargoAlvo && !getCargosPermitidos(profissional.cargo).includes(cargoAlvo)) {
-      return res.render('avisos/edit', { title: 'Editar Aviso', error: 'Cargo alvo não permitido.' });
-    }
-
-    await aviso.update({
-      assunto,
-      mensagem,
-      data: moment.tz(data, 'America/Sao_Paulo').toDate(),
-      tipo,
-      cargoAlvo
-    });
-
-    req.flash('success_msg', 'Aviso atualizado com sucesso');
-    res.redirect('/avisos');
-  } catch (error) {
-    console.error('Erro ao atualizar aviso:', error);
-    res.render('avisos/edit', { title: 'Editar Aviso', error: 'Erro ao atualizar aviso' });
-  }
-};
-
-exports.deleteAviso = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const aviso = await Aviso.findByPk(id);
-    if (!aviso) return res.render('avisos/index', { title: 'Lista de Avisos', error: 'Aviso não encontrado' });
-
-    await aviso.destroy();
-    req.flash('success_msg', 'Aviso deletado');
-    res.redirect('/avisos');
-  } catch (error) {
-    console.error('Erro ao excluir aviso:', error);
-    res.render('avisos/index', { title: 'Lista de Avisos', error: 'Erro ao excluir aviso' });
-  }
-};
-
-exports.contarAvisosDoDia = async (req, res) => {
-  try {
-    const profissional = await Profissional.findByPk(req.user.profissionalId, { attributes: ['cargo'] });
-    if (!profissional) return res.status(404).json({ error: 'Profissional não encontrado.' });
-
-    const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
-    const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
-
-    const avisosDoDia = await Aviso.count({
-      where: {
-        data: { [Op.between]: [startOfDay, endOfDay] },
-        [Op.or]: [{ cargoAlvo: 'Geral' }, { cargoAlvo: profissional.cargo }]
-      }
-    });
-
-    res.json({ avisosDoDia });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao contar avisos do dia.' });
-  }
-};
