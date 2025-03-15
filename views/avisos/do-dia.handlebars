@@ -9,182 +9,213 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      padding: 20px;
     }
 
     .container {
       max-width: 800px;
-      margin: auto;
+      margin: 0 auto;
       background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     h2 {
       text-align: center;
-      color: #0056b3;
-      margin-bottom: 20px;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 28px;
+      font-weight: 600;
     }
 
     .alert-container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
     }
 
     .alert {
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       display: flex;
       align-items: flex-start;
-      gap: 15px;
-      transition: 0.3s ease-in-out;
-      position: relative;
+      gap: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: white;
+      border-left: 6px solid transparent;
     }
 
     .alert:hover {
-      transform: scale(1.02);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
-    .alert i {
-      font-size: 24px;
-      padding: 10px;
-      border-radius: 50%;
+    .alert-icon {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-icon i {
+      font-size: 20px;
+      color: inherit;
     }
 
     .alert-content {
       flex-grow: 1;
     }
 
-    .alert strong {
-      font-size: 18px;
-      display: block;
-      margin-bottom: 5px;
+    .alert-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
     }
 
-    .alert p {
-      font-size: 14px;
-      margin: 5px 0;
+    .registro-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #0056b3;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 8px;
     }
 
-    .alert span {
+    .registro-box strong {
+      font-size: 16px;
+      color: #0056b3;
+    }
+
+    .registro-box p {
       font-size: 14px;
       color: #555;
-      display: block;
-      margin-top: 5px;
+      margin-top: 8px;
     }
 
-    .created-by {
-      font-size: 12px;
+    .alert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      font-size: 14px;
       color: #777;
-      font-style: italic;
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
     }
 
-    /* Estilos específicos para cada tipo de aviso */
-    .alert-lembrete {
-      background-color: #fff3cd;
-      border-left: 6px solid #ffc107;
+    .alert-footer span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .alert-lembrete i {
-      color: #ffc107;
-      background: rgba(255, 193, 7, 0.2);
+    .btn-marcar-visto {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
     }
 
-    .alert-alerta {
-      background-color: #f8d7da;
-      border-left: 6px solid #dc3545;
-      color: #721c24;
+    .btn-marcar-visto:hover {
+      background-color: #218838;
     }
 
-    .alert-alerta i {
-      color: #dc3545;
-      background: rgba(220, 53, 69, 0.2);
+    .visualizacoes-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
     }
 
-    .alert-administrativo {
-      background-color: #d1ecf1;
-      border-left: 6px solid #17a2b8;
-      color: #0c5460;
+    .visualizacoes-box h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
     }
 
-    .alert-administrativo i {
-      color: #17a2b8;
-      background: rgba(23, 162, 184, 0.2);
+    .visualizacoes-box ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .visualizacoes-box ul li {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 8px;
+      padding: 8px;
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
     .btn {
       display: block;
       width: fit-content;
-      margin: 20px auto;
-      padding: 10px 20px;
+      margin: 25px auto 0;
+      padding: 10px 25px;
       text-align: center;
       background-color: #0056b3;
       color: white;
-      border-radius: 5px;
+      border-radius: 6px;
       text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    
-        .registro-box {
-        background-color: #e9ecef; /* Cor de fundo da caixa */
-        border-left: 5px solid #0056b3; /* Borda lateral para destaque */
-        padding: 15px; /* Espaçamento interno */
-        margin-top: 20px; /* Espaçamento acima da caixa */
-        border-radius: 5px; /* Bordas arredondadas */
+      font-weight: 600;
+      transition: background-color 0.3s ease;
     }
 
     .btn:hover {
       background-color: #004494;
     }
 
-    .visualizacoes-box {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
+    /* Estilos específicos para cada tipo de aviso */
+    .alert-lembrete {
+      border-left-color: #ffc107;
+    }
 
-.visualizacoes-box h4 {
-  margin-bottom: 10px;
-  font-size: 16px;
-}
+    .alert-lembrete .alert-icon {
+      background-color: rgba(255, 193, 7, 0.1);
+    }
 
-.visualizacoes-box ul {
-  list-style-type: none;
-  padding-left: 0;
-}
+    .alert-lembrete i {
+      color: #ffc107;
+    }
 
-.visualizacoes-box ul li {
-  margin-bottom: 5px;
-  font-size: 14px;
-}
+    .alert-alerta {
+      border-left-color: #dc3545;
+    }
 
-.btn-marcar-visto {
-  background-color: #4CAF50; /* Verde */
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-left: 10px;
-}
+    .alert-alerta .alert-icon {
+      background-color: rgba(220, 53, 69, 0.1);
+    }
 
-.btn-marcar-visto:hover {
-  background-color: #45a049; /* Verde mais escuro */
-}
+    .alert-alerta i {
+      color: #dc3545;
+    }
+
+    .alert-administrativo {
+      border-left-color: #17a2b8;
+    }
+
+    .alert-administrativo .alert-icon {
+      background-color: rgba(23, 162, 184, 0.1);
+    }
+
+    .alert-administrativo i {
+      color: #17a2b8;
+    }
 
     @media (max-width: 600px) {
       .alert {
@@ -192,8 +223,14 @@
         align-items: flex-start;
       }
 
-      .alert i {
-        margin-bottom: 5px;
+      .alert-icon {
+        margin-bottom: 10px;
+      }
+
+      .alert-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
       }
     }
   </style>
@@ -221,11 +258,11 @@
           <div class="registro-box">
             <strong>Mensagem:</strong>
             <p>{{this.mensagem}}</p>
-          </div><br>
+          </div>
 
           <div class="alert-footer">
             <span><strong>Data:</strong> {{Data this.data}}</span>
-            <span class="created-by"><strong>Criado por:</strong> {{this.profissional.nome}}</span>
+            <span><strong>Criado por:</strong> {{this.profissional.nome}}</span>
             <button class="btn-marcar-visto" onclick="marcarComoVisto('{{this.id}}')">Marcar como Visto</button>
           </div>
 
@@ -256,10 +293,6 @@
   <a href="javascript:void(0);" class="btn" onclick="window.history.back();">Voltar</a>
 </div>
 
-
-</body>
-</html>
-
 <script>
   async function marcarComoVisto(avisoId) {
     try {
@@ -281,3 +314,6 @@
     }
   }
 </script>
+
+</body>
+</html>
