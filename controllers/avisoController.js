@@ -5,24 +5,42 @@ const moment = require('moment-timezone');
 
 // utils/cargos.js
 function getCargosPermitidos(cargoUsuario) {
-  const cargos = [
+  // Mapeamento de cargos de gestores para cargos de profissionais
+  const cargosGestores = {
+    'Gestor Servico Social': 'Assistente social',
+    'Gestor Psicologia': 'Psicólogo',
+    'Gestor Psiquiatria': 'Psiquiatra',
+    'Gestor Adms': 'Adm'
+  };
+
+  // Lista de cargos permitidos para administradores
+  const cargosAdministradores = ['Administrador', 'Adm'];
+
+  // Lista de cargos de profissionais
+  const cargosProfissionais = [
     'Assistente social',
     'Psicólogo',
     'Psiquiatra',
-    'Adm',
-    'Administrador' // Adicionado para evitar problemas com "Gestor Administrador"
+    'Adm'
   ];
 
-  if (['Administrador', 'Adm'].includes(cargoUsuario)) {
-    return ['Geral', ...cargos];
-  } else if (cargoUsuario.startsWith('Gestor')) {
-    const cargoCorrespondente = cargoUsuario.replace('Gestor ', '');
-    return [cargoCorrespondente];
-  } else if (cargos.includes(cargoUsuario)) {
-    return [cargoUsuario];
-  } else {
-    return ['Geral'];
+  // Se o usuário for administrador, pode enviar para todos os cargos
+  if (cargosAdministradores.includes(cargoUsuario)) {
+    return ['Geral', ...cargosProfissionais];
   }
+
+  // Se o usuário for um gestor, mapeie para o cargo correspondente
+  if (cargosGestores[cargoUsuario]) {
+    return [cargosGestores[cargoUsuario]];
+  }
+
+  // Se o usuário for um profissional comum, só pode enviar para o próprio cargo
+  if (cargosProfissionais.includes(cargoUsuario)) {
+    return [cargoUsuario];
+  }
+
+  // Caso o cargo não esteja na lista, permite apenas avisos gerais
+  return ['Geral'];
 }
 
 // Renderiza a página de criação de aviso
@@ -70,13 +88,6 @@ exports.createAviso = async (req, res) => {
       });
     }
 
-    if (cargoAlvo && typeof cargoAlvo !== 'string') {
-      return res.render('avisos/create', {
-        title: 'Novo Aviso',
-        error: 'Cargo alvo inválido.'
-      });
-    }
-
     const profissional = await Profissional.findByPk(profissionalId, {
       attributes: ['cargo']
     });
@@ -90,6 +101,7 @@ exports.createAviso = async (req, res) => {
 
     const cargosPermitidos = getCargosPermitidos(profissional.cargo);
 
+    // Verifica se o cargoAlvo é permitido
     if (cargoAlvo && !cargosPermitidos.includes(cargoAlvo)) {
       return res.render('avisos/create', {
         title: 'Novo Aviso',
@@ -97,6 +109,7 @@ exports.createAviso = async (req, res) => {
       });
     }
 
+    // Converte a data para o formato esperado pelo banco
     const dataFormatada = moment.tz(data, 'America/Sao_Paulo').toDate();
 
     await Aviso.create({ assunto, mensagem, data: dataFormatada, tipo, cargoAlvo, profissionalId });
@@ -142,6 +155,13 @@ exports.getAllAvisos = async (req, res) => {
       whereConditions.data = { [Op.eq]: dataFormatada };
     }
 
+    // Filtra avisos com base no cargo do usuário
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+    whereConditions[Op.or] = [
+      { cargoAlvo: 'Geral' },
+      { cargoAlvo: { [Op.in]: cargosPermitidos } }
+    ];
+
     const avisos = await Aviso.findAll({
       where: whereConditions,
       include: [
@@ -169,6 +189,7 @@ exports.getAllAvisos = async (req, res) => {
     });
   }
 };
+
 
 // Obter avisos do dia
 exports.getAvisosDoDia = async (req, res) => {
@@ -198,25 +219,12 @@ exports.getAvisosDoDia = async (req, res) => {
       }
     };
 
-    if (['Administrador', 'Adm'].includes(cargoProfissional)) {
-      // Administradores podem ver todos os avisos
-    } else {
-      const cargosPermitidos = getCargosPermitidos(cargoProfissional);
-
-      if (cargosPermitidos && cargosPermitidos.length > 0) {
-        whereConditions[Op.or] = [
-          { cargoAlvo: 'Geral' },
-          { cargoAlvo: { [Op.in]: cargosPermitidos } }
-        ];
-      } else {
-        return res.render('avisos/do-dia', {
-          title: 'Avisos do Dia',
-          avisos: [],
-          profissional,
-          message: 'Nenhum aviso disponível para o seu cargo.'
-        });
-      }
-    }
+    // Filtra avisos com base no cargo do usuário
+    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
+    whereConditions[Op.or] = [
+      { cargoAlvo: 'Geral' },
+      { cargoAlvo: { [Op.in]: cargosPermitidos } }
+    ];
 
     const avisosDoDia = await Aviso.findAll({
       where: whereConditions,
@@ -267,13 +275,6 @@ exports.updateAviso = async (req, res) => {
     if (!aviso) {
       req.flash('error_msg', 'Aviso não encontrado');
       return res.redirect('/avisos');
-    }
-
-    if (cargoAlvo && typeof cargoAlvo !== 'string') {
-      return res.render('avisos/edit', {
-        title: 'Editar Aviso',
-        error: 'Cargo alvo inválido.'
-      });
     }
 
     const profissional = await Profissional.findByPk(req.user.profissionalId, {
@@ -340,7 +341,6 @@ exports.deleteAviso = async (req, res) => {
     });
   }
 };
-
 // Contar avisos do dia
 exports.contarAvisosDoDia = async (req, res) => {
   try {
@@ -365,20 +365,12 @@ exports.contarAvisosDoDia = async (req, res) => {
       }
     };
 
-    if (['Administrador', 'Adm'].includes(cargoProfissional)) {
-      // Administradores podem ver todos os avisos
-    } else {
-      const cargosPermitidos = getCargosPermitidos(cargoProfissional);
-
-      if (cargosPermitidos && cargosPermitidos.length > 0) {
-        whereConditions[Op.or] = [
-          { cargoAlvo: 'Geral' },
-          { cargoAlvo: { [Op.in]: cargosPermitidos } }
-        ];
-      } else {
-        return res.json({ avisosDoDia: 0 });
-      }
-    }
+    // Filtra avisos com base no cargo do usuário
+    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
+    whereConditions[Op.or] = [
+      { cargoAlvo: 'Geral' },
+      { cargoAlvo: { [Op.in]: cargosPermitidos } }
+    ];
 
     const avisosDoDia = await Aviso.count({
       where: whereConditions
