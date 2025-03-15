@@ -4,9 +4,6 @@ const { Op } = require('sequelize');
 
 
 // Renderiza a página de criação de aviso
-exports.renderCreateAviso = (req, res) => {
-  res.render('avisos/create', { title: 'Novo Aviso' });
-};
 
 // Criar um novo aviso
 const moment = require('moment-timezone');
