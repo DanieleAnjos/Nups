@@ -40,10 +40,12 @@ exports.renderCreateAviso = async (req, res) => {
     }
 
     const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+    const isGeralPermitido = cargosPermitidos.includes('Geral');
 
     res.render('avisos/create', { 
       title: 'Novo Aviso',
-      cargosPermitidos // Passa a lista de cargos permitidos para o formulário
+      cargosPermitidos,
+      isGeralPermitido // Passa essa informação para o template
     });
   } catch (error) {
     console.error('Erro ao carregar formulário de aviso:', error);
@@ -215,45 +217,64 @@ exports.getAvisosDoDia = async (req, res) => {
 // Renderiza a página de edição de um aviso 
 
 // Atualizar aviso
-  exports.updateAviso = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { assunto, mensagem, data, tipo } = req.body;
-  
-      if (isNaN(id)) {
-        return res.render('avisos/index', { 
-          title: 'Lista de Avisos', 
-          error: 'ID inválido' 
-        });
-      }
-  
-      const aviso = await Aviso.findByPk(id);
-      if (!aviso) {
-        return res.render('avisos/index', { 
-          title: 'Lista de Avisos', 
-          error: 'Aviso não encontrado' 
-        });
-      }
-  
-      // Convertendo a data para o formato correto
-      const moment = require('moment');
-      const dataFormatada = moment(data).tz('America/Sao_Paulo').toDate();
-  
-      // Atualizando o aviso
-      await aviso.update({ assunto, mensagem, data: dataFormatada, tipo });
-  
-      req.flash('success_msg', 'Aviso atualizado com sucesso.');
-      console.log('Aviso atualizado com sucesso', aviso);
-      res.redirect('/avisos'); // Redireciona para a lista de avisos
-    } catch (error) {
-      console.error('Erro ao atualizar aviso:', error);
-      res.render('avisos/edit', { 
-        title: 'Editar Aviso', 
-        error: 'Erro ao atualizar aviso', 
-        details: error.message 
+exports.updateAviso = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { assunto, mensagem, data, tipo, cargoAlvo } = req.body;
+
+    if (isNaN(id)) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'ID inválido' 
       });
     }
-  };
+
+    const aviso = await Aviso.findByPk(id);
+    if (!aviso) {
+      return res.render('avisos/index', { 
+        title: 'Lista de Avisos', 
+        error: 'Aviso não encontrado' 
+      });
+    }
+
+    // Verifica se o cargoAlvo é permitido para o usuário logado
+    const profissional = await Profissional.findByPk(req.user.profissionalId, {
+      attributes: ['cargo']
+    });
+
+    if (!profissional) {
+      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    }
+
+    const cargosPermitidos = getCargosPermitidos(profissional.cargo);
+
+    // Se o cargoAlvo foi fornecido e não está na lista de cargos permitidos, retorna erro
+    if (cargoAlvo && !cargosPermitidos.includes(cargoAlvo)) {
+      return res.render('avisos/edit', { 
+        title: 'Editar Aviso', 
+        error: 'Cargo alvo não permitido para o seu cargo.' 
+      });
+    }
+
+    // Convertendo a data para o formato correto
+    const moment = require('moment');
+    const dataFormatada = moment(data).tz('America/Sao_Paulo').toDate();
+
+    // Atualizando o aviso
+    await aviso.update({ assunto, mensagem, data: dataFormatada, tipo, cargoAlvo });
+
+    req.flash('success_msg', 'Aviso atualizado com sucesso.');
+    console.log('Aviso atualizado com sucesso', aviso);
+    res.redirect('/avisos'); // Redireciona para a lista de avisos
+  } catch (error) {
+    console.error('Erro ao atualizar aviso:', error);
+    res.render('avisos/edit', { 
+      title: 'Editar Aviso', 
+      error: 'Erro ao atualizar aviso', 
+      details: error.message 
+    });
+  }
+};
 
 // Excluir aviso (exclusão lógica)
 exports.deleteAviso = async (req, res) => {

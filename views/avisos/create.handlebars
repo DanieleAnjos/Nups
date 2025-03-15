@@ -33,7 +33,7 @@
         {{#if cargosPermitidos}}
             <label for="cargoAlvo">Cargo Alvo:</label>
             <select id="cargoAlvo" name="cargoAlvo">
-                {{#if cargosPermitidos.includes 'Geral'}}
+                {{#if isGeralPermitido}}
                     <option value="Geral" {{#if (eq aviso.cargoAlvo 'Geral')}}selected{{/if}}>Geral (Todos)</option>
                 {{/if}}
                 {{#each cargosPermitidos}}
