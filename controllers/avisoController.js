@@ -171,6 +171,7 @@ exports.getAvisosDoDia = async (req, res) => {
 
     const profissionalId = req.user.profissionalId;
 
+    // Obtém o profissional logado
     const profissional = await Profissional.findByPk(profissionalId, {
       attributes: ['id', 'nome', 'cargo']
     });
@@ -181,24 +182,29 @@ exports.getAvisosDoDia = async (req, res) => {
 
     const cargoProfissional = profissional.cargo;
 
+    // Condição para filtrar avisos
     const whereConditions = {
       data: {
         [Op.between]: [startOfDay, endOfDay] // Filtra avisos dentro do dia atual
       }
     };
 
+    // Verifica se o profissional é administrador
     if (['Administrador', 'Adm'].includes(cargoProfissional)) {
       // Administradores podem ver todos os avisos
       // Não aplicamos nenhum filtro adicional
     } else {
+      // Para gestores e outros profissionais, aplicamos o filtro por cargo
       const cargosPermitidos = getCargosPermitidos(cargoProfissional);
 
-      if (cargosPermitidos.length > 0) {
+      // Se o profissional for um gestor ou tiver cargos permitidos, filtra os avisos
+      if (cargosPermitidos && cargosPermitidos.length > 0) {
         whereConditions[Op.or] = [
           { cargoAlvo: 'Geral' }, // Avisos gerais
           { cargoAlvo: { [Op.in]: cargosPermitidos } } // Avisos específicos para os cargos permitidos
         ];
       } else {
+        // Se não houver cargos permitidos, retorna uma lista vazia
         return res.render('avisos/do-dia', {
           title: 'Avisos do Dia',
           avisos: [],
@@ -208,6 +214,7 @@ exports.getAvisosDoDia = async (req, res) => {
       }
     }
 
+    // Busca os avisos do dia com as condições aplicadas
     const avisosDoDia = await Aviso.findAll({
       where: whereConditions,
       include: [
@@ -220,9 +227,15 @@ exports.getAvisosDoDia = async (req, res) => {
       order: [['data', 'ASC']]
     });
 
+    // Formata a data dos avisos para exibição
+    const avisosFormatados = avisosDoDia.map(aviso => ({
+      ...aviso.get({ plain: true }),
+      data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
+    }));
+
     res.render('avisos/do-dia', {
       title: 'Avisos do Dia',
-      avisos: avisosDoDia,
+      avisos: avisosFormatados,
       profissional
     });
   } catch (error) {
@@ -332,6 +345,7 @@ exports.contarAvisosDoDia = async (req, res) => {
   try {
     const profissionalId = req.user.profissionalId;
 
+    // Obtém o profissional logado
     const profissional = await Profissional.findByPk(profissionalId, {
       attributes: ['cargo']
     });
@@ -342,31 +356,38 @@ exports.contarAvisosDoDia = async (req, res) => {
 
     const cargoProfissional = profissional.cargo;
 
+    // Obtendo a data do início e fim do dia atual
     const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
     const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
 
+    // Condição para filtrar avisos
     const whereConditions = {
       data: {
         [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
       }
     };
 
+    // Verifica se o profissional é administrador
     if (['Administrador', 'Adm'].includes(cargoProfissional)) {
       // Administradores podem ver todos os avisos
       // Não aplicamos nenhum filtro adicional
     } else {
+      // Para gestores e outros profissionais, aplicamos o filtro por cargo
       const cargosPermitidos = getCargosPermitidos(cargoProfissional);
 
-      if (cargosPermitidos.length > 0) {
+      // Se o profissional for um gestor ou tiver cargos permitidos, filtra os avisos
+      if (cargosPermitidos && cargosPermitidos.length > 0) {
         whereConditions[Op.or] = [
           { cargoAlvo: 'Geral' }, // Avisos gerais
           { cargoAlvo: { [Op.in]: cargosPermitidos } } // Avisos específicos para os cargos permitidos
         ];
       } else {
+        // Se não houver cargos permitidos, retorna 0 avisos
         return res.json({ avisosDoDia: 0 });
       }
     }
 
+    // Conta os avisos do dia com as condições aplicadas
     const avisosDoDia = await Aviso.count({
       where: whereConditions
     });
