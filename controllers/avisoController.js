@@ -176,12 +176,37 @@ exports.getAvisosDoDia = async (req, res) => {
       return res.status(404).json({ message: 'Profissional não encontrado.' });
     }
 
+    const cargoProfissional = profissional.cargo;
+
+    const whereConditions = {
+      data: {
+        [Op.between]: [startOfDay, endOfDay] // Filtra avisos dentro do dia atual
+      }
+    };
+
+    if (['Administrador', 'Adm'].includes(cargoProfissional)) {
+      // Administradores podem ver todos os avisos
+      // Não aplicamos nenhum filtro adicional
+    } else {
+      const cargosPermitidos = getCargosPermitidos(cargoProfissional);
+
+      if (cargosPermitidos.length > 0) {
+        whereConditions[Op.or] = [
+          { cargoAlvo: 'Geral' }, // Avisos gerais
+          { cargoAlvo: { [Op.in]: cargosPermitidos } } // Avisos específicos para os cargos permitidos
+        ];
+      } else {
+        return res.render('avisos/do-dia', {
+          title: 'Avisos do Dia',
+          avisos: [],
+          profissional,
+          message: 'Nenhum aviso disponível para o seu cargo.'
+        });
+      }
+    }
+
     const avisosDoDia = await Aviso.findAll({
-      where: {
-        data: {
-          [Op.between]: [startOfDay, endOfDay]
-        }
-      },
+      where: whereConditions,
       include: [
         {
           model: Profissional,
@@ -192,27 +217,23 @@ exports.getAvisosDoDia = async (req, res) => {
       order: [['data', 'ASC']]
     });
 
-    res.render('avisos/do-dia', { 
-      title: 'Avisos do Dia', 
-      avisos: avisosDoDia, 
-      profissional 
+    res.render('avisos/do-dia', {
+      title: 'Avisos do Dia',
+      avisos: avisosDoDia,
+      profissional
     });
   } catch (error) {
     console.error('Erro ao buscar avisos do dia:', error);
-    res.render('avisos/do-dia', { 
-      title: 'Avisos do Dia', 
-      avisos: [], 
-      error: 'Erro ao buscar avisos do dia', 
-      details: error.message 
+    res.render('avisos/do-dia', {
+      title: 'Avisos do Dia',
+      avisos: [],
+      profissional: null,
+      error: 'Erro ao buscar avisos do dia',
+      details: error.message
     });
   }
 };
 
-
-
-// Renderiza a página de edição de um aviso 
-
-// Atualizar aviso
 exports.updateAviso = async (req, res) => {
   try {
     const { id } = req.params;
@@ -233,7 +254,6 @@ exports.updateAviso = async (req, res) => {
       });
     }
 
-    // Verifica se o cargoAlvo é permitido para o usuário logado
     const profissional = await Profissional.findByPk(req.user.profissionalId, {
       attributes: ['cargo']
     });
@@ -309,7 +329,6 @@ exports.contarAvisosDoDia = async (req, res) => {
   try {
     const profissionalId = req.user.profissionalId;
 
-    // Obtém o cargo do profissional logado
     const profissional = await Profissional.findByPk(profissionalId, {
       attributes: ['cargo']
     });
@@ -320,38 +339,31 @@ exports.contarAvisosDoDia = async (req, res) => {
 
     const cargoProfissional = profissional.cargo;
 
-    // Obtendo a data do início e fim do dia atual
     const startOfDay = moment().tz('America/Sao_Paulo').startOf('day').toDate();
     const endOfDay = moment().tz('America/Sao_Paulo').endOf('day').toDate();
 
-    // Condição para filtrar avisos
     const whereConditions = {
       data: {
         [Op.between]: [startOfDay, endOfDay], // Filtra avisos dentro do dia atual
       }
     };
 
-    // Verifica se o profissional é administrador
     if (['Administrador', 'Adm'].includes(cargoProfissional)) {
       // Administradores podem ver todos os avisos
       // Não aplicamos nenhum filtro adicional
     } else {
-      // Para gestores e outros profissionais, aplicamos o filtro por cargo
       const cargosPermitidos = getCargosPermitidos(cargoProfissional);
 
-      // Se o profissional for um gestor ou tiver cargos permitidos, filtra os avisos
       if (cargosPermitidos.length > 0) {
         whereConditions[Op.or] = [
           { cargoAlvo: 'Geral' }, // Avisos gerais
           { cargoAlvo: { [Op.in]: cargosPermitidos } } // Avisos específicos para os cargos permitidos
         ];
       } else {
-        // Se não houver cargos permitidos, retorna 0 avisos
         return res.json({ avisosDoDia: 0 });
       }
     }
 
-    // Conta os avisos do dia com as condições aplicadas
     const avisosDoDia = await Aviso.count({
       where: whereConditions
     });
