@@ -8,6 +8,26 @@ const { Op } = require('sequelize');
 // Criar um novo aviso
 const moment = require('moment-timezone');
 
+// Função para obter os cargos permitidos com base no cargo do usuário
+function getCargosPermitidos(cargoUsuario) {
+  const cargos = [
+    'Assistente social',
+    'Psicólogo',
+    'Psiquiatra'
+  ];
+
+  if (['Administrador', 'Adm'].includes(cargoUsuario)) {
+    return ['Geral', ...cargos]; // Administradores podem enviar para todos ou por cargo
+  } else if (cargoUsuario.startsWith('Gestor')) {
+    // Mapeia o cargo do gestor para o cargo correspondente
+    const cargoCorrespondente = cargoUsuario.replace('Gestor ', '');
+    return [cargoCorrespondente]; // Gestores só podem enviar para o cargo correspondente
+  } else {
+    return []; // Outros profissionais não podem enviar avisos por cargo
+  }
+};
+
+
 // Renderiza a página de criação de aviso
 exports.renderCreateAviso = async (req, res) => {
   try {
