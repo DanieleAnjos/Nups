@@ -358,7 +358,7 @@ const destroy = async (req, res) => {
 };
 
 
-exports.criarDiscussaoCaso = async (req, res) => {
+const criarDiscussaoCaso = async (req, res) => {
   try {
     const { fluxoAtendimentoId } = req.params;
     const { conteudo } = req.body;
