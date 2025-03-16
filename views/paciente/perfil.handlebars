@@ -70,11 +70,6 @@
             <span class="value">&nbsp;{{formatTelefone paciente.telefone}}</span>
           </div>
           <div class="info-item">
-            <i class="fas fa-id-card"></i>
-            <span class="label"><strong>RG: </strong></span>
-            <span class="value">&nbsp;{{formatRg paciente.rg}}</span>
-          </div>
-          <div class="info-item">
             <p class="info-single">
               <i class="fas fa-map-marker-alt"></i>
               <span class="label"><strong>Endereço: </strong></span>
@@ -107,11 +102,6 @@
             <span class="label"><strong>Plano de saúde: </strong></span>
             <span class="value">&nbsp;{{paciente.planoSaude}}</span>
             </div>
-          <div class="info-item">
-            <i class="fas fa-notes-medical"></i>
-            <span class="label"><strong>Cartão SUS: </strong></span>
-            <span class="value">&nbsp;{{paciente.cartaoSus}}</span>
-          </div>
         {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
           <div class="info-item">
             <i class="fas fa-notes-medical"></i>

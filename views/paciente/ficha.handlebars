@@ -5,50 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ficha do Paciente</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
     .container {
       max-width: 800px;
       padding: 40px;
       background-color: #fff;
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin: auto;
     }
 
-    h1 {
+    h1, h3, h4 {
       color: #34495e;
-      font-size: 2.5rem;
-      font-weight: 700;
       text-align: center;
-      margin-bottom: 20px;
     }
 
-    .card {
-      border: none;
+    .section {
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #f9f9f9;
       border-radius: 8px;
-      padding: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-title {
-      color: #2c3e50;
-      font-size: 1.3rem;
-      font-weight: bold;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-
-    .card-text {
-      color: #7f8c8d;
-      font-size: 1rem;
-      margin-bottom: 15px;
     }
 
     .info-group {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      font-size: 1rem;
     }
 
     .info-group strong {
       color: #2c3e50;
-      font-weight: bold;
     }
 
     .img-container {
@@ -63,16 +54,16 @@
     }
 
     .btn-primary {
-      display: inline-block;
-      padding: 10px 20px;
+      display: block;
+      padding: 10px;
       font-size: 1rem;
       font-weight: 600;
       color: #fff;
       background-color: #3498db;
       border: none;
       border-radius: 6px;
-      text-decoration: none;
       text-align: center;
+      text-decoration: none;
       transition: background-color 0.3s ease;
       margin-top: 20px;
     }
@@ -84,43 +75,57 @@
 </head>
 <body>
   <div class="container">
-    <br>
-    <h3>Ficha do Paciente</h3>
+    <h1>Ficha do Paciente</h1>
 
-    <div class="card">
-      <div class="img-container">
-        {{#if imagePath}}
-          <img src="{{imagePath}}" alt="Foto de {{paciente.nome}}">
-        {{else}}
-          <p>Sem foto disponível</p>
-        {{/if}}
-      </div>
+    <div class="img-container">
+      {{#if imagePath}}
+        <img src="{{imagePath}}" alt="Foto de {{paciente.nome}}">
+      {{else}}
+        <p>Sem foto disponível</p>
+      {{/if}}
+    </div>
 
-      <h3 class="card-title">{{paciente.nome}}</h3>
+    <div class="section">
+      <h3>Dados Pessoais</h3>
+      <p class="info-group"><strong>Nome:</strong> {{paciente.nome}}</p>
+      <p class="info-group"><strong>Matrícula:</strong> {{paciente.matricula}}</p>
+      <p class="info-group"><strong>Data de Nascimento:</strong> {{Data paciente.dataNascimento}}</p>
+      <p class="info-group"><strong>Sexo:</strong> {{paciente.sexo}}</p>
+      <p class="info-group"><strong>RG:</strong> {{paciente.rg}}</p>
+    </div>
 
-      <div class="info-group">
-        <p class="card-text"><strong>Matrícula:</strong> {{paciente.matricula}}</p>
-        <p class="card-text"><strong>Data de Nascimento:</strong> {{Data paciente.dataNascimento}}</p>
-        <p class="card-text"><strong>Sexo:</strong> {{paciente.sexo}}</p>
-        <p class="card-text"><strong>RG:</strong> {{paciente.rg}}</p>
-        <p class="card-text"><strong>Telefone:</strong> {{paciente.telefone}}</p>
-        <p class="card-text"><strong>Telefone de Contato:</strong> {{paciente.telefoneContato}}</p>
-        <p class="card-text"><strong>Escolaridade:</strong> {{paciente.escolaridade}}</p>
-        <p class="card-text"><strong>Endereço:</strong> {{paciente.endereco}}</p>
-        <p class="card-text"><strong>Cep:</strong> {{paciente.cep}}</p>
-        <p class="card-text"><strong>Posto de Serviço:</strong> {{paciente.postoServico}}</p>
-        <p class="card-text"><strong>Escala:</strong> {{paciente.escala}}</p>
-        <p class="card-text"><strong>Tempo de serviço:</strong> {{paciente.periodoEscala}}</p>
-        <p class="card-text"><strong>Status:</strong> {{paciente.statusPaciente}}</p>
-        <p class="card-text"><strong>Alergia:</strong> {{paciente.alergiaMedicamento}}</p>
-        <p class="card-text"><strong>Medicação de controle:</strong> {{paciente.tipoMedicamento}}</p>
-        <p class="card-text"><strong>Plano de saúde:</strong> {{paciente.planoSaude}}</p>
-        <p class="card-text"><strong>Cartão SUS:</strong> {{paciente.cartaoSus}}</p>
-        <p class="card-text"><strong>Seguro de vida:</strong> {{paciente.seguroVida}}</p>
-        <p class="card-text"><strong>Deficiência: </strong> {{Data paciente.deficiencia}}</p>
-      </div>
+    <div class="section">
+      <h3>Contato</h3>
+      <p class="info-group"><strong>Telefone:</strong> {{paciente.telefone}}</p>
+      <p class="info-group"><strong>Telefone de Contato:</strong> {{paciente.telefoneContato}}</p>
+    </div>
 
-      <h6><strong>Filhos</strong></h6>
+    <div class="section">
+      <h3>Endereço</h3>
+      <p class="info-group"><strong>Endereço:</strong> {{paciente.endereco}}</p>
+      <p class="info-group"><strong>CEP:</strong> {{paciente.cep}}</p>
+    </div>
+
+    <div class="section">
+      <h3>Informações Profissionais</h3>
+      <p class="info-group"><strong>Posto de Serviço:</strong> {{paciente.postoServico}}</p>
+      <p class="info-group"><strong>Escala:</strong> {{paciente.escala}}</p>
+      <p class="info-group"><strong>Tempo de serviço:</strong> {{paciente.periodoEscala}}</p>
+    </div>
+
+    <div class="section">
+      <h3>Saúde</h3>
+      <p class="info-group"><strong>Status:</strong> {{paciente.statusPaciente}}</p>
+      <p class="info-group"><strong>Alergia:</strong> {{paciente.alergiaMedicamento}}</p>
+      <p class="info-group"><strong>Medicação de controle:</strong> {{paciente.tipoMedicamento}}</p>
+      <p class="info-group"><strong>Plano de saúde:</strong> {{paciente.planoSaude}}</p>
+      <p class="info-group"><strong>Cartão SUS:</strong> {{paciente.cartaoSus}}</p>
+      <p class="info-group"><strong>Seguro de vida:</strong> {{paciente.seguroVida}}</p>
+      <p class="info-group"><strong>Deficiência:</strong> {{paciente.deficiencia}}</p>
+    </div>
+
+    <div class="section">
+      <h3>Filhos</h3>
       {{#if paciente.filhos.length}}
         <ul>
           {{#each paciente.filhos}}
@@ -130,12 +135,14 @@
       {{else}}
         <p>Sem filhos cadastrados.</p>
       {{/if}}
-
-      <h4>Observações</h4>
-      <p>{{paciente.observacoes}}</p>
-
-      <a href="/pacientes" class="btn-primary">Voltar</a>
     </div>
+
+    <div class="section">
+      <h3>Observações</h3>
+      <p>{{paciente.observacoes}}</p>
+    </div>
+
+    <a href="/pacientes" class="btn-primary">Voltar</a>
   </div>
 </body>
 </html>
