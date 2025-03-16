@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <!-- Cabeçalho com título e botão de voltar -->
-            <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
+        <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
 
         <!-- Card de detalhes do encaminhamento -->
         <div class="card">
@@ -38,13 +38,40 @@
                 <!-- Detalhes do atendimento -->
                 <div class="info-group">
                     <h3>Atendimento</h3>
-                    <p><strong>Atendimento Associado:</strong> {{fluxoAtendimento.atendimento.id}} - {{encaminhamento.atendimento.nomePaciente}}</p>
+                    <p><strong>Atendimento Associado:</strong> {{fluxoAtendimento.atendimento.id}} - {{fluxoAtendimento.atendimento.nomePaciente}}</p>
                     <p><strong>Assunto:</strong> {{fluxoAtendimento.assuntoAcolhimento}}</p>
-                        <div class="registro-box">
-                            <strong>Descrição:</strong>
-                            <p>{{fluxoAtendimento.descricao}}</p>
-                        </div>
+                    <div class="registro-box">
+                        <strong>Descrição:</strong>
+                        <p>{{fluxoAtendimento.descricao}}</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Seção de Discussões de Caso -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <h2>Discussões de Caso</h2>
+            </div>
+            <div class="card-body">
+                <!-- Lista de discussões -->
+                {{#if discussoes.length}}
+                    {{#each discussoes}}
+                        <div class="discussao-item">
+                            <p><strong>{{this.profissional.nome}}</strong> em {{this.dataHora.toLocaleString()}}:</p>
+                            <p>{{this.conteudo}}</p>
+                        </div>
+                        <hr>
+                    {{/each}}
+                {{else}}
+                    <p>Nenhuma discussão encontrada.</p>
+                {{/if}}
+
+                <!-- Formulário para adicionar uma nova discussão -->
+                <form action="/fluxoAtendimentos/{{fluxoAtendimento.id}}/discussoes" method="POST">
+                    <textarea name="conteudo" placeholder="Adicionar uma discussão..." required></textarea>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
             </div>
         </div>
     </div>

@@ -98,6 +98,11 @@ FluxoAtendimentos.associate = (models) => {
     as: 'atendimento', 
     allowNull: true,
   });
+
+  FluxoAtendimentos.hasMany(models.DiscussaoCaso, {
+    foreignKey: 'fluxoAtendimentoId',
+    as: 'discussoes',
+  });
 };
 
 module.exports = FluxoAtendimentos; 

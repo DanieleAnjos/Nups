@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional'); 
+const FluxoAtendimentos = require('../models/FluxoAtendimentos');
 
 const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   id: {
@@ -11,12 +12,21 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   },
   atendimentoId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: Atendimento, 
       key: 'id',
     },
     onDelete: 'CASCADE', 
+  },
+  fluxoAtendimentoId: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Permite ser nulo, pois pode estar associado a Atendimento
+    references: {
+      model: FluxoAtendimentos,
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
   },
   conteudo: {
     type: DataTypes.TEXT,
@@ -43,6 +53,8 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
 });
 
 DiscussaoCaso.belongsTo(Atendimento, { foreignKey: 'atendimentoId', as: 'atendimento' });
+DiscussaoCaso.belongsTo(FluxoAtendimentos, { foreignKey: 'fluxoAtendimentoId', as: 'fluxoAtendimento' });
 DiscussaoCaso.belongsTo(Profissional, { foreignKey: 'autor', as: 'profissional' });
+
 
 module.exports = DiscussaoCaso;

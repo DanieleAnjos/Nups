@@ -1,4 +1,4 @@
-const { FluxoAtendimentos, Profissional, Atendimento, Notificacao, Paciente } = require('../models');
+const { FluxoAtendimentos, Profissional, Atendimento, Notificacao, Paciente, DiscussaoCaso } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
 
@@ -231,6 +231,17 @@ const detalhesEncaminhamento = async (req, res) => {
         { model: Profissional, as: 'profissionalEnvio' },
         { model: Profissional, as: 'profissionalRecebido' },
         { model: Atendimento, as: 'atendimento' },
+        {
+          model: DiscussaoCaso, // Inclua as discussões de caso
+          as: 'discussoes',
+          include: [
+            {
+              model: Profissional,
+              as: 'profissional',
+              attributes: ['id', 'nome'], // Inclua apenas o ID e o nome do profissional
+            },
+          ],
+        },
       ],
     });
 
@@ -239,7 +250,10 @@ const detalhesEncaminhamento = async (req, res) => {
       return res.redirect('/fluxoAtendimentos');
     }
 
-    res.render('fluxoAtendimentos/detalhes', { fluxoAtendimento });
+    res.render('fluxoAtendimentos/detalhes', { 
+      fluxoAtendimento,
+      discussoes: fluxoAtendimento.discussoes || [], // Passa as discussões para a view
+    });
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
     req.flash('error_msg', 'Erro ao carregar detalhes do encaminhamento.');
@@ -343,6 +357,67 @@ const destroy = async (req, res) => {
   }
 };
 
+
+const criarDiscussaoCaso = async (req, res) => {
+  try {
+    const { fluxoAtendimentoId } = req.params;
+    const { conteudo } = req.body;
+
+    if (!conteudo) {
+      return res.status(400).json({ error: 'Conteúdo é obrigatório.' });
+    }
+
+    const fluxoAtendimento = await FluxoAtendimentos.findByPk(fluxoAtendimentoId);
+    if (!fluxoAtendimento) {
+      return res.status(404).json({ error: 'Fluxo de atendimento não encontrado.' });
+    }
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Você precisa estar logado para criar uma discussão.' });
+    }
+
+    const usuario = await Usuario.findOne({
+      where: { id: req.user.id },
+      include: { model: Profissional, as: 'profissional' },
+    });
+
+    if (!usuario || !usuario.profissional) {
+      return res.status(401).json({ error: 'Você precisa ter um profissional associado para criar uma discussão.' });
+    }
+
+    const autor = usuario.profissional.id;
+
+    const novaDiscussao = await DiscussaoCaso.create({
+      conteudo,
+      autor,
+      fluxoAtendimentoId,
+    });
+
+    res.status(201).json(novaDiscussao);
+  } catch (error) {
+    console.error('Erro ao criar discussão de caso:', error);
+    res.status(500).json({ error: 'Erro interno ao criar discussão de caso.' });
+  }
+};
+
+const listarDiscussaoCasos = async (req, res) => {
+  try {
+    const { fluxoAtendimentoId } = req.params;
+
+    const discussoes = await DiscussaoCaso.findAll({
+      where: { fluxoAtendimentoId },
+      include: [
+        { model: Profissional, as: 'profissional' },
+      ],
+    });
+
+    res.status(200).json(discussoes);
+  } catch (error) {
+    console.error('Erro ao listar discussões de caso:', error);
+    res.status(500).json({ error: 'Erro interno ao listar discussões de caso.' });
+  }
+};
+
 module.exports = {
   index,
   create,
@@ -351,5 +426,7 @@ module.exports = {
   detalhesEncaminhamento,
   marcarVisto,
   update,
-  destroy
+  destroy,
+  criarDiscussaoCaso,
+  listarDiscussaoCasos
 };
