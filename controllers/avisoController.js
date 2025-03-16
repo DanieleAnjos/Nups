@@ -506,7 +506,10 @@ exports.listarVisualizacoesAviso = async (req, res) => {
     });
 
     if (!aviso) {
-      return res.status(404).json({ error: 'Aviso não encontrado.' });
+      return res.render('avisos/visualizacoes', {
+        title: 'Visualizações do Aviso',
+        error: 'Aviso não encontrado.'
+      });
     }
 
     // Busca todos os profissionais
@@ -519,18 +522,24 @@ exports.listarVisualizacoesAviso = async (req, res) => {
       return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
     });
 
-    res.status(200).json({
+    // Renderiza a página de visualizações com os dados
+    res.render('avisos/visualizacoes', {
+      title: 'Visualizações do Aviso',
       aviso: {
         id: aviso.id,
         assunto: aviso.assunto,
         mensagem: aviso.mensagem,
-        data: aviso.data
+        data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
       },
       visualizadoPor: aviso.visualizadoPor,
       naoVisualizadoPor: profissionaisNaoVisualizaram
     });
   } catch (error) {
     console.error('Erro ao listar visualizações do aviso:', error);
-    res.status(500).json({ error: 'Erro ao listar visualizações do aviso.' });
+    res.render('avisos/visualizacoes', {
+      title: 'Visualizações do Aviso',
+      error: 'Erro ao listar visualizações do aviso.',
+      details: error.message
+    });
   }
 };
