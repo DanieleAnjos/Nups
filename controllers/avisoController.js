@@ -488,3 +488,49 @@ exports.marcarAvisoComoVisto = async (req, res) => {
     res.status(500).json({ error: 'Erro ao marcar aviso como visto.' });
   }
 };
+
+exports.listarVisualizacoesAviso = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Busca o aviso com a lista de profissionais que o visualizaram
+    const aviso = await Aviso.findByPk(id, {
+      include: [
+        {
+          model: Profissional,
+          as: 'visualizadoPor',
+          attributes: ['id', 'nome', 'cargo'],
+          through: { attributes: ['vistoEm'] }
+        }
+      ]
+    });
+
+    if (!aviso) {
+      return res.status(404).json({ error: 'Aviso não encontrado.' });
+    }
+
+    // Busca todos os profissionais
+    const todosProfissionais = await Profissional.findAll({
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+    // Filtra profissionais que não visualizaram o aviso
+    const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => {
+      return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
+    });
+
+    res.status(200).json({
+      aviso: {
+        id: aviso.id,
+        assunto: aviso.assunto,
+        mensagem: aviso.mensagem,
+        data: aviso.data
+      },
+      visualizadoPor: aviso.visualizadoPor,
+      naoVisualizadoPor: profissionaisNaoVisualizaram
+    });
+  } catch (error) {
+    console.error('Erro ao listar visualizações do aviso:', error);
+    res.status(500).json({ error: 'Erro ao listar visualizações do aviso.' });
+  }
+};

@@ -64,15 +64,20 @@
                                 <span class="badge badge-{{this.tipo}}">{{this.tipo}}</span>
                             </td>
                             <td class="text-center">
-                                <a href="/avisos/{{this.id}}" class="btn btn-warning btn-sm mx-1">
-                                    <i class="fa fa-pencil-square"></i> Editar
-                                </a>
-                                <form action="/avisos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
-                                    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                                    <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este aviso?');">
-                                        <i class="fa fa-trash"></i> Remover
-                                    </button>
-                                </form>
+                                    <a href="/avisos/{{this.id}}/visualizacoes" class="btn btn-info btn-sm mx-1">
+                                        <i class="fa fa-eye"></i> Visualizações
+                                    </a>
+                                {{#if (or user.isAdmin (eq user.id this.profissional.id))}}
+                                    <a href="/avisos/{{this.id}}" class="btn btn-warning btn-sm mx-1">
+                                        <i class="fa fa-pencil-square"></i> Editar
+                                    </a>
+                                    <form action="/avisos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
+                                        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                                        <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este aviso?');">
+                                            <i class="fa fa-trash"></i> Remover
+                                        </button>
+                                    </form>
+                                {{/if}}
                             </td>
                         </tr>
                     {{else}}

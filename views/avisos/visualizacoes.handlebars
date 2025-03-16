@@ -1,0 +1,13 @@
+<h3>Visualizado por:</h3>
+<ul>
+  {{#each visualizadoPor}}
+    <li>{{nome}} ({{cargo}}) - {{vistoEm}}</li>
+  {{/each}}
+</ul>
+
+<h3>Não visualizado por:</h3>
+<ul>
+  {{#each naoVisualizadoPor}}
+    <li>{{nome}} ({{cargo}})</li>
+  {{/each}}
+</ul>
