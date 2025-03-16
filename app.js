@@ -465,6 +465,32 @@ const accessControl = {
       '/fluxoAtendimentos'
     ],
 
+    'Gestor Adms': [
+      '/dashboard/adm2',
+      '/pacientes',
+      '/escalas',
+      '/atendimentos',
+      '/ocorrencias',
+      '/salas',
+      '/reservas',
+      '/eventos',
+      '/encaminhamentos',
+      '/relatorios',
+      '/estoque',
+      '/produtos',
+      '/mensagens',
+      '/notificacoes',
+      '/profissionais',
+      '/graficos',
+      '/discussoes',
+      '/usuarios',
+      '/Eventos-detalhes',
+      '/noticias',
+      '/auth/changePassword',
+      '/avisos',
+      '/fluxoAtendimentos'
+    ],
+
     'Gestor Servico Social': [
       '/dashboard/socialGestor',
       '/pacientes',
@@ -578,13 +604,8 @@ const accessControl = {
       '/encaminhamentos',
       '/escalas',
 
-      
-
-
-
-
-
     ],
+    
     'Psiquiatra': [
       '/dashboard/psico',
       '/pacientes',

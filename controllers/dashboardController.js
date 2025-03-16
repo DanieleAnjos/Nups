@@ -35,6 +35,10 @@ const dashboardController = {
     console.log(req.user);
     res.render('dashboard/socialGestor', { user: req.user, cargo: req.profissional.cargo });
   },
+  admGestor: (req, res) => {
+    console.log(req.user);
+    res.render('dashboard/admGestor', { user: req.user, cargo: req.profissional.cargo });
+  },
   psicoGestor: (req, res) => {
     console.log(req.user);
     res.render('dashboard/psicoGestor', { user: req.user, cargo: req.profissional.cargo });

@@ -1,0 +1,279 @@
+<div class="container text-center mt-5 dashboard">
+  <h1 class="mb-4">Bem-vindo ao Dashboard Administrativo</h1>
+  <div class="dashboard-grid">
+    <!-- Gestão de Pessoas -->
+    <a href="/pacientes" class="dashboard-card" aria-label="Gerenciar Pacientes">
+      <i class="fas fa-users"></i>
+      <span>Servidores</span>
+    </a>
+
+    <!-- Atendimento e Serviços -->
+    <a href="/atendimentos" class="dashboard-card" aria-label="Gerenciar Atendimentos">
+      <i class="fas fa-calendar-check"></i>
+      <span>Atendimentos</span>
+    </a>
+    <a href="/encaminhamentos" class="dashboard-card" aria-label="Gerenciar Encaminhamentos">
+      <i class="fas fa-clipboard-list"></i>
+      <span>Encaminhamentos</span>
+    </a>
+    <a href="/ocorrencias" class="dashboard-card" aria-label="Gerenciar Ocorrências">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>Ocorrências</span>
+    </a>
+
+    <!-- Infraestrutura -->
+    <a href="/salas" class="dashboard-card" aria-label="Cadastro de Salas">
+      <i class="fas fa-building"></i>
+      <span>Cadastro de Salas</span>
+    </a>
+    <a href="/reservas" class="dashboard-card" aria-label="Gerenciar Reservas de Salas">
+      <i class="fas fa-door-open"></i>
+      <span>Reservas</span>
+    </a>
+    <a href="/escalas" class="dashboard-card" aria-label="Gerenciar Escalas">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Escalas</span>
+    </a>
+    <a href="/avisos" class="dashboard-card" aria-label="Gerenciar Avisos">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos</span>
+    </a>
+    <a href="/avisos/do-dia" class="dashboard-card" aria-label="Gerenciar Avisos do Dia">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Avisos do Dia</span>
+      <span id="aviso-count" class="notification-badge" style="display: {{#if avisosDoDia}}inline{{else}}none{{/if}};">
+        {{avisosDoDia}}
+      </span>
+    </a>
+    <a href="/mensagens" class="dashboard-card" aria-label="Gerenciar Mensagens">
+      <i class="fas fa-envelope"></i>
+      <span>Mensagens</span>
+      <span id="message-count" class="notification-badge" style="display: {{#if mensagensNaoLidas}}inline{{else}}none{{/if}};">
+        {{mensagensNaoLidas}}
+      </span>
+    </a>
+    <a href="/notificacoes" class="dashboard-card" aria-label="Gerenciar Notificações">
+      <i class="fas fa-bell"></i>
+      <span>Notificações</span>
+      <span id="notificacao-count" class="notification-badge" style="display: {{#if notificacoesNaoLidas}}inline{{else}}none{{/if}};">
+        {{notificacoesNaoLidas}}
+      </span>
+    </a>
+
+    <!-- Relatórios e Estatísticas -->
+    <a href="/relatorios" class="dashboard-card" aria-label="Gerenciar Relatórios">
+      <i class="fas fa-chart-bar"></i>
+      <span>Relatórios</span>
+    </a>
+    <a href="/graficos" class="dashboard-card" aria-label="Visualizar Gráficos">
+      <i class="fas fa-chart-bar"></i>
+      <span>Gráficos</span>
+    </a>
+    <!-- Outros -->
+    <a href="/produtos" class="dashboard-card" aria-label="Gerenciar Produtos">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Produtos</span>
+    </a>
+    <a href="/profissionais/meu_perfil/{{user.id}}" class="dashboard-card" aria-label="Meu Perfil">
+      <i class="fas fa-user-circle"></i>
+      <span>Perfil</span>
+    </a>
+  </div>
+</div>
+
+
+<style>
+  /* Estilo para o container do dashboard */
+.dashboard {
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* Grid para organizar os cards */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+/* Estilo dos cards */
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #072C47;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+  position: relative;
+}
+
+h1 {
+  color: #297FB8;
+  padding-bottom: 15px;
+}
+
+/* Estilo do contador de notificações */
+.notification-badge {
+  background-color: orange;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 50%;
+  padding: 0.1em 0.6em;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: none; /* Inicialmente escondido */
+}
+
+/* Efeito hover para os cards */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #297FB8;
+  color: #ffffff;
+}
+
+/* Ícone maior para melhor visibilidade */
+.dashboard-card i {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+/* Texto do card */
+.dashboard-card span {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Card ativo */
+.dashboard-card.active {
+  background-color: #0056b3;
+  color: #ffffff;
+}
+
+/* Estilo responsivo */
+@media (max-width: 576px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+  }
+  .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-card i {
+    font-size: 1.8rem;
+  }
+  .dashboard-card span {
+    font-size: 1rem;
+  }
+}
+
+</style>
+
+<script>
+
+  async function atualizarContadorMensagens() {
+    try {
+        const response = await fetch('/api/mensagens/nao-lidas', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+            }
+        });
+
+        const text = await response.text(); // Lê a resposta como texto
+        console.log(text); // Verifique o que está sendo retornado
+
+        // Se a resposta for JSON, parseia ela
+        const data = JSON.parse(text); 
+
+        // Verifica se o count existe e é maior que 0
+        const contador = document.getElementById('message-count');
+        if (data.count > 0) {
+            contador.textContent = data.count;  // Atualiza o número de mensagens não lidas
+            contador.style.display = 'inline';  // Exibe o contador
+        } else {
+            contador.style.display = 'none';  // Oculta o contador se não houver mensagens não lidas
+        }
+
+    } catch (error) {
+        console.error('Erro ao buscar as mensagens não lidas:', error);
+    }
+};
+
+
+async function atualizarContadorNotificacoes() {
+    try {
+        const response = await fetch('/notificacoes', { 
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        });
+
+        // Verifica se a resposta é bem-sucedida (status 200)
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.statusText}`);
+        }
+
+        // Verifica o tipo de conteúdo da resposta
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json(); // Converte diretamente para JSON
+            const contador = document.getElementById('notificacao-count');
+            if (data.count > 0) {
+                contador.textContent = data.count;
+                contador.style.display = 'inline';
+            } else {
+                contador.style.display = 'none';
+            }
+        } else {
+            // Caso o conteúdo não seja JSON, imprime a resposta em HTML
+            const text = await response.text();
+            console.error('Resposta inesperada:', text);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar as notificações não lidas:', error);
+    }
+}
+
+  async function atualizarContadorAvisos() {
+    try {
+      const response = await fetch('/avisos/dia', { 
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('authToken') // Usando o token de autenticação
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao buscar dados');
+      }
+
+      const data = await response.json(); // Conversão direta para JSON
+
+      const contador = document.getElementById('aviso-count');
+
+      if (data.avisosDoDia > 0) {
+        contador.textContent = data.avisosDoDia;  // Atualiza o número de avisos do dia
+        contador.style.display = 'inline';  // Exibe o contador
+      } else {
+        contador.style.display = 'none';  // Oculta o contador se não houver avisos do dia
+      }
+
+    } catch (error) {
+      console.error('Erro ao buscar os avisos do dia:', error.message);
+    }
+  }
+
+  // Chama a função para atualizar o contador ao carregar a página
+  atualizarContadorAvisos();
+</script>
