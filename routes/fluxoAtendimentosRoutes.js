@@ -10,8 +10,8 @@ router.get('/:id/visto', FluxoAtendimentosController.marcarVisto);
 router.get('/:id/edit', FluxoAtendimentosController.edit); 
 router.put('/:id', FluxoAtendimentosController.update); 
 router.delete('/:id', FluxoAtendimentosController.destroy); 
-router.post('/:id/discussoes', FluxoAtendimentosController.criarDiscussaoCaso);
-router.get('/:id/discussoes', FluxoAtendimentosController.listarDiscussaoCasos);
+router.post('/:fluxoAtendimentoId/discussoes', FluxoAtendimentosController.criarDiscussaoCaso);
+router.get('/:fluxoAtendimentoId/discussoes', FluxoAtendimentosController.listarDiscussaoCasos);
 
 
 module.exports = router;
