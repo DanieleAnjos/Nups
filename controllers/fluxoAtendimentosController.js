@@ -1,4 +1,4 @@
-const { FluxoAtendimentos, Profissional, Atendimento, Notificacao, Paciente, DiscussaoCaso } = require('../models');
+const { FluxoAtendimentos, Profissional, Atendimento, Notificacao, Paciente, DiscussaoCaso, Usuario } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
 
@@ -358,22 +358,25 @@ const destroy = async (req, res) => {
 };
 
 
-const criarDiscussaoCaso = async (req, res) => {
+exports.criarDiscussaoCaso = async (req, res) => {
   try {
     const { fluxoAtendimentoId } = req.params;
     const { conteudo } = req.body;
 
     if (!conteudo) {
-      return res.status(400).json({ error: 'Conteúdo é obrigatório.' });
+      req.flash('error_msg', 'Conteúdo é obrigatório.');
+      return res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
     }
 
     const fluxoAtendimento = await FluxoAtendimentos.findByPk(fluxoAtendimentoId);
     if (!fluxoAtendimento) {
-      return res.status(404).json({ error: 'Fluxo de atendimento não encontrado.' });
+      req.flash('error_msg', 'Fluxo de atendimento não encontrado.');
+      return res.redirect('/fluxoAtendimentos');
     }
 
     if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: 'Você precisa estar logado para criar uma discussão.' });
+      req.flash('error_msg', 'Você precisa estar logado para criar uma discussão.');
+      return res.redirect('/auth/login');
     }
 
     const usuario = await Usuario.findOne({
@@ -382,21 +385,24 @@ const criarDiscussaoCaso = async (req, res) => {
     });
 
     if (!usuario || !usuario.profissional) {
-      return res.status(401).json({ error: 'Você precisa ter um profissional associado para criar uma discussão.' });
+      req.flash('error_msg', 'Você precisa ter um profissional associado para criar uma discussão.');
+      return res.redirect('/fluxoAtendimentos');
     }
 
     const autor = usuario.profissional.id;
 
-    const novaDiscussao = await DiscussaoCaso.create({
+    await DiscussaoCaso.create({
       conteudo,
       autor,
       fluxoAtendimentoId,
     });
 
-    res.status(201).json(novaDiscussao);
+    req.flash('success_msg', 'Discussão de caso criada com sucesso.');
+    res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
   } catch (error) {
     console.error('Erro ao criar discussão de caso:', error);
-    res.status(500).json({ error: 'Erro interno ao criar discussão de caso.' });
+    req.flash('error_msg', 'Erro ao criar discussão de caso.');
+    res.redirect('/fluxoAtendimentos/index');
   }
 };
 
