@@ -68,7 +68,7 @@
                                 <i class="fa fa-eye"></i> Visualizações
                             </a>
 
-                            {{#if (or (eq user.cargo "Administrador") (eq user.cargo "Adm") (eq user.id this.profissional.id))}}
+                            {{#if this.podeEditar}}
                                 <a href="/avisos/{{this.id}}" class="btn btn-warning btn-sm mx-1">
                                 <i class="fa fa-pencil-square"></i> Editar
                                 </a>

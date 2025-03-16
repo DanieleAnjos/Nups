@@ -171,11 +171,19 @@ exports.getAllAvisos = async (req, res) => {
       order: [['data', 'DESC']]
     });
 
-    // Formata a data dos avisos (opcional)
-    const avisosFormatados = avisos.map(aviso => ({
-      ...aviso.get({ plain: true }),
-      data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
-    }));
+    // Formata a data dos avisos e adiciona a flag `podeEditar`
+    const avisosFormatados = avisos.map(aviso => {
+      const podeEditar =
+        req.user.cargo === 'Administrador' ||
+        req.user.cargo === 'Adm' ||
+        req.user.profissionalId === aviso.profissional.id;
+
+      return {
+        ...aviso.get({ plain: true }),
+        data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
+        podeEditar // Adiciona a flag de permissão
+      };
+    });
 
     res.render('avisos/index', {
       title: 'Lista de Avisos',
