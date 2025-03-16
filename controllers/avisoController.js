@@ -147,15 +147,18 @@ exports.getAllAvisos = async (req, res) => {
     const { nomeProfissional, dataInicio } = req.query;
     const whereConditions = {};
 
+    // Filtra por nome do profissional (se fornecido)
     if (nomeProfissional && typeof nomeProfissional === 'string') {
       whereConditions['$profissional.nome$'] = { [Op.like]: `%${nomeProfissional}%` };
     }
 
+    // Filtra por data de início (se fornecida)
     if (dataInicio && !isNaN(Date.parse(dataInicio))) {
       const dataFormatada = moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate();
       whereConditions.data = { [Op.eq]: dataFormatada };
     }
 
+    // Busca todos os avisos (sem filtro por cargo)
     const avisos = await Aviso.findAll({
       where: whereConditions,
       include: [
@@ -168,9 +171,17 @@ exports.getAllAvisos = async (req, res) => {
       order: [['data', 'DESC']]
     });
 
+    // Formata a data dos avisos (opcional)
+    const avisosFormatados = avisos.map(aviso => ({
+      ...aviso.get({ plain: true }),
+      data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
+    }));
+
     res.render('avisos/index', {
       title: 'Lista de Avisos',
-      avisos,
+      avisos: avisosFormatados,
+      user: req.user, // Passa o usuário logado
+      csrfToken: req.csrfToken(), // Passa o token CSRF
       query: req.query
     });
   } catch (error) {
