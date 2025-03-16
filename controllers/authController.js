@@ -82,3 +82,59 @@ function checkAccess(role, restrictedRoute, req, res, next) {
   }
   next();
 }
+
+// controllers/authController.js
+
+// Exibir a view de alteração do nome de usuário
+exports.changeUsernameView = (req, res) => {
+  res.render('auth/changeUsername', { layout: false });
+};
+
+// Processar a alteração do nome de usuário
+exports.changeUsername = async (req, res) => {
+  try {
+      const { usuarioAtual, novoUsuario, senha } = req.body;
+
+      // Verifica se o usuário atual existe
+      const user = await Usuario.findOne({ where: { usuario: usuarioAtual } });
+      if (!user) {
+          return res.status(400).render('auth/changeUsername', {
+              error: 'Usuário atual não encontrado.',
+              layout: false
+          });
+      }
+
+      // Verifica se a senha está correta
+      const senhaCorreta = await argon2.verify(user.senha, senha);
+      if (!senhaCorreta) {
+          return res.status(400).render('auth/changeUsername', {
+              error: 'Senha incorreta.',
+              layout: false
+          });
+      }
+
+      // Verifica se o novo nome de usuário já está em uso
+      const existingUser = await Usuario.findOne({ where: { usuario: novoUsuario } });
+      if (existingUser) {
+          return res.status(400).render('auth/changeUsername', {
+              error: 'O novo nome de usuário já está em uso.',
+              layout: false
+          });
+      }
+
+      // Atualiza o nome de usuário
+      user.usuario = novoUsuario;
+      await user.save();
+
+      return res.status(200).render('auth/login', {
+          success: 'Nome de usuário alterado com sucesso. Faça login novamente.',
+          layout: false
+      });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).render('auth/changeUsername', {
+          error: 'Erro ao alterar o nome de usuário.',
+          layout: false
+      });
+  }
+};
