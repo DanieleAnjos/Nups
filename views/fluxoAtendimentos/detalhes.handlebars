@@ -58,7 +58,7 @@
                 {{#if discussoes.length}}
                     {{#each discussoes}}
                         <div class="discussao-item">
-                            <p><strong>{{this.profissional.nome}}</strong> em {{this.dataHora.toLocaleString()}}:</p>
+                            <p><strong>{{this.profissional.nome}}</strong> em {{formatDateTime this.dataHora}}:</p>
                             <p>{{this.conteudo}}</p>
                         </div>
                         <hr>
