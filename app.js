@@ -466,7 +466,7 @@ const accessControl = {
     ],
 
     'Gestor Adms': [
-      '/dashboard/adm2',
+      '/dashboard/admGestor',
       '/pacientes',
       '/escalas',
       '/atendimentos',
@@ -605,7 +605,7 @@ const accessControl = {
       '/escalas',
 
     ],
-    
+
     'Psiquiatra': [
       '/dashboard/psico',
       '/pacientes',
