@@ -435,7 +435,9 @@ const accessControl = {
       '/noticias',
       '/auth/changePassword',
       '/avisos',
-      '/fluxoAtendimentos'
+      '/fluxoAtendimentos',
+      '/auth/changeUsername',
+
     ],
     'Adm': [
       '/dashboard/adm2',
