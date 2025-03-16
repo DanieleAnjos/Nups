@@ -12,7 +12,7 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   },
   atendimentoId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: Atendimento, 
       key: 'id',
