@@ -116,8 +116,8 @@
 
     <div class="section">
       <h3>Informações Adicionais</h3>
-      <p class="info-group"><strong>Trabalho Armado:</strong> {{paciente.trabalhoArmado}}</p>
-      <p class="info-group"><strong>Arma Pessoal:</strong> {{paciente.armaPessoal}}</p>
+      <p class="info-group"><strong>Trabalho Armado:</strong> {{#if paciente.trabalhoArmado}}Sim{{else}}Não{{/if}}</p>
+      <p class="info-group"><strong>Arma Pessoal:</strong> {{#if paciente.armaPessoal}}Sim{{else}}Não{{/if}}</p>
     </div>
 
     <div class="section">

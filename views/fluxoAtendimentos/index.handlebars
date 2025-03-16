@@ -107,7 +107,7 @@
                                 </a>
 
                             
-                                {{#if ../podeCancelar}}
+                                {{#if this.podeCancelar}}
                                 <form action="/fluxoAtendimentos/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                     <input type="hidden" name="_csrf" value="{{csrfToken}}">
                                     <button type="submit" class="btn btn-danger btn-sm mx-1" onclick="return confirm('Tem certeza que deseja deletar este encaminhamento?');">
