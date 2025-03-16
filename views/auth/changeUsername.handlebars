@@ -1,34 +1,159 @@
-<!-- views/auth/changeUsername.ejs -->
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alterar Nome de Usuário</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- Adicione seu CSS aqui -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/Styles_Login.css"> <!-- Reutilize o mesmo CSS do login -->
 </head>
 <body>
-    <div class="container">
+    <div class="login-container">
+        <!-- Logo da Empresa -->
+        <img src="/IMG/pisico-removebg-preview.png" alt="Logo da Empresa" class="logo">
+        
         <h1>Alterar Nome de Usuário</h1>
+
+        <!-- Exibe mensagens de erro ou sucesso -->
         {{#if error}}
-            <div class="alert alert-danger">{{error}}</div>
+            <div class="message error" aria-live="polite">{{error}}</div>
+        {{/if}}
+        {{#if success}}
+            <div class="message success" aria-live="polite">{{success}}</div>
         {{/if}}
 
-        <form action="/changeUsername" method="POST">
-            <div class="form-group">
-                <label for="usuarioAtual">Usuário Atual:</label>
-                <input type="text" id="usuarioAtual" name="usuarioAtual" required class="form-control">
+        <!-- Formulário de alteração de nome de usuário -->
+        <form action="/auth/changeUsername" method="POST">
+            <div>
+                <input type="text" id="usuarioAtual" name="usuarioAtual" placeholder="Usuário Atual" autocomplete="username" required autofocus>
             </div>
-            <div class="form-group">
-                <label for="novoUsuario">Novo Usuário:</label>
-                <input type="text" id="novoUsuario" name="novoUsuario" required class="form-control">
+            <div>
+                <input type="text" id="novoUsuario" name="novoUsuario" placeholder="Novo Usuário" required>
             </div>
-            <div class="form-group">
-                <label for="senha">Senha:</label>
-                <input type="password" id="senha" name="senha" required class="form-control">
+            <div class="password-container">
+                <input type="password" id="senha" name="senha" placeholder="Senha" autocomplete="current-password" required>
+                <i class="fas fa-eye toggle-password" id="toggleSenha"></i>
             </div>
-            <button type="submit" class="btn btn-primary">Alterar Nome de Usuário</button>
+
+            <button type="submit">Alterar Nome de Usuário</button>
         </form>
+
+        <!-- Botão de voltar para o login -->
+        <div class="forgot-password">
+            <a href="/auth/login" class="forgot-link">Voltar para o login</a>
+        </div>
     </div>
+
+    <script>
+        // Script para alternar a visibilidade da senha
+        document.getElementById('toggleSenha').addEventListener('click', function() {
+            const senhaInput = document.getElementById('senha');
+            const icon = this;
+
+            if (senhaInput.type === 'password') {
+                senhaInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                senhaInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
 </body>
 </html>
+
+<style>
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.message.error {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.forgot-password {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.forgot-link {
+    font-size: 0.9rem;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+</style>
