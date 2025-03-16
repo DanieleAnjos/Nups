@@ -21,7 +21,7 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   },
   fluxoAtendimentoId: {
     type: DataTypes.INTEGER,
-    allowNull: true, // Permite ser nulo, pois pode estar associado a Atendimento
+    allowNull: true,
     references: {
       model: FluxoAtendimentos,
       key: 'id',
