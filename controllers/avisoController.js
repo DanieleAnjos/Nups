@@ -181,7 +181,6 @@ exports.getAllAvisos = async (req, res) => {
       title: 'Lista de Avisos',
       avisos: avisosFormatados,
       user: req.user, // Passa o usuário logado
-      csrfToken: req.csrfToken(), // Passa o token CSRF
       query: req.query
     });
   } catch (error) {
