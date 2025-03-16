@@ -68,7 +68,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Ficha do Paciente</h1>
+    <h1 style="text-align: center;">Ficha do Paciente</h1><br>
 
     <div class="img-container">
       {{#if imagePath}}
@@ -85,12 +85,20 @@
       <p class="info-group"><strong>Data de Nascimento:</strong> {{Data paciente.dataNascimento}}</p>
       <p class="info-group"><strong>Sexo:</strong> {{paciente.sexo}}</p>
       <p class="info-group"><strong>RG:</strong> {{paciente.rg}}</p>
+      <p class="info-group"><strong>Escolaridade:</strong> {{paciente.escolaridade}}</p>
     </div>
 
     <div class="section">
       <h3>Contato</h3>
+      <p class="info-group"><strong>Tipo de telefone:</strong> {{paciente.tipoTelefone}}</p>
       <p class="info-group"><strong>Telefone:</strong> {{paciente.telefone}}</p>
-      <p class="info-group"><strong>Telefone de Contato:</strong> {{paciente.telefoneContato}}</p>
+    </div>
+
+    <div class="section">
+      <h3>Contato de Emergência</h3>
+      <p class="info-group"><strong>Nome do contato:</strong> {{paciente.nomeContato}}</p>
+      <p class="info-group"><strong>Grau de parentesco:</strong> {{paciente.parentesco}}</p>
+      <p class="info-group"><strong>Telefone:</strong> {{paciente.telefoneContato}}</p>
     </div>
 
     <div class="section">
@@ -104,6 +112,12 @@
       <p class="info-group"><strong>Posto de Serviço:</strong> {{paciente.postoServico}}</p>
       <p class="info-group"><strong>Escala:</strong> {{paciente.escala}}</p>
       <p class="info-group"><strong>Tempo de serviço:</strong> {{paciente.periodoEscala}}</p>
+    </div>
+
+    <div class="section">
+      <h3>Informações Adicionais</h3>
+      <p class="info-group"><strong>Trabalho Armado:</strong> {{paciente.trabalhoArmado}}</p>
+      <p class="info-group"><strong>Arma Pessoal:</strong> {{paciente.armaPessoal}}</p>
     </div>
 
     <div class="section">

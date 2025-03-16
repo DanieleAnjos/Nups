@@ -153,7 +153,7 @@
           </thead>
           <tbody>
             {{#each paciente.atendimentos as |atendimento|}}
-                {{#if (or (eq ../profissional.cargo "Administrador") (eq profissional.id ../profissional.id))}}
+              {{#if (or (eq ../profissional.cargo "Administrador") (eq atendimento.profissional.cargo ../profissional.cargo))}}
                 <tr class="attendance-item">
                   <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                   <td>{{atendimento.profissional.nome}}</td>

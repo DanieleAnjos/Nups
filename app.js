@@ -574,7 +574,12 @@ const accessControl = {
       '/graficos',
       '/discussoes/detalhes',
       '/discussoes/edit',
-      '/discussoes/create'
+      '/discussoes/create',
+      '/encaminhamentos',
+      '/escalas',
+
+      
+
 
 
 
@@ -596,7 +601,9 @@ const accessControl = {
       '/graficos',
       '/discussoes/detalhes',
       '/discussoes/edit',
-      '/discussoes/create'
+      '/discussoes/create',
+      '/encaminhamentos',
+      '/escalas',
 
 
     ]
