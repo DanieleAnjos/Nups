@@ -1,4 +1,5 @@
 const Profissional = require('../models/Profissional');
+const Usuario = require('../models/Usuario');
 const passport = require('passport');
 const argon2 = require('argon2');
 const { checkProfissional } = require('../utils');
