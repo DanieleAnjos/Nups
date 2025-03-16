@@ -74,6 +74,9 @@ router.post('/login', (req, res, next) => {
 
 router.get('/logout', authController.logout);
 
+router.get('/changeUsername', authController.changeUsernameView);
 
+// Rota para processar a alteração do nome de usuário
+router.post('/changeUsername', authController.changeUsername);
 
 module.exports = router;
