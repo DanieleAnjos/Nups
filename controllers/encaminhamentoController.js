@@ -309,7 +309,8 @@ exports.detalhesEncaminhamento = async (req, res) => {
 
     res.render('encaminhamentos/detalhes', { 
       encaminhamento,
-      discussoes: encaminhamento.discussoes || [], // Passa as discussões para a view
+      discussoes: encaminhamento.discussoes || [], 
+      profissional: req.user.profissional,
     });
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);

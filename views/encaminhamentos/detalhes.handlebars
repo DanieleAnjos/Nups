@@ -62,9 +62,11 @@
                             <p>{{this.conteudo}}</p>
 
                             <!-- Botão de exclusão (apenas para administradores ou autores) -->
+                            {{#if (eq ../profissional.cargo "Administrador")}}
                                 <form action="/encaminhamentos/{{../encaminhamento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
                                 </form>
+                            {{/if}}
                         </div>
                         <hr>
                     {{/each}}
@@ -121,8 +123,8 @@
     }
 
     .card-header {
-        background-color: #007bff;
-        color: #fff;
+        background-color: #fff;
+        color: #3498db;
         padding: 15px;
     }
 
