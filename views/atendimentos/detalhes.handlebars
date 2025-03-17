@@ -23,14 +23,9 @@
                         <p><strong>{{#if this.profissional}}{{this.profissional.nome}}{{else}}Autor desconhecido{{/if}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
                         <p>{{this.conteudo}}</p>
 
-                        <!-- Botão de edição (apenas para administradores ou autores) -->
-                        {{#if (or (eq ../profissional.cargo "Administrador") (eq this.profissional.id ../profissional.id))}}
-                            <a href="/discussoes/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
-                        {{/if}}
-
                         <!-- Botão de exclusão (apenas para administradores) -->
                         {{#if (eq ../profissional.cargo "Administrador")}}
-                                    <form action="/discussoes/delete/{{this.id}}" method="POST" style="display:inline;">
+                                    <form action="/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
                             </form>
                         {{/if}}
