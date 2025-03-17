@@ -98,6 +98,11 @@ Encaminhamento.associate = (models) => {
     as: 'atendimento', 
     allowNull: true,
   });
+
+  Encaminhamento.hasMany(models.DiscussaoCaso, {
+    foreignKey: 'encaminhamentoId',
+    as: 'discussoes',
+  });
 };
 
 module.exports = Encaminhamento; 

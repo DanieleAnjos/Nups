@@ -2,7 +2,8 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Atendimento = require('../models/Atendimento');
 const Profissional = require('../models/Profissional'); 
-const FluxoAtendimentos = require('../models/FluxoAtendimentos');
+const FluxoAtendimentos = require('../models/FluxoAtendimentos')
+const Encaminhamento = require ('../models/Encaminhamento');
 
 const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
   id: {
