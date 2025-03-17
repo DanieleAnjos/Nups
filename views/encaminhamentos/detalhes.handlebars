@@ -62,11 +62,9 @@
                             <p>{{this.conteudo}}</p>
 
                             <!-- Botão de exclusão (apenas para administradores ou autores) -->
-                            {{#if (or (eq ../profissional.cargo "Administrador") (eq this.autor ../profissional.id))}}
                                 <form action="/encaminhamentos/{{../encaminhamento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
                                 </form>
-                            {{/if}}
                         </div>
                         <hr>
                     {{/each}}
@@ -114,27 +112,6 @@
         border-radius: 8px;
     }
 
-    /* Header */
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-        .registro-box {
-        background-color: #e9ecef; /* Cor de fundo da caixa */
-        border-left: 5px solid #0056b3; /* Borda lateral para destaque */
-        padding: 15px; /* Espaçamento interno */
-        margin-top: 20px; /* Espaçamento acima da caixa */
-        border-radius: 5px; /* Bordas arredondadas */
-    }
-
-    .header h1 {
-        color: #0056b3;
-        font-size: 2em;
-    }
-
     /* Card de detalhes */
     .card {
         background-color: #fff;
@@ -144,16 +121,9 @@
     }
 
     .card-header {
+        background-color: #007bff;
         color: #fff;
         padding: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .card-header h2 {
-        font-size: 1.5em;
-        margin: 0;
     }
 
     .status {
@@ -213,14 +183,6 @@
         background-color: #0056b3;
     }
 
-    .btn-secondary {
-        background-color: #6c757d;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
     /* Responsividade */
     @media (max-width: 600px) {
         .container {
@@ -228,12 +190,8 @@
             padding: 15px;
         }
 
-        .header h1 {
-            font-size: 1.5em;
-        }
-
         .card-header h2 {
-            font-size: 1.2em;
+            font-size: 1.5em;
         }
 
         .info-group h3 {
