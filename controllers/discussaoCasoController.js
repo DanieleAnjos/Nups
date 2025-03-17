@@ -164,19 +164,27 @@ exports.atualizarDiscussaoCaso = async (req, res) => {
 
 exports.deletarDiscussaoCaso = async (req, res) => {
   try {
-    const { id, atendimentoId } = req.params;
+    const { id } = req.params;
 
+    // Busca a discussão de caso pelo ID
     const discussaoCaso = await DiscussaoCaso.findByPk(id);
     if (!discussaoCaso) {
-      return res.status(404).render('error', { message: 'Discussão de caso não encontrada.' });
+      req.flash('error_msg', 'Discussão de caso não encontrada.');
+      return res.redirect('/atendimentos'); // Redireciona para a lista de atendimentos se a discussão não for encontrada
     }
 
+    // Salva o ID do atendimento antes de deletar a discussão
+    const atendimentoId = discussaoCaso.atendimentoId;
+
+    // Deleta a discussão de caso
     await discussaoCaso.destroy();
 
-    req.flash('sucess_msg', 'Sucesso ao deletar discussão de caso');
-    res.status(200).render(`/atendimentos/${atendimentoId}`);
+    // Redireciona para a página de detalhes do atendimento
+    req.flash('success_msg', 'Discussão de caso deletada com sucesso.');
+    res.redirect(`/atendimentos/${atendimentoId}`);
   } catch (error) {
     console.error('Erro ao deletar discussão de caso:', error);
-    res.status(500).render('error', { message: 'Erro interno ao deletar discussão de caso.' });
+    req.flash('error_msg', 'Erro ao deletar discussão de caso.');
+    res.redirect('/atendimentos'); // Redireciona para a lista de atendimentos em caso de erro
   }
 };
