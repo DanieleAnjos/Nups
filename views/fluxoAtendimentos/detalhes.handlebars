@@ -57,15 +57,21 @@
             <div class="card-body">
                 <!-- Lista de discussões -->
                 {{#if discussoes.length}}
-                    {{#each discussoes}}
-                        <div class="discussao-item mb-3">
-                            <p><strong>{{this.profissional.nome}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
-                            <p>{{this.conteudo}}</p>
-                        </div>
-                        <hr>
-                    {{/each}}
+                {{#each discussoes}}
+                    <div class="discussao-item mb-3">
+                    <p><strong>{{this.profissional.nome}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
+                    <p>{{this.conteudo}}</p>
+                    </div>
+                    <hr>
+                {{#if (or (eq ../profissional.cargo "Administrador") (eq this.autor ../profissional.id))}}
+                    <form action="/fluxoAtendimentos/{{../fluxoAtendimento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
+                    </form>
+                {{/if}}
+
+                {{/each}}
                 {{else}}
-                    <p>Nenhuma discussão encontrada.</p>
+                <p>Nenhuma discussão encontrada.</p>
                 {{/if}}
 
                 <!-- Formulário para adicionar uma nova discussão -->
@@ -120,7 +126,7 @@
     }
 
     .card-header {
-        background-color: #0056b3;
+        background-color: #007bff;
         color: #fff;
         padding: 15px;
     }

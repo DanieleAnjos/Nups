@@ -424,6 +424,64 @@ const listarDiscussaoCasos = async (req, res) => {
   }
 };
 
+
+
+
+const deletarDiscussaoCaso = async (req, res) => {
+  try {
+    const { fluxoAtendimentoId, discussaoId } = req.params;
+
+    // Verifica se o fluxo de atendimento existe
+    const fluxoAtendimento = await FluxoAtendimentos.findByPk(fluxoAtendimentoId);
+    if (!fluxoAtendimento) {
+      req.flash('error_msg', 'Fluxo de atendimento não encontrado.');
+      return res.redirect('/fluxoAtendimentos');
+    }
+
+    // Verifica se a discussão de caso existe
+    const discussaoCaso = await DiscussaoCaso.findOne({
+      where: { id: discussaoId, fluxoAtendimentoId },
+    });
+
+    if (!discussaoCaso) {
+      req.flash('error_msg', 'Discussão de caso não encontrada.');
+      return res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
+    }
+
+    // Verifica se o usuário tem permissão para deletar a discussão
+    if (!req.user || !req.user.id) {
+      req.flash('error_msg', 'Você precisa estar logado para deletar uma discussão.');
+      return res.redirect('/auth/login');
+    }
+
+    const usuario = await Usuario.findOne({
+      where: { id: req.user.id },
+      include: { model: Profissional, as: 'profissional' },
+    });
+
+    if (!usuario || !usuario.profissional) {
+      req.flash('error_msg', 'Você precisa ter um profissional associado para deletar uma discussão.');
+      return res.redirect('/fluxoAtendimentos');
+    }
+
+    // Verifica se o usuário é o autor da discussão ou tem permissão de administrador
+    if (discussaoCaso.autor !== usuario.profissional.id && usuario.cargo !== 'administrador') {
+      req.flash('error_msg', 'Você não tem permissão para deletar esta discussão.');
+      return res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
+    }
+
+    // Deleta a discussão de caso
+    await discussaoCaso.destroy();
+
+    req.flash('success_msg', 'Discussão de caso deletada com sucesso.');
+    res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
+  } catch (error) {
+    console.error('Erro ao deletar discussão de caso:', error);
+    req.flash('error_msg', 'Erro ao deletar discussão de caso.');
+    res.redirect(`/fluxoAtendimentos/${fluxoAtendimentoId}`);
+  }
+};
+
 module.exports = {
   index,
   create,
@@ -434,5 +492,6 @@ module.exports = {
   update,
   destroy,
   criarDiscussaoCaso,
-  listarDiscussaoCasos
+  listarDiscussaoCasos,
+  deletarDiscussaoCaso,
 };

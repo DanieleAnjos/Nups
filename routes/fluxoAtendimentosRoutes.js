@@ -11,6 +11,7 @@ router.get('/:id/edit', FluxoAtendimentosController.edit);
 
 router.post('/:fluxoAtendimentoId/discussoes', FluxoAtendimentosController.criarDiscussaoCaso);
 router.get('/:fluxoAtendimentoId/discussoes', FluxoAtendimentosController.listarDiscussaoCasos);
+router.delete('/:fluxoAtendimentoId/discussoes/:discussaoId', FluxoAtendimentosController.deletarDiscussaoCaso);
 
 router.put('/:id', FluxoAtendimentosController.update); 
 router.delete('/:id', FluxoAtendimentosController.destroy); 
