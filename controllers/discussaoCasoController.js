@@ -174,7 +174,7 @@ exports.deletarDiscussaoCaso = async (req, res) => {
     await discussaoCaso.destroy();
 
     req.flash('sucess_msg', 'Sucesso ao deletar discussão de caso');
-    res.status(200).render(`discussoes/${atendimentoId}`);
+    res.status(200).render(`/atendimentos/${atendimentoId}`);
   } catch (error) {
     console.error('Erro ao deletar discussão de caso:', error);
     res.status(500).render('error', { message: 'Erro interno ao deletar discussão de caso.' });
