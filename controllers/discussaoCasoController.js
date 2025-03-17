@@ -56,7 +56,7 @@ exports.criarDiscussaoCaso = async (req, res) => {
     const novaDiscussao = await DiscussaoCaso.create({ conteudo, autor, atendimentoId });
 
     req.flash('success_msg', 'Discussão de caso criada com sucesso.');
-    res.status(201).redirect(`/atendimentos`);
+    res.status(201).redirect(`/atendimentos/${atendimentoId}`);
   } catch (error) {
     console.error('Erro ao criar discussão de caso:', error);
     res.status(500).render('error', { message: 'Erro interno ao criar discussão de caso.' });
@@ -164,7 +164,7 @@ exports.atualizarDiscussaoCaso = async (req, res) => {
 
 exports.deletarDiscussaoCaso = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, atendimentoId } = req.params;
 
     const discussaoCaso = await DiscussaoCaso.findByPk(id);
     if (!discussaoCaso) {
@@ -174,7 +174,7 @@ exports.deletarDiscussaoCaso = async (req, res) => {
     await discussaoCaso.destroy();
 
     req.flash('sucess_msg', 'Sucesso ao deletar discussão de caso');
-    res.status(200).render('discussoes/index', { message: 'Discussão de caso deletada com sucesso.' });
+    res.status(200).render(`discussoes/${atendimentoId}`);
   } catch (error) {
     console.error('Erro ao deletar discussão de caso:', error);
     res.status(500).render('error', { message: 'Erro interno ao deletar discussão de caso.' });

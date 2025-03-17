@@ -331,6 +331,8 @@ exports.dash = async (req, res) => {
 
 exports.show = async (req, res) => {
   try {
+    const { id } = req.params;
+
     const atendimento = await Atendimento.findByPk(req.params.id, {
       include: [
         { 
@@ -343,7 +345,8 @@ exports.show = async (req, res) => {
           include: [
             { 
               model: Profissional, 
-              as: 'profissional' 
+              as: 'profissional',
+              attributes: ['id', 'nome'],
             }
           ]
         },
@@ -360,7 +363,7 @@ exports.show = async (req, res) => {
       return res.redirect('/atendimentos');
     }
 
-    res.render('atendimentos/detalhes', { atendimento });
+    res.render('atendimentos/detalhes', { atendimento, profissional: req.user.profissional });
   } catch (error) {
     console.error('Erro ao buscar detalhes do atendimento:', error);
     req.flash('error_msg', 'Erro ao buscar detalhes do atendimento.');
