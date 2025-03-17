@@ -23,20 +23,20 @@
         </div>
 
 
-                <form action="/ocorrencias" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
-            <div class="row">
-                <div class="col-md-5 mb-2">
-                    <input type="date" name="data" class="form-control" placeholder="Data" value="{{query.data}}">
-                </div>
-                <div class="col-md-5 mb-2">
-                    <input type="text" name="profissional" class="form-control" placeholder="Profissional" value="{{query.profissional}}">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-filter"></i> Filtrar
-                    </button>
-                </div>
+        <form action="/ocorrencias" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
+        <div class="row">
+            <div class="col-md-5 mb-2">
+            <input type="date" name="dataInicio" class="form-control" placeholder="Data inicial" value="{{query.dataInicio}}">
             </div>
+            <div class="col-md-5 mb-2">
+            <input type="date" name="dataFim" class="form-control" placeholder="Data final" value="{{query.dataFim}}">
+            </div>
+            <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter"></i> Filtrar
+            </button>
+            </div>
+        </div>
         </form>
 
         <!-- Tabela de Ocorrências -->

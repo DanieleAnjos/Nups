@@ -8,48 +8,57 @@ const xlsx = require('xlsx');
 
 const ocorrenciaController = {
   index: async (req, res) => {
-    const { data, profissional } = req.query;
+    const { dataInicio, dataFim, profissional } = req.query;
     const where = {};
-
-    if (data) {
-        where.data = data;
+  
+    if (dataInicio && dataFim) {
+      where.data = {
+        [Op.between]: [dataInicio, dataFim], 
+      };
+    } else if (dataInicio) {
+      where.data = {
+        [Op.gte]: dataInicio, 
+      };
+    } else if (dataFim) {
+      where.data = {
+        [Op.lte]: dataFim,
+      };
     }
-
+  
     try {
-        const ocorrencias = await Ocorrencia.findAll({
-            where,
-            include: [{
-                model: Profissional,
-                as: 'profissional',
-                where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined
-            }],
-            order: [['data', 'DESC']]
-        });
-
-        const ocorrenciasData = ocorrencias.map(ocorrencia => {
-            const ocorrenciaPlain = ocorrencia.get({ plain: true });
-            // Adiciona a informação se o usuário pode editar
-            const usuarioAtual = req.user || {};
-            const podeEditar = usuarioAtual.cargo && (usuarioAtual.cargo.toLowerCase() === "administrador" || usuarioAtual.id === ocorrenciaPlain.profissionalId);
-            ocorrenciaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
-            return ocorrenciaPlain;
-        });
-
-        const profissionais = await Profissional.findAll();
-        const profissionalAtual = req.user || {};
-
-        res.render('ocorrencias/index', {
-            ocorrencias: ocorrenciasData,
-            profissionais,
-            query: req.query
-        });
+      const ocorrencias = await Ocorrencia.findAll({
+        where,
+        include: [{
+          model: Profissional,
+          as: 'profissional',
+          where: profissional ? { nome: { [Op.like]: `%${profissional}%` } } : undefined,
+        }],
+        order: [['data', 'DESC']],
+      });
+  
+      const ocorrenciasData = ocorrencias.map(ocorrencia => {
+        const ocorrenciaPlain = ocorrencia.get({ plain: true });
+        // Adiciona a informação se o usuário pode editar
+        const usuarioAtual = req.user || {};
+        const podeEditar = usuarioAtual.cargo && (usuarioAtual.cargo.toLowerCase() === "administrador" || usuarioAtual.id === ocorrenciaPlain.profissionalId);
+        ocorrenciaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
+        return ocorrenciaPlain;
+      });
+  
+      const profissionais = await Profissional.findAll();
+      const profissionalAtual = req.user || {};
+  
+      res.render('ocorrencias/index', {
+        ocorrencias: ocorrenciasData,
+        profissionais,
+        query: req.query,
+      });
     } catch (error) {
-        console.error('Erro ao listar ocorrências:', error);
-        req.flash('error_msg', 'Erro ao listar ocorrências.');
-        res.redirect('/ocorrencias');
+      console.error('Erro ao listar ocorrências:', error);
+      req.flash('error_msg', 'Erro ao listar ocorrências.');
+      res.redirect('/ocorrencias');
     }
-},
-
+  },
 
   create: async (req, res) => {
     try {
