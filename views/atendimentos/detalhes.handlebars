@@ -10,28 +10,46 @@
         <p>{{atendimento.registroAtendimento}}</p>
     </div>
 
-        <!-- Exibir Discussões -->
-        <h3 class="mt-4">Discussões Associadas</h3>
-        {{#if atendimento.discussaoCasos.length}}
-            <ul class="discussao-list">
+    <!-- Seção de Discussões de Caso -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h2 class="h5">Discussões de Caso</h2>
+        </div>
+        <div class="card-body">
+            <!-- Lista de discussões -->
+            {{#if atendimento.discussaoCasos.length}}
                 {{#each atendimento.discussaoCasos}}
-                    <li class="discussao-item">
-                        <p><strong>Autor:</strong> {{#if profissional}}{{profissional.nome}}{{else}}Autor desconhecido{{/if}}</p>
-                        <p><strong>Data:</strong> {{formatDateTime2 dataHora}}</p>
-                        <p><strong>Conteúdo:</strong> {{conteudo}}</p>
-                        {{#if (or (eq ../profissional.cargo "Administrador") (eq profissional.id ../profissional.id))}}
-                            <a href="/discussoes/{{id}}/edit" class="btn btn-warning btn-sm">Editar</a>
+                    <div class="discussao-item mb-3">
+                        <p><strong>{{#if this.profissional}}{{this.profissional.nome}}{{else}}Autor desconhecido{{/if}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
+                        <p>{{this.conteudo}}</p>
+
+                        <!-- Botão de edição (apenas para administradores ou autores) -->
+                        {{#if (or (eq ../profissional.cargo "Administrador") (eq this.profissional.id ../profissional.id))}}
+                            <a href="/discussoes/{{this.id}}/edit" class="btn btn-warning btn-sm">Editar</a>
                         {{/if}}
-                    </li>
+
+                        <!-- Botão de exclusão (apenas para administradores) -->
+                        {{#if (eq ../profissional.cargo "Administrador")}}
+                            <form action="/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
+                            </form>
+                        {{/if}}
+                    </div>
+                    <hr>
                 {{/each}}
-            </ul>
-        {{else}}
-            <p>Não há discussões associadas a este atendimento.</p>
-            <a href="/discussoes/create/{{atendimento.id}}" class="btn btn-primary btn-sm">Vincular Discussão</a>
-        {{/if}}
+            {{else}}
+                <p>Nenhuma discussão encontrada.</p>
+            {{/if}}
 
-
-
+            <!-- Formulário para adicionar uma nova discussão -->
+            <form action="/discussoes/create/{{atendimento.id}}" method="POST">
+                <div class="input-group mb-3">
+                    <textarea name="conteudo" class="form-control" placeholder="Adicionar uma discussão..." required></textarea>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Centralizando o botão -->
     <div class="d-flex justify-content-center mt-4">
@@ -120,6 +138,68 @@
         background-color: #0056b3;
         transform: scale(1.05); /* Efeito de aumento ao passar o mouse */
     }
+
+    /* Estilos para a seção de discussões */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.card-header {
+    background-color: #fff;
+    color: #3498db;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.discussao-item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.discussao-item p {
+    margin: 5px 0;
+    font-size: 1em;
+    color: #555;
+}
+
+.discussao-item p strong {
+    color: #333;
+}
+
+.btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    margin-right: 5px;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    resize: vertical;
+}
 
     /* Responsive Design */
     @media (max-width: 600px) {

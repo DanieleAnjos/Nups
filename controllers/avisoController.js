@@ -290,7 +290,7 @@ exports.getAvisosDoDia = async (req, res) => {
 
       return {
         ...aviso.get({ plain: true }),
-        data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
+        data: moment(aviso.data).format('DD/MM/YYYY'),
         visualizadoPor: profissionaisVisualizaram,
         naoVisualizadoPor: profissionaisNaoVisualizaram,
         jaVisualizado
