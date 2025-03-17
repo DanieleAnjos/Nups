@@ -144,7 +144,7 @@ exports.getAllAvisos = async (req, res) => {
       });
     }
 
-    const { nomeProfissional, dataInicio } = req.query;
+    const { nomeProfissional, dataInicio, dataFim } = req.query;
     const whereConditions = {};
 
     // Filtra por nome do profissional (se fornecido)
@@ -152,10 +152,15 @@ exports.getAllAvisos = async (req, res) => {
       whereConditions['$profissional.nome$'] = { [Op.like]: `%${nomeProfissional}%` };
     }
 
-    // Filtra por data de início (se fornecida)
+    // Filtra por intervalo de datas (se fornecido)
     if (dataInicio && !isNaN(Date.parse(dataInicio))) {
-      const dataFormatada = moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate();
-      whereConditions.data = { [Op.eq]: dataFormatada };
+      const dataInicioFormatada = moment.tz(dataInicio, 'America/Sao_Paulo').startOf('day').toDate();
+      whereConditions.data = { [Op.gte]: dataInicioFormatada };
+
+      if (dataFim && !isNaN(Date.parse(dataFim))) {
+        const dataFimFormatada = moment.tz(dataFim, 'America/Sao_Paulo').endOf('day').toDate();
+        whereConditions.data[Op.lte] = dataFimFormatada;
+      }
     }
 
     // Busca todos os avisos (sem filtro por cargo)
@@ -180,7 +185,7 @@ exports.getAllAvisos = async (req, res) => {
 
       return {
         ...aviso.get({ plain: true }),
-        data: moment(aviso.data).format('DD/MM/YYYY HH:mm'),
+        data: moment(aviso.data).format('DD/MM/YYYY'),
         podeEditar // Adiciona a flag de permissão
       };
     });

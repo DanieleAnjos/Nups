@@ -26,12 +26,22 @@
         <!-- Formulário de filtro -->
         <form action="/avisos" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
-                <div class="col-md-5 mb-2">
+                <!-- Campo para filtrar por nome do profissional -->
+                <div class="col-md-4 mb-2">
                     <input type="text" name="nomeProfissional" class="form-control" placeholder="Nome do profissional" value="{{query.nomeProfissional}}">
                 </div>
-                <div class="col-md-5 mb-2">
+
+                <!-- Campo para filtrar por data inicial -->
+                <div class="col-md-3 mb-2">
                     <input type="date" id="dataInicio" name="dataInicio" class="form-control" value="{{query.dataInicio}}">
                 </div>
+
+                <!-- Campo para filtrar por data final -->
+                <div class="col-md-3 mb-2">
+                    <input type="date" id="dataFim" name="dataFim" class="form-control" value="{{query.dataFim}}">
+                </div>
+
+                <!-- Botão de filtrar -->
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="fa fa-filter"></i> Filtrar
