@@ -24,10 +24,13 @@
 
         <form action="/escalas" method="GET" class="mb-4 p-3 border rounded shadow-sm bg-light">
             <div class="row">
-                <div class="col-md-5 mb-2">
-                    <input type="date" name="data" value="{{query.data}}" class="form-control" placeholder="Data">
+                <div class="col-md-4 mb-2">
+                    <input type="date" name="dataInicio" value="{{query.dataInicio}}" class="form-control" placeholder="Data Início">
                 </div>
-                <div class="col-md-5 mb-2">
+                <div class="col-md-4 mb-2">
+                    <input type="date" name="dataFim" value="{{query.dataFim}}" class="form-control" placeholder="Data Fim">
+                </div>
+                <div class="col-md-4 mb-2">
                     <select name="profissional" class="form-control">
                         <option value="">Selecione um Profissional</option>
                         {{#each profissionais}}

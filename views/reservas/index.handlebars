@@ -4,10 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reserva de Salas</title>
-
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Estilos gerais */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Botões */
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        /* Formulário de filtro */
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-form .form-control,
+        .filter-form .form-select {
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-form .form-control:focus,
+        .filter-form .form-select:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Tabela */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f1f4f9;
+        }
+
+        /* Alertas */
+        .alert {
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .filter-form .form-control,
+            .filter-form .form-select {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -21,48 +192,46 @@
         </a>
     </div>
 
-    
-        <form action="/reservas" method="GET" class="mb-4 p-4 border rounded shadow-sm bg-light">
+    <!-- Formulário de Filtro -->
+    <form action="/reservas" method="GET" class="mb-4 p-4 border rounded shadow-sm bg-light filter-form">
         <div class="row g-3">
             <!-- Campo de Data Inicial -->
-            <div class="col-md-3 col-12">
-            <input type="date" name="dataInicio" id="dataInicio" class="form-control" placeholder="Data inicial" value="{{query.dataInicio}}">
+            <div class="col-md-2 col-12">
+                <input type="date" name="dataInicio" id="dataInicio" class="form-control" placeholder="Data inicial" value="{{query.dataInicio}}">
             </div>
 
             <!-- Campo de Data Final -->
-            <div class="col-md-3 col-12">
-            <input type="date" name="dataFim" id="dataFim" class="form-control" placeholder="Data final" value="{{query.dataFim}}">
+            <div class="col-md-2 col-12">
+                <input type="date" name="dataFim" id="dataFim" class="form-control" placeholder="Data final" value="{{query.dataFim}}">
             </div>
 
             <!-- Campo de Sala -->
-            <div class="col-md-3 col-12">
-            <select name="salaId" id="salaId" class="form-select">
-                <option value="">Todas as Salas</option>
-                {{#each salas}}
-                <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
-                {{/each}}
-            </select>
+            <div class="col-md-2 col-12">
+                <select name="salaId" id="salaId" class="form-select">
+                    <option value="">Todas as Salas</option>
+                    {{#each salas}}
+                        <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
+                    {{/each}}
+                </select>
             </div>
 
             <!-- Campo de Profissional -->
-            <div class="col-md-3 col-12">
-            <select name="profissionalId" id="profissionalId" class="form-select">
-                <option value="">Todos os Profissionais</option>
-                {{#each profissionais}}
-                <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
-                {{/each}}
-            </select>
+            <div class="col-md-2 col-12">
+                <select name="profissionalId" id="profissionalId" class="form-select">
+                    <option value="">Todos os Profissionais</option>
+                    {{#each profissionais}}
+                        <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
+                    {{/each}}
+                </select>
             </div>
 
             <!-- Botões -->
             <div class="col-md-2 col-12 d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary w-100 mb-2 mb-md-0">Filtrar</button>
-            <a href="/reservas" class="btn btn-secondary w-100">Limpar</a>
+                <button type="submit" class="btn btn-primary w-100 mb-2 mb-md-0">Filtrar</button>
+                <a href="/reservas" class="btn btn-secondary w-100">Limpar</a>
             </div>
         </div>
-        </form>
-
-
+    </form>
 
     <!-- Tabela de Reservas -->
     <div class="table-responsive shadow-sm">
@@ -84,8 +253,8 @@
                             <td>{{Data data}}</td>
                             <td>{{sala.nome}}</td>
                             <td>{{profissionalNome}}</td>
-                            <td>{{ horarioInicial}}</td>
-                            <td>{{ horarioFinal}}</td>
+                            <td>{{horarioInicial}}</td>
+                            <td>{{horarioFinal}}</td>
                             <td class="text-center">
                                 <a href="/reservas/{{id}}/edit" class="btn btn-warning btn-sm mx-1 shadow-sm">
                                     <i class="bi bi-pencil-square"></i> Editar
@@ -100,20 +269,18 @@
                         </tr>
                     {{/each}}
                 {{else}}
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <div class="alert alert-info" role="alert">
+                                Nenhuma reserva encontrada.
+                            </div>
+                        </td>
+                    </tr>
                 {{/if}}
             </tbody>
         </table>
     </div>
-            {{#if (eq reservas.length 0)}}
-            <div class="alert alert-info text-center" role="alert">
-                Nenhuma reserva encontrada.
-            </div>
-        {{/if}}
 </div>
-</body>
-</html>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -136,93 +303,5 @@
         {{/if}}
     });
 </script>
-
-    <style>
-        /* Reset básico */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Estilos gerais */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f9;
-            color: #4b4b4b;
-            line-height: 1.6;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #0056b3;
-            margin-bottom: 20px;
-        }
-
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #e9ecef;
-            color: #333;
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #f1f4f9;
-        }
-
-        /* Estilos para o formulário de filtro */
-        .filter-form {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Estilos responsivos */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
-
-            .btn {
-                font-size: 12px;
-                padding: 8px 16px;
-            }
-
-            th, td {
-                padding: 10px;
-                font-size: 12px;
-            }
-        }
-    </style>
+</body>
+</html>

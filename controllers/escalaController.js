@@ -10,14 +10,20 @@ const escalaController = {
 
   index: async (req, res) => {
     try {
-      const { data, horarioInicio, horarioFim, profissional } = req.query;
+      const { dataInicio, dataFim, horarioInicio, horarioFim, profissional } = req.query;
   
       const where = {};
   
-      if (data) {
-        where.data = data;
+      // Filtro por intervalo de datas
+      if (dataInicio && dataFim) {
+        where.data = { [Op.between]: [dataInicio, dataFim] };
+      } else if (dataInicio) {
+        where.data = { [Op.gte]: dataInicio }; // Data maior ou igual a dataInicio
+      } else if (dataFim) {
+        where.data = { [Op.lte]: dataFim }; // Data menor ou igual a dataFim
       }
   
+      // Filtro por horário
       if (horarioInicio) {
         where.horarioInicio = { [Op.gte]: horarioInicio };
       }
@@ -36,7 +42,7 @@ const escalaController = {
       // Determinar o filtro de profissional com base no cargo do usuário
       let whereProfissional = {};
   
-      if ([cargoAdministrador].includes(profissionalLogado.cargo)) {
+      if ([cargoAdministrador, cargoAdm].includes(profissionalLogado.cargo)) {
         // Administradores e 'Adm' podem ver todas as escalas
         whereProfissional = {};
       } else {
@@ -77,8 +83,6 @@ const escalaController = {
       const escalasFormatadas = escalas.map(escala => {
         const dataFormatada = new Date(escala.data);
         const dataLocal = dataFormatada.toISOString().split('T')[0];
-  
-        dataFormatada.setDate(dataFormatada.getDate() - 2);
   
         const horarioInicioFormatado = typeof escala.horarioInicio === 'string'
           ? escala.horarioInicio
