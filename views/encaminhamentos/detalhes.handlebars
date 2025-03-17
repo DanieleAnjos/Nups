@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <!-- Cabeçalho com título e botão de voltar -->
-            <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
+        <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
 
         <!-- Card de detalhes do encaminhamento -->
         <div class="card">
@@ -40,16 +40,53 @@
                     <h3>Atendimento</h3>
                     <p><strong>Atendimento Associado:</strong> {{encaminhamento.atendimento.id}} - {{encaminhamento.atendimento.nomePaciente}}</p>
                     <p><strong>Assunto:</strong> {{encaminhamento.assuntoAcolhimento}}</p>
-                        <div class="registro-box">
-                            <strong>Descrição:</strong>
-                            <p>{{encaminhamento.descricao}}</p>
-                        </div>
+                    <div class="registro-box">
+                        <strong>Descrição:</strong>
+                        <p>{{encaminhamento.descricao}}</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Seção de Discussões de Caso -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <h2 class="h5">Discussões de Caso</h2>
+            </div>
+            <div class="card-body">
+                <!-- Lista de discussões -->
+                {{#if discussoes.length}}
+                    {{#each discussoes}}
+                        <div class="discussao-item mb-3">
+                            <p><strong>{{this.profissional.nome}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
+                            <p>{{this.conteudo}}</p>
+
+                            <!-- Botão de exclusão (apenas para administradores ou autores) -->
+                            {{#if (or (eq ../profissional.cargo "Administrador") (eq this.autor ../profissional.id))}}
+                                <form action="/encaminhamentos/{{../encaminhamento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
+                                </form>
+                            {{/if}}
+                        </div>
+                        <hr>
+                    {{/each}}
+                {{else}}
+                    <p>Nenhuma discussão encontrada.</p>
+                {{/if}}
+
+                <!-- Formulário para adicionar uma nova discussão -->
+                <form action="/encaminhamentos/{{encaminhamento.id}}/discussoes" method="POST">
+                    <div class="input-group mb-3">
+                        <textarea name="conteudo" class="form-control" placeholder="Adicionar uma discussão..." required></textarea>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </body>
 </html>
+
 
 <style>
     /* Reset básico */

@@ -28,6 +28,15 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
     },
     onDelete: 'CASCADE',
   },
+  encaminhamentoId: { 
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Encaminhamento,
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
   conteudo: {
     type: DataTypes.TEXT,
     allowNull: false,
@@ -54,6 +63,7 @@ const DiscussaoCaso = sequelize.define('DiscussaoCaso', {
 
 DiscussaoCaso.belongsTo(Atendimento, { foreignKey: 'atendimentoId', as: 'atendimento' });
 DiscussaoCaso.belongsTo(FluxoAtendimentos, { foreignKey: 'fluxoAtendimentoId', as: 'fluxoAtendimento' });
+DiscussaoCaso.belongsTo(Encaminhamento, { foreignKey: 'encaminhamentoId', as: 'encaminhamento' });
 DiscussaoCaso.belongsTo(Profissional, { foreignKey: 'autor', as: 'profissional' });
 
 

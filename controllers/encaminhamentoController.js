@@ -2,6 +2,9 @@ const Encaminhamento = require('../models/Encaminhamento');
 const Notificacao = require('../models/Notificacao');
 const Profissional = require('../models/Profissional');
 const Atendimento = require('../models/Atendimento');
+const DiscussaoCaso = require('../models/DiscussaoCaso');
+const Usuario = require('../models/Usuario');
+
 const { Op } = require('sequelize');  
 const moment = require('moment');
 const { Paciente } = require('../models');
@@ -285,6 +288,17 @@ exports.detalhesEncaminhamento = async (req, res) => {
         { model: Profissional, as: 'profissionalEnvio' },
         { model: Profissional, as: 'profissionalRecebido' },
         { model: Atendimento, as: 'atendimento' },
+        {
+          model: DiscussaoCaso, // Inclua as discussões de caso
+          as: 'discussoes',
+          include: [
+            {
+              model: Profissional,
+              as: 'profissional',
+              attributes: ['id', 'nome'], // Inclua apenas o ID e o nome do profissional
+            },
+          ],
+        },
       ],
     });
 
@@ -293,7 +307,10 @@ exports.detalhesEncaminhamento = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    res.render('encaminhamentos/detalhes', { encaminhamento });
+    res.render('encaminhamentos/detalhes', { 
+      encaminhamento,
+      discussoes: encaminhamento.discussoes || [], // Passa as discussões para a view
+    });
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
     req.flash('error_msg', 'Erro ao carregar detalhes do encaminhamento.');
@@ -457,4 +474,123 @@ exports.destroy = async (req, res) => {
   }
 };
 
+exports.criarDiscussaoCaso = async (req, res) => {
+  try {
+    const { encaminhamentoId } = req.params;
+    const { conteudo } = req.body;
 
+    if (!conteudo) {
+      req.flash('error_msg', 'Conteúdo é obrigatório.');
+      return res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+    }
+
+    const encaminhamento = await Encaminhamento.findByPk(encaminhamentoId);
+    if (!encaminhamento) {
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    if (!req.user || !req.user.id) {
+      req.flash('error_msg', 'Você precisa estar logado para criar uma discussão.');
+      return res.redirect('/auth/login');
+    }
+
+    const usuario = await Usuario.findOne({
+      where: { id: req.user.id },
+      include: { model: Profissional, as: 'profissional' },
+    });
+
+    if (!usuario || !usuario.profissional) {
+      req.flash('error_msg', 'Você precisa ter um profissional associado para criar uma discussão.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    const autor = usuario.profissional.id;
+
+    await DiscussaoCaso.create({
+      conteudo,
+      autor,
+      encaminhamentoId,
+    });
+
+    req.flash('success_msg', 'Discussão de caso criada com sucesso.');
+    res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+  } catch (error) {
+    console.error('Erro ao criar discussão de caso:', error);
+    req.flash('error_msg', 'Erro ao criar discussão de caso.');
+    res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+  }
+};
+
+exports.listarDiscussaoCasos = async (req, res) => {
+  try {
+    const { encaminhamentoId } = req.params;
+
+    const discussoes = await DiscussaoCaso.findAll({
+      where: { encaminhamentoId },
+      include: [
+        { model: Profissional, as: 'profissional' },
+      ],
+    });
+
+    res.status(200).json(discussoes);
+  } catch (error) {
+    console.error('Erro ao listar discussões de caso:', error);
+    res.status(500).json({ error: 'Erro interno ao listar discussões de caso.' });
+  }
+};
+
+exports.deletarDiscussaoCaso = async (req, res) => {
+  try {
+    const { encaminhamentoId, discussaoId } = req.params;
+
+    // Verifica se o fluxo de atendimento existe
+    const encaminhamento = await Encaminhamento.findByPk(encaminhamentoId);
+    if (!encaminhamento) {
+      req.flash('error_msg', 'Fluxo de atendimento não encontrado.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    // Verifica se a discussão de caso existe
+    const discussaoCaso = await DiscussaoCaso.findOne({
+      where: { id: discussaoId, encaminhamentoId },
+    });
+
+    if (!discussaoCaso) {
+      req.flash('error_msg', 'Discussão de caso não encontrada.');
+      return res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+    }
+
+    // Verifica se o usuário tem permissão para deletar a discussão
+    if (!req.user || !req.user.id) {
+      req.flash('error_msg', 'Você precisa estar logado para deletar uma discussão.');
+      return res.redirect('/auth/login');
+    }
+
+    const usuario = await Usuario.findOne({
+      where: { id: req.user.id },
+      include: { model: Profissional, as: 'profissional' },
+    });
+
+    if (!usuario || !usuario.profissional) {
+      req.flash('error_msg', 'Você precisa ter um profissional associado para deletar uma discussão.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    // Verifica se o usuário é o autor da discussão ou tem permissão de administrador
+    if (discussaoCaso.autor !== usuario.profissional.id && usuario.cargo !== 'administrador') {
+      req.flash('error_msg', 'Você não tem permissão para deletar esta discussão.');
+      return res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+    }
+
+    // Deleta a discussão de caso
+    await discussaoCaso.destroy();
+
+    req.flash('success_msg', 'Discussão de caso deletada com sucesso.');
+    res.redirect(`/encaminhamentos/${encaminhamentoId}`);
+  } catch (error) {
+    console.error('Erro ao deletar discussão de caso:', error);
+    req.flash('error_msg', 'Erro ao deletar discussão de caso.');
+    res.redirect(`/encaminhamentos`);
+  }
+};
