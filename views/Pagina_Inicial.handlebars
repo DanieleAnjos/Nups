@@ -1,254 +1,426 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/CSS/Pagina_inicial.css">
     <title>Nups</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/IMG/favicon2-16x16.png">
+    <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-
+    <!-- Seção Principal -->
     <div class="main-image slide-in">
-        <img src="/IMG/Nups-logo2.png" alt="Imagem representativa do Núcleo Psicossocial" class="img-fluid">
+        <img src="/IMG/Nups-logo2.png" alt="Imagem representativa do Núcleo Psicossocial">
     </div>
 
     <main class="main-content2" id="Pagina_Incial">
-        <div class="main-container slide-in text-center">
+        <div class="main-container slide-in">
             <p class="main-description">
                 Sejam todas as pessoas bem-vindas ao Núcleo Psicossocial! <br>
-                A Gerência de Desenvolvimento Humano, através do seu Centro de Valorização da Guarda Civil Municipal de Salvador apresenta o Núcleo Psicossocial.
+                A Gerência de Desenvolvimento Humano, através do seu Centro de Valorização da Guarda Civil Municipal de Salvador, apresenta o Núcleo Psicossocial.
                 O NUPS está presente e atento na aplicação da política de saúde mental voltada aos Guardas Municipais da Cidade de Salvador, oferecendo apoio psicológico, atividades terapêuticas e programas de atenção psicossocial 
                 e de saúde com o intuito de prevenir os possíveis danos causados pelo exercício da atividade de segurança pública.        
             </p>
-
             <div class="button-container">
-                <a href="#contato" class="btn btn-primary">Contate-nos</a>
+                <a href="#contato" class="button contate-nos">Contate-nos</a>
             </div>
         </div>
     </main>
 
-    <section id="quem-somos" class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <img src="/IMG/Roda de conversa - Nups.jpeg" alt="Imagem que representa a missão" class="img-fluid">
+    <!-- Seção Quem Somos -->
+    <section id="quem-somos">
+        <div class="imagem-quemsomos">
+            <img src="/IMG/Roda de conversa - Nups.jpeg" alt="Imagem que representa a missão">
+        </div>
+        <div class="texto-quemsomos">
+            <h2 class="titulo-missao">Nossa <span class="Cores_texto">Missão</span></h2>
+            <hr class="linha-missao">
+            <p class="descricao-missao">
+                Nosso compromisso é oferecer um espaço acolhedor para o suporte emocional e psicológico dos Guardas Municipais, fortalecendo a resiliência e o autocuidado. 
+                Buscamos promover a saúde mental e o bem-estar, com serviços de apoio e orientação para enfrentar os desafios da profissão. Nosso objetivo é criar um ambiente de valorização e empatia, fortalecendo os vínculos entre a corporação, a sociedade e os agentes, minimizando os impactos do estresse e da exposição à violência.
+            </p>
+            <a href="./Quem_Somos" class="button saber-mais">Saber Mais</a>
+        </div>
+    </section>
+
+    <!-- Seção Valores -->
+    <section id="valores">
+        <h2 class="titulo-valores">Nossos <span class="Cores_texto">Valores</span></h2>
+        <div class="cards-container">
+            <div class="card">
+                <div class="face frente">
+                    <img src="/IMG/empatia.png" alt="Ícone de Empatia" class="icone">
+                    <h3 class="titulo-card">Empatia</h3>
                 </div>
-                <div class="col-md-6">
-                    <h2 class="titulo-missao">Nossa <span class="Cores_texto">Missão</span></h2>
-                    <hr class="linha-missao">
-                    <p class="descricao-missao">
-                        Nosso compromisso é oferecer um espaço acolhedor para o suporte emocional e psicológico dos Guardas Municipais, fortalecendo a resiliência e o autocuidado. 
-                        Buscamos promover a saúde mental e o bem-estar, com serviços de apoio e orientação para enfrentar os desafios da profissão. Nosso objetivo é criar um ambiente de valorização e empatia, fortalecendo os vínculos entre a corporação, a sociedade e os agentes, minimizando os impactos do estresse e da exposição à violência.
+                <div class="face verso">
+                    <p class="descricao-card">
+                        Compreender e valorizar as experiências e sentimentos dos guardas, oferecendo um espaço seguro para expressar suas preocupações.
                     </p>
-                    <a href="./Quem_Somos" class="btn btn-secondary">Saber Mais</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="face frente">
+                    <img src="/IMG/abraco.png" alt="Ícone de Apoio Psicológico" class="icone">
+                    <h3 class="titulo-card">Apoio Psicológico</h3>
+                </div>
+                <div class="face verso">
+                    <p class="descricao-card">
+                        Prover suporte emocional e psicológico, ajudando os profissionais a lidarem com os desafios do trabalho.
+                    </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="face frente">
+                    <img src="/IMG/confidencialidade.png" alt="Ícone de Confidencialidade" class="icone">
+                    <h3 class="titulo-card">Confidencialidade</h3>
+                </div>
+                <div class="face verso">
+                    <p class="descricao-card">
+                        Garantir que todas as informações compartilhadas sejam tratadas com sigilo, criando um ambiente de confiança.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="valores" class="py-5">
-        <div class="container text-center">
-            <h2 class="titulo-valores">Nossos <span class="Cores_texto">Valores</span></h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="face frente">
-                            <img src="/IMG/empatia.png" alt="Ícone de Empatia" class="icone">
-                            <h3 class="titulo-card">Empatia</h3>
-                        </div>
-                        <div class="face verso">
-                            <p class="descricao-card">
-                                Compreender e valorizar as experiências e sentimentos dos guardas, oferecendo um espaço seguro para expressar suas preocupações.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="face frente">
-                            <img src="/IMG/abraco.png" alt="Ícone de Apoio Psicológico" class="icone">
-                            <h3 class="titulo-card">Apoio Ps icológico</h3>
-                        </div>
-                        <div class="face verso">
-                            <p class="descricao-card">
-                                Prover suporte emocional e psicológico, ajudando os profissionais a lidarem com os desafios do trabalho.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="face frente">
-                            <img src="/IMG/confidencialidade.png" alt="Ícone de Confidencialidade" class="icone">
-                            <h3 class="titulo-card">Confidencialidade</h3>
-                        </div>
-                        <div class="face verso">
-                            <p class="descricao-card">
-                                Garantir que todas as informações compartilhadas sejam tratadas com sigilo, criando um ambiente de confiança.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+    <!-- Seção Contato -->
+    <section id="contato">
+        <h2 class="titulo-contato">Entre em <span class="Cores_texto">Contato</span></h2>
+        <div class="contato-container">
+            <div class="informacoes">
+                <h2>Detalhes de Contato</h2>
+                <p><strong>Endereço:</strong><br> 
+                    Parque Lagoa dos Pássaros, Travessa Arnaldo Lopes da Silva, 1, Stiep, Salvador - BA
+                </p>
+                <p><strong>Telefones:</strong><br> 
+                    <a href="tel:+557132025313">71 3202-5313 (GEDHU)</a><br>
+                    <a href="tel:+5571999916907">71 99991-6907 (Sv Social NUPS)</a>
+                </p>
+                <p><strong>WhatsApp NUPS:</strong><br> 
+                    <a href="https://wa.me/5571999940373" target="_blank">71 99994-0373</a>
+                </p>
+                <p><strong>Email:</strong><br> 
+                    <a href="mailto:acolhimentonups@gmail.com">acolhimentonups@gmail.com</a>
+                </p>
+                <p><strong>Horário de Atendimento:</strong><br> 
+                    Seg - Sex: 08:00 - 17:00
+                </p>
+            </div>
+            <div class="formulario">
+                <h2>Fale conosco</h2>
+                <form action="/contato/enviar" method="POST" class="formulario-contato">
+                    <label for="nome">Seu Nome:</label>
+                    <input type="text" id="nome" name="nome" required>
+                    <label for="email">Seu Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <label for="telefone">Seu Telefone (WhatsApp):</label>
+                    <input type="tel" id="telefone" name="telefone" required>
+                    <label for="mensagem">Sua Mensagem:</label>
+                    <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
+                    <button type="submit" class="botao-enviar">Enviar</button>
+                </form>
             </div>
         </div>
     </section>
 
-    <section id="contato" class="py-5">
-        <div class="container">
-            <h2 class="titulo-contato text-center">Entre em <span class="Cores_texto">Contato</span></h2>    
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>Detalhes de Contato</h2>
-                    <p><strong>Endereço:</strong><br> 
-                        Parque Lagoa dos Pássaros, Travessa Arnaldo Lopes da Silva, 1, Stiep, Salvador - BA
-                    </p>
-                    <p><strong>Telefones:</strong><br> 
-                        <a href="tel:+557132025313">71 3202-5313 (GEDHU)</a><br>
-                        <a href="tel:+5571999916907">71 99991-6907 (Sv Social NUPS)</a>
-                    </p>
-                    <p><strong>WhatsApp NUPS:</strong><br> 
-                        <a href="https://wa.me/5571999940373" target="_blank">71 99994-0373</a>
-                    </p>
-                    <p><strong>Email:</strong><br> 
-                        <a href="mailto:acolhimentonups@gmail.com">acolhimentonups@gmail.com</a>
-                    </p>
-                    <p><strong>Horário de Atendimento:</strong><br> 
-                        Seg - Sex: 08:00 - 17:00
-                    </p>
-                </div>
-
-                <div class="col-md-6">
-                    <h2>Fale conosco</h2>
-                    <form action="/contato/enviar" method="POST" class="formulario-contato">
-                        <div class="mb-3">
-                            <label for="nome" class="form-label">Seu Nome:</label>
-                            <input type="text" id="nome" name="nome" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Seu Email:</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="telefone" class="form-label">Seu Telefone (WhatsApp):</label>
-                            <input type="tel" id="telefone" name="telefone" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mensagem" class="form-label">Sua Mensagem:</label>
-                            <textarea id="mensagem" name="mensagem" rows="4" class="form-control" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success">Enviar</button>
-                    </form>
-                </div>
-            </div>
+    <!-- VLibras -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div vp></div>
         </div>
-    </section>
-
+    </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
     <script>
         new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
-    <script src="/JS/Pagina_Inicial.js"></script>    
+
+    <!-- Scripts -->
+    <script src="/JS/Pagina_Inicial.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            {{#if error_msg}}
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: '{{error_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+            {{#if success_msg}}
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{success_msg}}',
+                    confirmButtonText: 'Ok'
+                });
+            {{/if}}
+        });
+    </script>
 </body>
 </html>
 
+
 <style>
-  /* Estilos para as mensagens de alerta */
-.alert {
-    padding: 15px;
-    margin: 20px auto;
-    max-width: 600px;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-}
 
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24 border: 1px solid #f5c6cb;
-}
-
-.formulario-contato input,
-.formulario-contato textarea {
-    padding: 0.7rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.titulo {
-    font-size: 2.5rem;
-    color: #333;
+    /* Estilos Gerais */
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-.center-text {
+/* Seção Principal */
+.main-image {
     text-align: center;
+    margin: 20px 0;
 }
 
-.card {
-    transition: transform 0.2s;
+.main-image img {
+    max-width: 100%;
+    height: auto;
 }
 
-.card:hover {
-    transform: scale(1.05);
+.main-content2 {
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-description {
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #0056b3;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #004080;
+}
+
+/* Seção Quem Somos */
+#quem-somos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imagem-quemsomos {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.imagem-quemsomos img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.texto-quemsomos {
+    flex: 2;
 }
 
 .titulo-missao {
     font-size: 2rem;
-    color: #007bff;
+    color: #0056b3;
+}
+
+.linha-missao {
+    border: 1px solid #0056b3;
+    width: 50px;
+    margin: 10px 0;
+}
+
+.descricao-missao {
+    line-height: 1.6;
+}
+
+/* Seção Valores */
+#valores {
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .titulo-valores {
     font-size: 2rem;
-    color: #28a745;
+    color: #0056b3;
+    text-align: center;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.card {
+    width: 30%;
+    margin: 10px;
+    perspective: 1000px;
+}
+
+.face {
+    width: 100%;
+    height: 200px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.frente {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.verso {
+    background-color: #fff;
+    color: #333;
+    transform: rotateY(180deg);
+}
+
+.card:hover .frente {
+    transform: rotateY(180deg);
+}
+
+.card:hover .verso {
+    transform: rotateY(0deg);
+}
+
+.icone {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.titulo-card {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.descricao-card {
+    text-align: center;
+    padding: 10px;
+}
+
+/* Seção Contato */
+#contato {
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .titulo-contato {
     font-size: 2rem;
-    color: #dc3545;
+    color: #0056b3;
+    text-align: center;
 }
 
-.Cores_texto {
-    color: #007bff;
+.contato-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
-.linha-missao {
-    border: 1px solid #007bff;
-    width: 50%;
-    margin: 10px auto;
+.informacoes, .formulario {
+    flex: 1;
+    margin: 10px;
+}
+
+.informacoes h2, .formulario h2 {
+    font-size: 1.5rem;
+    color: #0056b3;
+}
+
+.informacoes p {
+    line-height: 1.6;
+}
+
+.formulario-contato {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario-contato label {
+    margin-top: 10px;
+}
+
+.formulario-contato input, .formulario-contato textarea {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.botao-enviar {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #0056b3;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao-enviar:hover {
+    background-color: #004080;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card {
+        width: 100%;
+    }
+
+    .contato-container {
+        flex-direction: column;
+    }
+
+    .informacoes, .formulario {
+        margin: 10px 0;
+    }
 }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        {{#if error_msg}}
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: '{{error_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-        
-        {{#if success_msg}}
-            Swal.fire({
-                icon: 'success',
-                title: 'Sucesso',
-                text: '{{success_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-    });
-</script>
