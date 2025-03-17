@@ -12,54 +12,55 @@ const excel = require('exceljs');
 const reservasSalaController = {
   listarReservas: async (req, res) => {
     try {
-      const { data, horarioInicial, horarioFinal, salaId, profissionalId } = req.query;
+      const { dataInicio, dataFim, salaId, profissionalId } = req.query;
+      const where = {};
   
-      const where = {}; 
-  
-      if (data) {
-        where.data = data; 
-      }
-  
-      if (horarioInicial) {
-        where.horarioInicial = { [Op.gte]: horarioInicial }; 
-      }
-  
-      if (horarioFinal) {
-        where.horarioFinal = { [Op.lte]: horarioFinal };
+      if (dataInicio && dataFim) {
+        where.data = {
+          [Op.between]: [dataInicio, dataFim], 
+        };
+      } else if (dataInicio) {
+        where.data = {
+          [Op.gte]: dataInicio,
+        };
+      } else if (dataFim) {
+        where.data = {
+          [Op.lte]: dataFim, 
+        };
       }
   
       if (salaId) {
-        where.salaId = salaId; 
+        where.salaId = salaId;
       }
   
       if (profissionalId) {
-        where.profissionalId = profissionalId; 
+        where.profissionalId = profissionalId;
       }
   
       const reservas = await ReservaSala.findAll({
         where,
         include: [
           { model: Sala, as: 'sala' },
-          { model: Profissional, as: 'profissional' }
+          { model: Profissional, as: 'profissional' },
         ],
-        order: [['data', 'DESC']] 
+        order: [['data', 'DESC']],
       });
   
       const reservasComNomes = reservas.map(reserva => ({
         ...reserva.toJSON(),
-        profissionalNome: reserva.profissional ? reserva.profissional.nome : 'N/A'
+        profissionalNome: reserva.profissional ? reserva.profissional.nome : 'N/A',
       }));
   
       const salas = await Sala.findAll();
       const profissionais = await Profissional.findAll();
   
-      res.render('reservas', { 
-        reservas: reservasComNomes, 
-        errorMessage: req.flash('error'), 
+      res.render('reservas', {
+        reservas: reservasComNomes,
+        errorMessage: req.flash('error'),
         successMessage: req.flash('success'),
-        query: req.query, 
+        query: req.query,
         salas,
-        profissionais
+        profissionais,
       });
     } catch (error) {
       console.error('Erro ao listar reservas:', error);

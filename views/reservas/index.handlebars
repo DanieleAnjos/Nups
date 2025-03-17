@@ -22,40 +22,45 @@
     </div>
 
     
-<form action="/reservas" method="GET" class="mb-4 p-4 border rounded shadow-sm bg-light">
-    <div class="row g-3">
-        <!-- Campo de Data -->
-        <div class="col-md-4 col-12">
-            <input type="date" name="data" id="data" class="form-control" placeholder="Data" value="{{query.data}}">
-        </div>
+        <form action="/reservas" method="GET" class="mb-4 p-4 border rounded shadow-sm bg-light">
+        <div class="row g-3">
+            <!-- Campo de Data Inicial -->
+            <div class="col-md-3 col-12">
+            <input type="date" name="dataInicio" id="dataInicio" class="form-control" placeholder="Data inicial" value="{{query.dataInicio}}">
+            </div>
 
-        <!-- Campo de Sala -->
-        <div class="col-md-3 col-12">
+            <!-- Campo de Data Final -->
+            <div class="col-md-3 col-12">
+            <input type="date" name="dataFim" id="dataFim" class="form-control" placeholder="Data final" value="{{query.dataFim}}">
+            </div>
+
+            <!-- Campo de Sala -->
+            <div class="col-md-3 col-12">
             <select name="salaId" id="salaId" class="form-select">
                 <option value="">Todas as Salas</option>
                 {{#each salas}}
-                    <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
+                <option value="{{id}}" {{#if (eq id ../query.salaId)}}selected{{/if}}>{{nome}}</option>
                 {{/each}}
             </select>
-        </div>
+            </div>
 
-        <!-- Campo de Profissional -->
-        <div class="col-md-3 col-12">
+            <!-- Campo de Profissional -->
+            <div class="col-md-3 col-12">
             <select name="profissionalId" id="profissionalId" class="form-select">
                 <option value="">Todos os Profissionais</option>
                 {{#each profissionais}}
-                    <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
+                <option value="{{id}}" {{#if (eq id ../query.profissionalId)}}selected{{/if}}>{{nome}}</option>
                 {{/each}}
             </select>
-        </div>
+            </div>
 
-        <!-- Botões -->
-        <div class="col-md-2 col-12 d-flex justify-content-between">
+            <!-- Botões -->
+            <div class="col-md-2 col-12 d-flex justify-content-between">
             <button type="submit" class="btn btn-primary w-100 mb-2 mb-md-0">Filtrar</button>
             <a href="/reservas" class="btn btn-secondary w-100">Limpar</a>
+            </div>
         </div>
-    </div>
-</form>
+        </form>
 
 
 
