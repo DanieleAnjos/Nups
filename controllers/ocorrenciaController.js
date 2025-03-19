@@ -312,63 +312,43 @@ const ocorrenciaController = {
 
   viewOcorrenciasReport: async (req, res) => {
     try {
-        const { dataInicio, dataFim } = req.query;
-        const where = {};
-
-        // Validação das datas
-        if (dataInicio && isNaN(Date.parse(dataInicio))) {
-            return res.status(400).send('Data de início inválida.');
-        }
-        if (dataFim && isNaN(Date.parse(dataFim))) {
-            return res.status(400).send('Data de fim inválida.');
-        }
-
-        // Filtragem por intervalo de datas
-        if (dataInicio && dataFim) {
-            where.data = {
-                [Op.between]: [new Date(dataInicio), new Date(dataFim)],
-            };
-        } else if (dataInicio) {
-            where.data = {
-                [Op.gte]: new Date(dataInicio),
-            };
-        } else if (dataFim) {
-            where.data = {
-                [Op.lte]: new Date(dataFim),
-            };
-        }
-
-        // Busca as ocorrências no banco de dados
-        const ocorrencias = await Ocorrencia.findAll({
-            where,
-            include: [{
-                model: Profissional,
-                as: 'profissional',
-                attributes: ['id', 'nome', 'cargo'], // Inclua os atributos que você deseja
-            }],
-        });
-
-        // Verifica se há ocorrências
-        if (ocorrencias.length === 0) {
-            return res.status(404).render('relatorios/index', {
-                message: 'Nenhuma ocorrência cadastrada no período selecionado.',
-                layout: false,
-            });
-        }
-
-        // Renderiza a view com as ocorrências
-        res.render('relatorios/viewOcorrenciasReport', {
-            ocorrencias,
-            layout: false,
-        });
+      const { data, profissional } = req.query;  
+      const where = {};
+  
+      if (profissional) {
+        where.profissionalId = profissional;
+      }
+  
+      if (data) {
+        where.data = data;  
+      }
+  
+      const ocorrencias = await Ocorrencia.findAll({
+        where,
+        include: [{
+          model: Profissional,
+          as: 'profissional',
+          required: true  
+        }]
+      });
+  
+      const profissionais = await Profissional.findAll();
+  
+      const mensagem = ocorrencias.length === 0 ? 'Nenhuma ocorrência encontrada.' : null;
+  
+      res.render('relatorios/viewOcorrenciasReport', {
+        ocorrencias,
+        profissionais,
+        query: req.query, 
+        mensagem,  
+        layout: false
+      });
+  
     } catch (error) {
-        console.error('Erro ao exibir o relatório de ocorrências:', error);
-        res.status(500).render('error', {
-            message: 'Erro ao exibir o relatório. Tente novamente mais tarde.',
-            layout: false,
-        });
+      console.error('Erro ao gerar o relatório de ocorrências:', error);
+      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
     }
-},
+  },
 
   generateOcorrenciaReportExcel: async (req, res) => {
     try {
