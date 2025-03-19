@@ -308,6 +308,21 @@ const ocorrenciaController = {
     }
   },
 
+  viewOcorrenciasReport: async (req, res) => {
+      try {
+        const ocorrencia = await Ocorrencia.findAll();
+    
+        if (ocorrencia.length === 0) {
+          return res.status(404).send('Nenhuma ocorrencia cadastrado.');
+        }
+    
+        res.render('relatorios/viewOcorrenciasReport', { ocorrencia, layout: false });
+      } catch (error) {
+        console.error('Erro ao exibir o relatório de ocorrencias:', error);
+        res.status(500).send('Erro ao exibir o relatório. Tente novamente mais tarde.');
+      }
+    },
+
   generateOcorrenciaReportExcel: async (req, res) => {
     try {
       const { dataInicio, dataFim, profissional } = req.query;

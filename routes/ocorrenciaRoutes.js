@@ -20,7 +20,7 @@ router.get('/relatorio', ocorrenciaController.generateOcorrenciaReport);
 
 router.get('/relatorio/excel', ocorrenciaController.generateOcorrenciaReportExcel);
 
-//router.get('/viewReport', ocorrenciaController.viewOcorrenciasReport);
+router.get('/viewReport', ocorrenciaController.viewOcorrenciasReport);
 
 
 
