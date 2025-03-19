@@ -60,6 +60,8 @@ const ocorrenciaController = {
     }
   },
 
+  
+
   create: async (req, res) => {
     try {
       if (!req.user) {
@@ -309,19 +311,47 @@ const ocorrenciaController = {
   },
 
   viewOcorrenciasReport: async (req, res) => {
-      try {
-        const ocorrencia = await Ocorrencia.findAll();
-    
-        if (ocorrencia.length === 0) {
-          return res.status(404).send('Nenhuma ocorrencia cadastrado.');
-        }
-    
-        res.render('relatorios/viewOcorrenciasReport', { ocorrencia, layout: false });
-      } catch (error) {
-        console.error('Erro ao exibir o relatório de ocorrencias:', error);
-        res.status(500).send('Erro ao exibir o relatório. Tente novamente mais tarde.');
+    try {
+      const { dataInicio, dataFim } = req.query;
+      const where = {};
+
+      // Filtragem por intervalo de datas
+      if (dataInicio && dataFim) {
+        where.data = {
+          [Op.between]: [dataInicio, dataFim],
+        };
+      } else if (dataInicio) {
+        where.data = {
+          [Op.gte]: dataInicio,
+        };
+      } else if (dataFim) {
+        where.data = {
+          [Op.lte]: dataFim,
+        };
       }
-    },
+
+      const ocorrencias = await Ocorrencia.findAll({
+        where,
+        include: [{
+          model: Profissional,
+          as: 'profissional',
+          attributes: ['id', 'nome', 'cargo'], // Inclua os atributos que você deseja
+        }],
+      });
+
+      if (ocorrencias.length === 0) {
+        return res.status(404).send('Nenhuma ocorrência cadastrada.');
+      }
+
+      res.render('relatorios/viewOcorrenciasReport', { 
+        ocorrencias, 
+        layout: false 
+      });
+    } catch (error) {
+      console.error('Erro ao exibir o relatório de ocorrências:', error);
+      res.status(500).send('Erro ao exibir o relatório. Tente novamente mais tarde.');
+    }
+  },
 
   generateOcorrenciaReportExcel: async (req, res) => {
     try {
