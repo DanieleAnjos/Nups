@@ -14,13 +14,15 @@ router.put('/:id', ocorrenciaController.update);
 
 router.get('/:id', ocorrenciaController.show);
 
-router.delete('/:id', ocorrenciaController.destroy);
+router.get('/viewReport', ocorrenciaController.viewOcorrenciasReport);
+
 
 router.get('/relatorio', ocorrenciaController.generateOcorrenciaReport);
 
 router.get('/relatorio/excel', ocorrenciaController.generateOcorrenciaReportExcel);
 
-router.get('/viewReport', ocorrenciaController.viewOcorrenciasReport);
+
+router.delete('/:id', ocorrenciaController.destroy);
 
 
 
