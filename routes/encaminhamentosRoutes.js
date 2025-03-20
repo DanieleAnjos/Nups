@@ -13,6 +13,9 @@ router.get('/:id/visto', EncaminhamentoController.marcarVisto);
 
 router.post('/:encaminhamentoId/discussoes', EncaminhamentoController.criarDiscussaoCaso);
 
+router.get('/viewReport', EncaminhamentoController.viewEncaminhamentosReport);
+
+
 router.get('/:encaminhamentoId/discussoes', EncaminhamentoController.listarDiscussaoCasos);
 router.delete('/:encaminhamentoId/discussoes/:discussaoId', EncaminhamentoController.deletarDiscussaoCaso);
 

@@ -595,3 +595,48 @@ exports.deletarDiscussaoCaso = async (req, res) => {
     res.redirect(`/encaminhamentos`);
   }
 };
+
+exports.viewEncaminhamentosReport = async (req, res) => {
+  try {
+      // Busca todos os encaminhamentos no banco de dados
+      const encaminhamentos = await Encaminhamento.findAll({
+          include: [
+              {
+                  model: Profissional,
+                  as: 'profissionalEnvio',
+                  attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que enviou
+              },
+              {
+                  model: Profissional,
+                  as: 'profissionalRecebido',
+                  attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que recebeu
+              },
+              {
+                  model: Atendimento,
+                  as: 'atendimento',
+                  attributes: ['id', 'nomePaciente'], // Inclui os atributos desejados do atendimento associado
+              },
+          ],
+      });
+
+      // Verifica se há encaminhamentos cadastrados
+      if (encaminhamentos.length === 0) {
+          return res.status(404).render('relatorios/semEncaminhamentos', {
+              message: 'Nenhum encaminhamento cadastrado.',
+              layout: false,
+          });
+      }
+
+      // Renderiza a view com os encaminhamentos
+      res.render('relatorios/viewEncaminhamentosReport', {
+          encaminhamentos,
+          layout: false,
+      });
+  } catch (error) {
+      console.error('Erro ao exibir o relatório de encaminhamentos:', error);
+      res.status(500).render('error', {
+          message: 'Erro ao exibir o relatório. Tente novamente mais tarde.',
+          layout: false,
+      });
+  }
+};

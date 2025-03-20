@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Encaminhamentos</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Encaminhamentos</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>Data</th>
+                <th>Profissional Envio</th>
+                <th>Profissional Recebido</th>
+                <th>Atendimento Associado</th>
+                <th>Visto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each encaminhamentos}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td>{{this.nomePaciente}}</td>
+                    <td>{{formatDate this.data}}</td>
+                    <td>{{this.profissionalEnvio.nome}}</td>
+                    <td>{{this.profissionalRecebido.nome}}</td>
+                    <td>
+                        {{#if this.atendimento}}
+                            {{this.atendimento.nomePaciente}}
+                        {{else}}
+                            N/A
+                        {{/if}}
+                    </td>
+                    <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</body>
+</html>

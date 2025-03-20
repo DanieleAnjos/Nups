@@ -34,6 +34,12 @@ const reportController = {
                 downloadLink: '/profissional/relatorio', 
                 print: '/profissionais/viewReport',
               },
+              {
+                title: 'Relatório de Encaminhamentos',
+                description: 'Relatório dos Encaminhamentos.',
+                downloadLink: '/encaminhamentos/relatorio', 
+                print: '/encaminhamentos/viewReport',
+              },
             ];
 
       res.render('relatorios/index', { reports });

@@ -206,87 +206,102 @@
         },
       };
 
+
+      const generateColors = (numColors) => {
+          const colors = [];
+          for (let i = 0; i < numColors; i++) {
+              const r = Math.floor(Math.random() * 255);
+              const g = Math.floor(Math.random() * 255);
+              const b = Math.floor(Math.random() * 255);
+              colors.push(`rgba(${r}, ${g}, ${b}, 0.6)`); // Cor com opacidade
+          }
+          return colors;
+      };
+
+      // Gerar cores dinâmicas
+      const barColors = generateColors(pacientesLabels.length);
+      const pieColors = generateColors(statusLabels.length);
+
       // Gráfico de Pacientes
       new Chart(document.getElementById("pacientesChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: pacientesLabels,
-          datasets: [{
-            label: "Pacientes",
-            data: pacientesData,
-            backgroundColor: "rgba(54, 162, 235, 0.6)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          }],
-        },
-        options: commonOptions,
+          type: "bar",
+          data: {
+              labels: pacientesLabels,
+              datasets: [{
+                  label: "Pacientes",
+                  data: pacientesData,
+                  backgroundColor: barColors, // Usar cores geradas
+                  borderColor: barColors.map(color => color.replace('0.6', '1')), // Ajustar opacidade da borda
+                  borderWidth: 1,
+              }],
+          },
+          options: commonOptions,
       });
 
       // Gráfico de Encaminhamentos
       new Chart(document.getElementById("encaminhamentosChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: encaminhamentosLabels,
-          datasets: [{
-            label: "Encaminhamentos",
-            data: encaminhamentosData,
-            backgroundColor: "rgba(255, 99, 132, 0.6)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-          }],
-        },
-        options: commonOptions,
+          type: "bar",
+          data: {
+              labels: encaminhamentosLabels,
+              datasets: [{
+                  label: "Encaminhamentos",
+                  data: encaminhamentosData,
+                  backgroundColor: barColors, // Usar cores geradas
+                  borderColor: barColors.map(color => color.replace('0.6', '1')), // Ajustar opacidade da borda
+                  borderWidth: 1,
+              }],
+          },
+          options: commonOptions,
       });
 
       // Gráfico de Atendimentos
       new Chart(document.getElementById("atendimentosChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: atendimentosLabels,
-          datasets: [{
-            label: "Atendimentos",
-            data: atendimentosData,
-            backgroundColor: "rgba(75, 192, 192, 0.6)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-          }],
-        },
-        options: commonOptions,
+          type: "bar",
+          data: {
+              labels: atendimentosLabels,
+              datasets: [{
+                  label: "Atendimentos",
+                  data: atendimentosData,
+                  backgroundColor: barColors, // Usar cores geradas
+                  borderColor: barColors.map(color => color.replace('0.6', '1')), // Ajustar opacidade da borda
+                  borderWidth: 1,
+              }],
+          },
+          options: commonOptions,
       });
 
       // Gráfico de Status
       new Chart(document.getElementById("statusChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: statusLabels,
-          datasets: [{
-            label: "Pacientes por Status",
-            data: statusData,
-            backgroundColor: [
-              "#36A2EB", "#FF6384", "#4BC0C0", "#FFCE56", "#9966FF", "#FF9F40",
-            ],
-            borderColor: "#fff",
-            borderWidth: 1,
-          }],
-        },
-        options: commonOptions,
+          type: "bar",
+          data: {
+              labels: statusLabels,
+              datasets: [{
+                  label: "Pacientes por Status",
+                  data: statusData,
+                  backgroundColor: pieColors, // Usar cores geradas
+                  borderColor: pieColors.map(color => color.replace('0.6', '1')), // Ajustar opacidade da borda
+                  borderWidth: 1,
+              }],
+          },
+          options: commonOptions,
       });
 
       // Gráfico de Profissionais
       new Chart(document.getElementById("profissionaisChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: profissionaisLabels,
-          datasets: [{
-            label: "Atendimentos por Profissional",
-            data: profissionaisData,
-            backgroundColor: "rgba(255, 206, 86, 0.6)",
-            borderColor: "rgba(255, 206, 86, 1)",
-            borderWidth: 1,
-          }],
-        },
-        options: commonOptions,
+          type: "bar",
+          data: {
+              labels: profissionaisLabels,
+              datasets: [{
+                  label: "Atendimentos por Profissional",
+                  data: profissionaisData,
+                  backgroundColor: barColors, // Usar cores geradas
+                  borderColor: barColors.map(color => color.replace('0.6', '1')), // Ajustar opacidade da borda
+                  borderWidth: 1,
+              }],
+          },
+          options: commonOptions,
       });
+
     });
   </script>
 </body>
