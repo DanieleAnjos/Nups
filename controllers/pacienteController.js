@@ -31,9 +31,9 @@ exports.index = async (req, res) => {
 
     const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
 
-    const podeEditar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+    const podeEditar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social" || profissional.cargo.toLowerCase() === "gestor servico social";
     const podeDeletar = profissional.cargo.toLowerCase() === "administrador";
-    const podeCadastrar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social";
+    const podeCadastrar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social"  || profissional.cargo.toLowerCase() === "gestor servico social";
 
 
     const pacientes = await Paciente.findAll({ where });
