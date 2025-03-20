@@ -10,76 +10,71 @@ const excel = require('exceljs');
 
 
 const reservasSalaController = {
-    listarReservas: async (req, res) => {
-      try {
-        const { dataInicio, dataFim, salaId, profissionalId } = req.query;
-        const where = {};
-    
-        if (dataInicio && dataFim) {
-          where.data = {
-            [Op.between]: [dataInicio, dataFim], 
-          };
-        } else if (dataInicio) {
-          where.data = {
-            [Op.gte]: dataInicio,
-          };
-        } else if (dataFim) {
-          where.data = {
-            [Op.lte]: dataFim, 
-          };
-        }
-    
-        if (salaId) {
-          where.salaId = salaId;
-        }
-    
-        if (profissionalId) {
-          where.profissionalId = profissionalId;
-        }
-    
-        const reservas = await ReservaSala.findAll({
-          where,
-          include: [
-            { model: Sala, as: 'sala' },
-            { model: Profissional, as: 'profissional' },
-          ],
-          order: [['data', 'DESC']],
-        });
+  listarReservas: async (req, res) => {
+    const { dataInicio, dataFim, salaId, profissionalId } = req.query;
+    const where = {};
   
-        const profissionalLogado = req.user.profissionalId || {};
-        const cargo = profissionalLogado.cargo ? profissionalLogado.cargo.toLowerCase() : "";
+    // Filtragem por intervalo de datas
+    if (dataInicio && dataFim) {
+      where.data = {
+        [Op.between]: [dataInicio, dataFim], 
+      };
+    } else if (dataInicio) {
+      where.data = {
+        [Op.gte]: dataInicio,
+      };
+    } else if (dataFim) {
+      where.data = {
+        [Op.lte]: dataFim, 
+      };
+    }
   
-        const reservasComPermissoes = reservas.map(reserva => {
-          const profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A';
-          const podeEditar = cargo === "administrador" || reserva.profissionalId === profissionalLogado.id;
-          const podeDeletar = cargo === "administrador" || reserva.profissionalId === profissionalLogado.id;
-          
-          return {
-            ...reserva.toJSON(),
-            profissionalNome,
-            podeEditar,
-            podeDeletar,
-          };
-        });
-    
-        const salas = await Sala.findAll();
-        const profissionais = await Profissional.findAll();
-        
-        res.render('reservas', {
-          reservas: reservasComPermissoes,
-          errorMessage: req.flash('error'),
-          successMessage: req.flash('success'),
-          query: req.query,
-          salas,
-          profissionais,
-        });
-      } catch (error) {
-        console.error('Erro ao listar reservas:', error);
-        req.flash('error', 'Erro ao listar reservas.');
-        res.redirect('/reservas');
-      }
-    },
+    // Filtragem por sala e profissional
+    if (salaId) {
+      where.salaId = salaId;
+    }
   
+    if (profissionalId) {
+      where.profissionalId = profissionalId;
+    }
+  
+    try {
+      const reservas = await ReservaSala.findAll({
+        where,
+        include: [
+          { model: Sala, as: 'sala' },
+          { model: Profissional, as: 'profissional' },
+        ],
+        order: [['data', 'DESC']],
+      });
+  
+      // Adiciona a informação se o usuário pode editar
+      const usuarioAtual = req.user || {};
+      const reservasComNomes = reservas.map(reserva => {
+        const reservaPlain = reserva.get({ plain: true });
+        const podeEditar = usuarioAtual.cargo && (usuarioAtual.cargo.toLowerCase() === "administrador" || usuarioAtual.id === reservaPlain.profissionalId);
+        reservaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
+        reservaPlain.profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A'; // Nome do profissional
+        return reservaPlain;
+      });
+  
+      const salas = await Sala.findAll();
+      const profissionais = await Profissional.findAll();
+      
+      res.render('reservas', {
+        reservas: reservasComNomes,
+        errorMessage: req.flash('error'),
+        successMessage: req.flash('success'),
+        query: req.query,
+        salas,
+        profissionais,
+      });
+    } catch (error) {
+      console.error('Erro ao listar reservas:', error);
+      req.flash('error', 'Erro ao listar reservas.');
+      res.redirect('/reservas');
+    }
+  },
   
 
   formCriarReserva: async (req, res) => {

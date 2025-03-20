@@ -256,7 +256,7 @@
                             <td>{{horarioInicial}}</td>
                             <td>{{horarioFinal}}</td>
                             <td class="text-center">
-                            {{#if (or (eq profissional.id ../user.profissionalId) (eq ../user.role "Administrador"))}}
+                            {{#if this.podeEditar}}
                                 <a href="/reservas/{{id}}/edit" class="btn btn-warning btn-sm mx-1 shadow-sm">
                                     <i class="bi bi-pencil-square"></i> Editar
                                 </a>
@@ -266,7 +266,7 @@
                                         <i class="bi bi-trash"></i> Deletar
                                     </button>
                                 </form>
-                                {{/if}}
+                            {{/if}}
                             </td>
                         </tr>
                     {{/each}}
