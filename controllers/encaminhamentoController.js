@@ -621,7 +621,7 @@ exports.viewEncaminhamentosReport = async (req, res) => {
 
       // Verifica se há encaminhamentos cadastrados
       if (encaminhamentos.length === 0) {
-          return res.status(404).render('relatorios/semEncaminhamentos', {
+          return res.status(404).render('relatorios', {
               message: 'Nenhum encaminhamento cadastrado.',
               layout: false,
           });
