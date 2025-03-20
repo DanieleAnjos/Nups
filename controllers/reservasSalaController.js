@@ -68,7 +68,7 @@ const reservasSalaController = {
         const profissionais = await Profissional.findAll();
 
         console.log("Usuário Atual:", usuarioAtual);
-        console.log("Reserva Profissional ID:", reserva.profissionalId);
+        console.log("Reserva Profissional ID:", reservas.profissionalId);
 
 
         res.render('reservas', {
