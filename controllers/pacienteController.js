@@ -15,39 +15,44 @@ const { upload, uploadErrorHandler } = require('../config/multer');
 exports.index = async (req, res) => {
   try {
     const { nome, matricula } = req.query; 
-
     const where = {}; 
 
+    // Filtragem por nome
     if (nome) {
       where.nome = { [Op.like]: `%${nome}%` }; 
     }
 
+    // Filtragem por matrícula
     if (matricula) {
       where.matricula = matricula; 
     }
 
     const profissional = req.user || {}; 
 
-
+    // Verifica se o profissional está definido
     const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
 
-    const podeEditar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social" || profissional.cargo.toLowerCase() === "gestor servico social";
-    const podeDeletar = profissional.cargo.toLowerCase() === "administrador";
-    const podeCadastrar = profissional.cargo.toLowerCase() === "administrador" || profissional.cargo.toLowerCase() === "assistente social"  || profissional.cargo.toLowerCase() === "gestor servico social";
+    // Verificações de permissão
+    const podeEditar = ["administrador", "assistente social", "gestor servico social"].includes(cargo);
+    const podeDeletar = cargo === "administrador";
+    const podeCadastrar = ["administrador", "assistente social", "gestor servico social"].includes(cargo);
 
-
+    // Busca os pacientes com as condições definidas
     const pacientes = await Paciente.findAll({ where });
+
+    // Renderiza a página de pacientes
     res.render('paciente/index', { 
       pacientes, 
       query: req.query,
-      profissional: req.user.profissionalId,
+      profissionalId: profissional.profissionalId, 
       podeEditar,
       podeDeletar,
       podeCadastrar
     }); 
   } catch (error) {
     console.error('Erro ao listar pacientes:', error);
-    res.status(500).send('Erro ao listar pacientes. Por favor, tente novamente mais tarde.');
+    req.flash('error_msg', 'Erro ao listar pacientes. Por favor, tente novamente mais tarde.');
+    res.redirect('/pacientes'); 
   }
 };
 
