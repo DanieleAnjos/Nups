@@ -10,64 +10,76 @@ const excel = require('exceljs');
 
 
 const reservasSalaController = {
-  listarReservas: async (req, res) => {
-    try {
-      const { dataInicio, dataFim, salaId, profissionalId } = req.query;
-      const where = {};
+    listarReservas: async (req, res) => {
+      try {
+        const { dataInicio, dataFim, salaId, profissionalId } = req.query;
+        const where = {};
+    
+        if (dataInicio && dataFim) {
+          where.data = {
+            [Op.between]: [dataInicio, dataFim], 
+          };
+        } else if (dataInicio) {
+          where.data = {
+            [Op.gte]: dataInicio,
+          };
+        } else if (dataFim) {
+          where.data = {
+            [Op.lte]: dataFim, 
+          };
+        }
+    
+        if (salaId) {
+          where.salaId = salaId;
+        }
+    
+        if (profissionalId) {
+          where.profissionalId = profissionalId;
+        }
+    
+        const reservas = await ReservaSala.findAll({
+          where,
+          include: [
+            { model: Sala, as: 'sala' },
+            { model: Profissional, as: 'profissional' },
+          ],
+          order: [['data', 'DESC']],
+        });
   
-      if (dataInicio && dataFim) {
-        where.data = {
-          [Op.between]: [dataInicio, dataFim], 
-        };
-      } else if (dataInicio) {
-        where.data = {
-          [Op.gte]: dataInicio,
-        };
-      } else if (dataFim) {
-        where.data = {
-          [Op.lte]: dataFim, 
-        };
+        const profissionalLogado = req.user.profissional || {};
+        const cargo = profissionalLogado.cargo ? profissionalLogado.cargo.toLowerCase() : "";
+  
+        const reservasComPermissoes = reservas.map(reserva => {
+          const profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A';
+          const podeEditar = cargo === "administrador" || reserva.profissionalId === profissionalLogado.id;
+          const podeDeletar = cargo === "administrador" || reserva.profissionalId === profissionalLogado.id;
+          
+          return {
+            ...reserva.toJSON(),
+            profissionalNome,
+            podeEditar,
+            podeDeletar,
+          };
+        });
+    
+        const salas = await Sala.findAll();
+        const profissionais = await Profissional.findAll();
+        
+        res.render('reservas', {
+          reservas: reservasComPermissoes,
+          errorMessage: req.flash('error'),
+          successMessage: req.flash('success'),
+          query: req.query,
+          salas,
+          profissionais,
+        });
+      } catch (error) {
+        console.error('Erro ao listar reservas:', error);
+        req.flash('error', 'Erro ao listar reservas.');
+        res.redirect('/reservas');
       }
+    },
   
-      if (salaId) {
-        where.salaId = salaId;
-      }
-  
-      if (profissionalId) {
-        where.profissionalId = profissionalId;
-      }
-  
-      const reservas = await ReservaSala.findAll({
-        where,
-        include: [
-          { model: Sala, as: 'sala' },
-          { model: Profissional, as: 'profissional' },
-        ],
-        order: [['data', 'DESC']],
-      });
-  
-      const reservasComNomes = reservas.map(reserva => ({
-        ...reserva.toJSON(),
-        profissionalNome: reserva.profissional ? reserva.profissional.nome : 'N/A',
-      }));
-  
-      const salas = await Sala.findAll();
-      const profissionais = await Profissional.findAll();
-  
-      res.render('reservas', {
-        reservas: reservasComNomes,
-        errorMessage: req.flash('error'),
-        successMessage: req.flash('success'),
-        query: req.query,
-        salas,
-        profissionais,
-      });
-    } catch (error) {
-      console.error('Erro ao listar reservas:', error);
-      req.flash('error', 'Erro ao listar reservas.');
-      res.redirect('/reservas');
-    }
-  },
   
 
   formCriarReserva: async (req, res) => {
