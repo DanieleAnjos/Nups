@@ -11,14 +11,7 @@
             padding: 20px;
             background-color: #f4f6f9;
             color: #333;
-        }
-
-        /* Título principal */
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 20px;
+            margin: 0;
         }
 
         /* Container principal */
@@ -31,7 +24,99 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilo da tabela */
+        /* Cabeçalho */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            width: 80px;
+            height: auto;
+        }
+
+        .header .title {
+            text-align: center;
+            flex-grow: 1;
+            margin: 10px 0;
+        }
+
+        .header .title p {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #34495e;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .header .title h2 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        /* Formulário de Filtro */
+        .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .filter-form .actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .filter-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-form .clear-button {
+            background-color: #e74c3c;
+        }
+
+        .filter-form .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Tabela de Encaminhamentos */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -62,82 +147,7 @@
             background-color: #e0ebf5;
         }
 
-        /* Estilo dos botões */
-        .button, .clear-button {
-            padding: 10px 18px;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .button {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .button:hover {
-            background-color: #45a049;
-        }
-
-        .clear-button {
-            background-color: #e74c3c;
-            color: white;
-            margin-left: 8px;
-        }
-
-        .clear-button:hover {
-            background-color: #c0392b;
-        }
-
-        /* Estilos do formulário de filtro */
-        .filter-form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .filter-form label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .filter-form select,
-        .filter-form input {
-            padding: 8px;
-            font-size: 16px;
-            width: 250px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .filter-form button,
-        .filter-form .clear-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .filter-form button:hover,
-        .filter-form .clear-button:hover {
-            background-color: #45a049;
-        }
-
-        /* Estilos para a seção de ações */
+        /* Botões de Ação */
         .actions {
             display: flex;
             justify-content: center;
@@ -145,12 +155,63 @@
             gap: 10px;
         }
 
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
         /* Responsividade */
-        @media print {
-            .button {
-                display: none;
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
             }
 
+            .header img {
+                margin-bottom: 10px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+            }
+
+            .filter-form input,
+            .filter-form select {
+                max-width: 100%;
+            }
+
+            .filter-form .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        @media print {
+            .button,
             .filter-form {
                 display: none;
             }
@@ -159,25 +220,19 @@
 </head>
 <body>
     <div class="container">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
-            <!-- Logo à esquerda -->
-            <img src="/IMG/guarda-municipal-de-salvador-logo-7A74B7150E-seeklogo.com.png" alt="Logo" style="width: 80px; height: auto;">
-
-            <!-- Título centralizado -->
-            <div style="text-align: center; flex-grow: 1;">
-                <p style="font-size: 0.9rem; font-weight: bold; color: #34495e; line-height: 1.4; margin-bottom: 5px;">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <img src="/IMG/guarda-municipal-de-salvador-logo-7A74B7150E-seeklogo.com.png" alt="Logo">
+            <div class="title">
+                <p>
                     Guarda Civil Municipal <br>
                     Gerência De Desenvolvimento Humano <br>
                     Centro de Valorização <br>
                     Núcleo Psicosocial
                 </p>
-                <h2 style="font-size: 1.8rem; font-weight: 500; color: #2c3e50; margin: 0;">
-                    Relatório de Encaminhamentos
-                </h2>
+                <h2>Relatório de Encaminhamentos</h2>
             </div>
-
-            <!-- Logo à direita -->
-            <img src="/IMG/8d633c58242467.Y3JvcCw4OTQsNzAwLDI1Miww.gif" alt="Logo" style="width: 90px; height: auto;">
+            <img src="/IMG/8d633c58242467.Y3JvcCw4OTQsNzAwLDI1Miww.gif" alt="Logo">
         </div>
 
         <!-- Formulário de Filtro -->
@@ -193,7 +248,7 @@
             </div>
 
             <div>
-                <label for="profissional">Profissional:</label><br>
+                <label for="profissional">Profissional:</label>
                 <select name="profissional" id="profissional">
                     <option value="">Selecione</option>
                     {{#each profissionais}}
@@ -204,7 +259,7 @@
 
             <div class="actions">
                 <button type="submit" class="button">Aplicar Filtros</button>
-                <button type="button" class="clear-button" onclick="clearFilters()">Limpar Filtros</button>
+                <button type="button" class="button clear-button" onclick="clearFilters()">Limpar Filtros</button>
             </div>
         </form>
 
@@ -239,7 +294,8 @@
             <a href="javascript:window.print()" class="button">Imprimir Relatório</a>
         </div>
 
-        <footer style="text-align: center;">
+        <!-- Rodapé -->
+        <footer>
             <p>© 2025 - Todos os direitos reservados.</p>
         </footer>
     </div>
@@ -247,7 +303,8 @@
     <script>
         // Função para limpar os filtros
         function clearFilters() {
-            document.getElementById('data').value = '';
+            document.getElementById('dataInicio').value = '';
+            document.getElementById('dataFim').value = '';
             document.getElementById('profissional').value = '';
             window.location.href = '/encaminhamentos/viewReport';
         }
