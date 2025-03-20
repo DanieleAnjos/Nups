@@ -147,7 +147,7 @@
         <div>
             <h3>Atendimentos por Profissional</h3>
             <div class="chart-container">
-                <canvas id="profissionaisChart" width="400" height="200"></canvas>
+                <canvas id="profissionaisChart"></canvas>
             </div>
         </div>
     </div>
@@ -272,96 +272,22 @@
         options: commonOptions,
       });
 
-// Gerar cores dinâmicas para cada barra
-const generateColors = (numColors) => {
-  const colors = [];
-  for (let i = 0; i < numColors; i++) {
-    const r = Math.floor(Math.random() * 255);
-    const g = Math.floor(Math.random() * 255);
-    const b = Math.floor(Math.random() * 255);
-    colors.push(`rgba(${r}, ${g}, ${b}, 0.6)`); // Cor com opacidade
-  }
-  return colors;
-};
-
-const barColors = generateColors(profissionaisLabels.length);
-
-// Gráfico de Profissionais
-new Chart(document.getElementById("profissionaisChart").getContext("2d"), {
-  type: "bar",
-  data: {
-    labels: profissionaisLabels,
-    datasets: [{
-      label: "Atendimentos por Profissional",
-      data: profissionaisData,
-      backgroundColor: barColors, // Usando cores dinâmicas
-      borderColor: "rgba(0, 0, 0, 1)", // Cor da borda
-      borderWidth: 1,
-    }],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false, // Permite que o gráfico se ajuste ao contêiner
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Quantidade de Atendimentos',
-          font: {
-            size: 14,
-          },
+      // Gráfico de Profissionais
+      new Chart(document.getElementById("profissionaisChart").getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: profissionaisLabels,
+          datasets: [{
+            label: "Atendimentos por Profissional",
+            data: profissionaisData,
+            backgroundColor: "rgba(255, 206, 86, 0.6)",
+            borderColor: "rgba(255, 206, 86, 1)",
+            borderWidth: 1,
+          }],
         },
-        ticks: {
-          font: {
-            size: 12,
-          },
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Profissionais',
-          font: {
-            size: 14,
-          },
-        },
-        ticks: {
-          font: {
-            size: 12,
-          },
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          font: {
-            size: 14,
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: 'Atendimentos por Profissional',
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function(tooltipItem) {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-          },
-        },
-      },
-    },
-  },
-  });
-});
+        options: commonOptions,
+      });
+    });
   </script>
 </body>
 </html>
