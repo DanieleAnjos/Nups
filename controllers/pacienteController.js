@@ -548,7 +548,7 @@ exports.delete = async (req, res) => {
 };
 exports.perfil = async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const paciente = await Paciente.findByPk(id, {
       include: [
@@ -575,20 +575,38 @@ exports.perfil = async (req, res) => {
 
     console.log("Usuário logado (req.user):", req.user);
 
-    const profissional = req.user.profissional || {}; 
+    const profissional = req.user.profissional || {};
     const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
-    
+
     console.log("Cargo do profissional:", cargo);
 
-    const podeEditar = cargo === "administrador" || cargo === "assistente social";
+    // Mapeamento de cargos para gestores
+    const gestorCargosMap = {
+      'gestor servico social': ['assistente social'],
+      'gestor psicologia': ['psicólogo'],
+      'gestor psiquiatria': ['psiquiatra']
+    };
+
+    // Verifica se o profissional é um gestor
+    const isGestor = Object.keys(gestorCargosMap).includes(cargo);
+
+    // Define as permissões
+    const podeEditar = cargo === "administrador" || 
+                       cargo === "assistente social" || 
+                       cargo === "gestor servico social" || 
+                       (isGestor && gestorCargosMap[cargo].includes(profissional.cargo.toLowerCase()));
+
     const podeDeletar = cargo === "administrador";
-    const podeCadastrar = cargo === "administrador" || cargo === "assistente social";
+    const podeCadastrar = cargo === "administrador" || 
+                          cargo === "assistente social" || 
+                          cargo === "gestor servico social" || 
+                          (isGestor && gestorCargosMap[cargo].includes(profissional.cargo.toLowerCase()));
 
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
 
-    return res.render('paciente/perfil', { 
+    return res.render('paciente/perfil', {
       paciente,
-      profissional, 
+      profissional,
       imagePath,
       podeEditar,
       podeDeletar,
@@ -601,7 +619,6 @@ exports.perfil = async (req, res) => {
     return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };
-
 
 
 
