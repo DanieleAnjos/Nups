@@ -133,7 +133,7 @@
   </div>
 
   <br>
-
+  
 <!-- Atendimentos -->
 <div class="card">
   <div class="card-header">
@@ -156,13 +156,13 @@
               {{log "Profissional Cargo:" (toLowerCase ../profissional.cargo)}}
               {{log "Atendimento Cargo:" (toLowerCase atendimento.profissional.cargo)}}
 
-              {{#if (or 
+              {{#if (and atendimento.profissional (or 
                   (eq (toLowerCase ../profissional.cargo) "administrador")
                   (eq (toLowerCase ../profissional.cargo) (toLowerCase atendimento.profissional.cargo))
                   (and (eq (toLowerCase ../profissional.cargo) "gestor servico social") (eq (toLowerCase atendimento.profissional.cargo) "assistente social"))
                   (and (eq (toLowerCase ../profissional.cargo) "gestor psicologia") (eq (toLowerCase atendimento.profissional.cargo) "psicólogo"))
                   (and (eq (toLowerCase ../profissional.cargo) "gestor psiquiatria") (eq (toLowerCase atendimento.profissional.cargo) "psiquiatra"))
-              )}}
+              ))}}
                   <tr class="attendance-item">
                       <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                       <td>{{atendimento.profissional.nome}}</td>
@@ -173,12 +173,11 @@
                   </tr>
               {{/if}}
           {{/each}}
-
           </tbody>
         </table>
       </div>
     {{else}}
-      <p>Este paciente não possui atendimentos registrados.</p>
+      <p class="text-warning">Este paciente não possui atendimentos registrados.</p>
     {{/if}}
   </div>
 </div>
