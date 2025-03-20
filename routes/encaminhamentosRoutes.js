@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const EncaminhamentoController = require('../controllers/encaminhamentoController');
 
+router.get('/viewReport', EncaminhamentoController.viewEncaminhamentosReport);
 
 
 router.get('/', EncaminhamentoController.index); 
@@ -18,7 +19,6 @@ router.post('/:encaminhamentoId/discussoes', EncaminhamentoController.criarDiscu
 router.get('/:encaminhamentoId/discussoes', EncaminhamentoController.listarDiscussaoCasos);
 router.delete('/:encaminhamentoId/discussoes/:discussaoId', EncaminhamentoController.deletarDiscussaoCaso);
 
-router.get('/viewReport', EncaminhamentoController.viewEncaminhamentosReport);
 
 
 module.exports = router;
