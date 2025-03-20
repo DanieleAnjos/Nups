@@ -576,7 +576,7 @@ exports.perfil = async (req, res) => {
     console.log("Usuário logado (req.user):", req.user);
 
     const profissional = req.user.profissional || {};
-    const cargo = profissional.cargo ? profissional.cargo.toLowerCase() : "";
+    const cargo = profissional.cargo ? profissional.cargo.trim().toLowerCase() : "";
 
     console.log("Cargo do profissional:", cargo);
 
@@ -590,17 +590,17 @@ exports.perfil = async (req, res) => {
     // Verifica se o profissional é um gestor
     const isGestor = Object.keys(gestorCargosMap).includes(cargo);
 
-    // Define as permissões
+    // Define permissões
     const podeEditar = cargo === "administrador" || 
                        cargo === "assistente social" || 
                        cargo === "gestor servico social" || 
-                       (isGestor && gestorCargosMap[cargo].includes(profissional.cargo.toLowerCase()));
+                       (isGestor && paciente.atendimentos.some(a => gestorCargosMap[cargo].includes(a.profissional.cargo.toLowerCase())));
 
     const podeDeletar = cargo === "administrador";
     const podeCadastrar = cargo === "administrador" || 
                           cargo === "assistente social" || 
                           cargo === "gestor servico social" || 
-                          (isGestor && gestorCargosMap[cargo].includes(profissional.cargo.toLowerCase()));
+                          (isGestor && paciente.atendimentos.some(a => gestorCargosMap[cargo].includes(a.profissional.cargo.toLowerCase())));
 
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
 
@@ -619,6 +619,7 @@ exports.perfil = async (req, res) => {
     return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };
+
 
 
 
