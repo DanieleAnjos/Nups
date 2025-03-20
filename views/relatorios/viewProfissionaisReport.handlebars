@@ -11,14 +11,7 @@
             padding: 20px;
             background-color: #f4f6f9;
             color: #333;
-        }
-
-        /* Título principal */
-        h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 20px;
+            margin: 0;
         }
 
         /* Container principal */
@@ -31,7 +24,99 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilo da tabela */
+        /* Cabeçalho */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            width: 80px;
+            height: auto;
+        }
+
+        .header .title {
+            text-align: center;
+            flex-grow: 1;
+            margin: 10px 0;
+        }
+
+        .header .title p {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #34495e;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .header .title h2 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        /* Formulário de Filtro */
+        .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .filter-form .actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .filter-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover {
+            background-color: #45a049;
+        }
+
+        .filter-form .clear-button {
+            background-color: #e74c3c;
+        }
+
+        .filter-form .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Tabela de Encaminhamentos */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -62,104 +147,7 @@
             background-color: #e0ebf5;
         }
 
-        /* Estilo dos botões */
-        .button, .clear-button {
-            padding: 10px 18px;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .button {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .button:hover {
-            background-color: #45a049;
-        }
-
-        .clear-button {
-            background-color: #e74c3c;
-            color: white;
-            margin-left: 8px;
-        }
-
-        .clear-button:hover {
-            background-color: #c0392b;
-        }
-
-        /* Estilos do formulário de filtro */
-        .filter-form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .filter-form label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .filter-form select,
-        .filter-form input {
-            padding: 8px;
-            font-size: 16px;
-            width: 250px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .filter-form button,
-        .filter-form .clear-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .filter-form button:hover,
-        .filter-form .clear ```html
-        .clear-button:hover {
-            background-color: #45a049;
-        }
-
-        .filter-form .clear-button {
-            background-color: #f44336;
-            margin-left: 10px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 5px;
-        }
-
-        input[type="date"], select {
-            padding: 8px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-            color: #333;
-            width: 100%;
-        }
-
-        /* Estilos para a seção de ações */
+        /* Botões de Ação */
         .actions {
             display: flex;
             justify-content: center;
@@ -167,12 +155,63 @@
             gap: 10px;
         }
 
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
         /* Responsividade */
-                @media print {
-            .button {
-                display: none;
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
             }
 
+            .header img {
+                margin-bottom: 10px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+            }
+
+            .filter-form input,
+            .filter-form select {
+                max-width: 100%;
+            }
+
+            .filter-form .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        @media print {
+            .button,
             .filter-form {
                 display: none;
             }
