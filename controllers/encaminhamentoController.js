@@ -627,7 +627,6 @@ exports.viewEncaminhamentosReport = async (req, res) => {
           });
       }
 
-      // Renderiza a view com os encaminhamentos
       res.render('relatorios/viewEncaminhamentosReport', {
           encaminhamentos,
           layout: false,
