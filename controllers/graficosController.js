@@ -84,25 +84,23 @@ router.get('/', async (req, res) => {
     console.log('Status Data:', statusData); 
 
 
-    const atendimentosPorProfissional = await Atendimento.findAll({
+    const atendamentosPorProfissional = await Atendimento.findAll({
       attributes: [
-        [Sequelize.col('profissional.nome'), 'profissional'], 
-        [Sequelize.fn('COUNT', Sequelize.col('Atendimento.id')), 'quantidade'] 
+        [Sequelize.fn('COUNT', Sequelize.col('Atendimento.id')), 'quantidade'] // Contagem de atendimentos
       ],
       include: [
         {
           model: Profissional,
           as: 'profissional',
-          attributes: ['nome'] 
+          attributes: ['nome'] // Incluindo o nome do profissional
         }
       ],
-      group: ['profissional.id'], 
+      group: ['profissional.id'], // Agrupando por ID do profissional
     });
-
-    const profissionaisLabels = atendimentosPorProfissional.map(item => item.get('profissional'));
-    const profissionaisData = atendimentosPorProfissional.map(item => item.get('quantidade'));
-
-
+    
+    const profissionaisLabels = atendamentosPorProfissional.map(item => item.profissional.nome); // Acessando diretamente o nome
+    const profissionaisData = atendamentosPorProfissional.map(item => item.get('quantidade')); // Acessando a contagem
+    
     console.log('Pacientes Labels:', pacientesLabels);
     console.log('Pacientes Data:', pacientesData);
     console.log('Encaminhamentos Labels:', encaminhamentosLabels);
