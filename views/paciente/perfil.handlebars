@@ -153,15 +153,15 @@
           </thead>
           <tbody>
           {{#each paciente.atendimentos as |atendimento|}}
-            {{!-- Logs para depuração --}}
+
             {{log "Profissional Cargo:" ../profissional.cargo}}
             {{log "Atendimento Cargo:" atendimento.profissional.cargo}}
 
-            {{#if (or (eq ../profissional.cargo "Administrador") 
-                      (eq ../profissional.cargo atendimento.profissional.cargo)
-                      (and (eq ../profissional.cargo "Gestor Servico Social") (eq atendimento.profissional.cargo "Assistente Social"))
-                      (and (eq ../profissional.cargo "Gestor Psicologia") (eq atendimento.profissional.cargo "Psicólogo"))
-                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "Psiquiatra")))}}
+            {{#if (or (eq (lowercase ../profissional.cargo) "administrador") 
+                      (eq (lowercase ../profissional.cargo) (lowercase atendimento.profissional.cargo))
+                      (and (eq (lowercase ../profissional.cargo) "gestor servico social") (eq (lowercase atendimento.profissional.cargo) "assistente social"))
+                      (and (eq (lowercase ../profissional.cargo) "gestor psicologia") (eq (lowercase atendimento.profissional.cargo) "psicólogo"))
+                      (and (eq (lowercase ../profissional.cargo) "gestor psiquiatria") (eq (lowercase atendimento.profissional.cargo) "psiquiatra")))}}
               <tr class="attendance-item">
                 <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                 <td>{{atendimento.profissional.nome}}</td>
