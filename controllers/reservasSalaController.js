@@ -48,18 +48,22 @@ const reservasSalaController = {
             order: [['data', 'DESC']],
         });
 
+        // Adiciona a informação se o usuário pode editar
         const usuarioAtual = req.user || {};
-
         const reservasComNomes = reservas.map(reserva => {
             const reservaPlain = reserva.get({ plain: true });
 
+            // Log para depuração
+            console.log("Reserva:", reservaPlain);
+
+            // Verifica se o usuário pode editar a reserva
             const podeEditar = usuarioAtual.cargo && (
                 usuarioAtual.cargo.toLowerCase() === "administrador" ||
                 usuarioAtual.id === reserva.profissionalId
             );
 
-            reservaPlain.podeEditar = podeEditar; 
-            reservaPlain.profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A'; 
+            reservaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
+            reservaPlain.profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A'; // Nome do profissional
 
             return reservaPlain;
         });
@@ -69,7 +73,6 @@ const reservasSalaController = {
 
         console.log("Usuário Atual:", usuarioAtual);
         console.log("Reserva Profissional ID:", reservas.profissionalId);
-
 
         res.render('reservas', {
             reservas: reservasComNomes,
