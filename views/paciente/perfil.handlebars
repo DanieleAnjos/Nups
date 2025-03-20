@@ -102,7 +102,7 @@
             <span class="label"><strong>Plano de saúde: </strong></span>
             <span class="value">&nbsp;{{paciente.planoSaude}}</span>
             </div>
-        {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador") (eq profissional.cargo "Gestor Servico Social")}}
+        {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador") (eq profissional.cargo "Gestor Servico Social") )}}
           <div class="info-item">
             <i class="fas fa-notes-medical"></i>
             <span class="label"><strong>Ficha: </strong></span>
@@ -157,7 +157,7 @@
                       (eq atendimento.profissional.cargo ../profissional.cargo)
                       (and (eq ../profissional.cargo "Gestor Servico Social") (eq atendimento.profissional.cargo "Assistente Social"))
                       (and (eq ../profissional.cargo "Gestor Psicologia") (eq atendimento.profissional.cargo "Psicólogo"))
-                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "Psiquiatra"))}}
+                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "Psiquiatra")))}}
               <tr class="attendance-item">
                 <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                 <td>{{atendimento.profissional.nome}}</td>
