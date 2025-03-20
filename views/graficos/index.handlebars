@@ -147,7 +147,7 @@
         <div>
             <h3>Atendimentos por Profissional</h3>
             <div class="chart-container">
-                <canvas id="profissionaisChart"></canvas>
+                <canvas id="profissionaisChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
@@ -273,21 +273,38 @@
       });
 
       // Gráfico de Profissionais
-      new Chart(document.getElementById("profissionaisChart").getContext("2d"), {
-        type: "bar",
-        data: {
-          labels: profissionaisLabels,
-          datasets: [{
-            label: "Atendimentos por Profissional",
-            data: profissionaisData,
-            backgroundColor: "rgba(255, 206, 86, 0.6)",
-            borderColor: "rgba(255, 206, 86, 1)",
-            borderWidth: 1,
-          }],
+ new Chart(document.getElementById("profissionaisChart").getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: profissionaisLabels,
+        datasets: [{
+          label: "Atendimentos por Profissional",
+          data: profissionaisData,
+          backgroundColor: "rgba(255, 206, 86, 0.6)",
+          borderColor: "rgba(255, 206, 86, 1)",
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
         },
-        options: commonOptions,
-      });
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Atendimentos por Profissional',
+          },
+        },
+      },
     });
+  });
   </script>
 </body>
 </html>
