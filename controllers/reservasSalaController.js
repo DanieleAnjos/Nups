@@ -46,7 +46,7 @@ const reservasSalaController = {
           order: [['data', 'DESC']],
         });
   
-        const profissionalLogado = req.user.profissional || {};
+        const profissionalLogado = req.user.profissionalId || {};
         const cargo = profissionalLogado.cargo ? profissionalLogado.cargo.toLowerCase() : "";
   
         const reservasComPermissoes = reservas.map(reserva => {
