@@ -153,24 +153,25 @@
           </thead>
           <tbody>
           {{#each paciente.atendimentos as |atendimento|}}
-            {{!-- Logs para depuração --}}
-            {{log "Profissional Cargo:" ../profissional.cargo}}
-            {{log "Atendimento Cargo:" atendimento.profissional.cargo}}
+              {{log "Profissional Cargo:" (t ../profissional.cargo)}}
+              {{log "Atendimento Cargo:" (toLowerCase atendimento.profissional.cargo)}}
 
-            {{#if (or (eq ../profissional.cargo "Administrador") 
-                      (eq ../profissional.cargo atendimento.profissional.cargo)
-                      (and (eq ../profissional.cargo "Gestor Servico Social") (eq atendimento.profissional.cargo "Assistente social"))
-                      (and (eq ../profissional.cargo "Gestor Psicologia") (eq atendimento.profissional.cargo "Psicólogo"))
-                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "Psiquiatra")))}}
-              <tr class="attendance-item">
-                <td>{{formatDateTime atendimento.dataAtendimento}}</td>
-                <td>{{atendimento.profissional.nome}}</td>
-                <td>{{atendimento.profissional.cargo}}</td>
-                <td>
-                  <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
-                </td>
-              </tr>
-            {{/if}}
+              {{#if (or 
+                  (eq (toLowerCase ../profissional.cargo) "administrador")
+                  (eq (toLowerCase ../profissional.cargo) (toLowerCase atendimento.profissional.cargo))
+                  (and (eq (toLowerCase ../profissional.cargo) "gestor servico social") (eq (toLowerCase atendimento.profissional.cargo) "assistente social"))
+                  (and (eq (toLowerCase ../profissional.cargo) "gestor psicologia") (eq (toLowerCase atendimento.profissional.cargo) "psicólogo"))
+                  (and (eq (toLowerCase ../profissional.cargo) "gestor psiquiatria") (eq (toLowerCase atendimento.profissional.cargo) "psiquiatra"))
+              )}}
+                  <tr class="attendance-item">
+                      <td>{{formatDateTime atendimento.dataAtendimento}}</td>
+                      <td>{{atendimento.profissional.nome}}</td>
+                      <td>{{atendimento.profissional.cargo}}</td>
+                      <td>
+                          <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
+                      </td>
+                  </tr>
+              {{/if}}
           {{/each}}
           </tbody>
         </table>
