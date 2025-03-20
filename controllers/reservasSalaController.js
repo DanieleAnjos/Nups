@@ -13,68 +13,78 @@ const reservasSalaController = {
   listarReservas: async (req, res) => {
     const { dataInicio, dataFim, salaId, profissionalId } = req.query;
     const where = {};
-  
+
     // Filtragem por intervalo de datas
     if (dataInicio && dataFim) {
-      where.data = {
-        [Op.between]: [dataInicio, dataFim], 
-      };
+        where.data = {
+            [Op.between]: [dataInicio, dataFim],
+        };
     } else if (dataInicio) {
-      where.data = {
-        [Op.gte]: dataInicio,
-      };
+        where.data = {
+            [Op.gte]: dataInicio,
+        };
     } else if (dataFim) {
-      where.data = {
-        [Op.lte]: dataFim, 
-      };
+        where.data = {
+            [Op.lte]: dataFim,
+        };
     }
-  
+
     // Filtragem por sala e profissional
     if (salaId) {
-      where.salaId = salaId;
+        where.salaId = salaId;
     }
-  
+
     if (profissionalId) {
-      where.profissionalId = profissionalId;
+        where.profissionalId = profissionalId;
     }
-  
+
     try {
-      const reservas = await ReservaSala.findAll({
-        where,
-        include: [
-          { model: Sala, as: 'sala' },
-          { model: Profissional, as: 'profissional' },
-        ],
-        order: [['data', 'DESC']],
-      });
-  
-      // Adiciona a informação se o usuário pode editar
-      const usuarioAtual = req.user || {};
-      const reservasComNomes = reservas.map(reserva => {
-        const reservaPlain = reserva.get({ plain: true });
-        const podeEditar = usuarioAtual.cargo && (usuarioAtual.cargo.toLowerCase() === "administrador" || usuarioAtual.id === reservaPlain.profissionalId);
-        reservaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
-        reservaPlain.profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A'; // Nome do profissional
-        return reservaPlain;
-      });
-  
-      const salas = await Sala.findAll();
-      const profissionais = await Profissional.findAll();
-      
-      res.render('reservas', {
-        reservas: reservasComNomes,
-        errorMessage: req.flash('error'),
-        successMessage: req.flash('success'),
-        query: req.query,
-        salas,
-        profissionais,
-      });
+        const reservas = await ReservaSala.findAll({
+            where,
+            include: [
+                { model: Sala, as: 'sala' },
+                { model: Profissional, as: 'profissional' },
+            ],
+            order: [['data', 'DESC']],
+        });
+
+        const usuarioAtual = req.user || {};
+
+        const reservasComNomes = reservas.map(reserva => {
+            const reservaPlain = reserva.get({ plain: true });
+
+            const podeEditar = usuarioAtual.cargo && (
+                usuarioAtual.cargo.toLowerCase() === "administrador" ||
+                usuarioAtual.id === reserva.profissionalId
+            );
+
+            reservaPlain.podeEditar = podeEditar; 
+            reservaPlain.profissionalNome = reserva.profissional ? reserva.profissional.nome : 'N/A'; 
+
+            return reservaPlain;
+        });
+
+        const salas = await Sala.findAll();
+        const profissionais = await Profissional.findAll();
+
+        console.log("Usuário Atual:", usuarioAtual);
+        console.log("Reserva Profissional ID:", reserva.profissionalId);
+
+
+        res.render('reservas', {
+            reservas: reservasComNomes,
+            errorMessage: req.flash('error'),
+            successMessage: req.flash('success'),
+            query: req.query,
+            salas,
+            profissionais,
+        });
     } catch (error) {
-      console.error('Erro ao listar reservas:', error);
-      req.flash('error', 'Erro ao listar reservas.');
-      res.redirect('/reservas');
+        console.error('Erro ao listar reservas:', error);
+        req.flash('error', 'Erro ao listar reservas.');
+        res.redirect('/reservas');
     }
-  },
+},
   
 
   formCriarReserva: async (req, res) => {
