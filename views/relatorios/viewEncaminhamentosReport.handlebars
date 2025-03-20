@@ -183,12 +183,17 @@
         <!-- Formulário de Filtro -->
         <form method="GET" action="/encaminhamentos/viewReport" class="filter-form">
             <div>
-                <label for="data">Filtrar por Data:</label>
-                <input type="date" name="data" id="data" value="{{query.data}}">
+                <label for="dataInicio">Data de Início:</label>
+                <input type="date" name="dataInicio" id="dataInicio" value="{{query.dataInicio}}">
             </div>
 
             <div>
-                <label for="profissional">Filtrar Profissional:</label><br>
+                <label for="dataFim">Data de Fim:</label>
+                <input type="date" name="dataFim" id="dataFim" value="{{query.dataFim}}">
+            </div>
+
+            <div>
+                <label for="profissional">Profissional:</label><br>
                 <select name="profissional" id="profissional">
                     <option value="">Selecione</option>
                     {{#each profissionais}}

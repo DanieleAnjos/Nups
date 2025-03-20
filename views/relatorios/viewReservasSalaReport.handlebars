@@ -203,6 +203,17 @@
 </div>
     <!-- Formulário de Filtros -->
     <form class="filter-form" action="/reservas/viewReport" method="GET">
+
+      <div>
+          <label for="dataInicio">Data de Início:</label>
+          <input type="date" name="dataInicio" id="dataInicio" value="{{query.dataInicio}}">
+      </div>
+
+      <div>
+          <label for="dataFim">Data de Fim:</label>
+          <input type="date" name="dataFim" id="dataFim" value="{{query.dataFim}}">
+      </div>
+
       <div>
         <label for="sala">Sala:</label>
         <select id="sala" name="salaId">
