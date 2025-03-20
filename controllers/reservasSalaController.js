@@ -282,7 +282,7 @@ const reservasSalaController = {
 
   viewReservasSalaReport: async (req, res) => {
     try {
-      const { salaId, profissionalId } = req.query;
+      const { dataInicio, dataFim, salaId, profissionalId } = req.query;
       const where = {};
 
       if (salaId) {
@@ -290,6 +290,20 @@ const reservasSalaController = {
       }
       if (profissionalId) {
         where.profissionalId = profissionalId;
+      }
+    
+      if (dataInicio && dataFim) {
+        where.data = {
+          [Op.between]: [dataInicio, dataFim],
+        };
+      } else if (dataInicio) {
+        where.data = {
+          [Op.gte]: dataInicio, 
+        };
+      } else if (dataFim) {
+        where.data = {
+          [Op.lte]: dataFim, 
+        };
       }
 
       const reservas = await ReservaSala.findAll({

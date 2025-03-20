@@ -333,41 +333,50 @@ update: async (req, res) => {
   
     viewEscalasReport: async (req, res) => {
       try {
-          const { data, horarioInicio, horarioFim, profissional } = req.query;
-  
-          const where = {};
-  
-          if (data) {
-              where.data = data; 
-          }
-  
-          if (horarioInicio) {
-              where.horarioInicio = { [Op.gte]: horarioInicio }; 
-          }
-  
-          if (horarioFim) {
-              where.horarioFim = { [Op.lte]: horarioFim }; 
-          }
-  
-          if (profissional) {
-              where.adminId = profissional; 
-          }
-
-          if (!data) {
-            delete where.data;
-          }
-  
-          const escalas = await Escala.findAll({ 
-              where, 
-              include: [{ model: Profissional, as: 'admin' }] 
-          });
-  
-          const profissionais = await Profissional.findAll();
-  
-          res.render('relatorios/viewEscalasReport', { escalas, profissionais, query: req.query, layout: false });
+        const { dataInicio, dataFim, horarioInicio, horarioFim, profissional } = req.query;
+    
+        const where = {};
+    
+        // Filtragem por intervalo de datas
+        if (dataInicio && dataFim) {
+          where.data = {
+            [Op.between]: [dataInicio, dataFim],
+          };
+        } else if (dataInicio) {
+          where.data = {
+            [Op.gte]: dataInicio, // Data maior ou igual a dataInicio
+          };
+        } else if (dataFim) {
+          where.data = {
+            [Op.lte]: dataFim, // Data menor ou igual a dataFim
+          };
+        }
+    
+        // Filtragem por horário
+        if (horarioInicio) {
+          where.horarioInicio = { [Op.gte]: horarioInicio };
+        }
+    
+        if (horarioFim) {
+          where.horarioFim = { [Op.lte]: horarioFim };
+        }
+    
+        // Filtragem por profissional
+        if (profissional) {
+          where.adminId = profissional; 
+        }
+    
+        const escalas = await Escala.findAll({ 
+          where, 
+          include: [{ model: Profissional, as: 'admin' }] 
+        });
+    
+        const profissionais = await Profissional.findAll();
+    
+        res.render('relatorios/viewEscalasReport', { escalas, profissionais, query: req.query, layout: false });
       } catch (error) {
-          console.error('Erro ao gerar o relatório de escalas:', error);
-          res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+        console.error('Erro ao gerar o relatório de escalas:', error);
+        res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
       }
     },
       

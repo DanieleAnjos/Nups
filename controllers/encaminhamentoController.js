@@ -598,44 +598,68 @@ exports.deletarDiscussaoCaso = async (req, res) => {
 
 exports.viewEncaminhamentosReport = async (req, res) => {
   try {
-      // Busca todos os encaminhamentos no banco de dados
-      const encaminhamentos = await Encaminhamento.findAll({
-          include: [
-              {
-                  model: Profissional,
-                  as: 'profissionalEnvio',
-                  attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que enviou
-              },
-              {
-                  model: Profissional,
-                  as: 'profissionalRecebido',
-                  attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que recebeu
-              },
-              {
-                  model: Atendimento,
-                  as: 'atendimento',
-                  attributes: ['id', 'nomePaciente'], // Inclui os atributos desejados do atendimento associado
-              },
-          ],
-      });
+    const { dataInicio, dataFim, profissional } = req.query;
 
-      // Verifica se há encaminhamentos cadastrados
-      if (encaminhamentos.length === 0) {
-          return res.status(404).render('relatorios', {
-              message: 'Nenhum encaminhamento cadastrado.',
-              layout: false,
-          });
-      }
+    const where = {};
 
-      res.render('relatorios/viewEncaminhamentosReport', {
-          encaminhamentos,
-          layout: false,
+    // Filtragem por intervalo de datas
+    if (dataInicio && dataFim) {
+      where.data = {
+        [Op.between]: [dataInicio, dataFim],
+      };
+    } else if (dataInicio) {
+      where.data = {
+        [Op.gte]: dataInicio, // Data maior ou igual a dataInicio
+      };
+    } else if (dataFim) {
+      where.data = {
+        [Op.lte]: dataFim, // Data menor ou igual a dataFim
+      };
+    }
+
+    // Filtragem por profissional
+    if (profissional) {
+      where.adminId = profissional; 
+    }
+
+    const encaminhamentos = await Encaminhamento.findAll({
+      where, // Adiciona a condição de filtragem
+      include: [
+        {
+          model: Profissional,
+          as: 'profissionalEnvio',
+          attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que enviou
+        },
+        {
+          model: Profissional,
+          as: 'profissionalRecebido',
+          attributes: ['id', 'nome', 'cargo'], // Inclui os atributos desejados do profissional que recebeu
+        },
+        {
+          model: Atendimento,
+          as: 'atendimento',
+          attributes: ['id', 'nomePaciente'], // Inclui os atributos desejados do atendimento associado
+        },
+      ],
+    });
+
+    // Verifica se há encaminhamentos cadastrados
+    if (encaminhamentos.length === 0) {
+      return res.status(404).render('relatorios', {
+        message: 'Nenhum encaminhamento cadastrado.',
+        layout: false,
       });
+    }
+
+    res.render('relatorios/viewEncaminhamentosReport', {
+      encaminhamentos,
+      layout: false,
+    });
   } catch (error) {
-      console.error('Erro ao exibir o relatório de encaminhamentos:', error);
-      res.status(500).render('error', {
-          message: 'Erro ao exibir o relatório. Tente novamente mais tarde.',
-          layout: false,
-      });
+    console.error('Erro ao exibir o relatório de encaminhamentos:', error);
+    res.status(500).render('error', {
+      message: 'Erro ao exibir o relatório. Tente novamente mais tarde.',
+      layout: false,
+    });
   }
 };

@@ -504,6 +504,29 @@ exports.delete = async (req, res) => {
 
   exports.viewProfissionaisReport = async (req, res) => {
     try {
+      
+      const { dataInicio, dataFim, profissional } = req.query;
+
+      const where = {};
+  
+      if (dataInicio && dataFim) {
+        where.data = {
+          [Op.between]: [dataInicio, dataFim],
+        };
+      } else if (dataInicio) {
+        where.data = {
+          [Op.gte]: dataInicio, 
+        };
+      } else if (dataFim) {
+        where.data = {
+          [Op.lte]: dataFim, 
+        };
+      }
+  
+      if (profissional) {
+        where.adminId = profissional; 
+      }
+  
       const profissionais = await Profissional.findAll();
   
       if (profissionais.length === 0) {

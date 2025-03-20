@@ -312,15 +312,26 @@ const ocorrenciaController = {
 
   viewOcorrenciasReport: async (req, res) => {
     try {
-      const { data, profissional } = req.query;  
+      const { dataInicio, dataFim, profissional } = req.query;
+  
       const where = {};
   
-      if (profissional) {
-        where.profissionalId = profissional;
+      if (dataInicio && dataFim) {
+        where.data = {
+          [Op.between]: [dataInicio, dataFim],
+        };
+      } else if (dataInicio) {
+        where.data = {
+          [Op.gte]: dataInicio, 
+        };
+      } else if (dataFim) {
+        where.data = {
+          [Op.lte]: dataFim, 
+        };
       }
   
-      if (data) {
-        where.data = data;  
+      if (profissional) {
+        where.adminId = profissional; 
       }
   
       const ocorrencias = await Ocorrencia.findAll({
@@ -328,6 +339,7 @@ const ocorrenciaController = {
         include: [{
           model: Profissional,
           as: 'profissional',
+          attributes: ['id', 'nome', 'cargo'],
           required: true  
         }]
       });
@@ -346,7 +358,10 @@ const ocorrenciaController = {
   
     } catch (error) {
       console.error('Erro ao gerar o relatório de ocorrências:', error);
-      res.status(500).send('Erro ao gerar o relatório. Tente novamente mais tarde.');
+      res.status(500).render('error', {
+        message: 'Erro ao gerar o relatório. Tente novamente mais tarde.',
+        layout: false,
+      });
     }
   },
 

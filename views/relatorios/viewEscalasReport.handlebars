@@ -203,12 +203,16 @@
 </div>
 
 
-
         <!-- Formulário de Filtro -->
         <form method="GET" action="/escalas/viewReport" class="filter-form">
             <div>
-                <label for="data">Filtrar por Data:</label>
-                <input type="date" name="data" id="data" value="{{query.data}}">
+                <label for="dataInicio">Filtrar por Data de Início:</label>
+                <input type="date" name="dataInicio" id="dataInicio" value="{{query.dataInicio}}">
+            </div>
+
+            <div>
+                <label for="dataFim">Filtrar por Data de Fim:</label>
+                <input type="date" name="dataFim" id="dataFim" value="{{query.dataFim}}">
             </div>
 
             <div>
