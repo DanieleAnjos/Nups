@@ -50,6 +50,8 @@ const reservasSalaController = {
 
         // Adiciona a informação se o usuário pode editar
         const usuarioAtual = req.user || {};
+        const profissionalAtual = await Profissional.findByPk(usuarioAtual.profissionalId); // Obtém o profissional associado ao usuário
+
         const reservasComNomes = reservas.map(reserva => {
             const reservaPlain = reserva.get({ plain: true });
 
@@ -57,9 +59,9 @@ const reservasSalaController = {
             console.log("Reserva:", reservaPlain);
 
             // Verifica se o usuário pode editar a reserva
-            const podeEditar = usuarioAtual.cargo && (
-                usuarioAtual.cargo.toLowerCase() === "administrador" ||
-                usuarioAtual.id === reserva.profissionalId
+            const podeEditar = profissionalAtual && (
+                profissionalAtual.id === reservaPlain.profissionalId || // O profissional do usuário é o responsável pela reserva
+                profissionalAtual.cargo && profissionalAtual.cargo.toLowerCase() === "administrador" // O profissional é um administrador
             );
 
             reservaPlain.podeEditar = podeEditar; // Adiciona a propriedade podeEditar
@@ -70,9 +72,6 @@ const reservasSalaController = {
 
         const salas = await Sala.findAll();
         const profissionais = await Profissional.findAll();
-
-        console.log("Usuário Atual:", usuarioAtual);
-        console.log("Reserva Profissional ID:", reservas.profissionalId);
 
         res.render('reservas', {
             reservas: reservasComNomes,
