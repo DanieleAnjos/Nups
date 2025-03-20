@@ -155,9 +155,9 @@
           {{#each paciente.atendimentos as |atendimento|}}
             {{#if (or (eq ../profissional.cargo "Administrador") 
                       (eq atendimento.profissional.cargo ../profissional.cargo)
-                      (and (eq ../profissional.cargo "Gestor Servico Social") (eq atendimento.profissional.cargo "Assistente Social"))
-                      (and (eq ../profissional.cargo "Gestor Psicologia") (eq atendimento.profissional.cargo "Psicólogo"))
-                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "Psiquiatra")))}}
+                      (and (eq ../profissional.cargo "Gestor Servico Social") (eq atendimento.profissional.cargo "assistente social"))
+                      (and (eq ../profissional.cargo "Gestor Psicologia") (eq atendimento.profissional.cargo "psicólogo"))
+                      (and (eq ../profissional.cargo "Gestor Psiquiatria") (eq atendimento.profissional.cargo "psiquiatra")))}}
               <tr class="attendance-item">
                 <td>{{formatDateTime atendimento.dataAtendimento}}</td>
                 <td>{{atendimento.profissional.nome}}</td>
@@ -180,7 +180,7 @@
 
 
   
-{{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador"))}}
+{{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador") (eq profissional.cargo "Gestor Servico Social"))}}
 
 <div class="card">
   <div class="card-header bg-secondary text-white">
