@@ -93,7 +93,7 @@ router.get('/', async (req, res) => {
         {
           model: Profissional,
           as: 'profissional',
-          attributes: [] 
+          attributes: ['nome'] 
         }
       ],
       group: ['profissional.id'], 
