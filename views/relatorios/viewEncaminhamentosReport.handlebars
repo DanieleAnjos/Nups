@@ -5,53 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório de Encaminhamentos</title>
     <style>
+        /* Estilos globais */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Título principal */
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo da tabela */
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: left;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #ddd;
         }
+
         th {
-            background-color: #f2f2f2;
+            background-color: #2980b9;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fbfc;
+        }
+
+        tr:hover {
+            background-color: #e0ebf5;
+        }
+
+        /* Estilo dos botões */
+        .button, .clear-button {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .clear-button {
+            background-color: #e74c3c;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilos do formulário de filtro */
+        .filter-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .filter-form label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .filter-form select,
+        .filter-form input {
+            padding: 8px;
+            font-size: 16px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-form button,
+        .filter-form .clear-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-form button:hover,
+        .filter-form .clear-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Estilos para a seção de ações */
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        /* Responsividade */
+        @media print {
+            .button {
+                display: none;
+            }
+
+            .filter-form {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Relatório de Encaminhamentos</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Paciente</th>
-                <th>Data</th>
-                <th>Profissional Envio</th>
-                <th>Profissional Recebido</th>
-                <th>Atendimento Associado</th>
-                <th>Visto</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each encaminhamentos}}
+    <div class="container">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+            <!-- Logo à esquerda -->
+            <img src="/IMG/guarda-municipal-de-salvador-logo-7A74B7150E-seeklogo.com.png" alt="Logo" style="width: 80px; height: auto;">
+
+            <!-- Título centralizado -->
+            <div style="text-align: center; flex-grow: 1;">
+                <p style="font-size: 0.9rem; font-weight: bold; color: #34495e; line-height: 1.4; margin-bottom: 5px;">
+                    Guarda Civil Municipal <br>
+                    Gerência De Desenvolvimento Humano <br>
+                    Centro de Valorização <br>
+                    Núcleo Psicosocial
+                </p>
+                <h2 style="font-size: 1.8rem; font-weight: 500; color: #2c3e50; margin: 0;">
+                    Relatório de Encaminhamentos
+                </h2>
+            </div>
+
+            <!-- Logo à direita -->
+            <img src="/IMG/8d633c58242467.Y3JvcCw4OTQsNzAwLDI1Miww.gif" alt="Logo" style="width: 90px; height: auto;">
+        </div>
+
+        <!-- Formulário de Filtro -->
+        <form method="GET" action="/encaminhamentos/viewReport" class="filter-form">
+            <div>
+                <label for="data">Filtrar por Data:</label>
+                <input type="date" name="data" id="data" value="{{query.data}}">
+            </div>
+
+            <div>
+                <label for="profissional">Filtrar Profissional:</label><br>
+                <select name="profissional" id="profissional">
+                    <option value="">Selecione</option>
+                    {{#each profissionais}}
+                        <option value="{{this.id}}" {{#if (eq this.id ../query.profissional)}}selected{{/if}}>{{this.nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="button">Aplicar Filtros</button>
+                <button type="button" class="clear-button" onclick="clearFilters()">Limpar Filtros</button>
+            </div>
+        </form>
+
+        <!-- Tabela de Encaminhamentos -->
+        <table>
+            <thead>
                 <tr>
-                    <td>{{this.id}}</td>
-                    <td>{{this.nomePaciente}}</td>
-                    <td>{{formatDate this.data}}</td>
-                    <td>{{this.profissionalEnvio.nome}}</td>
-                    <td>{{this.profissionalRecebido.nome}}</td>
-                    <td>
-                        {{#if this.atendimento}}
-                            {{this.atendimento.nomePaciente}}
-                        {{else}}
-                            N/A
-                        {{/if}}
-                    </td>
-                    <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
+                    <th>ID</th>
+                    <th>Paciente</th>
+                    <th>Data</th>
+                    <th>Profissional Envio</th>
+                    <th>Profissional Recebido</th>
+                    <th>Visto</th>
                 </tr>
-            {{/each}}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {{#each encaminhamentos}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td>{{this.nomePaciente}}</td>
+                        <td>{{formatDate this.data}}</td>
+                        <td>{{this.profissionalEnvio.nome}}</td>
+                        <td>{{this.profissionalRecebido.nome}}</td>
+                        <td>{{#if this.visto}}Sim{{else}}Não{{/if}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Botão de Impressão -->
+        <div class="actions">
+            <a href="javascript:window.print()" class="button">Imprimir Relatório</a>
+        </div>
+
+        <footer style="text-align: center;">
+            <p>© 2025 - Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Função para limpar os filtros
+        function clearFilters() {
+            document.getElementById('data').value = '';
+            document.getElementById('profissional').value = '';
+            window.location.href = '/encaminhamentos/viewReport';
+        }
+
+        window.onload = function() {
+            window.onafterprint = function() {
+                // Opcional: fechar a janela após a impressão
+                // window.close(); 
+            };
+        };
+    </script>
 </body>
 </html>
