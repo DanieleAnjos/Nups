@@ -35,7 +35,7 @@ function getCargosPermitidos(cargoUsuario) {
     return [cargosGestores[cargoUsuario]];
   }
 
-  // Se o usuário for um profissional comum, só pode enviar para o próprio cargo
+  // Se o usuário for um profissional comum, pode marcar como visto apenas para o próprio cargo
   if (cargosProfissionais.includes(cargoUsuario)) {
     return [cargoUsuario];
   }
@@ -508,6 +508,13 @@ exports.marcarAvisoComoVisto = async (req, res) => {
       where: { avisoId: id, profissionalId },
       defaults: { vistoEm: new Date() }
     });
+
+    // Verifica se o profissional tem permissão para marcar o aviso como visto
+    const cargoProfissional = req.user.profissional.cargo;
+    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
+    if (!cargosPermitidos.includes(aviso.cargoAlvo)) {
+      return res.status(403).json({ error: 'Você não tem permissão para marcar esse aviso como visto.' });
+    }
 
     if (!created) {
       return res.status(200).json({ message: 'Aviso já marcado como visto.' });
