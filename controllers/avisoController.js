@@ -6,7 +6,6 @@ const moment = require('moment-timezone');
 
 // utils/cargos.js
 function getCargosPermitidos(cargoUsuario) {
-  // Mapeamento de cargos de gestores para cargos de profissionais
   const cargosGestores = {
     'Gestor Servico Social': 'Assistente social',
     'Gestor Psicologia': 'Psicólogo',
@@ -14,33 +13,21 @@ function getCargosPermitidos(cargoUsuario) {
     'Gestor Adms': 'Adm'
   };
 
-  // Lista de cargos permitidos para administradores
   const cargosAdministradores = ['Administrador', 'Adm'];
+  const cargosProfissionais = ['Assistente social', 'Psicólogo', 'Psiquiatra', 'Adm'];
 
-  // Lista de cargos de profissionais
-  const cargosProfissionais = [
-    'Assistente social',
-    'Psicólogo',
-    'Psiquiatra',
-    'Adm'
-  ];
-
-  // Se o usuário for administrador, pode enviar para todos os cargos
   if (cargosAdministradores.includes(cargoUsuario)) {
     return ['Geral', ...cargosProfissionais];
   }
 
-  // Se o usuário for um gestor, mapeie para o cargo correspondente
   if (cargosGestores[cargoUsuario]) {
     return [cargosGestores[cargoUsuario]];
   }
 
-  // Se o usuário for um profissional comum, pode marcar como visto apenas para o próprio cargo
   if (cargosProfissionais.includes(cargoUsuario)) {
     return [cargoUsuario];
   }
 
-  // Caso o cargo não esteja na lista, permite apenas avisos gerais
   return ['Geral'];
 }
 
@@ -140,7 +127,7 @@ exports.getAllAvisos = async (req, res) => {
     if (!profissional) {
       return res.render('avisos/index', {
         title: 'Lista de Avisos',
-        error: 'Profissional não encontrado.'
+        error : 'Profissional não encontrado.'
       });
     }
 
@@ -207,7 +194,6 @@ exports.getAllAvisos = async (req, res) => {
   }
 };
 
-
 // Obter avisos do dia
 exports.getAvisosDoDia = async (req, res) => {
   try {
@@ -248,12 +234,12 @@ exports.getAvisosDoDia = async (req, res) => {
       include: [
         {
           model: Profissional,
-          as: 'profissional', // Alias para o criador do aviso
+          as: 'profissional',
           attributes: ['id', 'nome', 'cargo']
         },
         {
           model: Profissional,
-          as: 'visualizadoPor', // Alias para os profissionais que visualizaram o aviso
+          as: 'visualizadoPor',
           attributes: ['id', 'nome', 'cargo'],
           through: { attributes: ['vistoEm'] }
         }
@@ -261,27 +247,19 @@ exports.getAvisosDoDia = async (req, res) => {
       order: [['data', 'ASC']]
     });
 
-    // Busca todos os profissionais
     const todosProfissionais = await Profissional.findAll({
       attributes: ['id', 'nome', 'cargo']
     });
 
     const avisosFormatados = avisosDoDia.map(aviso => {
-      // Filtra os profissionais para os quais o aviso foi enviado
       const profissionaisAlvo = todosProfissionais.filter(profissional => {
-        // Se o cargoAlvo for "Geral", inclui todos os profissionais
-        if (aviso.cargoAlvo === 'Geral') return true;
-
-        // Caso contrário, filtra pelo cargoAlvo
-        return profissional.cargo === aviso.cargoAlvo;
+        return aviso.cargoAlvo === 'Geral' || profissional.cargo === aviso.cargoAlvo;
       });
 
-      // Filtra os profissionais que visualizaram o aviso
       const profissionaisVisualizaram = aviso.visualizadoPor.filter(visto => {
         return profissionaisAlvo.some(profissional => profissional.id === visto.id);
       });
 
-      // Filtra os profissionais que não visualizaram o aviso
       const profissionaisNaoVisualizaram = profissionaisAlvo.filter(profissional => {
         return !profissionaisVisualizaram.some(visto => visto.id === profissional.id);
       });
@@ -395,6 +373,7 @@ exports.deleteAviso = async (req, res) => {
     });
   }
 };
+
 // Contar avisos do dia
 exports.contarAvisosDoDia = async (req, res) => {
   try {
@@ -419,7 +398,6 @@ exports.contarAvisosDoDia = async (req, res) => {
       }
     };
 
-    // Filtra avisos com base no cargo do usuário
     const cargosPermitidos = getCargosPermitidos(cargoProfissional);
     whereConditions[Op.or] = [
       { cargoAlvo: 'Geral' },
@@ -427,7 +405,7 @@ exports.contarAvisosDoDia = async (req, res) => {
     ];
 
     const avisosDoDia = await Aviso.count({
-      where: whereConditions
+ where: whereConditions
     });
 
     return res.json({ avisosDoDia });
@@ -488,22 +466,21 @@ exports.renderEditAviso = async (req, res) => {
   }
 };
 
+// Marcar aviso como visto
 exports.marcarAvisoComoVisto = async (req, res) => {
   try {
     const { id } = req.params;
-    const profissionalId = req.user?.profissionalId; // Verifica se o profissional está autenticado
+    const profissionalId = req.user?.profissionalId;
 
     if (!profissionalId) {
       return res.status(403).json({ error: 'Usuário não autenticado.' });
     }
 
-    // Verifica se o aviso existe
     const aviso = await Aviso.findByPk(id);
     if (!aviso) {
       return res.status(404).json({ error: 'Aviso não encontrado.' });
     }
 
-    // Marca o aviso como visto pelo profissional
     const [avisoVisualizado, created] = await AvisoVisualizado.findOrCreate({
       where: { avisoId: id, profissionalId },
       defaults: { vistoEm: new Date() }
@@ -520,12 +497,11 @@ exports.marcarAvisoComoVisto = async (req, res) => {
   }
 };
 
-
+// Listar visualizações do aviso
 exports.listarVisualizacoesAviso = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Busca o aviso com a lista de profissionais que o visualizaram
     const aviso = await Aviso.findByPk(id, {
       include: [
         {
@@ -544,17 +520,14 @@ exports.listarVisualizacoesAviso = async (req, res) => {
       });
     }
 
-    // Busca todos os profissionais
     const todosProfissionais = await Profissional.findAll({
       attributes: ['id', 'nome', 'cargo']
     });
 
-    // Filtra profissionais que não visualizaram o aviso
     const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => {
       return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
     });
 
-    // Renderiza a página de visualizações com os dados
     res.render('avisos/visualizacoes', {
       title: 'Visualizações do Aviso',
       aviso: {
