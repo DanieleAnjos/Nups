@@ -595,8 +595,7 @@ const accessControl = {
       '/profissionais/meu_perfil/',
       '/mensagens',
       '/auth/changePassword',
-      '/avisos/do-dia',
-      '/avisos/dia',
+      '/avisos',
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
@@ -604,7 +603,6 @@ const accessControl = {
       '/discussoes/create',
       '/encaminhamentos',
       '/escalas',
-      '/avisos/:id/marcar-visto'
 
 
     ],
