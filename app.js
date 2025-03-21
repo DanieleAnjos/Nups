@@ -580,7 +580,8 @@ const accessControl = {
       '/graficos',
       '/discussoes/detalhes',
       '/discussoes/edit',
-      '/discussoes/create'
+      '/discussoes/create',
+      '/avisos/:id/marcar-visto'
 
 
     ],
@@ -603,6 +604,8 @@ const accessControl = {
       '/discussoes/create',
       '/encaminhamentos',
       '/escalas',
+      '/avisos/:id/marcar-visto'
+
 
     ],
 
@@ -625,6 +628,7 @@ const accessControl = {
       '/discussoes/create',
       '/encaminhamentos',
       '/escalas',
+      '/avisos/:id/marcar-visto'
 
 
     ]

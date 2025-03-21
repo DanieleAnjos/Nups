@@ -470,34 +470,30 @@ exports.renderEditAviso = async (req, res) => {
 exports.marcarAvisoComoVisto = async (req, res) => {
   try {
     const { id } = req.params;
-    const profissionalId = req.user?.profissionalId; // Verifica se está autenticado
+    const profissionalId = req.user?.profissionalId;
 
     if (!profissionalId) {
       return res.status(403).json({ error: 'Usuário não autenticado.' });
     }
 
-    // Verifica se o aviso existe
     const aviso = await Aviso.findByPk(id);
     if (!aviso) {
       return res.status(404).json({ error: 'Aviso não encontrado.' });
     }
 
-    // Marca o aviso como visualizado
     const [avisoVisualizado, created] = await AvisoVisualizado.findOrCreate({
       where: { avisoId: id, profissionalId },
       defaults: { vistoEm: new Date() }
     });
 
     if (!created) {
-      return res.status(200).json({ message: 'Aviso já marcado como visto.', avisoId: id });
+      return res.status(200).json({ message: 'Aviso já marcado como visto.' });
     }
 
     res.status(200).json({ message: 'Aviso marcado como visto.', avisoId: id });
   } catch (error) {
     console.error('Erro ao marcar aviso como visto:', error);
-
-    // Sempre retorna JSON, mesmo em caso de erro
-    res.status(500).json({ error: 'Erro ao marcar aviso como visto.', details: error.message });
+    res.status(500).json({ error: 'Erro ao marcar aviso como visto.' });
   }
 };
 
