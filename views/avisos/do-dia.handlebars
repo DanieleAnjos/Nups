@@ -261,41 +261,46 @@
 
   <div class="alert-container">
     {{#each avisos}}
-      <div class="alert alert-{{this.tipo}}">
+      <div class="alert alert-{{tipo}}">
         <div class="alert-icon">
-          <i class="{{#if (eq this.tipo 'lembrete')}}fas fa-bell{{/if}}
-                    {{#if (eq this.tipo 'alerta')}}fas fa-exclamation-triangle{{/if}}
-                    {{#if (eq this.tipo 'administrativo')}}fas fa-clipboard-list{{/if}}"></i>
+          {{#if (eq tipo "lembrete")}}
+            <i class="fas fa-bell"></i>
+          {{else if (eq tipo "alerta")}}
+            <i class="fas fa-exclamation-triangle"></i>
+          {{else if (eq tipo "administrativo")}}
+            <i class="fas fa-clipboard-list"></i>
+          {{/if}}
         </div>
+
         <div class="alert-content">
-          <strong class="alert-title">{{this.assunto}}</strong>
+          <strong class="alert-title">{{assunto}}</strong>
 
           <div class="registro-box">
             <strong>Mensagem:</strong>
-            <p>{{this.mensagem}}</p>
+            <p>{{mensagem}}</p>
           </div>
 
           <div class="alert-footer">
-            <span><strong>Data:</strong> {{this.data}}</span>
-            <span><strong>Criado por:</strong> {{this.profissional.nome}}</span>
-              <button
-                class="btn-marcar-visto"
-                onclick="marcarComoVisto('{{this.id}}')"
-                {{#if this.jaVisualizado}}disabled{{/if}}
-              >
-                {{#if this.jaVisualizado}}Visto{{else}}Marcar como Visto{{/if}}
-              </button>
+            <span><strong>Data:</strong> {{data}}</span>
+            <span><strong>Criado por:</strong> {{profissional.nome}}</span>
+            <button
+              class="btn-marcar-visto"
+              onclick="marcarComoVisto('{{id}}')"
+              {{#if jaVisualizado}}disabled{{/if}}
+            >
+              {{#if jaVisualizado}}Visto{{else}}Marcar como Visto{{/if}}
+            </button>
           </div>
 
-          <button class="btn-ver-visualizacoes" onclick="toggleVisualizacoes('{{this.id}}')">
+          <button class="btn-ver-visualizacoes" onclick="toggleVisualizacoes('{{id}}')">
             Ver Visualizações
           </button>
 
-          <div id="visualizacoes-{{this.id}}" class="visualizacoes-box">
+          <div id="visualizacoes-{{id}}" class="visualizacoes-box">
             <h4>Visualizado por:</h4>
             <ul>
-              {{#each this.visualizadoPor}}
-                <li>{{this.nome}} ({{this.cargo}}) - {{Data this.vistoEm}}</li>
+              {{#each visualizadoPor}}
+                <li>{{nome}} ({{cargo}}) - {{../formatarData vistoEm}}</li>
               {{else}}
                 <li>Nenhum profissional visualizou este aviso ainda.</li>
               {{/each}}
@@ -303,8 +308,8 @@
 
             <h4>Não visualizado por:</h4>
             <ul>
-              {{#each this.naoVisualizadoPor}}
-                <li>{{this.nome}} ({{this.cargo}})</li>
+              {{#each naoVisualizadoPor}}
+                <li>{{nome}} ({{cargo}})</li>
               {{else}}
                 <li>Todos os profissionais visualizaram este aviso.</li>
               {{/each}}
@@ -319,35 +324,21 @@
 </div>
 
 <script>
-
-  async function marcarComoVisto(avisoId) {
+ async function marcarComoVisto(avisoId) {
     try {
       const response = await fetch(`/avisos/${avisoId}/marcar-visto`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ avisoId }) // Envia o ID do aviso no corpo da requisição
+        headers: { 'Content-Type': 'application/json' }
       });
 
-      const result = await response.json(); // Converte a resposta para JSON
-
       if (response.ok) {
-
-        alert(result.message || 'Aviso marcado como visto.');
-
-        const botao = document.querySelector(`button[onclick="marcarComoVisto('${avisoId}')"]`);
-        if (botao) {
-          botao.textContent = 'Visto';
-          botao.disabled = true;
-        }
+        alert('Aviso marcado como visto.');
+        location.reload();
       } else {
-
-        alert(result.error || 'Erro ao marcar aviso como visto.');
+        alert('Erro ao marcar aviso como visto.');
       }
     } catch (error) {
       console.error('Erro:', error);
-      alert('Erro ao marcar aviso como visto. Tente novamente mais tarde.');
     }
   }
 
