@@ -9,9 +9,10 @@ router.get('/do-dia', avisoController.getAvisosDoDia);
 router.get('/', avisoController.getAllAvisos);
 router.put('/:id', avisoController.updateAviso);
 router.get('/:id', avisoController.renderEditAviso);
-router.delete('/:id', avisoController.deleteAviso);
-
 router.post('/:id/marcar-visto', avisoController.marcarAvisoComoVisto);
 router.get('/:id/visualizacoes', avisoController.listarVisualizacoesAviso);
+router.delete('/:id', avisoController.deleteAviso);
+
+
 
 module.exports = router;
