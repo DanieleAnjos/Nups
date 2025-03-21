@@ -575,14 +575,12 @@ const accessControl = {
       '/escalas',
       '/fluxoAtendimentos',
       '/auth/changePassword',
-      '/avisos/do-dia',
-      '/avisos/dia',
+      '/avisos',
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
       '/discussoes/edit',
       '/discussoes/create',
-      '/avisos/:id/marcar-visto'
 
 
     ],
@@ -597,9 +595,6 @@ const accessControl = {
       '/mensagens',
       '/auth/changePassword',
       '/avisos',
-      '/avisos/do-dia',
-      '/avisos/dia',
-      '/avisos/marcar-visto',
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
@@ -621,9 +616,7 @@ const accessControl = {
       '/profissionais/meu_perfil/',
       '/mensagens',
       '/auth/changePassword',
-      '/avisos/do-dia',
-      '/avisos/dia',
-      '/avisos/marcar-visto',
+      '/avisos',
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
@@ -631,7 +624,6 @@ const accessControl = {
       '/discussoes/create',
       '/encaminhamentos',
       '/escalas',
-      '/avisos/:id/marcar-visto'
 
 
     ]
