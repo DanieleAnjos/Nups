@@ -503,18 +503,18 @@ exports.marcarAvisoComoVisto = async (req, res) => {
       return res.status(404).json({ error: 'Aviso não encontrado.' });
     }
 
+    // Verifica se o profissional tem permissão para marcar o aviso como visto
+    const cargoProfissional = req.user.profissional.cargo;
+    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
+    if (!cargosPermitidos.includes(aviso.cargoAlvo) && aviso.cargoAlvo !== 'Geral') {
+      return res.status(403).json({ error: 'Você não tem permissão para marcar esse aviso como visto.' });
+    }
+
     // Marca o aviso como visto pelo profissional
     const [avisoVisualizado, created] = await AvisoVisualizado.findOrCreate({
       where: { avisoId: id, profissionalId },
       defaults: { vistoEm: new Date() }
     });
-
-    // Verifica se o profissional tem permissão para marcar o aviso como visto
-    const cargoProfissional = req.user.profissional.cargo;
-    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
-    if (!cargosPermitidos.includes(aviso.cargoAlvo)) {
-      return res.status(403).json({ error: 'Você não tem permissão para marcar esse aviso como visto.' });
-    }
 
     if (!created) {
       return res.status(200).json({ message: 'Aviso já marcado como visto.' });
