@@ -330,45 +330,41 @@
 
 <script>
   // Função para marcar o aviso como visto
-  async function marcarComoVisto(avisoId) {
+async function marcarComoVisto(avisoId) {
+  try {
+    const response = await fetch(`/avisos/${avisoId}/marcar-visto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const text = await response.text(); // Lê a resposta como texto para debugar
+    console.log('Resposta do servidor:', text);
+
+    let result;
     try {
-      const response = await fetch(`/avisos/${avisoId}/marcar-visto`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      const result = await response.json(); // Converte a resposta para JSON
-
-      if (response.ok) {
-        // Exibe uma mensagem de sucesso
-        alert(result.message || 'Aviso marcado como visto.');
-
-        // Atualiza o botão e o estado do aviso
-        const botao = document.querySelector(`button[onclick="marcarComoVisto('${avisoId}')"]`);
-        if (botao) {
-          botao.textContent = 'Visto';
-          botao.disabled = true;
-        }
-
-        // Atualiza a lista de visualizações (se necessário)
-        const visualizacoesBox = document.getElementById(`visualizacoes-${avisoId}`);
-        if (visualizacoesBox) {
-          const ulVisualizacoes = visualizacoesBox.querySelector('ul');
-          if (ulVisualizacoes) {
-            const novoItem = document.createElement('li');
-            novoItem.textContent = 'Você (agora)';
-            ulVisualizacoes.appendChild(novoItem);
-          }
-        }
-      } else {
-        // Exibe uma mensagem de erro
-        alert(result.error || 'Erro ao marcar aviso como visto.');
-      }
-    } catch (error) {
-      console.error('Erro:', error);
-      alert('Erro ao marcar aviso como visto. Tente novamente mais tarde.');
+      result = JSON.parse(text); // Tenta converter para JSON
+    } catch (e) {
+      throw new Error('Resposta do servidor não é um JSON válido.');
     }
+
+    if (response.ok) {
+      alert(result.message || 'Aviso marcado como visto.');
+
+      // Atualiza o botão para refletir a mudança de status
+      const botao = document.querySelector(`button[onclick="marcarComoVisto('${avisoId}')"]`);
+      if (botao) {
+        botao.innerHTML = '<i class="fas fa-check"></i> Visto';
+        botao.disabled = true;
+      }
+    } else {
+      alert(result.error || 'Erro ao marcar aviso como visto.');
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao marcar aviso como visto. Verifique o console para mais detalhes.');
   }
+}
+
 
   // Função para exibir/ocultar a lista de visualizações
   function toggleVisualizacoes(avisoId) {
