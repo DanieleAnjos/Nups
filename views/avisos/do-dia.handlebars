@@ -305,7 +305,7 @@
             <h4>Visualizado por:</h4>
             <ul>
               {{#each visualizadoPor}}
-                <li>{{nome}} ({{cargo}}) - {{formatDate vistoEm}}</li>
+                <li>{{nome}} ({{cargo}}) - {{Data vistoEm}}</li>
               {{else}}
                 <li>Nenhum profissional visualizou este aviso ainda.</li>
               {{/each}}
@@ -350,6 +350,16 @@
           botao.disabled = true;
         }
 
+        // Atualiza a lista de visualizações (se necessário)
+        const visualizacoesBox = document.getElementById(`visualizacoes-${avisoId}`);
+        if (visualizacoesBox) {
+          const ulVisualizacoes = visualizacoesBox.querySelector('ul');
+          if (ulVisualizacoes) {
+            const novoItem = document.createElement('li');
+            novoItem.textContent = 'Você (agora)';
+            ulVisualizacoes.appendChild(novoItem);
+          }
+        }
       } else {
         // Exibe uma mensagem de erro
         alert(result.error || 'Erro ao marcar aviso como visto.');
