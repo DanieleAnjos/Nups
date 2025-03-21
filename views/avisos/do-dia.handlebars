@@ -284,11 +284,16 @@
             <span><strong>Data:</strong> {{data}}</span>
             <span><strong>Criado por:</strong> {{profissional.nome}}</span>
             <button
-              class="btn-marcar-visto"
+              class="btn-marcar-visto {{#if jaVisualizado}}btn-disabled{{/if}}"
               onclick="marcarComoVisto('{{id}}')"
               {{#if jaVisualizado}}disabled{{/if}}
+              aria-label="{{#if jaVisualizado}}Aviso já visto{{else}}Marcar aviso como visto{{/if}}"
             >
-              {{#if jaVisualizado}}Visto{{else}}Marcar como Visto{{/if}}
+              {{#if jaVisualizado}}
+                <i class="fas fa-check"></i> Visto
+              {{else}}
+                Marcar como Visto
+              {{/if}}
             </button>
           </div>
 

@@ -491,7 +491,7 @@ exports.renderEditAviso = async (req, res) => {
 exports.marcarAvisoComoVisto = async (req, res) => {
   try {
     const { id } = req.params;
-    const profissionalId = req.user?.profissionalId; // Verifica se o profissionalId está definido
+    const profissionalId = req.user?.profissionalId; // Verifica se o profissional está autenticado
 
     if (!profissionalId) {
       return res.status(403).json({ error: 'Usuário não autenticado.' });
@@ -501,13 +501,6 @@ exports.marcarAvisoComoVisto = async (req, res) => {
     const aviso = await Aviso.findByPk(id);
     if (!aviso) {
       return res.status(404).json({ error: 'Aviso não encontrado.' });
-    }
-
-    // Verifica se o profissional tem permissão para marcar o aviso como visto
-    const cargoProfissional = req.user.profissional.cargo;
-    const cargosPermitidos = getCargosPermitidos(cargoProfissional);
-    if (!cargosPermitidos.includes(aviso.cargoAlvo) && aviso.cargoAlvo !== 'Geral') {
-      return res.status(403).json({ error: 'Você não tem permissão para marcar esse aviso como visto.' });
     }
 
     // Marca o aviso como visto pelo profissional
@@ -526,6 +519,7 @@ exports.marcarAvisoComoVisto = async (req, res) => {
     res.status(500).json({ error: 'Erro ao marcar aviso como visto.' });
   }
 };
+
 
 exports.listarVisualizacoesAviso = async (req, res) => {
   try {
