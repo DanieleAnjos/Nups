@@ -402,11 +402,6 @@ app.get('/Quem_Somos',function(req, res)  {
     res.render('Quem_Somos', {layout: 'public/public-layout'});
 });
 
-const rotaAcessada = req.path.replace(/\d+/g, ':id'); 
-
-if (!caminhosPermitidos.includes(rotaAcessada) && !caminhosPermitidos.includes('/avisos/*')) {
-  return res.status(403).json({ error: 'Você não tem permissão para acessar esta rota.' });
-}
 
 app.get('/', function(req, res) {
     res.render('Pagina_Inicial', {
@@ -582,7 +577,6 @@ const accessControl = {
       '/auth/changePassword',
       '/avisos/do-dia',
       '/avisos/dia',
-      '/avisos/marcar-visto',
       '/reservas',
       '/graficos',
       '/discussoes/detalhes',
