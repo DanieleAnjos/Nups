@@ -300,7 +300,7 @@
             <h4>Visualizado por:</h4>
             <ul>
               {{#each visualizadoPor}}
-                <li>{{nome}} ({{cargo}}) - {{../ vistoEm}}</li>
+                <li>{{nome}} ({{cargo}}) - {{formatDate vistoEm}}</li>
               {{else}}
                 <li>Nenhum profissional visualizou este aviso ainda.</li>
               {{/each}}
