@@ -405,7 +405,7 @@ exports.update = async (req, res) => {
         'error_msg',
         'Este profissional já recebeu um encaminhamento para o mesmo paciente hoje.'
       );
-      return res.redirect(`/encaminhamentos/editar/${id}`);
+      return res.redirect(`/encaminhamentos/${id}/edit`);
     }
 
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
