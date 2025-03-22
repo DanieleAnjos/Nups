@@ -158,19 +158,11 @@ exports.create = async (req, res) => {
   try {
     const profissionalIdEnvio = req.user ? req.user.profissionalId : null;
 
-    const profissionaisPsicologia = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Psicólogo", 
-      },
+    const todosProfissionais = await Profissional.findAll({
+      attributes: ['id', 'nome', 'cargo']
     });
 
-    const profissionaisServicoSocial = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Assistente Social", 
-      },
-    });
+
 
         const pacientes = await Paciente.findAll({
           attributes: ['id', 'nome', 'matricula'], 
@@ -180,8 +172,7 @@ exports.create = async (req, res) => {
 
     res.render("encaminhamentos/create", {
       profissionalIdEnvio,
-      profissionaisPsicologia,
-      profissionaisServicoSocial,
+      todosProfissionais,
       pacientes,
     });
 
@@ -345,33 +336,26 @@ exports.edit = async (req, res) => {
       },
     });
 
+
+
+    const todosProfissionais = await Profissional.findAll({
+      attributes: ['id', 'nome', 'cargo']
+    });
+
+  
+
     const pacientes = await Paciente.findAll({
       attributes: ['id', 'nome', 'matricula'], 
       order: [['nome', 'ASC']]
     });
 
-    const profissionaisPsicologia = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Psicólogo", 
-      },
-    });
-
-    const profissionaisServicoSocial = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Assistente Social", 
-      },
-    });
-    
 
     res.render('encaminhamentos/edit', { 
       encaminhamento: encaminhamento.get({ plain: true }),
       profissionalIdEnvio, 
       profissionaisRecebimento,
       pacientes,
-      profissionaisPsicologia,
-      profissionaisServicoSocial,
+      todosProfissionais
     });
 
   } catch (error) {
