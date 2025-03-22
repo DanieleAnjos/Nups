@@ -15,7 +15,7 @@ if (!fs.existsSync(arquivosDir)) {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, arquivosDir); 
+        cb(null, 'uploads/arquivos'); 
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}${path.extname(file.originalname)}`); // Nome único
