@@ -94,7 +94,7 @@
                 <option value="Acolhimento de disparo">Acolhimento de disparo</option>
                 <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
                 <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
-                <option value="Atendimento psicologico">Atendimento psicologico</option>
+                <option value="Atendimento psicologico">Atendimento psicológico</option>
                 <option value="Atendimento psiquiátrico">Atendimento psiquiátrico</option>
             </select>
         </div>
@@ -102,22 +102,13 @@
         <!-- Descrição -->
         <div class="mb-4">
             <label for="descricao" class="form-label">Descrição:</label>
-            <textarea name="descricao" id="descricao" class="form-control" rows="4" >{{encaminhamento.descricao}}</textarea>
-        </div>
-
-        <!-- Profissional de Envio (oculto) -->
-        <div class="mb-4" style="display: none;">
-            <label for="profissionalIdEnvio" class="form-label">Profissional de Envio:</label>
-            <input type="hidden" name="profissionalIdEnvio" id="profissionalIdEnvio" value="{{encaminhamento.profissionalIdEnvio}}">
+            <textarea name="descricao" id="descricao" class="form-control" rows="4">{{encaminhamento.descricao}}</textarea>
         </div>
 
         <!-- Profissional de Recebimento -->
         <div class="mb-4">
             <label for="profissionalIdRecebido" class="form-label">Profissional de Recebimento:</label>
-            <select name="profissionalIdRecebido" id="profissionalIdRecebido" class="form-control" required>
-                <option value="{{encaminhamento.profissionalIdRecebido}}" selected>{{encaminhamento.profissionalRecebido.nome}}</option>
-                <!-- Lista de profissionais será preenchida pelo JavaScript -->
-            </select>
+            <select name="profissionalIdRecebido" id="profissionalIdRecebido" class="form-control" required></select>
         </div>
 
         <!-- Botão de Envio -->
@@ -131,153 +122,46 @@
 
 <script>
     $(document).ready(function() {
-        // Inicialização do Select2 para os campos
-        $('#nomePaciente').select2({
-            placeholder: "🔍 Digite para buscar um servidor",
+        $('#nomePaciente, #profissionalIdRecebido').select2({
+            placeholder: "🔍 Selecione uma opção",
             allowClear: true,
-            tags: true,
             width: '100%'
         });
 
-        $('#profissionalIdRecebido').select2({
-            placeholder: "🔍 Selecione um profissional",
-            allowClear: true
-        });
-
-        // Atualizar o campo de matrícula ao selecionar um paciente
         $('#nomePaciente').on('change', function () {
             const selectedOption = $(this).find(':selected');
             const matricula = selectedOption.data('matricula');
-            $('#matriculaPaciente').val(matricula); // Preencher o campo de matrícula
+            $('#matriculaPaciente').val(matricula);
         });
 
-        // Validação do número do processo
-        document.getElementById('numeroProcesso').addEventListener('input', function (event) {
-            const input = event.target;
-            let value = input.value.replace(/\D/g, '');
+        const todosProfissionais = [
+            {{#each todosProfissionais}}
+                { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
+            {{/each}}
+        ];
 
-            if (value.length > 6) {
-                value = value.slice(0, 6) + '/' + value.slice(6, 10);
-            }
+        const profissionalSelect = document.getElementById("profissionalIdRecebido");
+        const profissionalIdEnvio = "{{encaminhamento.profissionalIdEnvio}}";
+        const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
 
-            input.value = value;
+        function atualizarListaProfissionais() {
+            profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+            todosProfissionais.forEach(profissional => {
+                if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
+                    const option = document.createElement("option");
+                    option.value = profissional.id;
+                    option.textContent = profissional.nome;
+                    profissionalSelect.appendChild(option);
+                }
+            });
 
-            if (value === "") {
-                input.setCustomValidity("");
-                input.classList.remove("is-invalid");
-                return;
-            }
-
-            if (!/^\d{6}\/\d{4}$/.test(value)) {
-                input.setCustomValidity("O número do processo deve estar no formato 000000/0000.");
-                input.classList.add("is-invalid");
-            } else {
-                input.setCustomValidity("");
-                input.classList.remove("is-invalid");
-            }
-        });
-
-        // Validação do telefone
-        document.getElementById('telefonePaciente').addEventListener('input', function (event) {
-            const input = event.target;
-            let value = input.value.replace(/\D/g, '');
-
-            if (value.length > 11) {
-                value = value.slice(0, 11);
-            }
-
-            if (value.length > 10) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
-            } else if (value.length > 9) {
-                value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-            }
-
-            input.value = value;
-
-            const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
-            if (!telefoneRegex.test(value)) {
-                input.setCustomValidity("Informe um telefone válido no formato (XX) XXXXX-XXXX.");
-                input.classList.add("is-invalid");
-            } else {
-                input.setCustomValidity("");
-                input.classList.remove("is-invalid");
-            }
-        });
-
-        // Funções para buscar paciente por nome ou matrícula
-        function buscarPacientePorNome() {
-            const nomePaciente = document.getElementById ('nomePaciente').value.trim();
-            
-            if (nomePaciente.length > 3) {
-                $.ajax({
-                    url: '/encaminhamentos/buscarPaciente?nome=' + nomePaciente,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#matriculaPaciente').val(data.matricula);
-                        $('#pacienteId').val(data.id);
-                    },
-                    error: function() {
-                        $('#matriculaPaciente').val('');
-                        $('#pacienteId').val('');
-                        alert('Paciente não encontrado!');
-                    }
-                });
+            if (profissionalRecebidoId) {
+                profissionalSelect.value = profissionalRecebidoId;
             }
         }
 
-        function buscarPacientePorMatricula() {
-            const matriculaPaciente = document.getElementById('matriculaPaciente').value.trim();
-            
-            if (matriculaPaciente.length > 0) {
-                $.ajax({
-                    url: '/encaminhamentos/buscarPaciente?matricula=' + matriculaPaciente,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#nomePaciente').val(data.nome);
-                        $('#pacienteId').val(data.id);
-                    },
-                    error: function() {
-                        $('#nomePaciente').val('');
-                        $('#pacienteId').val('');
-                        alert('Paciente não encontrado!');
-                    }
-                });
-            }
-        }
-
-document.addEventListener("DOMContentLoaded", function () {
-  const profissionalSelect = document.getElementById("profissionalIdRecebido");
-
-  const todosProfissionais = [
-    {{#each todosProfissionais}}
-      { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
-    {{/each}}
-  ];
-
-  const profissionalIdEnvio = "{{encaminhamento.profissionalIdEnvio}}";
-
-  function atualizarListaProfissionais() {
-
-    profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
-
-    todosProfissionais.forEach(profissional => {
-
-      if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
-        const option = document.createElement("option");
-        option.value = profissional.id;
-        option.textContent = profissional.nome;
-        profissionalSelect.appendChild(option);
-      }
+        atualizarListaProfissionais();
     });
-
-    const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
-    if (profissionalRecebidoId) {
-      profissionalSelect.value = profissionalRecebidoId;
-    }
-  }
-
-  atualizarListaProfissionais();
-});
 </script>
 </body>
 </html>
