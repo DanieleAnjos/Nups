@@ -4,7 +4,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Arquivo = require('../models/Arquivo');
-const { ensureAuthenticated } = require('../config/auth');
 
 const arquivosDir = path.join(__dirname, '../uploads/arquivos/');
 
@@ -55,7 +54,7 @@ router.get('/create', (req, res) => {
   res.render('arquivos/create');
 });
 
-router.post('/create', ensureAuthenticated, upload.single('arquivo'), async (req, res) => {
+router.post('/create', upload.single('arquivo'), async (req, res) => {
     try {
         const { nome, descricao } = req.body;
 
