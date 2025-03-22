@@ -53,6 +53,7 @@ const contatoRoutes = require('./routes/contatoRoutes');
 const discussaoCasoRoutes = require('./routes/discussaoCasoRoutes');
 const noticiasRoutes = require('./routes/noticiasRoutes');
 const avisoRoutes = require('./routes/avisoRoutes');
+const arquivoRoutes = require('./routes/arquivoRoutes');
 
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -438,6 +439,7 @@ const accessControl = {
       '/avisos',
       '/fluxoAtendimentos',
       '/auth/changeUsername',
+      '/arquivos'
 
     ],
     'Adm': [
@@ -513,7 +515,8 @@ const accessControl = {
       '/discussoes/detalhes',
       '/discussoes/edit',
       '/discussoes/create',
-      '/fluxoAtendimentos'
+      '/fluxoAtendimentos',
+      '/arquivos'
 
     ],
 
@@ -581,6 +584,7 @@ const accessControl = {
       '/discussoes/detalhes',
       '/discussoes/edit',
       '/discussoes/create',
+      '/arquivos'
 
 
     ],
@@ -685,6 +689,7 @@ app.use('/eventos', eventoRoutes);
 app.use('/noticias', noticiasRoutes);
 app.use('/auth', usuarioRoutes);
 app.use('/avisos', avisoRoutes);
+app.use('/arquivos', arquivoRoutes);
 
 app.use((req, res) => {
     res.status(404).render('404'); 
