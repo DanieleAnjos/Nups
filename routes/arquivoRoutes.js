@@ -1,11 +1,8 @@
-// routes/arquivos.js
 const express = require('express');
 const router = express.Router();
 const Arquivo = require('../models/Arquivo');
 const { upload, uploadErrorHandler } = require('../config/multer');
 
-
-// Listar arquivos
 router.get('/', async (req, res) => {
   try {
     const arquivos = await Arquivo.findAll({
@@ -19,16 +16,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Formulário para upload de arquivo
 router.get('/create', (req, res) => {
   res.render('arquivos/create');
 });
 
-// Upload de arquivo
 router.post('/create', upload.single('arquivo'), uploadErrorHandler, async (req, res) => {
   try {
     const { nome, descricao } = req.body;
-    const caminho = req.file.path.replace('public', '');
+
+    if (!req.file) {
+      req.flash('error_msg', 'Nenhum arquivo enviado.');
+      return res.redirect('/arquivos/create');
+    }
+
+    const caminho = req.file.path.replace('public', ''); // Caminho relativo
 
     await Arquivo.create({
       nome,
@@ -46,14 +47,15 @@ router.post('/create', upload.single('arquivo'), uploadErrorHandler, async (req,
   }
 });
 
-// Formulário para editar arquivo
 router.get('/edit/:id', async (req, res) => {
   try {
     const arquivo = await Arquivo.findByPk(req.params.id);
+
     if (!arquivo || arquivo.profissionalId !== req.user.profissionalId) {
       req.flash('error_msg', 'Arquivo não encontrado ou você não tem permissão para editá-lo.');
       return res.redirect('/arquivos');
     }
+
     res.render('arquivos/edit', { arquivo });
   } catch (error) {
     console.error('Erro ao buscar arquivo:', error);
@@ -62,8 +64,7 @@ router.get('/edit/:id', async (req, res) => {
   }
 });
 
-// Atualizar arquivo
-router.post('/edit/:id', upload.single('arquivo'), async (req, res) => {
+router.post('/edit/:id', upload.single('arquivo'), uploadErrorHandler, async (req, res) => {
   try {
     const { nome, descricao } = req.body;
     const arquivo = await Arquivo.findByPk(req.params.id);
@@ -77,6 +78,16 @@ router.post('/edit/:id', upload.single('arquivo'), async (req, res) => {
     arquivo.descricao = descricao;
 
     if (req.file) {
+
+        if (arquivo.caminho) {
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(__dirname, '../public', arquivo.caminho);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath); 
+        }
+      }
+
       arquivo.caminho = req.file.path.replace('public', '');
     }
 
@@ -92,15 +103,26 @@ router.post('/edit/:id', upload.single('arquivo'), async (req, res) => {
 });
 
 // Excluir arquivo
-router.post('/excluir/:id', async (req, res) => {
+router.post('/delete/:id', async (req, res) => {
   try {
     const arquivo = await Arquivo.findByPk(req.params.id);
+
     if (!arquivo || arquivo.profissionalId !== req.user.profissionalId) {
       req.flash('error_msg', 'Arquivo não encontrado ou você não tem permissão para excluí-lo.');
       return res.redirect('/arquivos');
     }
 
+    if (arquivo.caminho) {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(__dirname, '../public', arquivo.caminho);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath); 
+      }
+    }
+
     await arquivo.destroy();
+
     req.flash('success_msg', 'Arquivo excluído com sucesso!');
     res.redirect('/arquivos');
   } catch (error) {
