@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Arquivo = require('../models/Arquivo');
-const upload = require('../config/multer');
+const { upload, uploadErrorHandler } = require('../config/multer');
+
 
 // Listar arquivos
 router.get('/', async (req, res) => {
@@ -24,7 +25,7 @@ router.get('/create', (req, res) => {
 });
 
 // Upload de arquivo
-router.post('/create', upload.single('arquivo'), async (req, res) => {
+router.post('/create', upload.single('arquivo'), uploadErrorHandler, async (req, res) => {
   try {
     const { nome, descricao } = req.body;
     const caminho = req.file.path.replace('public', '');

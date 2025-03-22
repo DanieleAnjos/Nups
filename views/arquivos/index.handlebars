@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Arquivos</title>
+</head>
+<body>
+  <h1>Meus Arquivos</h1>
+  {{#if success_msg}}
+    <div class="alert alert-success">{{success_msg}}</div>
+  {{/if}}
+  {{#if error_msg}}
+    <div class="alert alert-danger">{{error_msg}}</div>
+  {{/if}}
+  <a href="/arquivos/create" class="btn btn-primary">Novo Arquivo</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Data</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each arquivos}}
+        <tr>
+          <td>{{this.nome}}</td>
+          <td>{{this.descricao}}</td>
+          <td>{{formatDate this.createdAt}}</td>
+          <td>
+            <a href="{{this.caminho}}" target="_blank" class="btn btn-info">Visualizar</a>
+            <a href="/arquivos/edit/{{this.id}}" class="btn btn-warning">Editar</a>
+            <form action="/arquivos/excluir/{{this.id}}" method="POST" style="display:inline;">
+              <button type="submit" class="btn btn-danger">Excluir</button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</body>
+</html>
