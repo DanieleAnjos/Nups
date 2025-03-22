@@ -4,6 +4,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const Arquivo = require('../models/Arquivo');
+const { uploadErrorHandler } = require('../config/multer');
+
 
 const arquivosDir = path.join(__dirname, '../uploads/arquivos/');
 
