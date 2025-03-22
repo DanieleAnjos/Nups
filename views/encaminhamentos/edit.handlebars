@@ -243,45 +243,39 @@
             }
         }
 
-        // Defina as listas de profissionais
-        const assuntoSelect = document.getElementById("assuntoAcolhimento");
-        const profissionalSelect = document.getElementById("profissionalIdRecebido");
+document.addEventListener("DOMContentLoaded", function () {
+  const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
-        const profissionaisPsicologia = [
-            {{#each profissionaisPsicologia}}
-                { id: "{{this.id}}", nome: "{{this.nome}}" },
-            {{/each}}
-        ];
+  const todosProfissionais = [
+    {{#each todosProfissionais}}
+      { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
+    {{/each}}
+  ];
 
-        const profissionaisServicoSocial = [
-            {{#each profissionaisServicoSocial}}
-                { id: "{{this.id}}", nome: "{{this.nome}}" },
-            {{/each}}
-        ];
+  const profissionalIdEnvio = "{{encaminhamento.profissionalIdEnvio}}";
 
-        function atualizarListaProfissionais() {
-            const assuntoSelecionado = assuntoSelect.value;
+  function atualizarListaProfissionais() {
 
-            let profissionais = [];
-            if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
-                profissionais = profissionaisPsicologia;
-            } else {
-                profissionais = profissionaisServicoSocial;
-            }
+    profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-            profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+    todosProfissionais.forEach(profissional => {
 
-            profissionais.forEach(profissional => {
-                const option = document.createElement("option");
-                option.value = profissional.id;
-                option.textContent = profissional.nome;
-                profissionalSelect.appendChild(option);
-            });
-        }
-
-        assuntoSelect.addEventListener("change", atualizarListaProfissionais);
-        atualizarListaProfissionais(); // Chama a função ao carregar a página
+      if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
+        const option = document.createElement("option");
+        option.value = profissional.id;
+        option.textContent = profissional.nome;
+        profissionalSelect.appendChild(option);
+      }
     });
+
+    const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
+    if (profissionalRecebidoId) {
+      profissionalSelect.value = profissionalRecebidoId;
+    }
+  }
+
+  atualizarListaProfissionais();
+});
 </script>
 </body>
 </html>

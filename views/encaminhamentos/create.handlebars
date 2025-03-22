@@ -95,6 +95,8 @@
           <option value="Acolhimento de disparo">Acolhimento de disparo</option>
           <option value="Acolhimento psicossocial">Acolhimento psicossocial</option>
           <option value="Exposição negativa na mídia">Exposição negativa na mídia</option>
+          <option value="Atendimento psicologico">Atendimento psicologico</option>
+          <option value="Atendimento psiquiátrico">Atendimento psiquiátrico</option>
         </select>
       </div>
 
@@ -245,43 +247,33 @@ $(document).ready(function() {
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      const assuntoSelect = document.getElementById("assuntoAcolhimento");
+      
       const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
-      const profissionaisPsicologia = [
-        {{#each profissionaisPsicologia}}
-          { id: "{{this.id}}", nome: "{{this.nome}}" },
+      const todosProfissionais = [
+
+        {{#each todosProfissionais}}
+          { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
         {{/each}}
       ];
 
-      const profissionaisServicoSocial = [
-        {{#each profissionaisServicoSocial}}
-          { id: "{{this.id}}", nome: "{{this.nome}}" },
-        {{/each}}
-      ];
+      const profissionalIdEnvio = "{{profissionalIdEnvio}}";
 
       function atualizarListaProfissionais() {
-        const assuntoSelecionado = assuntoSelect.value;
-
-        let profissionais = [];
-        if (assuntoSelecionado === "Acolhimento de disparo" || assuntoSelecionado === "Exposição negativa na mídia") {
-          profissionais = profissionaisPsicologia;
-        } else {
-          profissionais = profissionaisServicoSocial;
-        }
-
         profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-        profissionais.forEach(profissional => {
-          const option = document.createElement("option");
-          option.value = profissional.id;
-          option.textContent = profissional.nome;
-          profissionalSelect.appendChild(option);
+        todosProfissionais.forEach(profissional => {
+
+          if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
+            const option = document.createElement("option");
+            option.value = profissional.id;
+            option.textContent = profissional.nome;
+            profissionalSelect.appendChild(option);
+          }
         });
       }
 
-      assuntoSelect.addEventListener("change", atualizarListaProfissionais);
-      atualizarListaProfissionais(); // Chama a função ao carregar a página
+      atualizarListaProfissionais();
     });
   </script>
 </body>
