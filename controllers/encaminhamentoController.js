@@ -6,7 +6,7 @@ const DiscussaoCaso = require('../models/DiscussaoCaso');
 const Usuario = require('../models/Usuario');
 
 const { Op } = require('sequelize');  
-const moment = require('moment');
+const moment = require('moment-timezone');
 const { Paciente } = require('../models');
 
 exports.index = async (req, res) => {
@@ -366,6 +366,7 @@ exports.edit = async (req, res) => {
 };
 
 
+
 exports.update = async (req, res) => {
   const { id } = req.params;
 
@@ -383,33 +384,30 @@ exports.update = async (req, res) => {
       atendimentoId,
     } = req.body;
 
-    // Verifica se o número de processo já está associado a outro encaminhamento (exceto o próprio encaminhamento)
-    const numeroProcessoExistente = await Encaminhamento.findOne({
+    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
+
+    const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
-        numeroProcesso,
-        id: { [Op.ne]: id }, // Exclui o encaminhamento atual da busca
+        matriculaPaciente: matriculaPaciente, 
+        profissionalIdRecebido: profissionalIdRecebido, 
+        createdAt: {
+          [Op.between]: [startOfDay, endOfDay], 
+        },
+        id: {
+          [Op.ne]: id,
+        },
       },
     });
 
-    if (numeroProcessoExistente) {
-      req.flash('error_msg', 'Este número de processo já está associado a outro encaminhamento.');
-      return res.redirect(`/encaminhamentos/${id}/edit`);
+    if (encaminhamentoExistente) {
+      req.flash(
+        'error_msg',
+        'Este profissional já recebeu um encaminhamento para o mesmo paciente hoje.'
+      );
+      return res.redirect(`/encaminhamentos/editar/${id}`);
     }
 
-    // Verifica se a matrícula do paciente já está associada a outro encaminhamento (exceto o próprio encaminhamento)
-    const matriculaPacienteExistente = await Encaminhamento.findOne({
-      where: {
-        matriculaPaciente,
-        id: { [Op.ne]: id }, // Exclui o encaminhamento atual da busca
-      },
-    });
-
-    if (matriculaPacienteExistente) {
-      req.flash('error_msg', 'Este paciente já possui um encaminhamento associado com esta matrícula.');
-      return res.redirect(`/encaminhamentos/${id}/edit`);
-    }
-
-    // Atualiza o encaminhamento
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
 
     if (!updated) {
