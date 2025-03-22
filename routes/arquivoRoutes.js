@@ -1,7 +1,42 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const Arquivo = require('../models/Arquivo');
-const { upload, uploadErrorHandler } = require('../config/multer');
+const { ensureAuthenticated } = require('../config/auth');
+
+const arquivosDir = path.join(__dirname, '../uploads/arquivos/');
+
+if (!fs.existsSync(arquivosDir)) {
+    fs.mkdirSync(arquivosDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, arquivosDir); 
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}${path.extname(file.originalname)}`); // Nome único
+    },
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 50 * 1024 * 1024 }, 
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|xlsx|txt/;
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+
+        if (mimetype && extname) {
+            cb(null, true);
+        } else {
+            cb(new Error('Apenas arquivos de imagem (JPEG, PNG, GIF) e documentos (PDF, DOC, DOCX, XLSX, TXT) são permitidos!'), false);
+        }
+    },
+});
+
 
 router.get('/', async (req, res) => {
   try {
@@ -20,31 +55,31 @@ router.get('/create', (req, res) => {
   res.render('arquivos/create');
 });
 
-router.post('/create', upload.single('arquivo'), uploadErrorHandler, async (req, res) => {
-  try {
-    const { nome, descricao } = req.body;
+router.post('/create', ensureAuthenticated, upload.single('arquivo'), async (req, res) => {
+    try {
+        const { nome, descricao } = req.body;
 
-    if (!req.file) {
-      req.flash('error_msg', 'Nenhum arquivo enviado.');
-      return res.redirect('/arquivos/create');
+        if (!req.file) {
+            req.flash('error_msg', 'Nenhum arquivo enviado.');
+            return res.redirect('/arquivos/create');
+        }
+
+        const caminho = req.file.path.replace('public', ''); // Caminho relativo
+
+        await Arquivo.create({
+            nome,
+            caminho,
+            descricao,
+            profissionalId: req.user.profissionalId,
+        });
+
+        req.flash('success_msg', 'Arquivo enviado com sucesso!');
+        res.redirect('/arquivos');
+    } catch (error) {
+        console.error('Erro ao enviar arquivo:', error);
+        req.flash('error_msg', 'Erro ao enviar arquivo.');
+        res.redirect('/arquivos/create');
     }
-
-    const caminho = req.file.path.replace('public', ''); // Caminho relativo
-
-    await Arquivo.create({
-      nome,
-      caminho,
-      descricao,
-      profissionalId: req.user.profissionalId,
-    });
-
-    req.flash('success_msg', 'Arquivo enviado com sucesso!');
-    res.redirect('/arquivos');
-  } catch (error) {
-    console.error('Erro ao enviar arquivo:', error);
-    req.flash('error_msg', 'Erro ao enviar arquivo.');
-    res.redirect('/arquivos/create');
-  }
 });
 
 router.get('/edit/:id', async (req, res) => {
