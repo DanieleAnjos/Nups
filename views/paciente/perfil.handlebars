@@ -102,7 +102,15 @@
             <span class="label"><strong>Plano de saúde: </strong></span>
             <span class="value">&nbsp;{{paciente.planoSaude}}</span>
             </div>
-        {{#if (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Administrador") (eq profissional.cargo "gestor servico social"))}}
+        {{#if (eq profissional.cargo "Assistente social")}}
+          <div class="info-item">
+            <i class="fas fa-notes-medical"></i>
+            <span class="label"><strong>Ficha: </strong></span>
+            <span class="value">&nbsp;
+              <a href="/pacientes/ficha/{{paciente.id}}" class="link-ficha">Ver ficha completa</a>
+            </span>
+          </div>        
+        {{else if (eq profissional.cargo "Administrador")}}
           <div class="info-item">
             <i class="fas fa-notes-medical"></i>
             <span class="label"><strong>Ficha: </strong></span>
@@ -110,7 +118,15 @@
               <a href="/pacientes/ficha/{{paciente.id}}" class="link-ficha">Ver ficha completa</a>
             </span>
           </div>
-          {{/if}}
+        {{else if (eq profissional.cargo "Gestor Servico Social")}}
+          <div class="info-item">
+            <i class="fas fa-notes-medical"></i>
+            <span class="label"><strong>Ficha: </strong></span>
+            <span class="value">&nbsp;
+              <a href="/pacientes/ficha/{{paciente.id}}" class="link-ficha">Ver ficha completa</a>
+            </span>
+          </div>       
+       {{/if}}
           </div>
       </div>
 
