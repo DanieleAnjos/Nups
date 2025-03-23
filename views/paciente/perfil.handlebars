@@ -158,7 +158,7 @@
   <div class="card-body">
     {{#if paciente.atendimentos}}
       <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="tabelaAtendimentos">
           <thead>
             <tr>
               <th>Data</th>
@@ -169,25 +169,18 @@
           </thead>
           <tbody>
           {{#each paciente.atendimentos as |atendimento|}}
-              {{log "Profissional Cargo:" (toLowerCase ../profissional.cargo)}}
-              {{log "Atendimento Cargo:" (toLowerCase atendimento.profissional.cargo)}}
-
-              {{#if (and atendimento.profissional (or 
-                  (eq (toLowerCase ../profissional.cargo) "administrador")
-                  (eq (toLowerCase ../profissional.cargo) (toLowerCase atendimento.profissional.cargo))
-                  (and (eq (toLowerCase ../profissional.cargo) "gestor servico social") (eq (toLowerCase atendimento.profissional.cargo) "assistente social"))
-                  (and (eq (toLowerCase ../profissional.cargo) "gestor psicologia") (eq (toLowerCase atendimento.profissional.cargo) "psicólogo"))
-                  (and (eq (toLowerCase ../profissional.cargo) "gestor psiquiatria") (eq (toLowerCase atendimento.profissional.cargo) "psiquiatra"))
-              ))}}
-                  <tr class="attendance-item">
-                      <td>{{formatDateTime atendimento.dataAtendimento}}</td>
-                      <td>{{atendimento.profissional.nome}}</td>
-                      <td>{{atendimento.profissional.cargo}}</td>
-                      <td>
-                          <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
-                      </td>
-                  </tr>
-              {{/if}}
+            {{#if atendimento.profissional}}
+              <tr class="attendance-item"
+                  data-atendimento-cargo="{{atendimento.profissional.cargo}}"
+                  data-atendimento-id="{{atendimento.id}}">
+                <td>{{formatDateTime atendimento.dataAtendimento}}</td>
+                <td>{{atendimento.profissional.nome}}</td>
+                <td>{{atendimento.profissional.cargo}}</td>
+                <td>
+                  <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
+                </td>
+              </tr>
+            {{/if}}
           {{/each}}
           </tbody>
         </table>
@@ -322,6 +315,26 @@
 
   // Adiciona o evento de validação ao formulário
   document.querySelector('form').addEventListener('submit', validateFileSize);
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const profissionalCargo = "{{profissional.cargo}}".toLowerCase();
+    
+    document.querySelectorAll("#tabelaAtendimentos tbody tr").forEach(tr => {
+      const atendimentoCargo = tr.getAttribute("data-atendimento-cargo").toLowerCase();
+
+      const podeVisualizar = 
+        profissionalCargo === "administrador" ||
+        profissionalCargo === atendimentoCargo ||
+        (profissionalCargo === "gestor servico social" && atendimentoCargo === "assistente social") ||
+        (profissionalCargo === "gestor psicologia" && atendimentoCargo === "psicólogo") ||
+        (profissionalCargo === "gestor psiquiatria" && atendimentoCargo === "psiquiatra");
+
+      if (!podeVisualizar) {
+        tr.style.display = "none";
+      }
+    });
+  });
 </script>
 
 
