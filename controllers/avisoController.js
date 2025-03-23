@@ -497,7 +497,7 @@ exports.marcarAvisoComoVisto = async (req, res) => {
   }
 };
 
-// Listar visualizações do aviso
+
 exports.listarVisualizacoesAviso = async (req, res) => {
   try {
     const { id } = req.params;
@@ -508,7 +508,7 @@ exports.listarVisualizacoesAviso = async (req, res) => {
           model: Profissional,
           as: 'visualizadoPor',
           attributes: ['id', 'nome', 'cargo'],
-          through: { attributes: ['vistoEm'] }
+          through: { attributes: ['vistoEm'] } 
         }
       ]
     });
@@ -524,9 +524,11 @@ exports.listarVisualizacoesAviso = async (req, res) => {
       attributes: ['id', 'nome', 'cargo']
     });
 
-    const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => {
-      return !aviso.visualizadoPor.some(visto => visto.id === profissional.id);
-    });
+    const idsVisualizados = aviso.visualizadoPor.map(visto => visto.id);
+
+    const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => 
+      !idsVisualizados.includes(profissional.id)
+    );
 
     res.render('avisos/visualizacoes', {
       title: 'Visualizações do Aviso',
@@ -536,9 +538,10 @@ exports.listarVisualizacoesAviso = async (req, res) => {
         mensagem: aviso.mensagem,
         data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
       },
-      visualizadoPor: aviso.visualizadoPor,
-      naoVisualizadoPor: profissionaisNaoVisualizaram
+      visualizadoPor: aviso.visualizadoPor, 
+      naoVisualizadoPor: profissionaisNaoVisualizaram 
     });
+
   } catch (error) {
     console.error('Erro ao listar visualizações do aviso:', error);
     res.render('avisos/visualizacoes', {

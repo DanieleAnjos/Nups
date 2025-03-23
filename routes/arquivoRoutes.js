@@ -41,9 +41,7 @@ const upload = multer({
 
 router.get('/', async (req, res) => {
   try {
-    const arquivos = await Arquivo.findAll({
-      where: { profissionalId: req.user.profissionalId },
-    });
+    const arquivos = await Arquivo.findAll(); 
     res.render('arquivos/index', { arquivos });
   } catch (error) {
     console.error('Erro ao buscar arquivos:', error);
@@ -51,6 +49,7 @@ router.get('/', async (req, res) => {
     res.redirect('/profissionais');
   }
 });
+
 
 router.get('/create', (req, res) => {
   res.render('arquivos/create');
