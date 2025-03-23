@@ -156,7 +156,7 @@
     <h2 class="h5 mb-0">Atendimentos</h2>
   </div>
   <div class="card-body">
-    {{#if paciente.atendimentos}}
+    {{#if paciente.atendimentos.length}}
       <div class="table-responsive">
         <table class="table table-bordered" id="tabelaAtendimentos">
           <thead>
@@ -168,20 +168,20 @@
             </tr>
           </thead>
           <tbody>
-          {{#each paciente.atendimentos as |atendimento|}}
-            {{#if atendimento.profissional}}
-              <tr class="attendance-item"
-                  data-atendimento-cargo="{{atendimento.profissional.cargo}}"
-                  data-atendimento-id="{{atendimento.id}}">
-                <td>{{formatDateTime atendimento.dataAtendimento}}</td>
-                <td>{{atendimento.profissional.nome}}</td>
-                <td>{{atendimento.profissional.cargo}}</td>
-                <td>
-                  <a href="/atendimentos/{{atendimento.id}}" class="btn btn-sm btn-primary">Detalhes</a>
-                </td>
-              </tr>
-            {{/if}}
-          {{/each}}
+            {{#each paciente.atendimentos}}
+              {{#if this.profissional}}
+                <tr class="attendance-item"
+                    data-atendimento-cargo="{{this.profissional.cargo}}"
+                    data-atendimento-id="{{this.id}}">
+                  <td>{{formatDateTime this.dataAtendimento}}</td>
+                  <td>{{this.profissional.nome}}</td>
+                  <td>{{this.profissional.cargo}}</td>
+                  <td>
+                    <a href="/atendimentos/{{this.id}}" class="btn btn-sm btn-primary">Detalhes</a>
+                  </td>
+                </tr>
+              {{/if}}
+            {{/each}}
           </tbody>
         </table>
       </div>
