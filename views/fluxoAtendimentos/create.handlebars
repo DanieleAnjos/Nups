@@ -210,23 +210,25 @@ document.getElementById('numeroProcesso').addEventListener('input', function (ev
         {{/each}}
     ];
 
-    function atualizarListaProfissionais() {
+function atualizarListaProfissionais() {
+    // Limpar as opções anteriores
+    profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-        // Limpar as opções anteriores
-        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+    // Lista combinada de profissionais do Serviço Social e Gestores do Serviço Social
+    const todosProfissionaisFiltrados = [...profissionaisServicoSocial, ...profissionaisGestorSocial, ...profissionaisAdm];
 
-        // Adicionar os novos profissionais ao select
-      profissionaisServicoSocial.forEach(profissional => {
+    // Adicionar profissionais ao select
+    todosProfissionaisFiltrados.forEach(profissional => {
         const option = document.createElement("option");
         option.value = profissional.id;
         option.textContent = profissional.nome;
         profissionalSelect.appendChild(option);
-      });
-    }
+    });
+}
 
-    // Executar a função ao mudar o assunto
-    // Executar ao carregar a página (caso já tenha um assunto pré-selecionado)
-    atualizarListaProfissionais();
+// Executar ao carregar a página e ao mudar o assunto
+atualizarListaProfissionais();
+
 });
   </script>
 

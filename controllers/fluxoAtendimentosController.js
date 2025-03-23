@@ -138,6 +138,21 @@ const create = async (req, res) => {
       },
     });
 
+    const profissionaisGestorSocial = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Gestor Servico Social", 
+      },
+    });
+
+    
+    const profissionaisAdm = await Profissional.findAll({
+      where: {
+        id: { [Op.ne]: profissionalIdEnvio },
+        cargo: "Adm", 
+      },
+    });
+
     const pacientes = await Paciente.findAll({
       attributes: ['id', 'nome', 'matricula'], 
       order: [['nome', 'ASC']]
@@ -147,6 +162,8 @@ const create = async (req, res) => {
       profissionalIdEnvio,
       profissionaisPsicologia,
       profissionaisServicoSocial,
+      profissionaisGestorSocial,
+      profissionaisAdm,
       pacientes,
     });
 
