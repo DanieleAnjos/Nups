@@ -502,13 +502,14 @@ exports.listarVisualizacoesAviso = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Buscar o aviso específico e incluir os profissionais que visualizaram
     const aviso = await Aviso.findByPk(id, {
       include: [
         {
           model: Profissional,
           as: 'visualizadoPor',
           attributes: ['id', 'nome', 'cargo'],
-          through: { attributes: ['vistoEm'] } 
+          through: { attributes: ['vistoEm'] }
         }
       ]
     });
@@ -520,14 +521,24 @@ exports.listarVisualizacoesAviso = async (req, res) => {
       });
     }
 
+    // Buscar todos os profissionais
     const todosProfissionais = await Profissional.findAll({
       attributes: ['id', 'nome', 'cargo']
     });
 
-    const idsVisualizados = aviso.visualizadoPor.map(visto => visto.id);
+    // Definir os profissionais que são alvo deste aviso
+    const profissionaisAlvo = todosProfissionais.filter(profissional => 
+      aviso.cargoAlvo === 'Geral' || profissional.cargo === aviso.cargoAlvo
+    );
 
-    const profissionaisNaoVisualizaram = todosProfissionais.filter(profissional => 
-      !idsVisualizados.includes(profissional.id)
+    // Filtrar os profissionais que visualizaram o aviso
+    const profissionaisVisualizaram = aviso.visualizadoPor.filter(visto => 
+      profissionaisAlvo.some(profissional => profissional.id === visto.id)
+    );
+
+    // Filtrar os profissionais que ainda não visualizaram o aviso
+    const profissionaisNaoVisualizaram = profissionaisAlvo.filter(profissional => 
+      !profissionaisVisualizaram.some(visto => visto.id === profissional.id)
     );
 
     res.render('avisos/visualizacoes', {
@@ -538,8 +549,8 @@ exports.listarVisualizacoesAviso = async (req, res) => {
         mensagem: aviso.mensagem,
         data: moment(aviso.data).format('DD/MM/YYYY HH:mm')
       },
-      visualizadoPor: aviso.visualizadoPor, 
-      naoVisualizadoPor: profissionaisNaoVisualizaram 
+      visualizadoPor: profissionaisVisualizaram,
+      naoVisualizadoPor: profissionaisNaoVisualizaram
     });
 
   } catch (error) {
@@ -551,3 +562,4 @@ exports.listarVisualizacoesAviso = async (req, res) => {
     });
   }
 };
+
