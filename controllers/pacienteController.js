@@ -607,14 +607,9 @@ exports.perfil = async (req, res) => {
       // Gestor pode ver atendimentos dos profissionais sob sua gestão
       if (isGestor && gestorCargosMap[cargo].includes(atendimentoCargo)) return true;
 
-      // Profissional pode ver atendimentos do seu respectivo gestor
-      if (
-        ['assistente social', 'psicólogo', 'psiquiatra'].includes(cargo) &&
-        Object.keys(gestorCargosMap).some(gestorCargo => {
-          return gestorCargosMap[gestorCargo].includes(cargo) && // O profissional pertence à gestão do gestor
-                 atendimentoCargo === gestorCargo; // O atendimento foi realizado pelo gestor
-        })
-      ) {
+      // Profissionais podem ver atendimentos de seus gestores
+      if (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo) && 
+          Object.keys(gestorCargosMap).includes(cargo)) {
         return true;
       }
 
