@@ -201,35 +201,56 @@ document.getElementById('numeroProcesso').addEventListener('input', function (ev
 
 
 
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const profissionalSelect = document.getElementById("profissionalIdRecebido");
 
+    // Lista de profissionais do Serviço Social
     const profissionaisServicoSocial = [
         {{#each profissionaisServicoSocial}}
             { id: "{{this.id}}", nome: "{{this.nome}}" },
         {{/each}}
     ];
 
-function atualizarListaProfissionais() {
-    // Limpar as opções anteriores
-    profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+    // Lista de gestores do Serviço Social
+    const profissionaisGestorSocial = [
+        {{#each profissionaisGestorSocial}}
+            { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+    ];
 
-    // Lista combinada de profissionais do Serviço Social e Gestores do Serviço Social
-    const todosProfissionaisFiltrados = [...profissionaisServicoSocial, ...profissionaisGestorSocial, ...profissionaisAdm];
+    // Lista de administradores (se aplicável)
+    const profissionaisAdm = [
+        {{#each profissionaisAdm}}
+            { id: "{{this.id}}", nome: "{{this.nome}}" },
+        {{/each}}
+    ];
 
-    // Adicionar profissionais ao select
-    todosProfissionaisFiltrados.forEach(profissional => {
-        const option = document.createElement("option");
-        option.value = profissional.id;
-        option.textContent = profissional.nome;
-        profissionalSelect.appendChild(option);
-    });
-}
+    function atualizarListaProfissionais() {
+        // Limpar as opções anteriores
+        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-// Executar ao carregar a página e ao mudar o assunto
-atualizarListaProfissionais();
+        // Combinar todas as listas de profissionais
+        const todosProfissionaisFiltrados = [...profissionaisServicoSocial, ...profissionaisGestorSocial, ...profissionaisAdm];
 
+        // Adicionar profissionais ao select
+        todosProfissionaisFiltrados.forEach(profissional => {
+            const option = document.createElement("option");
+            option.value = profissional.id;
+            option.textContent = profissional.nome;
+            profissionalSelect.appendChild(option);
+        });
+
+        // Manter a seleção do profissional já atribuído (se existir)
+        const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
+        if (profissionalRecebidoId) {
+            profissionalSelect.value = profissionalRecebidoId;
+        }
+    }
+
+    // Executar ao carregar a página
+    atualizarListaProfissionais();
 });
+
   </script>
 
 </body>
