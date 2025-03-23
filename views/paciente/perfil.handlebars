@@ -316,25 +316,6 @@
   // Adiciona o evento de validação ao formulário
   document.querySelector('form').addEventListener('submit', validateFileSize);
 
-
-    document.addEventListener("DOMContentLoaded", function () {
-    const profissionalCargo = "{{profissional.cargo}}".toLowerCase();
-    
-    document.querySelectorAll("#tabelaAtendimentos tbody tr").forEach(tr => {
-      const atendimentoCargo = tr.getAttribute("data-atendimento-cargo").toLowerCase();
-
-      const podeVisualizar = 
-        profissionalCargo === "administrador" ||
-        profissionalCargo === atendimentoCargo ||
-        (profissionalCargo === "gestor servico social" && atendimentoCargo === "assistente social") ||
-        (profissionalCargo === "gestor psicologia" && atendimentoCargo === "psicólogo") ||
-        (profissionalCargo === "gestor psiquiatria" && atendimentoCargo === "psiquiatra");
-
-      if (!podeVisualizar) {
-        tr.style.display = "none";
-      }
-    });
-  });
 </script>
 
 

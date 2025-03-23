@@ -585,17 +585,31 @@ exports.perfil = async (req, res) => {
 
     console.log("Cargo do profissional:", cargo);
 
-    // Mapeamento de cargos para gestores
     const gestorCargosMap = {
       'gestor servico social': ['assistente social'],
       'gestor psicologia': ['psicólogo'],
       'gestor psiquiatria': ['psiquiatra']
     };
 
-    // Verifica se o profissional é um gestor
     const isGestor = Object.keys(gestorCargosMap).includes(cargo);
 
-    // Define permissões
+    const atendimentosFiltrados = paciente.atendimentos.filter(atendimento => {
+      const atendimentoCargo = atendimento.profissional.cargo.toLowerCase();
+
+      if (cargo === "administrador") return true;
+
+      if (atendimento.profissionalId === profissional.id) return true;
+
+      if (isGestor && gestorCargosMap[cargo].includes(atendimentoCargo)) return true;
+
+      if (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo) && 
+          Object.values(gestorCargosMap).flat().includes(cargo)) {
+        return true;
+      }
+
+      return false;
+    });
+
     const podeEditar = cargo === "administrador" || 
                        cargo === "assistente social" || 
                        cargo === "gestor servico social" || 
@@ -610,7 +624,10 @@ exports.perfil = async (req, res) => {
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
 
     return res.render('paciente/perfil', {
-      paciente,
+      paciente: {
+        ...paciente.get({ plain: true }),
+        atendimentos: atendimentosFiltrados, 
+      },
       profissional,
       imagePath,
       podeEditar,
@@ -624,8 +641,6 @@ exports.perfil = async (req, res) => {
     return res.status(500).send('Erro ao buscar perfil do paciente.');
   }
 };
-
-
 
 
 exports.relatorioDetalhes = async (req, res) => {
