@@ -580,7 +580,7 @@ exports.perfil = async (req, res) => {
 
     console.log("Usuário logado (req.user):", req.user);
 
-    const profissional = req.user.profissional || {};
+    const profissional = req.user?.profissional || {};
     const cargo = profissional.cargo ? profissional.cargo.trim().toLowerCase() : "";
 
     console.log("Cargo do profissional:", cargo);
@@ -595,19 +595,14 @@ exports.perfil = async (req, res) => {
 
     const atendimentosFiltrados = paciente.atendimentos.filter(atendimento => {
       const atendimentoCargo = atendimento.profissional.cargo.toLowerCase();
-
-      if (cargo === "administrador") return true;
-
-      if (atendimento.profissionalId === profissional.id) return true;
-
-      if (isGestor && gestorCargosMap[cargo].includes(atendimentoCargo)) return true;
-
-      if (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo) && 
-          Object.values(gestorCargosMap).flat().includes(cargo)) {
-        return true;
-      }
-
-      return false;
+    
+      return (
+        cargo === "administrador" ||
+        atendimento.profissionalId === profissional.id ||
+        (isGestor && gestorCargosMap[cargo].includes(atendimentoCargo)) ||
+        (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo) &&
+          Object.values(gestorCargosMap).flat().includes(cargo))
+      );
     });
 
     const podeEditar = cargo === "administrador" || 
@@ -616,10 +611,7 @@ exports.perfil = async (req, res) => {
                        (isGestor && paciente.atendimentos.some(a => gestorCargosMap[cargo].includes(a.profissional.cargo.toLowerCase())));
 
     const podeDeletar = cargo === "administrador";
-    const podeCadastrar = cargo === "administrador" || 
-                          cargo === "assistente social" || 
-                          cargo === "gestor servico social" || 
-                          (isGestor && paciente.atendimentos.some(a => gestorCargosMap[cargo].includes(a.profissional.cargo.toLowerCase())));
+    const podeCadastrar = podeEditar; // Simplificação, pois a lógica é a mesma
 
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
 
@@ -638,7 +630,7 @@ exports.perfil = async (req, res) => {
 
   } catch (error) {
     console.error('Erro ao buscar perfil do paciente:', error);
-    return res.status(500).send('Erro ao buscar perfil do paciente.');
+    return res.status(500).send(`Erro ao buscar perfil do paciente: ${error.message}`);
   }
 };
 
