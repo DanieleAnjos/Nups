@@ -7,7 +7,6 @@ const index = async (req, res) => {
     const { nomePaciente, profissional, dataInicio, dataFim } = req.query;
     const profissionalId = req.user.profissionalId;
 
-    // Buscar o profissional associado ao usuário logado
     const profissionalAssociado = await Profissional.findOne({
       where: { id: profissionalId },
     });
@@ -40,24 +39,40 @@ const index = async (req, res) => {
       whereConditions.data = { [Op.lte]: dataFim };
     }
 
-    // Restrições adicionais para Gestores
-    if (userCargo.includes('gestor')) {
+    // Restrições adicionais para Gestores, Assistentes Sociais, Psicólogos e Psiquiatras
+    if (
+      userCargo.includes('gestor') ||
+      userCargo === 'assistente social' ||
+      userCargo === 'psicólogo' ||
+      userCargo === 'psiquiatra'
+    ) {
+      const cargosPermitidos = [];
+
+      // Adiciona o próprio cargo do usuário
+      cargosPermitidos.push(userCargo);
+
+      // Adiciona os cargos gerenciados ou do gestor correspondente
       if (userCargo.includes('servico social')) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'assistente social' },
-          { '$profissionalRecebido.cargo$': 'assistente social' }
-        ];
+        cargosPermitidos.push('assistente social');
       } else if (userCargo.includes('psicologia')) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'psicólogo' },
-          { '$profissionalRecebido.cargo$': 'psicólogo' }
-        ];
+        cargosPermitidos.push('psicólogo');
       } else if (userCargo.includes('psiquiatria')) {
-        whereConditions[Op.or] = [
-          { '$profissionalEnvio.cargo$': 'psiquiatra' },
-          { '$profissionalRecebido.cargo$': 'psiquiatra' }
-        ];
+        cargosPermitidos.push('psiquiatra');
       }
+
+      // Se for assistente social, psicólogo ou psiquiatra, adiciona o cargo do gestor correspondente
+      if (userCargo === 'assistente social') {
+        cargosPermitidos.push('gestor servico social');
+      } else if (userCargo === 'psicólogo') {
+        cargosPermitidos.push('gestor psicologia');
+      } else if (userCargo === 'psiquiatra') {
+        cargosPermitidos.push('gestor psiquiatria');
+      }
+
+      whereConditions[Op.or] = [
+        { '$profissionalEnvio.cargo$': { [Op.in]: cargosPermitidos } },
+        { '$profissionalRecebido.cargo$': { [Op.in]: cargosPermitidos } }
+      ];
     }
 
     // Buscar os atendimentos com os relacionamentos necessários
@@ -95,7 +110,6 @@ const index = async (req, res) => {
     res.status(500).send('Erro ao carregar a lista de fluxo de atendimentos');
   }
 };
-
 
 const marcarVisto = async (req, res) => {
   const { id } = req.params;
