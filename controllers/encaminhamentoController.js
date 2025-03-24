@@ -344,23 +344,34 @@ exports.edit = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { id } = req.params;
-  
-  try {
-    const dadosAtualizados = req.body;
-    const encaminhamentoAtual = await Encaminhamento.findByPk(id);
 
+  try {
+    const {
+      nomePaciente,
+      matriculaPaciente,
+      numeroProcesso,
+      telefonePaciente,
+      nomeProfissional,
+      assuntoAcolhimento,
+      descricao,
+      profissionalIdEnvio,
+      profissionalIdRecebido,
+      atendimentoId,
+    } = req.body;
+
+    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
+    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
+
+    const encaminhamentoAtual = await Encaminhamento.findByPk(id);
     if (!encaminhamentoAtual) {
       req.flash('error_msg', 'Encaminhamento não encontrado.');
       return res.redirect('/encaminhamentos');
     }
 
-    const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
-    const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
-
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
-        matriculaPaciente: dadosAtualizados.matriculaPaciente,
-        profissionalIdRecebido: dadosAtualizados.profissionalIdRecebido,
+        matriculaPaciente,
+        profissionalIdRecebido,
         createdAt: { [Op.between]: [startOfDay, endOfDay] },
         id: { [Op.ne]: id },
       },
@@ -374,15 +385,31 @@ exports.update = async (req, res) => {
       return res.redirect(`/encaminhamentos/${id}/edit`);
     }
 
-    const atualizado = await Encaminhamento.update(dadosAtualizados, { where: { id } });
-    if (!atualizado) {
-      req.flash('error_msg', 'Erro ao atualizar encaminhamento.');
-      return res.redirect('/encaminhamentos');
-    }
+    const dadosAtualizados = {
+      nomePaciente,
+      matriculaPaciente,
+      numeroProcesso,
+      telefonePaciente,
+      nomeProfissional,
+      assuntoAcolhimento,
+      descricao,
+      profissionalIdEnvio,
+      profissionalIdRecebido,
+      atendimentoId,
+    };
+
+    const profissionalAlterado =
+      encaminhamentoAtual.profissionalIdRecebido !== profissionalIdRecebido;
+
+    const outrosCamposAlterados = Object.keys(dadosAtualizados).some(
+      (campo) => encaminhamentoAtual[campo] !== dadosAtualizados[campo]
+    );
+
+    await encaminhamentoAtual.update(dadosAtualizados);
 
     const notificacoes = [];
 
-    if (encaminhamentoAtual.profissionalIdRecebido !== dadosAtualizados.profissionalIdRecebido) {
+    if (profissionalAlterado) {
       if (encaminhamentoAtual.profissionalIdRecebido) {
         notificacoes.push({
           titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
@@ -391,26 +418,23 @@ exports.update = async (req, res) => {
         });
       }
 
-      if (dadosAtualizados.profissionalIdRecebido) {
+      if (profissionalIdRecebido) {
         notificacoes.push({
-          titulo: `Novo Encaminhamento: ${dadosAtualizados.assuntoAcolhimento}`,
-          mensagem: `Você recebeu um novo encaminhamento para o paciente ${dadosAtualizados.nomePaciente}.`,
-          profissionalId: dadosAtualizados.profissionalIdRecebido,
+          titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
+          mensagem: `Você recebeu um novo encaminhamento para o paciente ${nomePaciente}.`,
+          profissionalId: profissionalIdRecebido,
         });
       }
-    } else if (Object.keys(dadosAtualizados).some(campo => encaminhamentoAtual[campo] !== dadosAtualizados[campo])) {
-      if (dadosAtualizados.profissionalIdRecebido) {
-        notificacoes.push({
-          titulo: `Encaminhamento Atualizado: ${dadosAtualizados.assuntoAcolhimento}`,
-          mensagem: `O encaminhamento do paciente ${dadosAtualizados.nomePaciente} foi atualizado.`,
-          profissionalId: dadosAtualizados.profissionalIdRecebido,
-        });
-      }
+    } else if (outrosCamposAlterados) {
+      notificacoes.push({
+        titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
+        mensagem: `O encaminhamento do paciente ${nomePaciente} foi atualizado.`,
+        profissionalId: profissionalIdRecebido,
+      });
     }
 
     if (notificacoes.length > 0) {
       await Notificacao.bulkCreate(notificacoes);
-      console.log('Notificações geradas com sucesso.');
     }
 
     req.flash('success_msg', 'Encaminhamento atualizado com sucesso!');
@@ -421,6 +445,7 @@ exports.update = async (req, res) => {
     res.status(500).redirect('/encaminhamentos');
   }
 };
+
 
 
 
