@@ -257,7 +257,7 @@
         <li class="nav-item">
           <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab" aria-controls="atendimentos" aria-selected="false">Atendimentos</button>
         </li>
-        {{#if (eq profissional.cargo "Assistente social")}}
+        {{#if  (or (eq profissional.cargo "Assistente social") (eq profissional.cargo "Gestor Servico Social"))}}
         <li class="nav-item">
           <button class="nav-link" id="fluxoAtendimentos-tab" data-bs-toggle="tab" data-bs-target="#fluxoAtendimentos" type="button" role="tab" aria-controls="fluxoAtendimentos" aria-selected="false">Fluxo de Atendimentos</button>
         </li>
@@ -274,7 +274,7 @@
         <!-- Encaminhamentos -->
         <div class="tab-pane fade show active" id="encaminhamentos" role="tabpanel" aria-labelledby="encaminhamentos-tab">
           <div class="card">
-            <div class="card-header">Encaminhamentos Relacionados</div>
+            <div class="card-header">Encaminhamentos Recebidos</div>
             <div class="card-body">
               {{#if encaminhamentos.length}}
               <div class="table-responsive">
@@ -353,7 +353,7 @@
         <!-- Atendimentos -->
         <div class="tab-pane fade" id="atendimentos" role="tabpanel" aria-labelledby="atendimentos-tab">
           <div class="card">
-            <div class="card-header">Atendimentos</div>
+            <div class="card-header">Atendimentos Realizados</div>
             <div class="card-body">
               {{#if atendimentos.length}}
               <div class="table-responsive">
