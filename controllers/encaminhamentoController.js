@@ -301,27 +301,22 @@ exports.edit = async (req, res) => {
 
     const profissionalIdEnvio = req.user ? req.user.id : null; 
 
+    // Busca todos os profissionais, incluindo o profissional logado
     const profissionaisRecebimento = await Profissional.findAll({
       where: {
-        id: {
-          [Op.ne]: profissionalIdEnvio,  
-        },
+        // Removido a condição que exclui o profissional logado
+        // id: { [Op.ne]: profissionalIdEnvio },
       },
     });
-
-
 
     const todosProfissionais = await Profissional.findAll({
       attributes: ['id', 'nome', 'cargo']
     });
 
-  
-
     const pacientes = await Paciente.findAll({
       attributes: ['id', 'nome', 'matricula'], 
       order: [['nome', 'ASC']]
     });
-
 
     res.render('encaminhamentos/edit', { 
       encaminhamento: encaminhamento.get({ plain: true }),
@@ -337,7 +332,6 @@ exports.edit = async (req, res) => {
     res.status(500).redirect('/encaminhamentos');
   }
 };
-
 
 exports.update = async (req, res) => {
   const { id } = req.params;
