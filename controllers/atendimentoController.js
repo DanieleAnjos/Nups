@@ -58,9 +58,9 @@ exports.index = async (req, res) => {
 
     // Mapeamento de cargos para gestores
     const gestorCargosMap = {
-      'gestor servico social': ['Assistente social'],
-      'gestor psicologia': ['Psicólogo'],
-      'gestor psiquiatria': ['Psiquiatra']
+      'gestor servico social': ['Assistente social', 'Gestor Servico Social'],
+      'gestor psicologia': ['Psicólogo', 'Gestor Psicologia'],
+      'gestor psiquiatria': ['Psiquiatra', 'Gestor psiquiatria']
     };
 
     // Configura o filtro de cargo
