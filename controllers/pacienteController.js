@@ -631,11 +631,7 @@ exports.perfil = async (req, res) => {
     const podeEditar =
       cargo === CARGO_ADMINISTRADOR ||
       cargo === CARGO_ASSISTENTE_SOCIAL ||
-      cargo === CARGO_GESTOR_SERVICO_SOCIAL ||
-      cargo === CARGO_PSICOLOGO ||
-      cargo === CARGO_GESTOR_PSICOLOGIA ||
-      cargo === CARGO_PSIQUIATRA ||
-      cargo === CARGO_GESTOR_PSIQUIATRIA;
+      cargo === CARGO_GESTOR_SERVICO_SOCIAL;
 
     const podeDeletar = cargo === CARGO_ADMINISTRADOR;
     const podeCadastrar = podeEditar;
