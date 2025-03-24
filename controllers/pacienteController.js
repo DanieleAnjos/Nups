@@ -618,11 +618,18 @@ exports.perfil = async (req, res) => {
         return true; // Permite que vejam seus próprios atendimentos
       }
     
+      const cargosPermitidos = {
+        'assistente social': ['gestor servico social'],
+        'psicólogo': ['gestor psicologia'],
+        'psiquiatra': ['gestor psiquiatria']
+      };
+      
       // Profissionais podem ver atendimentos de seus gestores
       return (
-        Object.values(gestorCargosMap).some(cargos => cargos.includes(atendimentoCargo)) && 
-        Object.keys(gestorCargosMap).includes(cargo)
+        cargosPermitidos[atendimentoCargo]?.includes(cargo) || // Verifica se o cargo do profissional é um gestor do atendimento
+        Object.keys(gestorCargosMap).includes(cargo) // Verifica se o profissional é um gestor
       );
+      
     });
 
 
