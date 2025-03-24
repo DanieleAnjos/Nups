@@ -55,7 +55,8 @@ exports.index = async (req, res) => {
       cargoFilter = { cargo: { [Op.in]: cargoVisualizacao[profissionalCargo] } };
     } else if (profissionalCargo.includes('gestor')) {
       // Gestores podem ver seus próprios atendimentos e dos profissionais que gerenciam
-      const cargosGerenciados = cargoVisualizacao[profissionalCargo.replace('gestor ', '')];
+      const cargoBase = profissionalCargo.replace('gestor ', ''); // Remove "gestor " para obter o cargo base
+      const cargosGerenciados = cargoVisualizacao[cargoBase] || []; // Garante que seja um array
       cargoFilter = { cargo: { [Op.in]: [profissionalCargo, ...cargosGerenciados] } };
     } else if (!['administrador', 'adm'].includes(profissionalCargo)) {
       // Outros profissionais só podem ver seus próprios atendimentos
