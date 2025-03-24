@@ -142,21 +142,17 @@ const create = async (req, res) => {
   try {
     const profissionalIdEnvio = req.user ? req.user.profissionalId : null;
 
-
     const profissionaisServicoSocial = await Profissional.findAll({
       where: {
-        id: { [Op.ne]: profissionalIdEnvio },
         cargo: "Assistente Social", 
       },
     });
 
     const profissionaisGestorSocial = await Profissional.findAll({
       where: {
-        id: { [Op.ne]: profissionalIdEnvio },
         cargo: "Gestor Servico Social", 
       },
     });
-
 
     const pacientes = await Paciente.findAll({
       attributes: ['id', 'nome', 'matricula'], 

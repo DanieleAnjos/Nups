@@ -138,13 +138,10 @@ exports.create = async (req, res) => {
       attributes: ['id', 'nome', 'cargo']
     });
 
-
-
-        const pacientes = await Paciente.findAll({
-          attributes: ['id', 'nome', 'matricula'], 
-          order: [['nome', 'ASC']]
-        });
-    
+    const pacientes = await Paciente.findAll({
+      attributes: ['id', 'nome', 'matricula'], 
+      order: [['nome', 'ASC']]
+    });
 
     res.render("encaminhamentos/create", {
       profissionalIdEnvio,
