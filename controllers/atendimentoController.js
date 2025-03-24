@@ -13,99 +13,83 @@ exports.index = async (req, res) => {
     const { search, dataInicio, dataFim } = req.query;
     const profissionalId = req.user.profissionalId;
 
-    // Busca o profissional logado
-    const profissional = await Profissional.findByPk(profissionalId, {
+    const profissionalAssociado = await Profissional.findByPk(profissionalId, {
       attributes: ['id', 'nome', 'cargo']
     });
 
-    if (!profissional) {
-      return res.status(404).json({ message: 'Profissional não encontrado.' });
+    if (!profissionalAssociado) {
+      return res.status(403).send('Usuário não está associado a um profissional válido.');
     }
 
-    const profissionalCargo = profissional.cargo.toLowerCase();
+    const userCargo = profissionalAssociado.cargo.toLowerCase();
+    const whereConditions = {};
 
-    // Filtro por intervalo de datas
-    const dateFilter = {};
-    if (dataInicio || dataFim) {
-      const inicio = dataInicio ? new Date(dataInicio) : null;
-      const fim = dataFim ? new Date(dataFim) : null;
+    // Filtrar por intervalo de datas
+    if (dataInicio && dataFim) {
+      whereConditions.createdAt = { [Op.between]: [new Date(dataInicio), new Date(dataFim)] };
+    } else if (dataInicio) {
+      whereConditions.createdAt = { [Op.gte]: new Date(dataInicio) };
+    } else if (dataFim) {
+      whereConditions.createdAt = { [Op.lte]: new Date(dataFim) };
+    }
 
-      if (inicio) inicio.setHours(0, 0, 0, 0);
-      if (fim) fim.setHours(23, 59, 59, 999);
-
-      if (inicio && fim) {
-        dateFilter.createdAt = { [Op.between]: [inicio, fim] };
-      } else if (inicio) {
-        dateFilter.createdAt = { [Op.gte]: inicio };
-      } else if (fim) {
-        dateFilter.createdAt = { [Op.lte]: fim };
+    // Definir restrições de cargo
+    const cargosPermitidos = [userCargo];
+    if (userCargo.includes('gestor')) {
+      if (userCargo.includes('servico social')) {
+        cargosPermitidos.push('assistente social');
+      } else if (userCargo.includes('psicologia')) {
+        cargosPermitidos.push('psicólogo');
+      } else if (userCargo.includes('psiquiatria')) {
+        cargosPermitidos.push('psiquiatra');
       }
+    } else {
+      if (userCargo === 'assistente social') cargosPermitidos.push('gestor servico social');
+      if (userCargo === 'psicólogo') cargosPermitidos.push('gestor psicologia');
+      if (userCargo === 'psiquiatra') cargosPermitidos.push('gestor psiquiatria');
     }
 
-    // Mapeamento de cargos para visualização
-    const cargoVisualizacao = {
-      'assistente social': ['Assistente Social', 'Gestor Servico Social'],
-      'psicólogo': ['Psicólogo', 'Gestor Psicologia'],
-      'psiquiatra': ['Psiquiatra', 'Gestor Psiquiatria']
-    };
-
-    // Define o filtro de cargo
-    let cargoFilter = {};
-    if (cargoVisualizacao[profissionalCargo]) {
-      cargoFilter = { cargo: { [Op.in]: cargoVisualizacao[profissionalCargo] } };
-    } else if (profissionalCargo.includes('gestor')) {
-      // Gestores podem ver seus próprios atendimentos e dos profissionais que gerenciam
-      const cargoBase = profissionalCargo.replace('gestor ', ''); // Remove "gestor " para obter o cargo base
-      const cargosGerenciados = cargoVisualizacao[cargoBase] || []; // Garante que seja um array
-      cargoFilter = { cargo: { [Op.in]: [profissionalCargo, ...cargosGerenciados] } };
-    } else if (!['administrador', 'adm'].includes(profissionalCargo)) {
-      // Outros profissionais só podem ver seus próprios atendimentos
-      cargoFilter = { cargo: profissionalCargo };
-    }
-
-    // Configura os includes com os filtros
-    const includeConditions = [
-      {
-        model: Profissional,
-        as: 'profissional',
-        attributes: ['id', 'nome', 'cargo'],
-        where: cargoFilter
-      },
-      {
-        model: Paciente,
-        as: 'paciente',
-        attributes: ['id', 'nome'],
-        where: search ? { nome: { [Op.like]: `%${search}%` } } : {}
-      }
+    whereConditions[Op.or] = [
+      { '$profissional.cargo$': { [Op.in]: cargosPermitidos } }
     ];
 
-    // Busca os atendimentos com os filtros aplicados
+    if (search) {
+      whereConditions['$paciente.nome$'] = { [Op.like]: `%${search}%` };
+    }
+
+    // Buscar os atendimentos
     const atendimentos = await Atendimento.findAll({
-      where: dateFilter,
-      include: includeConditions,
+      where: whereConditions,
+      include: [
+        { model: Profissional, as: 'profissional', attributes: ['id', 'nome', 'cargo'] },
+        { model: Paciente, as: 'paciente', attributes: ['id', 'nome'] }
+      ],
       order: [['createdAt', 'DESC']]
     });
 
     // Permissões
-    const podeEditar = ['administrador', 'assistente social'].includes(profissionalCargo);
-    const podeDeletar = profissionalCargo === 'administrador';
-    const podeCadastrar = podeEditar;
+    const atendimentosFormatados = atendimentos.map(atendimento => ({
+      ...atendimento.toJSON(),
+      podeEditar: userCargo === 'administrador' || atendimento.profissionalId === profissionalId,
+      podeDeletar: userCargo === 'administrador',
+      podeCadastrar: userCargo === 'administrador' || userCargo === 'assistente social'
+    }));
 
-    return res.status(200).render('atendimentos/index', {
-      atendimentos,
+    return res.render('atendimentos/index', {
+      atendimentos: atendimentosFormatados,
       searchTerm: search,
       dataInicio,
       dataFim,
-      podeEditar,
-      podeDeletar,
-      podeCadastrar
+      podeEditar: atendimentosFormatados.some(a => a.podeEditar),
+      podeDeletar: atendimentosFormatados.some(a => a.podeDeletar),
+      podeCadastrar: atendimentosFormatados.some(a => a.podeCadastrar)
     });
-
   } catch (error) {
     console.error('Erro ao buscar atendimentos:', error);
     return res.status(500).json({ message: 'Erro ao buscar atendimentos.' });
   }
 };
+
 
 exports.create = async (req, res) => {
   try {
