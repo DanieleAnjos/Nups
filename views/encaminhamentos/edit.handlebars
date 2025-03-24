@@ -121,47 +121,52 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#nomePaciente, #profissionalIdRecebido').select2({
-            placeholder: "🔍 Selecione uma opção",
-            allowClear: true,
-            width: '100%'
-        });
-
-        $('#nomePaciente').on('change', function () {
-            const selectedOption = $(this).find(':selected');
-            const matricula = selectedOption.data('matricula');
-            $('#matriculaPaciente').val(matricula);
-        });
-
-        const todosProfissionais = [
-            {{#each todosProfissionais}}
-                { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
-            {{/each}}
-        ];
-
-        const profissionalSelect = document.getElementById("profissionalIdRecebido");
-        const profissionalIdEnvio = "{{encaminhamento.profissionalIdEnvio}}";
-        const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
-
-        function atualizarListaProfissionais() {
-            profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
-            todosProfissionais.forEach(profissional => {
-                if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
-                    const option = document.createElement("option");
-                    option.value = profissional.id;
-                    option.textContent = profissional.nome;
-                    profissionalSelect.appendChild(option);
-                }
-            });
-
-            if (profissionalRecebidoId) {
-                profissionalSelect.value = profissionalRecebidoId;
-            }
-        }
-
-        atualizarListaProfissionais();
+$(document).ready(function() {
+    $('#nomePaciente, #profissionalIdRecebido').select2({
+        placeholder: "🔍 Selecione uma opção",
+        allowClear: true,
+        width: '100%'
     });
+
+    $('#nomePaciente').on('change', function () {
+        const selectedOption = $(this).find(':selected');
+        const matricula = selectedOption.data('matricula');
+        $('#matriculaPaciente').val(matricula);
+    });
+
+      const todosProfissionais = [
+
+        {{#each todosProfissionais}}
+          { id: "{{this.id}}", nome: "{{this.nome}}", cargo: "{{this.cargo}}" },
+        {{/each}}
+      ];
+
+      
+    const profissionalSelect = document.getElementById("profissionalIdRecebido");
+    const profissionalIdEnvio = "{{encaminhamento.profissionalIdEnvio}}";
+    const profissionalRecebidoId = "{{encaminhamento.profissionalIdRecebido}}";
+
+    function atualizarListaProfissionais() {
+        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+        todosProfissionais.forEach(profissional => {
+            // Removido a condição que exclui o profissional logado
+            if (profissional.cargo !== "Administrador") {
+                const option = document.createElement("option");
+                option.value = profissional.id;
+                option.textContent = profissional.nome;
+                profissionalSelect.appendChild(option);
+            }
+        });
+
+        // Se houver um profissional recebido, seleciona-o
+        if (profissionalRecebidoId) {
+            profissionalSelect.value = profissionalRecebidoId;
+        }
+    }
+
+    atualizarListaProfissionais();
+});
 </script>
+
 </body>
 </html>
