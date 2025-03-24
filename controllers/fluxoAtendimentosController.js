@@ -142,12 +142,6 @@ const create = async (req, res) => {
   try {
     const profissionalIdEnvio = req.user ? req.user.profissionalId : null;
 
-    const profissionaisPsicologia = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Psicólogo", 
-      },
-    });
 
     const profissionaisServicoSocial = await Profissional.findAll({
       where: {
@@ -163,13 +157,6 @@ const create = async (req, res) => {
       },
     });
 
-    
-    const profissionaisAdm = await Profissional.findAll({
-      where: {
-        id: { [Op.ne]: profissionalIdEnvio },
-        cargo: "Adm", 
-      },
-    });
 
     const pacientes = await Paciente.findAll({
       attributes: ['id', 'nome', 'matricula'], 
@@ -178,10 +165,8 @@ const create = async (req, res) => {
 
     res.render("fluxoAtendimentos/create", {
       profissionalIdEnvio,
-      profissionaisPsicologia,
       profissionaisServicoSocial,
       profissionaisGestorSocial,
-      profissionaisAdm,
       pacientes,
     });
 
