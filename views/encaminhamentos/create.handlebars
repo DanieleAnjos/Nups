@@ -257,21 +257,22 @@ $(document).ready(function() {
         {{/each}}
       ];
 
-      const profissionalIdEnvio = "{{profissionalIdEnvio}}";
 
-      function atualizarListaProfissionais() {
-        profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
+  function atualizarListaProfissionais() {
+    // Limpa as opções existentes
+    profissionalSelect.innerHTML = '<option value="">Selecione um profissional</option>';
 
-        todosProfissionais.forEach(profissional => {
-
-          if (profissional.id !== profissionalIdEnvio && profissional.cargo !== "Administrador") {
-            const option = document.createElement("option");
-            option.value = profissional.id;
-            option.textContent = profissional.nome;
-            profissionalSelect.appendChild(option);
-          }
-        });
+    // Adiciona todos os profissionais à lista, incluindo o logado
+    todosProfissionais.forEach(profissional => {
+      // Removido a condição que exclui o profissional logado
+      if (profissional.cargo !== "Administrador") {
+        const option = document.createElement("option");
+        option.value = profissional.id;
+        option.textContent = profissional.nome;
+        profissionalSelect.appendChild(option);
       }
+    });
+  }
 
       atualizarListaProfissionais();
     });
