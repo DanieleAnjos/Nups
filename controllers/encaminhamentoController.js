@@ -365,10 +365,10 @@ exports.update = async (req, res) => {
     // Verifica se já existe um encaminhamento para o mesmo paciente e profissional no mesmo dia
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
-        matriculaPaciente: matriculaPaciente, 
-        profissionalIdRecebido: profissionalIdRecebido, 
+        matriculaPaciente: matriculaPaciente,
+        profissionalIdRecebido: profissionalIdRecebido,
         createdAt: {
-          [Op.between]: [startOfDay, endOfDay], 
+          [Op.between]: [startOfDay, endOfDay],
         },
         id: {
           [Op.ne]: id,
@@ -391,7 +391,6 @@ exports.update = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    // Atualiza o encaminhamento
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
 
     if (!updated) {
@@ -399,9 +398,8 @@ exports.update = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    // Verifica se o profissional recebido foi alterado
     if (encaminhamentoAtual.profissionalIdRecebido !== profissionalIdRecebido) {
-      // Notifica o profissional anterior sobre o cancelamento
+
       if (encaminhamentoAtual.profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
@@ -411,7 +409,6 @@ exports.update = async (req, res) => {
         console.log('Notificação de cancelamento gerada para o profissional anterior.');
       }
 
-      // Notifica o novo profissional sobre o encaminhamento
       if (profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
@@ -422,7 +419,6 @@ exports.update = async (req, res) => {
       }
     }
 
-    // Verifica se outros campos foram alterados
     if (
       encaminhamentoAtual.nomePaciente !== nomePaciente ||
       encaminhamentoAtual.matriculaPaciente !== matriculaPaciente ||
@@ -434,7 +430,7 @@ exports.update = async (req, res) => {
       encaminhamentoAtual.profissionalIdEnvio !== profissionalIdEnvio ||
       encaminhamentoAtual.atendimentoId !== atendimentoId
     ) {
-      // Notifica o profissional recebido sobre a alteração
+
       if (profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
@@ -453,6 +449,7 @@ exports.update = async (req, res) => {
     res.status(500).redirect('/encaminhamentos');
   }
 };
+
 
 
 exports.destroy = async (req, res) => {
