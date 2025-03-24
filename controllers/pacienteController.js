@@ -607,7 +607,8 @@ exports.perfil = async (req, res) => {
       // Gestor pode ver atendimentos do seu próprio cargo e dos cargos que gerencia
       if (isGestor) {
         return (
-          gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos do próprio cargo
+          atendimentoCargo === cargo || // Atendimentos do próprio cargo
+          gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos dos cargos que ele gerencia
           Object.values(gestorCargosMap).flat().includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
         );
       }
