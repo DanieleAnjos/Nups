@@ -410,13 +410,6 @@ exports.update = async (req, res) => {
     const notificacoes = [];
 
     if (profissionalAlterado) {
-      if (encaminhamentoAtual.profissionalIdRecebido) {
-        notificacoes.push({
-          titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
-          mensagem: `O encaminhamento do paciente ${encaminhamentoAtual.nomePaciente} foi cancelado.`,
-          profissionalId: encaminhamentoAtual.profissionalIdRecebido,
-        });
-      }
 
       if (profissionalIdRecebido) {
         notificacoes.push({
