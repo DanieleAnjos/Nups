@@ -618,25 +618,24 @@ exports.perfil = async (req, res) => {
       if (isGestor) {
         return (
           atendimentoCargo === cargo ||
-          GESTOR_CARGOS_MAP[cargo].includes(atendimentoCargo) ||
-          Object.values(GESTOR_CARGOS_MAP[cargo]).flat().includes(atendimentoCargo)
+          GESTOR_CARGOS_MAP[cargo].includes(atendimentoCargo)
         );
       }
 
-      if ([CARGO_ASSISTENTE_SOCIAL, CARGO_PSICOLOGO, CARGO_PSIQUIATRA].includes(atendimentoCargo)) {
-        return true;
-      }
-
       return (
-        CARGOS_PERMITIDOS[atendimentoCargo]?.includes(cargo) ||
-        Object.keys(GESTOR_CARGOS_MAP).includes(cargo)
+        CARGOS_PERMITIDOS[cargo]?.includes(atendimentoCargo) ||
+        atendimentoCargo === cargo
       );
     });
 
-    const podeEditar = cargo === CARGO_ADMINISTRADOR ||
-                       cargo === CARGO_ASSISTENTE_SOCIAL ||
-                       cargo === CARGO_GESTOR_SERVICO_SOCIAL ||
-                       (isGestor && paciente.atendimentos.some(a => GESTOR_CARGOS_MAP[cargo].includes(a.profissional.cargo.toLowerCase())));
+    const podeEditar =
+      cargo === CARGO_ADMINISTRADOR ||
+      cargo === CARGO_ASSISTENTE_SOCIAL ||
+      cargo === CARGO_GESTOR_SERVICO_SOCIAL ||
+      cargo === CARGO_PSICOLOGO ||
+      cargo === CARGO_GESTOR_PSICOLOGIA ||
+      cargo === CARGO_PSIQUIATRA ||
+      cargo === CARGO_GESTOR_PSIQUIATRIA;
 
     const podeDeletar = cargo === CARGO_ADMINISTRADOR;
     const podeCadastrar = podeEditar;
@@ -661,6 +660,7 @@ exports.perfil = async (req, res) => {
     return res.status(500).send(`Erro ao buscar perfil do paciente: ${error.message}`);
   }
 };
+
 
 exports.relatorioDetalhes = async (req, res) => {
   const { id } = req.params;
