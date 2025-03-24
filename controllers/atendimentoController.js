@@ -13,8 +13,9 @@ exports.index = async (req, res) => {
     const { search, dataInicio, dataFim } = req.query;
     const profissionalId = req.user.profissionalId;
 
+    // Busca o profissional logado
     const profissional = await Profissional.findByPk(profissionalId, {
-      attributes: ['cargo']
+      attributes: ['id', 'nome', 'cargo']
     });
 
     if (!profissional) {
@@ -52,7 +53,12 @@ exports.index = async (req, res) => {
     let cargoFilter = {};
     if (cargoVisualizacao[profissionalCargo]) {
       cargoFilter = { cargo: { [Op.in]: cargoVisualizacao[profissionalCargo] } };
+    } else if (profissionalCargo.includes('gestor')) {
+      // Gestores podem ver seus próprios atendimentos e dos profissionais que gerenciam
+      const cargosGerenciados = cargoVisualizacao[profissionalCargo.replace('gestor ', '')];
+      cargoFilter = { cargo: { [Op.in]: [profissionalCargo, ...cargosGerenciados] } };
     } else if (!['administrador', 'adm'].includes(profissionalCargo)) {
+      // Outros profissionais só podem ver seus próprios atendimentos
       cargoFilter = { cargo: profissionalCargo };
     }
 
@@ -72,6 +78,7 @@ exports.index = async (req, res) => {
       }
     ];
 
+    // Busca os atendimentos com os filtros aplicados
     const atendimentos = await Atendimento.findAll({
       where: dateFilter,
       include: includeConditions,
@@ -98,7 +105,6 @@ exports.index = async (req, res) => {
     return res.status(500).json({ message: 'Erro ao buscar atendimentos.' });
   }
 };
-
 
 exports.create = async (req, res) => {
   try {
