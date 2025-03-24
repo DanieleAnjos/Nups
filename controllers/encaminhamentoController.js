@@ -341,7 +341,6 @@ exports.edit = async (req, res) => {
   }
 };
 
-
 exports.update = async (req, res) => {
   const { id } = req.params;
 
@@ -398,8 +397,9 @@ exports.update = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
+    // Verifica se o profissional recebido foi alterado
     if (encaminhamentoAtual.profissionalIdRecebido !== profissionalIdRecebido) {
-
+      // Notifica o profissional anterior sobre o cancelamento
       if (encaminhamentoAtual.profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
@@ -409,6 +409,7 @@ exports.update = async (req, res) => {
         console.log('Notificação de cancelamento gerada para o profissional anterior.');
       }
 
+      // Notifica o novo profissional sobre o encaminhamento
       if (profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
@@ -417,27 +418,28 @@ exports.update = async (req, res) => {
         });
         console.log('Notificação de novo encaminhamento gerada para o novo profissional.');
       }
-    }
+    } else {
 
-    if (
-      encaminhamentoAtual.nomePaciente !== nomePaciente ||
-      encaminhamentoAtual.matriculaPaciente !== matriculaPaciente ||
-      encaminhamentoAtual.numeroProcesso !== numeroProcesso ||
-      encaminhamentoAtual.telefonePaciente !== telefonePaciente ||
-      encaminhamentoAtual.nomeProfissional !== nomeProfissional ||
-      encaminhamentoAtual.assuntoAcolhimento !== assuntoAcolhimento ||
-      encaminhamentoAtual.descricao !== descricao ||
-      encaminhamentoAtual.profissionalIdEnvio !== profissionalIdEnvio ||
-      encaminhamentoAtual.atendimentoId !== atendimentoId
-    ) {
-
-      if (profissionalIdRecebido) {
-        await Notificacao.create({
-          titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
-          mensagem: `O encaminhamento do paciente ${nomePaciente} foi atualizado.`,
-          profissionalId: profissionalIdRecebido,
-        });
-        console.log('Notificação de atualização gerada para o profissional recebido.');
+      if (
+        encaminhamentoAtual.nomePaciente !== nomePaciente ||
+        encaminhamentoAtual.matriculaPaciente !== matriculaPaciente ||
+        encaminhamentoAtual.numeroProcesso !== numeroProcesso ||
+        encaminhamentoAtual.telefonePaciente !== telefonePaciente ||
+        encaminhamentoAtual.nomeProfissional !== nomeProfissional ||
+        encaminhamentoAtual.assuntoAcolhimento !== assuntoAcolhimento ||
+        encaminhamentoAtual.descricao !== descricao ||
+        encaminhamentoAtual.profissionalIdEnvio !== profissionalIdEnvio ||
+        encaminhamentoAtual.atendimentoId !== atendimentoId
+      ) {
+        // Notifica o profissional recebido sobre a atualização
+        if (profissionalIdRecebido) {
+          await Notificacao.create({
+            titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
+            mensagem: `O encaminhamento do paciente ${nomePaciente} foi atualizado.`,
+            profissionalId: profissionalIdRecebido,
+          });
+          console.log('Notificação de atualização gerada para o profissional recebido.');
+        }
       }
     }
 
