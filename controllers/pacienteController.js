@@ -553,8 +553,32 @@ exports.delete = async (req, res) => {
 };
 
 
+const CARGO_ADMINISTRADOR = 'administrador';
+const CARGO_ASSISTENTE_SOCIAL = 'assistente social';
+const CARGO_PSICOLOGO = 'psicólogo';
+const CARGO_PSIQUIATRA = 'psiquiatra';
+const CARGO_GESTOR_SERVICO_SOCIAL = 'gestor servico social';
+const CARGO_GESTOR_PSICOLOGIA = 'gestor psicologia';
+const CARGO_GESTOR_PSIQUIATRIA = 'gestor psiquiatria';
+
+const GESTOR_CARGOS_MAP = {
+  [CARGO_GESTOR_SERVICO_SOCIAL]: [CARGO_ASSISTENTE_SOCIAL],
+  [CARGO_GESTOR_PSICOLOGIA]: [CARGO_PSICOLOGO],
+  [CARGO_GESTOR_PSIQUIATRIA]: [CARGO_PSIQUIATRA]
+};
+
+const CARGOS_PERMITIDOS = {
+  [CARGO_ASSISTENTE_SOCIAL]: [CARGO_GESTOR_SERVICO_SOCIAL],
+  [CARGO_PSICOLOGO]: [CARGO_GESTOR_PSICOLOGIA],
+  [CARGO_PSIQUIATRA]: [CARGO_GESTOR_PSIQUIATRIA]
+};
+
 exports.perfil = async (req, res) => {
   const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).send('ID do paciente é obrigatório.');
+  }
 
   try {
     const paciente = await Paciente.findByPk(id, {
@@ -580,76 +604,49 @@ exports.perfil = async (req, res) => {
       return res.status(404).send('Paciente não encontrado.');
     }
 
-    console.log("Usuário logado (req.user):", req.user);
-
     const profissional = req.user?.profissional || {};
     const cargo = profissional.cargo ? profissional.cargo.trim().toLowerCase() : "";
 
-    console.log("Cargo do profissional:", cargo);
-
-    const gestorCargosMap = {
-      'gestor servico social': ['assistente social'],
-      'gestor psicologia': ['psicólogo'],
-      'gestor psiquiatria': ['psiquiatra']
-    };
-
-    const isGestor = Object.keys(gestorCargosMap).includes(cargo);
+    const isGestor = Object.keys(GESTOR_CARGOS_MAP).includes(cargo);
 
     const atendimentosFiltrados = paciente.atendimentos.filter(atendimento => {
       const atendimentoCargo = atendimento.profissional.cargo.toLowerCase();
-    
-      // Administrador pode ver tudo
-      if (cargo === "administrador") return true;
-    
-      // Profissional pode ver seus próprios atendimentos
+
+      if (cargo === CARGO_ADMINISTRADOR) return true;
       if (atendimento.profissionalId === profissional.id) return true;
-    
-      // Gestor pode ver atendimentos do seu próprio cargo e dos cargos que gerencia
+
       if (isGestor) {
         return (
-          atendimentoCargo === cargo || // Atendimentos do próprio cargo
-          gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos dos cargos que ele gerencia
-          Object.values(gestorCargosMap[cargo]).flat().includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
+          atendimentoCargo === cargo ||
+          GESTOR_CARGOS_MAP[cargo].includes(atendimentoCargo) ||
+          Object.values(GESTOR_CARGOS_MAP[cargo]).flat().includes(atendimentoCargo)
         );
       }
-    
-      // Profissionais (assistentes sociais, psicólogos, psiquiatras) podem ver atendimentos do seu próprio cargo
-      if (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo)) {
-        return true; // Permite que vejam seus próprios atendimentos
+
+      if ([CARGO_ASSISTENTE_SOCIAL, CARGO_PSICOLOGO, CARGO_PSIQUIATRA].includes(atendimentoCargo)) {
+        return true;
       }
-    
-      const cargosPermitidos = {
-        'assistente social': ['gestor servico social'],
-        'psicólogo': ['gestor psicologia'],
-        'psiquiatra': ['gestor psiquiatria']
-      };
-      
-      // Profissionais podem ver atendimentos de seus gestores
+
       return (
-        cargosPermitidos[atendimentoCargo]?.includes(cargo) || // Verifica se o cargo do profissional é um gestor do atendimento
-        Object.keys(gestorCargosMap).includes(cargo) // Verifica se o profissional é um gestor
+        CARGOS_PERMITIDOS[atendimentoCargo]?.includes(cargo) ||
+        Object.keys(GESTOR_CARGOS_MAP).includes(cargo)
       );
-      
     });
 
+    const podeEditar = cargo === CARGO_ADMINISTRADOR ||
+                       cargo === CARGO_ASSISTENTE_SOCIAL ||
+                       cargo === CARGO_GESTOR_SERVICO_SOCIAL ||
+                       (isGestor && paciente.atendimentos.some(a => GESTOR_CARGOS_MAP[cargo].includes(a.profissional.cargo.toLowerCase())));
 
-    const podeEditar = cargo === "administrador" || 
-                       cargo === "assistente social" || 
-                       cargo === "gestor servico social" || 
-                       (isGestor && paciente.atendimentos.some(a => gestorCargosMap[cargo].includes(a.profissional.cargo.toLowerCase())));
-
-    const podeDeletar = cargo === "administrador";
-    const podeCadastrar = podeEditar; // Simplificação, pois a lógica é a mesma
+    const podeDeletar = cargo === CARGO_ADMINISTRADOR;
+    const podeCadastrar = podeEditar;
 
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
-
-    console.log("Cargo do profissional:", cargo);
-    console.log("Atendimentos filtrados:", atendimentosFiltrados);
 
     return res.render('paciente/perfil', {
       paciente: {
         ...paciente.get({ plain: true }),
-        atendimentos: atendimentosFiltrados, 
+        atendimentos: atendimentosFiltrados,
       },
       profissional,
       imagePath,
