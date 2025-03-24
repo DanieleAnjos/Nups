@@ -608,7 +608,7 @@ exports.perfil = async (req, res) => {
       if (isGestor) {
         return (
           gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos do próprio cargo
-          Object.values(gestorCargosMap[cargo]).includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
+          Object.values(gestorCargosMap).flat().includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
         );
       }
     
