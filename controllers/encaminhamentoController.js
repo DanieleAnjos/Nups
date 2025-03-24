@@ -26,12 +26,10 @@ exports.index = async (req, res) => {
 
     const whereConditions = {};
 
-    // Filtro por nome do paciente
     if (nomePaciente) {
       whereConditions.nomePaciente = { [Op.like]: `%${nomePaciente}%` };
     }
 
-    // Filtro por profissional
     if (profissional) {
       whereConditions[Op.or] = [
         { '$profissionalEnvio.nome$': { [Op.like]: `%${profissional}%` } },
@@ -39,7 +37,6 @@ exports.index = async (req, res) => {
       ];
     }
 
-    // Filtro por data
     if (dataInicio || dataFim) {
       whereConditions.data = {};
       if (dataInicio) {
@@ -50,41 +47,29 @@ exports.index = async (req, res) => {
       }
     }
 
-    // Filtro por mês e ano
     if (mes && ano) {
       const inicioMes = moment(`${ano}-${mes}-01`).startOf('month').format('YYYY-MM-DD');
       const fimMes = moment(`${ano}-${mes}-01`).endOf('month').format('YYYY-MM-DD');
       whereConditions.data = { [Op.between]: [inicioMes, fimMes] };
     }
 
-    // Filtro por ano
     if (ano && !mes) {
       const inicioAno = moment(`${ano}-01-01`).startOf('year').format('YYYY-MM-DD');
       const fimAno = moment(`${ano}-12-31`).endOf('year').format('YYYY-MM-DD');
       whereConditions.data = { [Op.between]: [inicioAno, fimAno] };
     }
 
-    // Mapeamento de cargos para gestores
     const gestorCargosMap = {
       'gestor servico social': ['Assistente social'],
       'gestor psicologia': ['Psicólogo'],
       'gestor psiquiatria': ['Psiquiatra']
     };
 
-    // Aplicar restrições para gestores
     if (gestorCargosMap[userCargo]) {
       const cargosPermitidos = gestorCargosMap[userCargo];
       whereConditions[Op.or] = [
         { '$profissionalEnvio.cargo$': { [Op.in]: cargosPermitidos } },
         { '$profissionalRecebido.cargo$': { [Op.in]: cargosPermitidos } }
-      ];
-    }
-
-    // Restrições para outros cargos (não gestores)
-    if (userCargo !== 'administrador' && userCargo !== 'adm' && !gestorCargosMap[userCargo]) {
-      whereConditions[Op.or] = [
-        { '$profissionalEnvio.cargo$': userCargo },
-        { '$profissionalRecebido.cargo$': userCargo }
       ];
     }
 
