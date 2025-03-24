@@ -33,25 +33,27 @@ exports.index = async (req, res) => {
       whereConditions.createdAt = { [Op.lte]: new Date(dataFim) };
     }
 
-    // Definir restrições de cargo
-    const cargosPermitidos = [userCargo];
-    if (userCargo.includes('gestor')) {
-      if (userCargo.includes('servico social')) {
-        cargosPermitidos.push('assistente social');
-      } else if (userCargo.includes('psicologia')) {
-        cargosPermitidos.push('psicólogo');
-      } else if (userCargo.includes('psiquiatria')) {
-        cargosPermitidos.push('psiquiatra');
+    // Se for administrador, não há restrições de cargo
+    if (userCargo !== 'administrador') {
+      const cargosPermitidos = [userCargo];
+      if (userCargo.includes('gestor')) {
+        if (userCargo.includes('servico social')) {
+          cargosPermitidos.push('assistente social');
+        } else if (userCargo.includes('psicologia')) {
+          cargosPermitidos.push('psicólogo');
+        } else if (userCargo.includes('psiquiatria')) {
+          cargosPermitidos.push('psiquiatra');
+        }
+      } else {
+        if (userCargo === 'assistente social') cargosPermitidos.push('gestor servico social');
+        if (userCargo === 'psicólogo') cargosPermitidos.push('gestor psicologia');
+        if (userCargo === 'psiquiatra') cargosPermitidos.push('gestor psiquiatria');
       }
-    } else {
-      if (userCargo === 'assistente social') cargosPermitidos.push('gestor servico social');
-      if (userCargo === 'psicólogo') cargosPermitidos.push('gestor psicologia');
-      if (userCargo === 'psiquiatra') cargosPermitidos.push('gestor psiquiatria');
-    }
 
-    whereConditions[Op.or] = [
-      { '$profissional.cargo$': { [Op.in]: cargosPermitidos } }
-    ];
+      whereConditions[Op.or] = [
+        { '$profissional.cargo$': { [Op.in]: cargosPermitidos } }
+      ];
+    }
 
     if (search) {
       whereConditions['$paciente.nome$'] = { [Op.like]: `%${search}%` };
