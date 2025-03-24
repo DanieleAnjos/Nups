@@ -618,16 +618,13 @@ exports.perfil = async (req, res) => {
       }
     
       // Profissionais podem ver atendimentos de seus gestores
-      if (Object.keys(gestorCargosMap).includes(cargo) && 
-          Object.values(gestorCargosMap).flat().includes(atendimentoCargo)) {
-        return true; // Permite que vejam atendimentos de seus gestores
-      }
-    
-      // Caso contrário, não pode ver o atendimento
-      return false;
+      return (
+        Object.keys(gestorCargosMap).includes(cargo) && 
+        Object.values(gestorCargosMap).flat().includes(atendimentoCargo)
+      );
     });
 
-    
+
     const podeEditar = cargo === "administrador" || 
                        cargo === "assistente social" || 
                        cargo === "gestor servico social" || 
@@ -637,6 +634,9 @@ exports.perfil = async (req, res) => {
     const podeCadastrar = podeEditar; // Simplificação, pois a lógica é a mesma
 
     const imagePath = paciente.imagePath ? `/uploads/images/${paciente.imagePath}` : null;
+
+    console.log("Cargo do profissional:", cargo);
+    console.log("Atendimentos filtrados:", atendimentosFiltrados);
 
     return res.render('paciente/perfil', {
       paciente: {
