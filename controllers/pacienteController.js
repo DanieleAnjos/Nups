@@ -598,15 +598,36 @@ exports.perfil = async (req, res) => {
     const atendimentosFiltrados = paciente.atendimentos.filter(atendimento => {
       const atendimentoCargo = atendimento.profissional.cargo.toLowerCase();
     
-      return (
-        cargo === "administrador" ||
-        atendimento.profissionalId === profissional.id ||
-        (isGestor && gestorCargosMap[cargo].includes(atendimentoCargo)) ||
-        (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo) &&
-          Object.values(gestorCargosMap).flat().includes(cargo))
-      );
+      // Administrador pode ver tudo
+      if (cargo === "administrador") return true;
+    
+      // Profissional pode ver seus próprios atendimentos
+      if (atendimento.profissionalId === profissional.id) return true;
+    
+      // Gestor pode ver atendimentos do seu próprio cargo e dos cargos que gerencia
+      if (isGestor) {
+        return (
+          gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos do próprio cargo
+          Object.values(gestorCargosMap[cargo]).includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
+        );
+      }
+    
+      // Profissionais (assistentes sociais, psicólogos, psiquiatras) podem ver atendimentos do seu próprio cargo
+      if (['assistente social', 'psicólogo', 'psiquiatra'].includes(atendimentoCargo)) {
+        return true; // Permite que vejam seus próprios atendimentos
+      }
+    
+      // Profissionais podem ver atendimentos de seus gestores
+      if (Object.keys(gestorCargosMap).includes(cargo) && 
+          Object.values(gestorCargosMap).flat().includes(atendimentoCargo)) {
+        return true; // Permite que vejam atendimentos de seus gestores
+      }
+    
+      // Caso contrário, não pode ver o atendimento
+      return false;
     });
 
+    
     const podeEditar = cargo === "administrador" || 
                        cargo === "assistente social" || 
                        cargo === "gestor servico social" || 
