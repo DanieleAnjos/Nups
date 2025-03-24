@@ -163,12 +163,6 @@ exports.store = [
         profissionalId: req.user.profissionalId 
       });
 
-      await Notificacao.create({
-        titulo: `Novo Atendimento: ${req.body.registroAtendimento}`,
-        mensagem: `Você realizou um novo atendimento para o paciente ${req.body.nomePaciente}, matrícula: ${req.body.matriculaPaciente}.`,
-        profissionalId: req.user.profissionalId 
-      });
-
       req.flash('success_msg', 'Atendimento criado com sucesso!');
       return res.redirect('/atendimentos');
     } catch (error) {
