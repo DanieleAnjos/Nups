@@ -609,7 +609,7 @@ exports.perfil = async (req, res) => {
         return (
           atendimentoCargo === cargo || // Atendimentos do próprio cargo
           gestorCargosMap[cargo].includes(atendimentoCargo) || // Atendimentos dos cargos que ele gerencia
-          Object.values(gestorCargosMap).flat().includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
+          Object.values(gestorCargosMap[cargo]).flat().includes(atendimentoCargo) // Atendimentos dos cargos que ele gerencia
         );
       }
     
@@ -620,8 +620,8 @@ exports.perfil = async (req, res) => {
     
       // Profissionais podem ver atendimentos de seus gestores
       return (
-        Object.keys(gestorCargosMap).includes(cargo) && 
-        Object.values(gestorCargosMap).flat().includes(atendimentoCargo)
+        Object.values(gestorCargosMap).some(cargos => cargos.includes(atendimentoCargo)) && 
+        Object.keys(gestorCargosMap).includes(cargo)
       );
     });
 
