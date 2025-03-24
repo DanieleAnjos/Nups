@@ -13,14 +13,14 @@ exports.showNotifications = async (req, res) => {
 
     const notificacoes = await Notificacao.findAll({
       where: {
-        profissionalId,  
-        lida: false,      
+        profissionalId, 
+        lida: false,     
       },
-      order: [['dataEnvio', 'DESC']], 
+      order: [['dataEnvio', 'DESC']],  
     });
 
     res.render('notificacoes/index', {
-      notificacoes: notificacoes.map(n => n.get({ plain: true })), 
+      notificacoes: notificacoes.map(n => n.get({ plain: true })),  
       sucesso_msg: req.flash('success_msg'), 
       erro_msg: req.flash('error_msg'),     
     });
@@ -30,6 +30,7 @@ exports.showNotifications = async (req, res) => {
     res.redirect('/dashboard'); 
   }
 };
+
 
 exports.markAsRead = async (req, res) => {
   try {
