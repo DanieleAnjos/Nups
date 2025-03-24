@@ -366,7 +366,6 @@ exports.edit = async (req, res) => {
 };
 
 
-
 exports.update = async (req, res) => {
   const { id } = req.params;
 
@@ -387,6 +386,7 @@ exports.update = async (req, res) => {
     const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
     const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
 
+    // Verifica se já existe um encaminhamento para o mesmo paciente e profissional no mesmo dia
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
         matriculaPaciente: matriculaPaciente, 
@@ -408,11 +408,65 @@ exports.update = async (req, res) => {
       return res.redirect(`/encaminhamentos/${id}/edit`);
     }
 
+    // Busca o encaminhamento atual antes de atualizar
+    const encaminhamentoAtual = await Encaminhamento.findByPk(id);
+    if (!encaminhamentoAtual) {
+      req.flash('error_msg', 'Encaminhamento não encontrado.');
+      return res.redirect('/encaminhamentos');
+    }
+
+    // Atualiza o encaminhamento
     const [updated] = await Encaminhamento.update(req.body, { where: { id } });
 
     if (!updated) {
       req.flash('error_msg', 'Encaminhamento não encontrado.');
       return res.redirect('/encaminhamentos');
+    }
+
+    // Verifica se o profissional recebido foi alterado
+    if (encaminhamentoAtual.profissionalIdRecebido !== profissionalIdRecebido) {
+      // Notifica o profissional anterior sobre o cancelamento
+      if (encaminhamentoAtual.profissionalIdRecebido) {
+        await Notificacao.create({
+          titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
+          mensagem: `O encaminhamento do paciente ${encaminhamentoAtual.nomePaciente} foi cancelado.`,
+          profissionalId: encaminhamentoAtual.profissionalIdRecebido,
+        });
+        console.log('Notificação de cancelamento gerada para o profissional anterior.');
+      }
+
+      // Notifica o novo profissional sobre o encaminhamento
+      if (profissionalIdRecebido) {
+        await Notificacao.create({
+          titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
+          mensagem: `Você recebeu um novo encaminhamento para o paciente ${nomePaciente}.`,
+          profissionalId: profissionalIdRecebido,
+        });
+        console.log('Notificação de novo encaminhamento gerada para o novo profissional.');
+      }
+    }
+
+    // Verifica se outros campos foram alterados
+    if (
+      encaminhamentoAtual.nomePaciente !== nomePaciente ||
+      encaminhamentoAtual.matriculaPaciente !== matriculaPaciente ||
+      encaminhamentoAtual.numeroProcesso !== numeroProcesso ||
+      encaminhamentoAtual.telefonePaciente !== telefonePaciente ||
+      encaminhamentoAtual.nomeProfissional !== nomeProfissional ||
+      encaminhamentoAtual.assuntoAcolhimento !== assuntoAcolhimento ||
+      encaminhamentoAtual.descricao !== descricao ||
+      encaminhamentoAtual.profissionalIdEnvio !== profissionalIdEnvio ||
+      encaminhamentoAtual.atendimentoId !== atendimentoId
+    ) {
+      // Notifica o profissional recebido sobre a alteração
+      if (profissionalIdRecebido) {
+        await Notificacao.create({
+          titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
+          mensagem: `O encaminhamento do paciente ${nomePaciente} foi atualizado.`,
+          profissionalId: profissionalIdRecebido,
+        });
+        console.log('Notificação de atualização gerada para o profissional recebido.');
+      }
     }
 
     req.flash('success_msg', 'Encaminhamento atualizado com sucesso!');
