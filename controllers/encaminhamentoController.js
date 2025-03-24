@@ -361,7 +361,6 @@ exports.update = async (req, res) => {
     const startOfDay = moment.tz('America/Sao_Paulo').startOf('day').toDate();
     const endOfDay = moment.tz('America/Sao_Paulo').endOf('day').toDate();
 
-    // Verifica se já existe um encaminhamento para o mesmo paciente e profissional no mesmo dia
     const encaminhamentoExistente = await Encaminhamento.findOne({
       where: {
         matriculaPaciente: matriculaPaciente,
@@ -383,7 +382,6 @@ exports.update = async (req, res) => {
       return res.redirect(`/encaminhamentos/${id}/edit`);
     }
 
-    // Busca o encaminhamento atual antes de atualizar
     const encaminhamentoAtual = await Encaminhamento.findByPk(id);
     if (!encaminhamentoAtual) {
       req.flash('error_msg', 'Encaminhamento não encontrado.');
@@ -397,9 +395,8 @@ exports.update = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
-    // Verifica se o profissional recebido foi alterado
     if (encaminhamentoAtual.profissionalIdRecebido !== profissionalIdRecebido) {
-      // Notifica o profissional anterior sobre o cancelamento
+
       if (encaminhamentoAtual.profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Encaminhamento Cancelado: ${encaminhamentoAtual.assuntoAcolhimento}`,
@@ -409,7 +406,6 @@ exports.update = async (req, res) => {
         console.log('Notificação de cancelamento gerada para o profissional anterior.');
       }
 
-      // Notifica o novo profissional sobre o encaminhamento
       if (profissionalIdRecebido) {
         await Notificacao.create({
           titulo: `Novo Encaminhamento: ${assuntoAcolhimento}`,
@@ -431,7 +427,7 @@ exports.update = async (req, res) => {
         encaminhamentoAtual.profissionalIdEnvio !== profissionalIdEnvio ||
         encaminhamentoAtual.atendimentoId !== atendimentoId
       ) {
-        // Notifica o profissional recebido sobre a atualização
+
         if (profissionalIdRecebido) {
           await Notificacao.create({
             titulo: `Encaminhamento Atualizado: ${assuntoAcolhimento}`,
