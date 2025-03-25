@@ -43,7 +43,7 @@ exports.login = (req, res, next) => {
           'Adm' : '/dashboard/adm2',
           'Gestor Adms' : '/dashboard/admGestor',
           'Gestor Psicologia' : '/dashboard/psicoGestor',
-          'Gestor Psiquiatra' : '/dashboard/psiquiGestor',
+          'Gestor Psiquiatria' : '/dashboard/psiquiGestor',
           'Gestor Servico Social' : '/dashboard/socialGestor',
           'Assistente social': '/dashboard/assistente-social',
           'Psicólogo': '/dashboard/psico',
