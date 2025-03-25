@@ -41,6 +41,28 @@
             font-weight: bold;
         }
 
+        /* Estilo para a legenda de cores */
+        .color-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .color-legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .color-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+        }
+
         /* Ajustes para telas menores */
         @media (max-width: 768px) {
             .fc-toolbar-title {
@@ -198,7 +220,7 @@
 </div>
 
 <script>
-    
+
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const toggleCalendarBtn = document.getElementById('toggleCalendar');
@@ -214,14 +236,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cores personalizadas para cada profissional (opcional)
     const profissionalColors = {}; // Você pode preencher isso se quiser cores diferentes
 
+    function getProfessionalColor(profissionalId, profissionalNome) {
+    if (!profissionalColors[profissionalId]) {
+        profissionalColors[profissionalId] = generateColorFromString(profissionalId + profissionalNome);
+    }
+    return profissionalColors[profissionalId];
+}
+
     const events = [
         {{#each reservas}}
         {
             title: '{{this.sala.nome}} - {{this.profissionalNome}}',
             start: '{{this.data}}T{{this.horarioInicial}}',
             end: '{{this.data}}T{{this.horarioFinal}}',
-            backgroundColor: '#007bff', // Cor padrão ou use profissionalColors
-            borderColor: '#007bff',
+            backgroundColor: getProfessionalColor('{{this.profissionalId}}', '{{this.profissionalNome}}'),
+            borderColor: getProfessionalColor('{{this.profissionalId}}', '{{this.profissionalNome}}'),
             textColor: '#fff',
             extendedProps: {
                 sala: '{{this.sala.nome}}',
