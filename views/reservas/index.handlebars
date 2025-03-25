@@ -220,7 +220,6 @@
 </div>
 
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const toggleCalendarBtn = document.getElementById('toggleCalendar');
@@ -233,16 +232,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Começa com o calendário oculto
     calendarEl.style.display = "none";
 
-    // Cores personalizadas para cada profissional (opcional)
-    const profissionalColors = {}; // Você pode preencher isso se quiser cores diferentes
-
-    function getProfessionalColor(profissionalId, profissionalNome) {
-    if (!profissionalColors[profissionalId]) {
-        profissionalColors[profissionalId] = generateColorFromString(profissionalId + profissionalNome);
+    // Função para gerar cores consistentes baseadas em uma string
+    function generateColorFromString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const h = Math.abs(hash % 360);
+        return `hsl(${h}, 70%, 50%)`;
     }
-    return profissionalColors[profissionalId];
-}
 
+    // Função para obter cor do profissional
+    function getProfessionalColor(profissionalId, profissionalNome) {
+        if (!profissionalColors[profissionalId]) {
+            profissionalColors[profissionalId] = generateColorFromString(profissionalId + profissionalNome);
+        }
+        return profissionalColors[profissionalId];
+    }
+
+    // Objeto para armazenar as cores dos profissionais
+    const profissionalColors = {};
+
+    // Formatando os eventos
     const events = [
         {{#each reservas}}
         {
@@ -262,13 +273,18 @@ document.addEventListener('DOMContentLoaded', function() {
         {{/each}}
     ];
 
-    // Formatar os horários para exibição
+    // Formatando os horários para exibição
     events.forEach(event => {
-        const startTime = moment(event.start).format('HH:mm');
-        const endTime = moment(event.end).format('HH:mm');
-        event.title = `${event.extendedProps.sala} - ${startTime} até ${endTime}`;
+        try {
+            const startTime = moment(event.start).format('HH:mm');
+            const endTime = moment(event.end).format('HH:mm');
+            event.title = `${event.extendedProps.sala} - ${startTime} até ${endTime}`;
+        } catch (e) {
+            console.error("Erro ao formatar horário do evento:", event, e);
+        }
     });
 
+    // Inicializando o calendário
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
@@ -284,20 +300,29 @@ document.addEventListener('DOMContentLoaded', function() {
             hour12: false
         },
         eventClick: function(info) {
-            const startTime = moment(info.event.start).format('HH:mm');
-            const endTime = moment(info.event.end).format('HH:mm');
-            const eventDate = moment(info.event.start).format('DD/MM/YYYY');
-            
-            Swal.fire({
-                title: `Reserva - ${info.event.extendedProps.sala}`,
-                html: `
-                    <p><strong>Profissional:</strong> ${info.event.extendedProps.profissional}</p>
-                    <p><strong>Data:</strong> ${eventDate}</p>
-                    <p><strong>Horário:</strong> ${startTime} - ${endTime}</p>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Fechar'
-            });
+            try {
+                const startTime = moment(info.event.start).format('HH:mm');
+                const endTime = moment(info.event.end).format('HH:mm');
+                const eventDate = moment(info.event.start).format('DD/MM/YYYY');
+                
+                Swal.fire({
+                    title: `Reserva - ${info.event.extendedProps.sala}`,
+                    html: `
+                        <p><strong>Profissional:</strong> ${info.event.extendedProps.profissional}</p>
+                        <p><strong>Data:</strong> ${eventDate}</p>
+                        <p><strong>Horário:</strong> ${startTime} - ${endTime}</p>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Fechar'
+                });
+            } catch (e) {
+                console.error("Erro ao exibir detalhes do evento:", e);
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Ocorreu um erro ao exibir os detalhes da reserva',
+                    icon: 'error'
+                });
+            }
         },
         eventDidMount: function(info) {
             // Adaptação para telas pequenas
@@ -305,7 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 info.el.title = info.event.title;
                 info.el.innerHTML = info.event.extendedProps.sala;
             }
-        }
+        },
+        height: 'auto',
+        contentHeight: 'auto'
     });
 
     calendar.render();
@@ -324,17 +351,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ajuste responsivo
     function handleResponsive() {
-        if (window.innerWidth < 768) {
-            calendar.changeView('timeGridDay');
-        } else {
-            calendar.changeView('dayGridMonth');
+        try {
+            if (window.innerWidth < 768) {
+                calendar.changeView('timeGridDay');
+            } else {
+                calendar.changeView('dayGridMonth');
+            }
+            calendar.updateSize();
+        } catch (e) {
+            console.error("Erro no redimensionamento:", e);
         }
-        calendar.updateSize();
     }
 
+    // Configuração inicial
+    handleResponsive();
     window.addEventListener('resize', handleResponsive);
 });
-
 </script>
 
 </body>
