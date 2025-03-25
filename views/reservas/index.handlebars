@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- FullCalendar CSS -->
+    <link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+    <!-- FullCalendar JS -->
+    <script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
     <style>
         /* Reset básico */
         * {
@@ -153,6 +157,12 @@
             border-radius: 5px;
         }
 
+        /* Estilos do calendário */
+        #calendar {
+            margin-top: 20px;
+            display: none; /* Inicialmente oculto */
+        }
+
         /* Responsividade */
         @media (max-width: 768px) {
             .container {
@@ -190,6 +200,13 @@
         <a href="/reservas/create" class="btn btn-success">
             <i class="bi bi-calendar-plus"></i> Cadastrar Reserva
         </a>
+    </div>
+
+    <!-- Botão para Alternar o Calendário -->
+    <div class="d-flex justify-content-end mb-3">
+        <button id="toggleCalendar" class="btn btn-primary">
+            <i class="bi bi-calendar"></i> Mostrar/Ocultar Calendário
+        </button>
     </div>
 
     <!-- Formulário de Filtro -->
@@ -282,27 +299,79 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Elemento do Calendário -->
+    <div id="calendar"></div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        {{#if error_msg}}
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: '{{error_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
-        
-        {{#if success_msg}}
-            Swal.fire({
-                icon: 'success',
-                title: 'Sucesso',
-                text: '{{success_msg}}',
-                confirmButtonText: 'Ok'
-            });
-        {{/if}}
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const toggleCalendarBtn = document.getElementById('toggleCalendar');
+
+        if (!calendarEl) {
+            console.error("Elemento de calendário não encontrado!");
+            return;
+        }
+
+        const profissional Colors = JSON.parse('{{{profissionalColors}}}');
+
+        const events = [
+            {{#each reservas}}
+            {
+                title: '{{this.profissionalNome}} - {{this.horarioInicial}} até {{this.horarioFinal}}',
+                start: '{{this.data}}T{{this.horarioInicial}}',
+                end: '{{this.data}}T{{this.horarioFinal}}',
+                backgroundColor: '#007bff', // Cor padrão ou personalizada
+                borderColor: '#007bff',
+                textColor: '#fff',
+                extendedProps: {
+                    horarioInicial: '{{this.horarioInicial}}',
+                    horarioFinal: '{{this.horarioFinal}}'
+                }
+            },
+            {{/each}}
+        ];
+
+        // Formatar os horários antes de exibir
+        events.forEach(event => {
+            let startTime = new Date(event.start).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            let endTime = new Date(event.end).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            event.title = `${event.title.split(' - ')[0]} - ${startTime} até ${endTime}`;
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Exibe o calendário no formato mensal
+            locale: 'pt-br',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: events,
+            eventClick: function(info) {
+                let startTime = info.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                let endTime = info.event.end ? info.event.end.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Sem horário final';
+
+                Swal.fire({
+                    title: info.event.title.split(" - ")[0], // Apenas o nome do profissional
+                    html: `<b>Início:</b> ${startTime}<br><b>Fim:</b> ${endTime}`,
+                    icon: 'info',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        });
+
+        calendar.render();
+
+        toggleCalendarBtn.addEventListener('click', function () {
+            if (calendarEl.style.display === "none") {
+                calendarEl.style.display = "block";
+                calendar.updateSize(); // Atualiza o tamanho do calendário
+            } else {
+                calendarEl.style.display = "none";
+            }
+        });
     });
 </script>
 </body>
