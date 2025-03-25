@@ -192,27 +192,35 @@
             <i class="bi bi-calendar"></i> Mostrar/Ocultar Calendário
         </button>
     </div>
-    
+
     <!-- Elemento do Calendário -->
     <div id="calendar"></div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
     
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const toggleCalendarBtn = document.getElementById('toggleCalendar');
+
     if (!calendarEl) {
         console.error("Elemento de calendário não encontrado!");
         return;
     }
 
+    // Começa com o calendário oculto
+    calendarEl.style.display = "none";
+
+    // Cores personalizadas para cada profissional (opcional)
+    const profissionalColors = {}; // Você pode preencher isso se quiser cores diferentes
+
     const events = [
         {{#each reservas}}
         {
             title: '{{this.sala.nome}} - {{this.profissionalNome}}',
-            start: new Date('{{this.data}}T{{this.horarioInicial}}').toISOString(),
-            end: new Date('{{this.data}}T{{this.horarioFinal}}').toISOString(),
-            backgroundColor: '#007bff',
+            start: '{{this.data}}T{{this.horarioInicial}}',
+            end: '{{this.data}}T{{this.horarioFinal}}',
+            backgroundColor: '#007bff', // Cor padrão ou use profissionalColors
             borderColor: '#007bff',
             textColor: '#fff',
             extendedProps: {
@@ -224,6 +232,13 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         {{/each}}
     ];
+
+    // Formatar os horários para exibição
+    events.forEach(event => {
+        const startTime = moment(event.start).format('HH:mm');
+        const endTime = moment(event.end).format('HH:mm');
+        event.title = `${event.extendedProps.sala} - ${startTime} até ${endTime}`;
+    });
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -239,40 +254,58 @@ document.addEventListener('DOMContentLoaded', function () {
             minute: '2-digit',
             hour12: false
         },
-        eventDisplay: 'block',
-        eventColor: '#3788d8',
-        eventTextColor: '#ffffff',
-        height: 'auto',
-        contentHeight: 'auto',
-        handleWindowResize: true,
-        dayMaxEvents: true, // Mostra um indicador quando há muitos eventos
+        eventClick: function(info) {
+            const startTime = moment(info.event.start).format('HH:mm');
+            const endTime = moment(info.event.end).format('HH:mm');
+            const eventDate = moment(info.event.start).format('DD/MM/YYYY');
+            
+            Swal.fire({
+                title: `Reserva - ${info.event.extendedProps.sala}`,
+                html: `
+                    <p><strong>Profissional:</strong> ${info.event.extendedProps.profissional}</p>
+                    <p><strong>Data:</strong> ${eventDate}</p>
+                    <p><strong>Horário:</strong> ${startTime} - ${endTime}</p>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Fechar'
+            });
+        },
         eventDidMount: function(info) {
-            // Ajusta o título para telas pequenas
+            // Adaptação para telas pequenas
             if (window.innerWidth < 768) {
                 info.el.title = info.event.title;
-                info.el.innerHTML = info.event.title.split(' - ')[0]; // Mostra apenas o nome da sala
+                info.el.innerHTML = info.event.extendedProps.sala;
             }
         }
     });
 
     calendar.render();
 
-    window.addEventListener('resize', function() {
-        calendar.updateSize();
+    // Botão para mostrar/ocultar calendário
+    toggleCalendarBtn.addEventListener('click', function() {
+        if (calendarEl.style.display === "none") {
+            calendarEl.style.display = "block";
+            calendar.updateSize();
+            toggleCalendarBtn.innerHTML = '<i class="bi bi-calendar"></i> Ocultar Calendário';
+        } else {
+            calendarEl.style.display = "none";
+            toggleCalendarBtn.innerHTML = '<i class="bi bi-calendar"></i> Mostrar Calendário';
+        }
     });
 
-    function adjustView() {
+    // Ajuste responsivo
+    function handleResponsive() {
         if (window.innerWidth < 768) {
             calendar.changeView('timeGridDay');
         } else {
             calendar.changeView('dayGridMonth');
         }
+        calendar.updateSize();
     }
 
-    adjustView();
-    
-    window.addEventListener('resize', adjustView);
+    window.addEventListener('resize', handleResponsive);
 });
+
 </script>
 
 </body>
