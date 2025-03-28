@@ -25,7 +25,7 @@ const Mensagem = sequelize.define('Mensagem', {
     },
   },
   destinatarioCargo: {
-    type: DataTypes.ENUM('Assistente social', 'Administrador', 'Psicólogo', 'Psiquiatra'),
+    type: DataTypes.ENUM('Gestor Servico Social', 'Gestor Psicologia','Gestor Adms', 'Gestor Psiquiatria' ,'Administrador','Adm', 'Assistente social', 'Psicólogo', 'Psiquiatra'),
     allowNull: true,
   },
   assunto: {
