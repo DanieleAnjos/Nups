@@ -226,48 +226,61 @@ module.exports = {
 
   enviarResposta: async (req, res) => {
     try {
-      const { corpo } = req.body;
-      const mensagemId = req.params.id;
-      const profissionalId = req.user?.profissionalId;
-      const arquivo = req.file ? `/arquivos/${req.file.filename}` : null; 
-      const dataEnvio = moment().tz('America/Sao_Paulo').toDate(); // Data corrigida
+        const { corpo } = req.body;
+        const mensagemId = req.params.id;
+        const profissionalId = req.user?.profissionalId;
 
-      if (!corpo || corpo.trim() === '') {
-        req.flash('error_msg', 'O corpo da mensagem não pode estar vazio.');
-        return res.redirect(`/mensagens/${mensagemId}/responder`);
-      }
+        if (!profissionalId) {
+            req.flash('error_msg', 'Erro: Usuário não autenticado.');
+            return res.redirect('/mensagens');
+        }
 
-      const mensagem = await Mensagem.findOne({
-        where: { id: mensagemId },
-        include: [{ model: Profissional, as: 'remetente' }],
-      });
+        if (!corpo || corpo.trim() === '') {
+            req.flash('error_msg', 'O corpo da mensagem não pode estar vazio.');
+            return res.redirect(`/mensagens/${mensagemId}/responder`);
+        }
 
-      if (!mensagem) {
-        req.flash('error_msg', 'Mensagem não encontrada.');
+        const mensagem = await Mensagem.findOne({
+            where: { id: mensagemId },
+            include: [{ model: Profissional, as: 'remetente' }],
+        });
+
+        if (!mensagem || !mensagem.remetente) {
+            req.flash('error_msg', 'Mensagem original não encontrada.');
+            return res.redirect('/mensagens');
+        }
+
+        const arquivo = req.file ? `/arquivos/${req.file.filename}` : null;
+        const dataEnvio = moment().tz('America/Sao_Paulo').toDate();
+
+        // Criar nova mensagem como resposta
+        const novaMensagem = await Mensagem.create({
+            remetenteId: profissionalId,
+            destinatarioId: mensagem.remetenteId,
+            destinatarioCargo: mensagem.remetente.cargo,
+            assunto: `Re: ${mensagem.assunto}`,
+            corpo,
+            arquivo,
+            visualizada: false,
+            respondida: false,
+            createdAt: dataEnvio,
+            updatedAt: dataEnvio,
+        });
+
+        // Atualiza a mensagem original para indicar que foi respondida
+        await mensagem.update({ respondida: true });
+
+        console.log('Mensagem respondida com sucesso:', novaMensagem);
+
+        req.flash('success_msg', 'Resposta enviada com sucesso.');
         return res.redirect('/mensagens');
-      }
 
-      await Mensagem.create({
-          remetenteId: profissionalId,
-          destinatarioId: mensagem.remetenteId,
-          destinatarioCargo: mensagem.remetente.cargo,
-          assunto: 'Re: ' + mensagem.assunto,
-          corpo,
-          arquivo,
-          visualizada: false,
-          respondida: true,
-          createdAt: dataEnvio,
-          updatedAt: dataEnvio,
-      });
-
-      req.flash('success_msg', 'Resposta enviada com sucesso.');
-      return res.redirect('/mensagens');
     } catch (error) {
-      console.error(error);
-      req.flash('error_msg', 'Erro ao enviar a resposta.');
-      return res.redirect(`/mensagens/${req.params.id}/responder`);
+        console.error('Erro ao enviar resposta:', error);
+        req.flash('error_msg', 'Erro ao enviar a resposta.');
+        return res.redirect(`/mensagens/${req.params.id}/responder`);
     }
-  },
+},
 
   arquivarMensagem: async (req, res) => {
     try {
