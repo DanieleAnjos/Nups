@@ -248,16 +248,16 @@ module.exports = {
       }
 
       await Mensagem.create({
-        remetenteId: profissionalId,
-        destinatarioId: mensagem.remetenteId,
-        destinatarioCargo: mensagem.remetente.cargo,
-        assunto: 'Re: ' + mensagem.assunto,
-        corpo,
-        arquivo,
-        visualizada: false,
-        respondida: true,
-        createdAt: dataEnvio,
-        updatedAt: dataEnvio,
+          remetenteId: profissionalId,
+          destinatarioId: mensagem.remetenteId,
+          destinatarioCargo: mensagem.remetente.cargo,
+          assunto: 'Re: ' + mensagem.assunto,
+          corpo,
+          arquivo,
+          visualizada: false,
+          respondida: true,
+          createdAt: dataEnvio,
+          updatedAt: dataEnvio,
       });
 
       req.flash('success_msg', 'Resposta enviada com sucesso.');
