@@ -216,35 +216,95 @@
                         // Montar pré-visualização conforme o tipo de arquivo
                         switch(filetype) {
                             case 'image':
-                                previewContent.innerHTML = `<img src="${filepath}" class="img-fluid" alt="Pré-visualização">`;
-                                break;
-                            case 'pdf':
-                                previewContent.innerHTML = `<iframe src="${filepath}#toolbar=0" class="file-preview" frameborder="0"></iframe>`;
-                                break;
-                            case 'document':
-                                // Usar o visualizador do Google Docs para documentos
                                 previewContent.innerHTML = `
-                                    <div class="unsupported-file">
-                                        <p>Este tipo de arquivo não pode ser pré-visualizado diretamente.</p>
-                                        <a href="https://docs.google.com/viewer?url=${encodeURIComponent(filepath)}" 
-                                           target="_blank" class="btn btn-primary">
-                                            Visualizar no Google Docs
-                                        </a>
-                                        <a href="${filepath}" 
-                                           download="${filename}" 
-                                           class="btn btn-secondary ms-2">
-                                            <i class="bi bi-download"></i> Baixar
+                                    <img src="${filepath}" class="img-fluid" alt="Pré-visualização">
+                                    <div class="mt-3 text-center">
+                                        <a href="${filepath}" download="${filename}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i> Baixar Imagem
                                         </a>
                                     </div>`;
                                 break;
+                                
+                            case 'pdf':
+                                previewContent.innerHTML = `
+                                    <iframe src="${filepath}#toolbar=0" class="file-preview" frameborder="0"></iframe>
+                                    <div class="mt-3 text-center">
+                                        <a href="${filepath}" download="${filename}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i> Baixar PDF
+                                        </a>
+                                    </div>`;
+                                break;
+                                
+                            case 'document':
+                                previewContent.innerHTML = `
+                                    <div class="unsupported-file">
+                                        <p>Visualização de documentos disponível através do download</p>
+                                        <a href="${filepath}" download="${filename}" class="btn btn-primary">
+                                            <i class="bi bi-download"></i> Baixar Documento
+                                        </a>
+                                        ${filename.endsWith('.txt') ? 
+                                            `<button class="btn btn-secondary ms-2" id="view-text">
+                                                <i class="bi bi-file-text"></i> Ver como texto
+                                            </button>` : ''}
+                                    </div>`;
+                                
+                                if (filename.endsWith('.txt')) {
+                                    setTimeout(() => {
+                                        document.getElementById('view-text').addEventListener('click', async () => {
+                                            try {
+                                                const response = await fetch(filepath);
+                                                const text = await response.text();
+                                                previewContent.innerHTML = `
+                                                    <pre class="p-3 bg-light">${text}</pre>
+                                                    <div class="mt-3 text-center">
+                                                        <a href="${filepath}" download="${filename}" class="btn btn-sm btn-primary">
+                                                            <i class="bi bi-download"></i> Baixar Arquivo
+                                                        </a>
+                                                    </div>`;
+                                            } catch (error) {
+                                                console.error('Erro ao carregar arquivo de texto:', error);
+                                                previewContent.innerHTML = `
+                                                    <div class="alert alert-danger">
+                                                        Erro ao carregar o conteúdo do arquivo
+                                                    </div>`;
+                                            }
+                                        });
+                                    }, 100);
+                                }
+                                break;
+                                
+                            case 'video':
+                                previewContent.innerHTML = `
+                                    <video controls class="w-100">
+                                        <source src="${filepath}" type="video/${filename.split('.').pop()}">
+                                        Seu navegador não suporta vídeos.
+                                    </video>
+                                    <div class="mt-3 text-center">
+                                        <a href="${filepath}" download="${filename}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i> Baixar Vídeo
+                                        </a>
+                                    </div>`;
+                                break;
+                                
+                            case 'audio':
+                                previewContent.innerHTML = `
+                                    <audio controls class="w-100">
+                                        <source src="${filepath}" type="audio/${filename.split('.').pop()}">
+                                        Seu navegador não suporta áudio.
+                                    </audio>
+                                    <div class="mt-3 text-center">
+                                        <a href="${filepath}" download="${filename}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-download"></i> Baixar Áudio
+                                        </a>
+                                    </div>`;
+                                break;
+                                
                             default:
                                 previewContent.innerHTML = `
                                     <div class="unsupported-file">
                                         <p>Este tipo de arquivo não pode ser pré-visualizado.</p>
-                                        <a href="${filepath}" 
-                                           download="${filename}" 
-                                           class="btn btn-primary">
-                                            <i class="bi bi-download"></i> Baixar arquivo
+                                        <a href="${filepath}" download="${filename}" class="btn btn-primary">
+                                            <i class="bi bi-download"></i> Baixar Arquivo
                                         </a>
                                     </div>`;
                         }
