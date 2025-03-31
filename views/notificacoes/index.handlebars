@@ -112,7 +112,7 @@
           <div class="card-body">
             <h5 class="card-title"><strong>Mensagem:</strong> {{mensagem}}</h5>
             <p class="card-text">
-              <strong>Data de Envio:</strong> {{formatDateTime dataEnvio}}
+              <strong>Data de Envio:</strong> {{formatDateTime2 dataEnvio}}
             </p>
             <form action="/notificacoes/markAsRead/{{id}}" method="POST">
               <button type="submit" class="btn btn-primary btn-sm" aria-label="Marcar como lida">
