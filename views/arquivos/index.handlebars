@@ -273,18 +273,17 @@
                                         <img src="${filepath}" class="img-fluid" alt="Pré-visualização de ${filename}" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22600%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20600%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18d9f6a7e7b%20text%20%7B%20fill%3A%23555%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A40pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18d9f6a7e7b%22%3E%3Crect%20width%3D%22800%22%20height%3D%22600%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22285.9140625%22%20y%3D%22317.7%22%3EImagem%20não%20dispon%C3%ADvel%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'">`;
                                     break;
                                     
-                            case 'pdf':
-                                // Usar o visualizador do navegador com parâmetros para esconder controles
-                                const pdfUrl = `${filepath}#toolbar=0&navpanes=0&scrollbar=0`;
-                                previewContent.innerHTML = `
-                                    <iframe src="${pdfUrl}" 
-                                            class="file-preview" 
-                                            frameborder="0"
-                                            allowfullscreen
-                                            title="Visualizador de PDF">
-                                    </iframe>
-                                    <p class="text-muted mt-2">Se o PDF não aparecer, <a href="${filepath}" target="_blank">clique aqui para abrir em nova janela</a></p>`;
-                                break;
+                                case 'pdf':
+                                    const pdfUrl = `${filepath}#toolbar=0&navpanes=0&scrollbar=0`;
+                                    previewContent.innerHTML = `
+                                        <iframe src="${pdfUrl}" 
+                                                class="file-preview" 
+                                                frameborder="0"
+                                                allowfullscreen
+                                                title="Visualizador de PDF">
+                                        </iframe>
+                                        <p class="text-muted mt-2">Se o PDF não aparecer, <a href="${filepath}" target="_blank">clique aqui para abrir em nova janela</a></p>`;
+                                    break;
                                     
                                 case 'document':
                                     if (filename.endsWith('.txt') || filename.endsWith('.csv')) {
