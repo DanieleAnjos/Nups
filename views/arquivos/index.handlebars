@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             switch (filetype) {
                 case 'image':
-                    previewContent.innerHTML = `<img src="${filepath}" class="img-fluid" alt="Pré-visualização">`;
+                    previewContent.innerHTML = `<iframe src="${filepath}" class="img-fluid" alt="Pré-visualização">`;
                     break;
                 case 'pdf':
                     previewContent.innerHTML = `<canvas id="pdf-canvas"></canvas>`;
