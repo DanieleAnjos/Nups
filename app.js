@@ -12,6 +12,7 @@ const argon2 = require('argon2');
 const Profissional = require('./models/Profissional');
 const Evento = require ( './models/Evento');
 const sequelize = require('./config/database');  
+const crypto = require('crypto');
 
 // Adicionando morgan e winston para logging
 const morgan = require('morgan');
