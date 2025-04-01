@@ -287,17 +287,55 @@ app.use(favicon(path.join(__dirname, 'public', 'IMG', 'favicon2-16x16.png')));
 
 
 app.use(session({
-  secret: process.env.SESSION_SECRET, // Chave secreta da sessão
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' && process.env.FORCE_HTTPS !== 'false',
-    sameSite: 'strict',
-    maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    secure: process.env.NODE_ENV === 'production', // HTTPS obrigatório em produção
+    sameSite: 'lax', // Equilíbrio entre segurança e usabilidade
+    maxAge: 2 * 60 * 60 * 1000, // 2 horas de tempo total
+    domain: process.env.COOKIE_DOMAIN || undefined,
+    path: '/',
+    overwrite: true
   },
+  name: 'SecureSessionId', // Nome genérico sem prefixo para compatibilidade
+  rolling: true, // Renova o tempo a cada interação
+  unset: 'keep', // Mantém a sessão mas remove dados sensíveis
+  genid: (req) => {
+    return crypto.randomBytes(16).toString('hex'); // ID seguro porém mais curto
+  }
 }));
+
+app.use((req, res, next) => {
+  if (req.session) {
+    // Sessão nova
+    if (!req.session.lastActivity) {
+      req.session.lastActivity = Date.now();
+      return next();
+    }
+    
+    if (Date.now() - req.session.lastActivity > 30 * 60 * 1000) {
+      req.session.destroy(err => {
+        if (err) console.error('Erro ao destruir sessão inativa:', err);
+      });
+      return res.status(401).json({ 
+        message: 'Sessão expirada por inatividade',
+        redirect: '/login' 
+      });
+    }
+    
+    req.session.lastActivity = Date.now();
+  }
+  next();
+});
+
+if (sessionStore.clearExpiredSessions) {
+  setInterval(() => {
+    sessionStore.clearExpiredSessions();
+  }, 30 * 60 * 1000); // A cada 30 minutos
+}
 
 sessionStore.sync();
 
