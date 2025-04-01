@@ -191,198 +191,102 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-        <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            {{#if error_msg}}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: '{{error_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
-            
-            {{#if success_msg}}
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sucesso',
-                    text: '{{success_msg}}',
-                    confirmButtonText: 'Ok'
-                });
-            {{/if}}
+<!-- Adicione PDF.js para visualização de PDFs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
-            // Elementos do DOM
-            const previewModal = document.getElementById('previewModal');
-            const previewContent = document.getElementById('preview-content');
-            const previewTitle = document.getElementById('preview-title');
-            const previewActions = document.getElementById('preview-actions');
-            const closeBtn = document.querySelector('.close-preview');
-            const previewBtns = document.querySelectorAll('.preview-btn');
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const previewModal = document.getElementById('previewModal');
+    const previewContent = document.getElementById('preview-content');
+    const previewTitle = document.getElementById('preview-title');
+    const previewActions = document.getElementById('preview-actions');
+    const closeBtn = document.querySelector('.close-preview');
+    const previewBtns = document.querySelectorAll('.preview-btn');
 
-            // Função para obter o tipo de arquivo pela extensão
-            function getFileType(filename) {
-                if (!filename) return 'other';
-                
-                const extension = filename.split('.').pop().toLowerCase();
-                const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
-                const docTypes = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'];
-                const videoTypes = ['mp4', 'webm', 'ogg', 'mov'];
-                const audioTypes = ['mp3', 'wav', 'ogg', 'm4a'];
-                
-                if (imageTypes.includes(extension)) return 'image';
-                if (extension === 'pdf') return 'pdf';
-                if (docTypes.includes(extension)) return 'document';
-                if (videoTypes.includes(extension)) return 'video';
-                if (audioTypes.includes(extension)) return 'audio';
-                return 'other';
+    function getFileType(filename) {
+        const extension = filename.split('.').pop().toLowerCase();
+        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+        const videoTypes = ['mp4', 'webm', 'ogg', 'mov'];
+        const audioTypes = ['mp3', 'wav', 'ogg', 'm4a'];
+        if (imageTypes.includes(extension)) return 'image';
+        if (extension === 'pdf') return 'pdf';
+        if (videoTypes.includes(extension)) return 'video';
+        if (audioTypes.includes(extension)) return 'audio';
+        return 'other';
+    }
+
+    function createActionButtons(filepath, filename) {
+        return `
+            <a href="${filepath}" download class="btn btn-primary btn-sm">
+                <i class="bi bi-download"></i> Baixar
+            </a>
+            <button class="btn btn-secondary btn-sm" onclick="window.open('${filepath}', '_blank')">
+                <i class="bi bi-box-arrow-up-right"></i> Abrir em nova aba
+            </button>
+            <button class="btn btn-outline-danger btn-sm" onclick="document.getElementById('previewModal').style.display='none'">
+                <i class="bi bi-x"></i> Fechar
+            </button>
+        `;
+    }
+
+    previewBtns.forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const filepath = this.getAttribute('data-filepath');
+            const filename = this.getAttribute('data-filename');
+            const filetype = getFileType(filename);
+
+            previewTitle.textContent = filename;
+            previewContent.innerHTML = '<div class="text-center my-5">Carregando...</div>';
+            previewActions.innerHTML = createActionButtons(filepath, filename);
+            previewModal.style.display = "block";
+
+            switch (filetype) {
+                case 'image':
+                    previewContent.innerHTML = `<img src="${filepath}" class="img-fluid" alt="Pré-visualização">`;
+                    break;
+                case 'pdf':
+                    previewContent.innerHTML = `<canvas id="pdf-canvas"></canvas>`;
+                    const loadingTask = pdfjsLib.getDocument(filepath);
+                    loadingTask.promise.then(pdf => {
+                        pdf.getPage(1).then(page => {
+                            const scale = 1.5;
+                            const viewport = page.getViewport({ scale });
+                            const canvas = document.getElementById('pdf-canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            page.render({ canvasContext: context, viewport });
+                        });
+                    });
+                    break;
+                case 'video':
+                    previewContent.innerHTML = `<video controls class="w-100"><source src="${filepath}" type="video/mp4">Seu navegador não suporta vídeos.</video>`;
+                    break;
+                case 'audio':
+                    previewContent.innerHTML = `<audio controls class="w-100"><source src="${filepath}" type="audio/mp3">Seu navegador não suporta áudio.</audio>`;
+                    break;
+                default:
+                    previewContent.innerHTML = `<div class="alert alert-warning">Este tipo de arquivo não pode ser pré-visualizado.</div>`;
             }
-
-            // Função para criar visualização alternativa
-            function createAlternativePreview(filepath, filename) {
-                return `
-                    <div class="preview-alternative">
-                        <i class="bi bi-file-earmark"></i>
-                        <h5>Pré-visualização não disponível</h5>
-                        <p>Este tipo de arquivo não pode ser exibido diretamente no navegador.</p>
-                        <div class="action-buttons">
-                            <a href="${filepath}" download="${filename}" class="btn btn-primary">
-                                <i class="bi bi-download"></i> Baixar Arquivo
-                            </a>
-                            <a href="${filepath}" target="_blank" class="btn btn-secondary">
-                                <i class="bi bi-box-arrow-up-right"></i> Abrir Externamente
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Função para criar visualização de PDF com abas
-            function createPdfPreview(filepath, filename) {
-                const pdfEmbedUrl = `${filepath}#toolbar=0&navpanes=0&scrollbar=0`;
-                const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(filepath)}&embedded=true`;
-                
-                return `
-                    <div class="preview-tabs">
-                        <div class="preview-tab active" data-tab="native">Visualizador do Navegador</div>
-                        <div class="preview-tab" data-tab="google">Google Docs Viewer</div>
-                    </div>
-                    <div class="preview-iframe-container">
-                        <iframe id="native-preview" src="${pdfEmbedUrl}" class="preview-iframe" style="display: block;"></iframe>
-                        <iframe id="google-preview" src="${googleViewerUrl}" class="preview-iframe" style="display: none;"></iframe>
-                    </div>
-                    <p class="text-muted mt-2">Se o PDF não carregar, tente alternar entre as abas acima ou <a href="${filepath}" target="_blank">abra em nova janela</a></p>
-                `;
-            }
-
-            // Abrir modal de pré-visualização
-            previewBtns.forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const filepath = this.getAttribute('data-filepath');
-                    const filename = this.getAttribute('data-filename');
-                    const filetype = getFileType(filename);
-                    
-                    previewTitle.textContent = filename;
-                    previewContent.innerHTML = '<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-2">Carregando pré-visualização...</p></div>';
-                    previewActions.innerHTML = '';
-                    
-                    previewModal.style.display = "block";
-                    
-                    try {
-                        // Montar pré-visualização conforme o tipo de arquivo
-                        switch(filetype) {
-                            case 'image':
-                                previewContent.innerHTML = `
-                                    <div class="preview-iframe-container">
-                                        <img src="${filepath}" class="preview-iframe" style="object-fit: contain;" alt="Pré-visualização de ${filename}" 
-                                             onerror="this.onerror=null;this.parentElement.innerHTML='${createAlternativePreview(filepath, filename)}'">
-                                    </div>`;
-                                break;
-                                
-                            case 'pdf':
-                                previewContent.innerHTML = createPdfPreview(filepath, filename);
-                                // Adiciona evento para alternar entre abas
-                                setTimeout(() => {
-                                    document.querySelectorAll('.preview-tab').forEach(tab => {
-                                        tab.addEventListener('click', function() {
-                                            document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
-                                            this.classList.add('active');
-                                            
-                                            document.getElementById('native-preview').style.display = 'none';
-                                            document.getElementById('google-preview').style.display = 'none';
-                                            
-                                            const tabType = this.getAttribute('data-tab');
-                                            document.getElementById(`${tabType}-preview`).style.display = 'block';
-                                        });
-                                    });
-                                }, 100);
-                                break;
-                                
-                            case 'document':
-                                if (filename.endsWith('.txt') || filename.endsWith('.csv')) {
-                                    try {
-                                        const response = await fetch(filepath);
-                                        if (!response.ok) throw new Error('Erro ao carregar arquivo');
-                                        const text = await response.text();
-                                        previewContent.innerHTML = `
-                                            <div class="text-preview">${text}</div>`;
-                                    } catch (error) {
-                                        previewContent.innerHTML = createAlternativePreview(filepath, filename);
-                                    }
-                                } else {
-                                    previewContent.innerHTML = createAlternativePreview(filepath, filename);
-                                }
-                                break;
-                                
-                            case 'video':
-                                previewContent.innerHTML = `
-                                    <div class="preview-iframe-container">
-                                        <video controls class="preview-iframe">
-                                            <source src="${filepath}" type="video/${filename.split('.').pop()}">
-                                            Seu navegador não suporta vídeos.
-                                        </video>
-                                    </div>`;
-                                break;
-                                
-                            case 'audio':
-                                previewContent.innerHTML = `
-                                    <div class="preview-iframe-container" style="display: flex; align-items: center; justify-content: center;">
-                                        <audio controls style="width: 100%; max-width: 500px;">
-                                            <source src="${filepath}" type="audio/${filename.split('.').pop()}">
-                                            Seu navegador não suporta áudio.
-                                        </audio>
-                                    </div>`;
-                                break;
-                                
-                            default:
-                                previewContent.innerHTML = createAlternativePreview(filepath, filename);
-                        }
-                    } catch (error) {
-                        console.error('Erro ao carregar pré-visualização:', error);
-                        previewContent.innerHTML = createAlternativePreview(filepath, filename);
-                    }
-                });
-            });
-
-            // Fechar modal
-            closeBtn.addEventListener('click', () => {
-                previewModal.style.display = "none";
-            });
-
-            // Fechar ao clicar fora do conteúdo
-            window.addEventListener('click', (event) => {
-                if (event.target === previewModal) {
-                    previewModal.style.display = "none";
-                }
-            });
-
-            // Fechar com tecla ESC
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && previewModal.style.display === 'block') {
-                    previewModal.style.display = 'none';
-                }
-            });
         });
-    </script>s
+    });
+
+    closeBtn.addEventListener('click', () => {
+        previewModal.style.display = "none";
+    });
+    window.addEventListener('click', event => {
+        if (event.target === previewModal) {
+            previewModal.style.display = "none";
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            previewModal.style.display = 'none';
+        }
+    });
+});
+</script>
+
     </div>
 </body>
 </html>
