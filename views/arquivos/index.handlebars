@@ -6,7 +6,6 @@
     <title>Meus Arquivos</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/CSS/Principal.css">
     <style>
@@ -27,7 +26,7 @@
             }
         }
 
-        /* Estilos para o modal de pré-visualização */
+        /* Modal de pré-visualização */
         .preview-modal {
             display: none;
             position: fixed;
@@ -68,29 +67,50 @@
             z-index: 10;
         }
 
-        .file-preview {
+        /* Estilos específicos para visualização */
+        .preview-wrapper {
             width: 100%;
             height: 70vh;
-            border: none;
+            display: flex;
+            flex-direction: column;
         }
-
-        .unsupported-file {
-            padding: 20px;
-            text-align: center;
-            color: #666;
+        
+        .file-viewer {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            margin-bottom: 10px;
         }
-
-        .text-preview {
-            white-space: pre-wrap;
-            font-family: monospace;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            max-height: 60vh;
-            overflow-y: auto;
+        
+        .viewer-options {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
         }
-
-        /* Estilos para botões de ação */
+        
+        .viewer-option-btn {
+            padding: 5px 10px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .viewer-option-btn.active {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+        
+        .img-preview {
+            max-width: 100%;
+            max-height: 70vh;
+            display: block;
+            margin: 0 auto;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -99,7 +119,6 @@
             flex-wrap: wrap;
         }
 
-        /* Ajustes para mobile */
         @media (max-width: 576px) {
             .preview-content {
                 width: 95%;
@@ -114,22 +133,23 @@
                 right: 15px;
                 font-size: 30px;
             }
+            
+            .viewer-options {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <!-- Título da página -->
         <h2 class="text-center text-primary my-4">Arquivos</h2>
 
-        <!-- Botão Adicionar Novo Arquivo -->
         <div class="d-flex justify-content-end mb-3">
             <a href="/arquivos/create" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Adicionar Novo Arquivo
             </a>
         </div>
 
-        <!-- Tabela de Arquivos -->
         <div class="table-responsive">
             <table class="table table-hover table-striped table-bordered mt-3">
                 <thead class="table-primary">
@@ -147,7 +167,6 @@
                             <td>{{this.descricao}}</td>
                             <td>{{formatDate this.createdAt}}</td>
                             <td class="text-center">
-                                <!-- Botão de visualização com pré-visualização -->
                                 <button class="btn btn-info btn-sm preview-btn" 
                                         data-filename="{{this.nome}}"
                                         data-filepath="{{this.caminho}}">
@@ -179,7 +198,7 @@
             <div class="preview-container">
                 <h4 id="preview-title" class="mb-3"></h4>
                 <div id="preview-content">
-                    <!-- Conteúdo será inserido dinamicamente via JavaScript -->
+                    <!-- Conteúdo será inserido dinamicamente -->
                 </div>
                 <div class="action-buttons" id="preview-actions">
                     <!-- Botões de ação serão inseridos aqui -->
@@ -191,102 +210,215 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Adicione PDF.js para visualização de PDFs -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const previewModal = document.getElementById('previewModal');
-    const previewContent = document.getElementById('preview-content');
-    const previewTitle = document.getElementById('preview-title');
-    const previewActions = document.getElementById('preview-actions');
-    const closeBtn = document.querySelector('.close-preview');
-    const previewBtns = document.querySelectorAll('.preview-btn');
-
-    function getFileType(filename) {
-        const extension = filename.split('.').pop().toLowerCase();
-        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
-        const videoTypes = ['mp4', 'webm', 'ogg', 'mov'];
-        const audioTypes = ['mp3', 'wav', 'ogg', 'm4a'];
-        if (imageTypes.includes(extension)) return 'image';
-        if (extension === 'pdf') return 'pdf';
-        if (videoTypes.includes(extension)) return 'video';
-        if (audioTypes.includes(extension)) return 'audio';
-        return 'other';
-    }
-
-    function createActionButtons(filepath, filename) {
-        return `
-            <a href="${filepath}" download class="btn btn-primary btn-sm">
-                <i class="bi bi-download"></i> Baixar
-            </a>
-            <button class="btn btn-secondary btn-sm" onclick="window.open('${filepath}', '_blank')">
-                <i class="bi bi-box-arrow-up-right"></i> Abrir em nova aba
-            </button>
-            <button class="btn btn-outline-danger btn-sm" onclick="document.getElementById('previewModal').style.display='none'">
-                <i class="bi bi-x"></i> Fechar
-            </button>
-        `;
-    }
-
-    previewBtns.forEach(btn => {
-        btn.addEventListener('click', async function () {
-            const filepath = this.getAttribute('data-filepath');
-            const filename = this.getAttribute('data-filename');
-            const filetype = getFileType(filename);
-
-            previewTitle.textContent = filename;
-            previewContent.innerHTML = '<div class="text-center my-5">Carregando...</div>';
-            previewActions.innerHTML = createActionButtons(filepath, filename);
-            previewModal.style.display = "block";
-
-            switch (filetype) {
-                case 'image':
-                    previewContent.innerHTML = `<iframe src="${filepath}" class="img-fluid" alt="Pré-visualização">`;
-                    break;
-                case 'pdf':
-                    previewContent.innerHTML = `<canvas id="pdf-canvas"></canvas>`;
-                    const loadingTask = pdfjsLib.getDocument(filepath);
-                    loadingTask.promise.then(pdf => {
-                        pdf.getPage(1).then(page => {
-                            const scale = 1.5;
-                            const viewport = page.getViewport({ scale });
-                            const canvas = document.getElementById('pdf-canvas');
-                            const context = canvas.getContext('2d');
-                            canvas.height = viewport.height;
-                            canvas.width = viewport.width;
-                            page.render({ canvasContext: context, viewport });
-                        });
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                {{#if error_msg}}
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: '{{error_msg}}',
+                        confirmButtonText: 'Ok'
                     });
-                    break;
-                case 'video':
-                    previewContent.innerHTML = `<video controls class="w-100"><source src="${filepath}" type="video/mp4">Seu navegador não suporta vídeos.</video>`;
-                    break;
-                case 'audio':
-                    previewContent.innerHTML = `<audio controls class="w-100"><source src="${filepath}" type="audio/mp3">Seu navegador não suporta áudio.</audio>`;
-                    break;
-                default:
-                    previewContent.innerHTML = `<div class="alert alert-warning">Este tipo de arquivo não pode ser pré-visualizado.</div>`;
-            }
-        });
-    });
+                {{/if}}
+                
+                {{#if success_msg}}
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: '{{success_msg}}',
+                        confirmButtonText: 'Ok'
+                    });
+                {{/if}}
 
-    closeBtn.addEventListener('click', () => {
-        previewModal.style.display = "none";
-    });
-    window.addEventListener('click', event => {
-        if (event.target === previewModal) {
-            previewModal.style.display = "none";
-        }
-    });
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-            previewModal.style.display = 'none';
-        }
-    });
-});
-</script>
+                // Elementos do DOM
+                const previewModal = document.getElementById('previewModal');
+                const previewContent = document.getElementById('preview-content');
+                const previewTitle = document.getElementById('preview-title');
+                const previewActions = document.getElementById('preview-actions');
+                const closeBtn = document.querySelector('.close-preview');
+                const previewBtns = document.querySelectorAll('.preview-btn');
 
+                // Função para obter o tipo de arquivo
+                function getFileType(filename) {
+                    if (!filename) return 'other';
+                    
+                    const extension = filename.split('.').pop().toLowerCase();
+                    const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+                    const docTypes = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'];
+                    const videoTypes = ['mp4', 'webm', 'ogg', 'mov'];
+                    const audioTypes = ['mp3', 'wav', 'ogg', 'm4a'];
+                    
+                    if (imageTypes.includes(extension)) return 'image';
+                    if (extension === 'pdf') return 'pdf';
+                    if (docTypes.includes(extension)) return 'document';
+                    if (videoTypes.includes(extension)) return 'video';
+                    if (audioTypes.includes(extension)) return 'audio';
+                    return 'other';
+                }
+
+                // Função para criar visualização de PDF
+                async function renderPdfPreview(filepath, filename, container) {
+                    const viewerOptions = [
+                        { id: 'native', name: 'Navegador', url: `${filepath}#toolbar=0` },
+                        { id: 'google', name: 'Google Viewer', url: `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + filepath)}&embedded=true` }
+                    ];
+
+                    container.innerHTML = `
+                        <div class="preview-wrapper">
+                            <iframe id="file-viewer" class="file-viewer" src="${viewerOptions[0].url}" frameborder="0"></iframe>
+                            <div class="viewer-options" id="viewer-options">
+                                ${viewerOptions.map(opt => `
+                                    <div class="viewer-option-btn ${opt.id === 'native' ? 'active' : ''}" 
+                                         data-viewer="${opt.id}" 
+                                         data-url="${opt.url}">
+                                        ${opt.name}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <p class="text-muted">Se o PDF não carregar, tente outra opção de visualização</p>
+                    `;
+
+                    // Adicionar eventos para trocar visualizadores
+                    document.getElementById('viewer-options').addEventListener('click', (e) => {
+                        if (e.target.classList.contains('viewer-option-btn')) {
+                            document.querySelectorAll('.viewer-option-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            e.target.classList.add('active');
+                            document.getElementById('file-viewer').src = e.target.dataset.url;
+                        }
+                    });
+                }
+
+                // Função para criar botões de ação
+                function createActionButtons(filepath, filename) {
+                    return `
+                        <a href="${filepath}" download="${filename}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-download"></i> Baixar
+                        </a>
+                        <a href="${filepath}" target="_blank" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-box-arrow-up-right"></i> Abrir em nova aba
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm" onclick="document.getElementById('previewModal').style.display='none'">
+                            <i class="bi bi-x"></i> Fechar
+                        </button>
+                    `;
+                }
+
+                // Abrir modal de pré-visualização
+                previewBtns.forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const filepath = this.getAttribute('data-filepath');
+                        const filename = this.getAttribute('data-filename');
+                        const filetype = getFileType(filename);
+                        
+                        previewTitle.textContent = filename;
+                        previewContent.innerHTML = `
+                            <div class="text-center my-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Carregando...</span>
+                                </div>
+                                <p class="mt-2">Carregando pré-visualização...</p>
+                            </div>`;
+                        previewActions.innerHTML = createActionButtons(filepath, filename);
+                        
+                        previewModal.style.display = "block";
+                        
+                        try {
+                            switch(filetype) {
+                                case 'pdf':
+                                    await renderPdfPreview(filepath, filename, previewContent);
+                                    break;
+                                    
+                                case 'image':
+                                    previewContent.innerHTML = `
+                                        <div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
+                                            <img src="${filepath}" class="img-preview" 
+                                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'alert alert-danger\'>Não foi possível carregar a imagem</div>'">
+                                        </div>`;
+                                    break;
+                                    
+                                case 'document':
+                                    if (filename.endsWith('.txt') || filename.endsWith('.csv')) {
+                                        try {
+                                            const response = await fetch(filepath);
+                                            if (!response.ok) throw new Error('Erro ao carregar arquivo');
+                                            const text = await response.text();
+                                            previewContent.innerHTML = `
+                                                <div class="file-viewer">
+                                                    <pre class="p-3">${text}</pre>
+                                                </div>`;
+                                        } catch (error) {
+                                            previewContent.innerHTML = `
+                                                <div class="alert alert-danger">
+                                                    Não foi possível carregar o conteúdo do arquivo.
+                                                </div>`;
+                                        }
+                                    } else {
+                                        previewContent.innerHTML = `
+                                            <div class="alert alert-info">
+                                                <i class="bi bi-file-earmark-text"></i> Pré-visualização não disponível para este tipo de documento.
+                                            </div>`;
+                                    }
+                                    break;
+                                    
+                                case 'video':
+                                    previewContent.innerHTML = `
+                                        <div class="file-viewer">
+                                            <video controls style="width: 100%; height: 100%;">
+                                                <source src="${filepath}" type="video/${filename.split('.').pop()}">
+                                                Seu navegador não suporta vídeos.
+                                            </video>
+                                        </div>`;
+                                    break;
+                                    
+                                case 'audio':
+                                    previewContent.innerHTML = `
+                                        <div class="file-viewer" style="display: flex; justify-content: center; align-items: center;">
+                                            <audio controls style="width: 100%; max-width: 500px;">
+                                                <source src="${filepath}" type="audio/${filename.split('.').pop()}">
+                                                Seu navegador não suporta áudio.
+                                            </audio>
+                                        </div>`;
+                                    break;
+                                    
+                                default:
+                                    previewContent.innerHTML = `
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-file-earmark"></i> Pré-visualização não disponível para este tipo de arquivo.
+                                        </div>`;
+                            }
+                        } catch (error) {
+                            console.error('Erro ao carregar pré-visualização:', error);
+                            previewContent.innerHTML = `
+                                <div class="alert alert-danger">
+                                    Ocorreu um erro ao carregar a pré-visualização.
+                                </div>`;
+                        }
+                    });
+                });
+
+                // Fechar modal
+                closeBtn.addEventListener('click', () => {
+                    previewModal.style.display = "none";
+                });
+
+                // Fechar ao clicar fora do conteúdo
+                window.addEventListener('click', (event) => {
+                    if (event.target === previewModal) {
+                        previewModal.style.display = "none";
+                    }
+                });
+
+                // Fechar com tecla ESC
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && previewModal.style.display === 'block') {
+                        previewModal.style.display = 'none';
+                    }
+                });
+            });
+        </script>
     </div>
 </body>
 </html>
