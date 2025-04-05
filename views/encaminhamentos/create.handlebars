@@ -144,14 +144,15 @@
         const option = $(this).find(':selected');
         const nome = option.data('nome');
         const matricula = option.data('matricula');
-        const telefone = selectedOption.data('telefone');
+        const telefone = option.data('telefone');
 
 
         const id = option.val();
+        const telefoneFormatado = telefone ? formatarTelefone(telefone.toString()) : '';
+
 
         $('#pacienteId').val(id);
         $('#matriculaPaciente').val(matricula || '');
-        const telefoneFormatado = telefone ? formatarTelefone(telefone.toString()) : '';
         $('#telefonePaciente').val(telefoneFormatado);
       });
 
