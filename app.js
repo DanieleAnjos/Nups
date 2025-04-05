@@ -514,6 +514,7 @@ const accessControl = {
       '/salas',
       '/reservas',
       '/eventos',
+      '/fluxoAtendimentos',
       '/encaminhamentos',
       '/relatorios',
       '/estoque',
