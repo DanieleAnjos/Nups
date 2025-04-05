@@ -48,11 +48,14 @@ const FluxoAtendimentos = sequelize.define('FluxoAtendimentos', {
   },  
   telefonePaciente: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: true, // Permite valores nulos
     validate: {
-      is: /^[0-9]{10,11}$/,
+        is: {
+            args: /^[0-9]{10,11}$/, // Validação para 10 ou 11 dígitos
+            msg: "O telefone deve conter 10 ou 11 dígitos."
+        }
     },
-  },
+},
   assuntoAcolhimento: {
     type: DataTypes.STRING,
     allowNull: false,
