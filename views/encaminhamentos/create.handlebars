@@ -64,7 +64,7 @@
         <select name="nomePaciente" id="nomePaciente" class="form-select select2" required>
           <option value="">🔍 Digite para buscar um servidor</option>
           {{#each pacientes}}
-            <option value="{{this.nome}}" data-matricula="{{this.matricula}}">{{this.nome}}</option>
+            <option value="{{this.nome}}" data-matricula="{{this.matricula}}" data-telefone="{{this.telefone}}">{{this.nome}}</option>
           {{/each}}
         </select>
       </div>
@@ -84,7 +84,7 @@
       <!-- Telefone do Paciente -->
       <div class="mb-4">
         <label for="telefonePaciente" class="form-label">Telefone do Servidor:</label>
-        <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control" required placeholder="(99) 99999-9999">
+        <input type="text" name="telefonePaciente" id="telefonePaciente" class="form-control"  placeholder="(99) 99999-9999">
         <div class="invalid-feedback">Informe um telefone válido no formato (XX) XXXXX-XXXX.</div>
       </div>
 
@@ -146,12 +146,36 @@ $(document).ready(function() {
   }
 
   // Update matricula when a patient is selected
-  $('#nomePaciente').on('change', function () {
-    const selectedOption = $(this).find(':selected');
-    const matricula = selectedOption.data('matricula');
-    $('#matriculaPaciente').val(matricula); // Populate the matricula field
-  });
-});
+      $('#nomePaciente').on('change', function() {
+        const selectedOption = $(this).find(':selected');
+        const matricula = selectedOption.data('matricula');
+        const telefone = selectedOption.data('telefone');
+        
+        $('#matriculaPaciente').val(matricula);
+        
+        // Formata o telefone antes de exibir
+        if (telefone) {
+          const telefoneFormatado = formatarTelefone(telefone);
+          $('#telefonePaciente').val(telefoneFormatado);
+        } else {
+          $('#telefonePaciente').val('');
+        }
+      });
+
+      function formatarTelefone(numero) {
+        // Remove tudo que não é dígito
+        const digits = numero.replace(/\D/g, '');
+        
+        // Verifica se tem código de área (2 dígitos) + número
+        if (digits.length === 11) { // Com DDD e 9 dígitos
+          return `(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}`;
+        } else if (digits.length === 10) { // Com DDD e 8 dígitos
+          return `(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-${digits.substring(6)}`;
+        }
+        // Retorna o número sem formatação se não corresponder aos padrões
+        return numero;
+      }
+
 
 
     document.getElementById('numeroProcesso').addEventListener('input', function (event) {
