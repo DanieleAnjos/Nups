@@ -249,13 +249,13 @@ const detalhesEncaminhamento = async (req, res) => {
         { model: Profissional, as: 'profissionalRecebido' },
         { model: Atendimento, as: 'atendimento' },
         {
-          model: DiscussaoCaso, // Inclua as discussões de caso
+          model: DiscussaoCaso,
           as: 'discussoes',
           include: [
             {
               model: Profissional,
               as: 'profissional',
-              attributes: ['id', 'nome'], // Inclua apenas o ID e o nome do profissional
+              attributes: ['id', 'nome'],
             },
           ],
         },
@@ -267,16 +267,31 @@ const detalhesEncaminhamento = async (req, res) => {
       return res.redirect('/fluxoAtendimentos');
     }
 
+    const profissionalLogadoId = req.user.profissionalId;
+    const userCargo = req.user.cargo; // ou req.user.profissional.cargo dependendo de como vem
+
+    // Adiciona a flag podeDeletar para cada discussão
+    const discussoes = (fluxoAtendimento.discussoes || []).map(discussao => {
+      const podeDeletar = userCargo === 'Administrador' || discussao.profissional.id === profissionalLogadoId;
+      return { ...discussao.toJSON(), podeDeletar };
+    });
+
     res.render('fluxoAtendimentos/detalhes', { 
       fluxoAtendimento,
-      discussoes: fluxoAtendimento.discussoes || [], // Passa as discussões para a view
+      discussoes,
+      profissional: {
+        id: profissionalLogadoId,
+        cargo: userCargo
+      }
     });
+
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
     req.flash('error_msg', 'Erro ao carregar detalhes do encaminhamento.');
     res.status(500).redirect('/fluxoAtendimentos');
   }
 };
+
 
 const edit = async (req, res) => {
   const { id } = req.params;
