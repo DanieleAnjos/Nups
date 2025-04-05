@@ -90,6 +90,7 @@ const index = async (req, res) => {
           include: [{ model: Profissional, as: 'profissional' }]
         },
       ],
+      order: [['createdAt', 'DESC']]
     });
 
     const fluxoAtendimentosFormatados = fluxoAtendimentos.map(enc => ({

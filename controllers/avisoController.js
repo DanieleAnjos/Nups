@@ -13,7 +13,7 @@ function getCargosPermitidos(cargoUsuario) {
     'Gestor Adms': 'Adm'
   };
 
-  const cargosAdministradores = ['Administrador', 'Adm'];
+  const cargosAdministradores = ['Administrador', 'Adm', 'Gestor Adms'];
   const cargosProfissionais = ['Assistente social', 'Psicólogo', 'Psiquiatra', 'Adm'];
 
   if (cargosAdministradores.includes(cargoUsuario)) {
