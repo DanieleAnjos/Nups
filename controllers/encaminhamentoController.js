@@ -242,7 +242,6 @@ exports.store = async (req, res) => {
 };
 
 
-
 exports.detalhesEncaminhamento = async (req, res) => {
   try {
     const { id } = req.params;
@@ -253,13 +252,13 @@ exports.detalhesEncaminhamento = async (req, res) => {
         { model: Profissional, as: 'profissionalRecebido' },
         { model: Atendimento, as: 'atendimento' },
         {
-          model: DiscussaoCaso, // Inclua as discussões de caso
+          model: DiscussaoCaso,
           as: 'discussoes',
           include: [
             {
               model: Profissional,
               as: 'profissional',
-              attributes: ['id', 'nome'], // Inclua apenas o ID e o nome do profissional
+              attributes: ['id', 'nome'],
             },
           ],
         },
@@ -271,11 +270,21 @@ exports.detalhesEncaminhamento = async (req, res) => {
       return res.redirect('/encaminhamentos');
     }
 
+    const profissionalLogadoId = req.user.profissionalId;
+    const userCargo = req.user.cargo;
+
+    // Adiciona a flag podeDeletar nas discussões
+    const discussoes = (encaminhamento.discussoes || []).map(discussao => {
+      const podeDeletar = userCargo === 'Administrador' || discussao.profissional.id === profissionalLogadoId;
+      return { ...discussao.toJSON(), podeDeletar };
+    });
+
     res.render('encaminhamentos/detalhes', { 
       encaminhamento,
-      discussoes: encaminhamento.discussoes || [], 
+      discussoes,
       profissional: req.user.profissional,
     });
+
   } catch (error) {
     console.error('Erro ao buscar detalhes do encaminhamento:', error);
     req.flash('error_msg', 'Erro ao carregar detalhes do encaminhamento.');

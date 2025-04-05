@@ -8,7 +8,7 @@
     <style>
         :root {
             --primary: #0056b3;
-            --secondary: #0056b3;
+            --secondary: #003d82;
             --success: #4cc9f0;
             --danger: #f72585;
             --light: #f8f9fa;
@@ -383,7 +383,7 @@
                             </div>
                         {{/each}}
                     {{else}}
-                        <p class="text-center text-muted">Nenhuma discussão encontrada.</p>
+                        <p class="text-center text-muted">Nenhuma discussão ou atualização encontrada.</p>
                     {{/if}}
                 </div>
                 
@@ -391,7 +391,7 @@
                 <form class="discussion-form" action="/fluxoAtendimentos/{{fluxoAtendimento.id}}/discussoes" method="POST">
                     <textarea name="conteudo" class="form-control" placeholder="Adicione uma nova discussão ou atualização..." required></textarea>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-send"></i> Enviar Comentário
+                        <i class="bi bi-send"></i> Enviar
                     </button>
                 </form>
             </div>

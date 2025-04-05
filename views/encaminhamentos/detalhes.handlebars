@@ -4,207 +4,402 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Encaminhamento</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #0056b3;
+            --secondary: #003d82;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .page-title {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 2rem;
+            text-align: center;
+            width: 100%;
+        }
+        
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid var(--light-gray);
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-visto {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-nao-visto {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Info Sections */
+        .info-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .info-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: var(--gray);
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            font-weight: 400;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        /* Description Box */
+        .description-box {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Discussions Section */
+        .discussions-list {
+            margin-bottom: 1.5rem;
+        }
+        
+        .discussion-item {
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .discussion-author {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .discussion-date {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .discussion-content {
+            color: var(--dark);
+            line-height: 1.5;
+        }
+        
+        /* Form Styles */
+        .discussion-form {
+            margin-top: 1.5rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .page-title {
+                margin-bottom: 1rem;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- Cabeçalho com título e botão de voltar -->
-        <h1 style="text-align: center; color:#0056b3;">Detalhes do Encaminhamento</h1><br>
 
-        <!-- Card de detalhes do encaminhamento -->
+        
+        <!-- Main Card -->
         <div class="card">
+            <br>
+            <h2 style="text-align: center;">Detalhes do Encaminhamento</h2>
+            <br>
             <div class="card-header">
-                <h2>Encaminhamento #{{encaminhamento.id}}</h2>
-                <span class="status {{#if encaminhamento.visto}}status-visto{{else}}status-nao-visto{{/if}}">
-                    {{#if encaminhamento.visto}}Visto{{else}}Não Visto{{/if}}
-                </span>
+                <h2 class="card-title">Encaminhamento #{{encaminhamento.id}}</h2>
             </div>
             <div class="card-body">
-                <!-- Informações principais -->
-                <div class="info-group">
-                    <h3>Paciente</h3>
-                    <p><strong>Nome:</strong> {{encaminhamento.nomePaciente}}</p>
-                    <p><strong>Matrícula:</strong> {{encaminhamento.matriculaPaciente}}</p>
-                    <p><strong>Telefone:</strong> {{encaminhamento.telefonePaciente}}</p>
-                </div>
-
-                <!-- Profissionais envolvidos -->
-                <div class="info-group">
-                    <h3>Profissionais</h3>
-                    <p><strong>Enviado por:</strong> {{encaminhamento.profissionalEnvio.nome}}</p>
-                    <p><strong>Recebido por:</strong> {{encaminhamento.profissionalRecebido.nome}}</p>
-                </div>
-
-                <!-- Detalhes do atendimento -->
-                <div class="info-group">
-                    <h3>Atendimento</h3>
-                    <p><strong>Atendimento Associado:</strong> {{encaminhamento.atendimento.id}} - {{encaminhamento.atendimento.nomePaciente}}</p>
-                    <p><strong>Assunto:</strong> {{encaminhamento.assuntoAcolhimento}}</p>
-                    <div class="registro-box">
-                        <strong>Descrição:</strong>
-                        <p>{{encaminhamento.descricao}}</p>
+                <!-- Patient Information -->
+                <section class="info-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-person-circle"></i> Informações do Servidor
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Nome</span>
+                            <p class="info-value">{{encaminhamento.nomePaciente}}</p>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Matrícula</span>
+                            <p class="info-value">{{encaminhamento.matriculaPaciente}}</p>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Telefone</span>
+                            <p class="info-value">{{encaminhamento.telefonePaciente}}</p>
+                        </div>
                     </div>
-                </div>
+                </section>
+                
+                <!-- Professionals Information -->
+                <section class="info-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-people-fill"></i> Profissionais Envolvidos
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Enviado por</span>
+                            <p class="info-value">{{encaminhamento.profissionalEnvio.nome}}</p>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Recebido por</span>
+                            <p class="info-value">{{encaminhamento.profissionalRecebido.nome}}</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Appointment Details -->
+                <section class="info-section">
+                    <h3 class="section-title">
+                        <i class="bi bi-calendar-check"></i> Detalhes do Atendimento
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Atendimento Associado</span>
+                            <p class="info-value">{{encaminhamento.atendimento.id}} - {{encaminhamento.atendimento.nomePaciente}}</p>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Assunto</span>
+                            <p class="info-value">{{encaminhamento.assuntoAcolhimento}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="description-box">
+                        <h4 class="info-label">Descrição:</h4>
+                        <p class="info-value">{{encaminhamento.descricao}}</p>
+                    </div>
+                </section>
             </div>
         </div>
-
-        <!-- Seção de Discussões de Caso -->
-        <div class="card" style="margin-top: 20px;">
+        
+        <!-- Discussions Card -->
+        <div class="card">
             <div class="card-header">
-                <h2 class="h5">Discussões de Caso</h2>
+                <h2 class="card-title">
+                    <i class="bi bi-chat-left-text"></i> Discussões de Caso
+                </h2>
             </div>
             <div class="card-body">
-                <!-- Lista de discussões -->
-                {{#if discussoes.length}}
-                    {{#each discussoes}}
-                        <div class="discussao-item mb-3">
-                            <p><strong>{{this.profissional.nome}}</strong> em {{formatDateTime2 this.dataHora}}:</p>
-                            <p>{{this.conteudo}}</p>
-
-                            <!-- Botão de exclusão (apenas para administradores ou autores) -->
-                            {{#if (eq ../profissional.cargo "Administrador")}}
-                                <form action="/encaminhamentos/{{../encaminhamento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
-                                </form>
-                            {{/if}}
-                        </div>
-                        <hr>
-                    {{/each}}
-                {{else}}
-                    <p>Nenhuma discussão encontrada.</p>
-                {{/if}}
-
-                <!-- Formulário para adicionar uma nova discussão -->
-                <form action="/encaminhamentos/{{encaminhamento.id}}/discussoes" method="POST">
-                    <div class="input-group mb-3">
-                        <textarea name="conteudo" class="form-control" placeholder="Adicionar uma discussão..." required></textarea>
-                        <button type="submit" class="btn btn-primary">Enviar</button>
-                    </div>
+                <!-- Discussions List -->
+                <div class="discussions-list">
+                    {{#if discussoes.length}}
+                        {{#each discussoes}}
+                            <div class="discussion-item">
+                                <div class="discussion-header">
+                                    <span class="discussion-author">{{this.profissional.nome}}</span>
+                                    <span class="discussion-date">{{formatDateTime2 this.dataHora}}</span>
+                                </div>
+                                <p class="discussion-content">{{this.conteudo}}</p>
+                                
+                                {{#if podeDeletar}}
+                                    <div class="mt-2">
+                                        <form action="/encaminhamentos/{{../encaminhamento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">
+                                                <i class="bi bi-trash"></i> Deletar
+                                            </button>
+                                        </form>
+                                    </div>
+                                {{/if}}
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <p class="text-center text-muted">Nenhuma discussão encontrada.</p>
+                    {{/if}}
+                </div>
+                
+                <!-- Discussion Form -->
+                <form class="discussion-form" action="/encaminhamentos/{{encaminhamento.id}}/discussoes" method="POST">
+                    <textarea name="conteudo" class="form-control" placeholder="Adicione uma nova discussão..." required></textarea>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Enviar
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </body>
 </html>
-
-
-<style>
-    /* Reset básico */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* Estilos gerais */
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f6f9;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    .container {
-        width: 90%;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 20px;
-        background-color: #fff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-    /* Card de detalhes */
-    .card {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .card-header {
-        background-color: #fff;
-        color: #3498db;
-        padding: 15px;
-    }
-
-    .status {
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.9em;
-        font-weight: bold;
-    }
-
-    .status-visto {
-        background-color: #28a745;
-        color: #fff;
-    }
-
-    .status-nao-visto {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    .card-body {
-        padding: 20px;
-    }
-
-    .info-group {
-        margin-bottom: 20px;
-    }
-
-    .info-group h3 {
-        color: #0056b3;
-        font-size: 1.2em;
-        margin-bottom: 10px;
-        border-bottom: 2px solid #e9ecef;
-        padding-bottom: 5px;
-    }
-
-    .info-group p {
-        margin: 5px 0;
-        font-size: 1em;
-        color: #555;
-    }
-
-    .info-group p strong {
-        color: #333;
-    }
-
-    /* Botões */
-    .btn {
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-        background-color: #0056b3;
-    }
-
-    /* Responsividade */
-    @media (max-width: 600px) {
-        .container {
-            width: 95%;
-            padding: 15px;
-        }
-
-        .card-header h2 {
-            font-size: 1.5em;
-        }
-
-        .info-group h3 {
-            font-size: 1em;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            font-size: 0.9em;
-        }
-    }
-</style>
