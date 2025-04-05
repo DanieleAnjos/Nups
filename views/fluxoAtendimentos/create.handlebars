@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const matricula = selectedOption.data('matricula');
     const telefone = selectedOption.data('telefone');
 
-    const telefoneFormatado = telefone ? formatarTelefone(telefone.toString()) : '';
+    const telefoneFormatado = telefone ? formatarTelefone(String(telefone)) : '';
 
 
     $('#matriculaPaciente').val(matricula); // Preenche o campo de matrícula
@@ -149,12 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
       function formatarTelefone(numero) {
-        if (!numero || typeof numero !== 'string') {
-          return '';
-        }
+        if (!numero) return '';
+
 
         // Remove tudo que não é dígito
-        const digits = numero.replace(/\D/g, '');
+        const digits = String(numero).replace(/\D/g, '');
 
         if (digits.length === 11) {
           return `(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}`;
