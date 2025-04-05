@@ -139,7 +139,7 @@ exports.create = async (req, res) => {
     });
 
     const pacientes = await Paciente.findAll({
-      attributes: ['id', 'nome', 'matricula'], 
+      attributes: ['id', 'nome', 'matricula', 'telefone'], 
       order: [['nome', 'ASC']]
     });
 
