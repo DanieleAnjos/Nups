@@ -63,7 +63,7 @@
                     <p>{{this.conteudo}}</p>
                     </div>
                     <hr>
-                {{#if (eq ../profissional.cargo "Administrador")}}
+                {{#if (or (eq ../profissional.cargo "Administrador") (eq ../profissional.id this.profissionalId))}}
                     <form action="/fluxoAtendimentos/{{../fluxoAtendimento.id}}/discussoes/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta discussão?');">Deletar</button>
                     </form>
